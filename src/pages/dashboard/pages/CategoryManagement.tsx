@@ -8,6 +8,7 @@ import { CategoryForm } from '../components/CategoryForm';
 import { ConfirmationModal } from '../../../components/ui/ConfirmationModal';
 import toast from 'react-hot-toast';
 import EmptySection from '../../../components/dashboard/shared/EmptySection';
+import { useTranslation } from 'react-i18next';
 
 export function CategoryManagement() {
   const { categories, isLoading, addCategory, updateCategory, deleteCategory } =
@@ -22,6 +23,7 @@ export function CategoryManagement() {
     categoryName?: string;
   }>({ isOpen: false });
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const { t } = useTranslation();
 
   const handleSave = async (data: Omit<Category, 'id'>) => {
     try {
@@ -82,22 +84,21 @@ export function CategoryManagement() {
 
   return (
     <div className="space-y-6 p-6">
-      {/* Header Section */}
       <div className="flex flex-col space-y-4 md:space-y-0 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900 dark:text-white flex items-center gap-3">
             <LayoutGrid className="w-6 h-6 text-blue-500" />
-            Catégories
+            {t('category:category-title')}
           </h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Gérez les catégories de votre menu
+            {t('category:category-description')}
           </p>
         </div>
 
         <Button onClick={() => setIsFormOpen(true)} type="button">
           <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
-          <span className="relative">Nouvelle catégorie</span>
+          <span className="relative">{t('category:new-category')}</span>
         </Button>
       </div>
 
@@ -107,7 +108,7 @@ export function CategoryManagement() {
           <div className="relative flex-1">
             <input
               type="text"
-              placeholder="Rechercher une catégorie..."
+              placeholder={t('category:search-placeholder')}
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-500/20 transition-shadow"
@@ -122,7 +123,9 @@ export function CategoryManagement() {
             className="min-w-[140px]"
           >
             <ArrowUpDown className="w-4 h-4 mr-2" />
-            {sortOrder === 'asc' ? 'Croissant' : 'Décroissant'}
+            {sortOrder === 'asc'
+              ? t('common:ascending')
+              : t('common:descending')}
           </Button>
         </div>
       </div>
@@ -184,14 +187,14 @@ export function CategoryManagement() {
                           onClick={() => handleEdit(category)}
                           className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                         >
-                          Modifier
+                          {t('common:edit')}
                         </Button>
                         <Button
                           variant="ghost"
                           onClick={() => handleDelete(category)}
                           className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                         >
-                          Supprimer
+                          {t('common:delete')}
                         </Button>
                       </div>
                     </div>

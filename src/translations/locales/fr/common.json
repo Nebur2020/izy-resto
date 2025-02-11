@@ -76,5 +76,9 @@
   "payment-on-site": "PAIEMENT SUR PLACE",
   "payment-receive": "PAIEMENT REÇU",
   "serve-by": "Vous avez été servi par",
-  "payment-on-delivery": "Paiement à la livraison"
+  "payment-on-delivery": "Paiement à la livraison",
+  "descending": "Décroissant",
+  "ascending": "Croissant",
+  "name": "Nom",
+  "description": "Description"
 }

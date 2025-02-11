@@ -72,5 +72,9 @@
   "payment-receive": "Payment received",
   "serve-by": "You were served by",
   "payment-on-delivery": "Payment on delivery",
-  "in-cooking": "Cooking"
+  "in-cooking": "Cooking",
+  "descending": "Descending",
+  "ascending": "Ascending",
+  "name": "Name",
+  "description": "Description"
 }

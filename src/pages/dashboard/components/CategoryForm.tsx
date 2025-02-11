@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import { X, Hash, Type, AlignLeft } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { Category } from '../../../types';
+import { useTranslation } from 'react-i18next';
 
 interface CategoryFormProps {
   category: Category | null;
@@ -10,12 +11,9 @@ interface CategoryFormProps {
   isLoading: boolean;
 }
 
-export function CategoryForm({
-  category,
-  onSave,
-  onCancel,
-  isLoading,
-}: CategoryFormProps) {
+export function CategoryForm(props: CategoryFormProps) {
+  const { category, onSave, onCancel, isLoading } = props;
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
@@ -35,12 +33,14 @@ export function CategoryForm({
         <div className="relative border-b dark:border-gray-700/80">
           <div className="px-6 py-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              {category ? 'Modifier la catégorie' : 'Nouvelle catégorie'}
+              {category
+                ? t('category:update-category')
+                : t('category:new-category')}
             </h3>
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               {category
-                ? 'Modifier les détails de la catégorie'
-                : 'Ajouter une nouvelle catégorie au menu'}
+                ? t('category:update-category-details')
+                : t('category:add-new-category')}
             </p>
           </div>
           <button
@@ -50,8 +50,6 @@ export function CategoryForm({
             <X className="w-5 h-5" />
           </button>
         </div>
-
-        {/* Form */}
         <form
           onSubmit={e => {
             e.stopPropagation();
@@ -59,11 +57,10 @@ export function CategoryForm({
           }}
           className="p-6 space-y-5"
         >
-          {/* Name Field */}
           <div className="space-y-2">
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
               <Type className="w-4 h-4" />
-              Nom
+              {t('common:name')}
             </label>
             <div className="relative">
               <input
@@ -91,7 +88,7 @@ export function CategoryForm({
           <div className="space-y-2">
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
               <AlignLeft className="w-4 h-4" />
-              Description
+              {t('common:description')}
             </label>
             <textarea
               {...register('description')}
@@ -104,7 +101,7 @@ export function CategoryForm({
                 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-500
                 transition-shadow resize-none
               "
-              placeholder="Description de la catégorie (optionnel)"
+              placeholder={t('category:description-placeholder')}
             />
           </div>
 
@@ -112,7 +109,7 @@ export function CategoryForm({
           <div className="space-y-2">
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
               <Hash className="w-4 h-4" />
-              Ordre d'affichage
+              {t('category:display-order')}
             </label>
             <input
               type="number"

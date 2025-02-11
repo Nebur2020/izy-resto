@@ -1,0 +1,11 @@
+{
+  "category-title": "Catégorie",
+  "category-description": "Gérez les catégories de votre menu",
+  "new-category": "Nouvelle catégorie",
+  "search-placeholder": "Rechercher une catégorie...",
+  "update-category": "Modifier la catégorie",
+  "add-new-category": "Ajouter une nouvelle catégorie au menu",
+  "update-category-details": "Modifier les détails de la catégorie",
+  "description-placeholder": "Description de la catégorie",
+  "display-order": "Ordre d'affichage"
+}
