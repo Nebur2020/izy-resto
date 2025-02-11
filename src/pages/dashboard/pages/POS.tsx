@@ -117,13 +117,11 @@ export function POS() {
   return (
     <>
       <div className="h-[calc(100vh-6rem)] flex flex-col lg:flex-row gap-6">
-        {/* Menu Section */}
         <div className="flex-1 flex flex-col overflow-hidden">
           <MenuFilters
             activeCategory={selectedCategory}
             onCategoryChange={setSelectedCategory}
           />
-
           <POSMenuGrid
             items={filteredItems}
             onAddToCart={addToCart}
@@ -132,8 +130,6 @@ export function POS() {
             onToggleCart={() => setIsSidebarOpen(true)}
           />
         </div>
-
-        {/* Mobile Cart */}
         <AnimatePresence>
           {isSidebarOpen && (
             <motion.div

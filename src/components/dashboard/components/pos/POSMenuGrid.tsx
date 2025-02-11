@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Minus, Trash2, ShoppingBag } from 'lucide-react';
+import { ShoppingBag } from 'lucide-react';
 import { MenuItem } from '../../../../types';
 import { Button } from '../../../ui/Button';
 import { useSettings } from '../../../../hooks/useSettings';
 import { formatCurrency } from '../../../../utils/currency';
 import { ProductDetailsModal } from '../../../menu/ProductDetailsModal';
 import { Pagination } from '../../../ui/Pagination';
+import { useTranslation } from 'react-i18next';
 
 const ITEMS_PER_PAGE = 8;
 
@@ -18,32 +19,27 @@ interface POSMenuGridProps {
   onToggleCart: () => void;
 }
 
-export function POSMenuGrid({
-  items,
-  onAddToCart,
-  searchTerm,
-  onSearchChange,
-  onToggleCart
-}: POSMenuGridProps) {
+export function POSMenuGrid(props: POSMenuGridProps) {
+  const { t } = useTranslation('common');
+  const { items, onAddToCart, searchTerm, onSearchChange, onToggleCart } =
+    props;
   const { settings } = useSettings();
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Calculate pagination
   const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedItems = items.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
-      {/* Search Bar */}
       <div className="p-4 flex items-center gap-4">
         <div className="relative flex-1">
           <input
             type="text"
-            placeholder="Rechercher produit..."
+            placeholder={t('search-items')}
             value={searchTerm}
-            onChange={(e) => onSearchChange(e.target.value)}
+            onChange={e => onSearchChange(e.target.value)}
             className="w-full pl-4 pr-4 py-2 rounded-lg border dark:border-gray-700"
           />
         </div>
@@ -60,7 +56,7 @@ export function POSMenuGrid({
       <div className="flex-1 overflow-y-auto p-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           <AnimatePresence mode="popLayout">
-            {paginatedItems.map((item) => (
+            {paginatedItems.map(item => (
               <motion.div
                 key={item.id}
                 layout

@@ -76,5 +76,22 @@
   "payment-on-site": "PAIEMENT SUR PLACE",
   "payment-receive": "PAIEMENT REÇU",
   "serve-by": "Vous avez été servi par",
-  "payment-on-delivery": "Paiement à la livraison"
+  "payment-on-delivery": "Paiement à la livraison",
+  "amount-condition": "Le montant reçu est inférieur au total de la commande",
+  "order-successfully-created": "Commande créée avec succès",
+  "order-creation-fail": "Échec de la création de la commande",
+  "cart": "Panier",
+  "table-number": "Numéro de Table (Optionnel)",
+  "tax-and-tips": "Taxes et pourboires",
+  "validated-order": "Valider la commande",
+  "processing": "Traitement...",
+  "name": "Nom",
+  "client-name": "Nom du client",
+  "client-phone-number": "Numéro de téléphone",
+  "phone-number": "Téléphone",
+  "cart-empty": "Le panier est vide",
+  "search-items": "Rechercher un produit...",
+  "cart-details": "Détails du Paiement",
+  "order-save-successfully": "La commande {{orderId}} a été enregistrée avec succès.",
+  "download-bill": "Télécharger le ticket"
 }

@@ -5,6 +5,7 @@ import { Button } from '../../../ui/Button';
 import { InventoryItem } from '../../../../types/inventory';
 import { useSettings } from '../../../../hooks/useSettings';
 import { formatCurrency } from '../../../../utils/currency';
+import { useTranslation } from 'react-i18next';
 
 interface StockUpdateFormProps {
   items: InventoryItem[];
@@ -25,6 +26,7 @@ export function StockUpdateForm({
   onCancel,
   isSubmitting,
 }: StockUpdateFormProps) {
+  const { t } = useTranslation('common');
   const { settings } = useSettings();
   const [searchTerm, setSearchTerm] = useState('');
   const {
@@ -61,7 +63,6 @@ export function StockUpdateForm({
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
-        {/* Header - Made more responsive */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 sm:p-6 border-b dark:border-gray-700 gap-4 sm:gap-0">
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between sm:justify-start gap-2">
@@ -90,7 +91,6 @@ export function StockUpdateForm({
           </button>
         </div>
 
-        {/* Search Bar - Made consistent with responsive design */}
         <div className="p-4 sm:p-6 border-b dark:border-gray-700">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -98,13 +98,12 @@ export function StockUpdateForm({
               type="text"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              placeholder="Rechercher un produit..."
+              placeholder={t('search-product')}
               className="w-full pl-10 pr-4 py-2 rounded-lg border dark:border-gray-600 dark:bg-gray-700"
             />
           </div>
         </div>
 
-        {/* Form Content */}
         <form
           onSubmit={handleSubmit(handleFormSubmit)}
           className="flex flex-col flex-1 min-h-0"
@@ -203,7 +202,6 @@ export function StockUpdateForm({
             </div>
           </div>
 
-          {/* Footer - Made more responsive */}
           <div className="border-t dark:border-gray-700 p-4 sm:p-6 bg-gray-50 dark:bg-gray-800/50">
             <div className="flex flex-col sm:flex-row justify-end gap-3">
               <Button
