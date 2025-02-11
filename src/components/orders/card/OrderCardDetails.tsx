@@ -40,7 +40,7 @@ export function OrderCardDetails({ order }: OrderCardDetailsProps) {
             {t('payment-method')}
           </h4>
           <div className="text-sm opacity-75">
-            <p>{order.paymentMethod.name}</p>
+            <p>{t(`payment-method-names.${order.paymentMethod?.name}`)}</p>
           </div>
         </div>
       )}

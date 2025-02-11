@@ -86,6 +86,7 @@
   "payment-method-names": {
     "Paiement à la livraison": "Cash on delivery",
     "CinetPay": "Pay with CinetPay",
+    "Orange Money": "Pay with Orange Money",
     "PayTech": "Pay with PayTech",
     "Stripe": "Pay with Stripe",
     "Wave": "Pay with Wave",
