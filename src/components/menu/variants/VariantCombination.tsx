@@ -4,6 +4,7 @@ import { Button } from '../../ui/Button';
 import { Variant } from '../../../types/variant';
 import { LogoUploader } from '../../settings/LogoUploader';
 import { useSettings } from '../../../hooks/useSettings';
+import { useTranslation } from 'react-i18next';
 
 interface VariantCombinationProps {
   variants: Variant[];
@@ -27,6 +28,7 @@ export function VariantCombination({
   onRemove,
 }: VariantCombinationProps) {
   const { settings } = useSettings();
+  const { t } = useTranslation();
 
   const handleImageChange = (url: string) => {
     onImageChange(url);
@@ -44,7 +46,6 @@ export function VariantCombination({
     <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg space-y-4">
       <div className="flex justify-between items-start">
         <div className="flex-1 space-y-4">
-          {/* Variant Combinations */}
           <div className="grid gap-4">
             {variants.map((variant, idx) => (
               <div key={variant.id} className="grid grid-cols-2 gap-4">
@@ -63,7 +64,7 @@ export function VariantCombination({
                       onCombinationChange(newCombination);
                     }}
                   >
-                    <option value="null">Sélectionner une valeur</option>
+                    <option value="null">{t("common:choose-value")}</option>
                     {variant.values.map(value => (
                       <option key={value} value={value}>
                         {value}
@@ -75,9 +76,8 @@ export function VariantCombination({
             ))}
           </div>
 
-          {/* Price Input */}
           <div>
-            <label className="block text-sm font-medium mb-1">Prix</label>
+            <label className="block text-sm font-medium mb-1">{t("common:price")}</label>
             <input
               type="number"
               step={settings?.currency === 'XOF' ? '1' : '0.01'}
@@ -87,13 +87,12 @@ export function VariantCombination({
             />
           </div>
 
-          {/* Image Uploader */}
           <div onClick={e => e.stopPropagation()}>
             <LogoUploader
               value={image || ''}
               onChange={handleImageChange}
-              label="Image de la variante"
-              description="Image spécifique pour cette combinaison (optionnel)"
+              label={t('common:variant-image')}
+              description={t('common:specific-image')}
             />
           </div>
         </div>

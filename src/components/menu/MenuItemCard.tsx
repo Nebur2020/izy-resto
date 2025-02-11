@@ -4,6 +4,7 @@ import { Edit2, Trash2, Package, Plus } from 'lucide-react';
 import { MenuItem, MenuItemWithVariants } from '../../types';
 import { Button } from '../ui/Button';
 import { formatCurrency, Currency } from '../../utils/currency';
+import { useTranslation } from 'react-i18next';
 
 interface MenuItemCardProps {
   item: MenuItem;
@@ -16,8 +17,8 @@ const MenuItemCard = forwardRef<HTMLDivElement, MenuItemCardProps>(
   ({ item, onEdit, onDelete, currency }, ref) => {
     const isOutOfStock = item.stockQuantity === 0;
     const itemWithVariants = item as MenuItemWithVariants;
+    const { t } = useTranslation();
 
-    // Get price range if item has variants
     const priceRange = React.useMemo(() => {
       if (!itemWithVariants.variantPrices?.length) {
         return { min: item.price, max: item.price };
@@ -46,7 +47,6 @@ const MenuItemCard = forwardRef<HTMLDivElement, MenuItemCardProps>(
         transition={{ duration: 0.3 }}
         className="group relative flex flex-col overflow-hidden rounded-xl bg-white shadow-md transition-all duration-300 hover:translate-y-[-4px] hover:shadow-xl dark:bg-gray-800"
       >
-        {/* Image Container */}
         <div className="relative aspect-[4/3] overflow-hidden">
           <img
             src={item.image}
@@ -54,8 +54,6 @@ const MenuItemCard = forwardRef<HTMLDivElement, MenuItemCardProps>(
             className="h-full w-full object-cover transition-transform duration-500 will-change-transform group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-
-          {/* Stock Status Badge */}
           {isOutOfStock ? (
             <div className="absolute left-4 top-4 rounded-full bg-red-500/90 px-3 py-1.5 text-sm font-medium text-white shadow-lg">
               Rupture de stock
@@ -67,8 +65,6 @@ const MenuItemCard = forwardRef<HTMLDivElement, MenuItemCardProps>(
               </div>
             )
           )}
-
-          {/* Price Badge */}
           <div className="absolute right-4 top-4 rounded-full bg-white/95 px-4 py-2 text-sm font-bold text-gray-900 shadow-lg backdrop-blur-sm dark:bg-gray-900/95 dark:text-white">
             {hasVariants ? (
               <>
@@ -82,8 +78,6 @@ const MenuItemCard = forwardRef<HTMLDivElement, MenuItemCardProps>(
             )}
           </div>
         </div>
-
-        {/* Content */}
         <div className="flex flex-1 flex-col p-5">
           <div className="mb-4 flex-1">
             <h3 className="mb-2 text-lg font-semibold text-gray-900 transition-colors dark:text-white">
@@ -95,18 +89,15 @@ const MenuItemCard = forwardRef<HTMLDivElement, MenuItemCardProps>(
           </div>
 
           <div className="flex flex-wrap items-center gap-4">
-            {/* Category & Stock Info */}
             <div className="flex flex-1 flex-wrap items-center gap-3">
               <span className="inline-flex rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-200">
                 {item.category}
               </span>
               <span className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
                 <Package className="h-4 w-4" />
-                {item.stockQuantity} en stock
+                {item.stockQuantity} {t('menu:product-in-stock')}
               </span>
             </div>
-
-            {/* Variants Badge */}
             {hasVariants && (
               <div className="flex flex-wrap gap-1">
                 {itemWithVariants.variantPrices
@@ -132,8 +123,6 @@ const MenuItemCard = forwardRef<HTMLDivElement, MenuItemCardProps>(
                 )}
               </div>
             )}
-
-            {/* Action Buttons */}
             <div className="flex gap-2">
               <Button
                 variant="ghost"

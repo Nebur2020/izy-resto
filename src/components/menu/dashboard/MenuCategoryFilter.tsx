@@ -16,22 +16,21 @@ export function MenuCategoryFilter({
   return (
     <div className="relative w-48">
       <label htmlFor="category-select" className="sr-only">
-        {t('Select Category')}
+        {t('select-category')}
       </label>
       <select
         id="category-select"
         value={selectedCategory}
-        onChange={(e) => onCategoryChange(e.target.value)}
+        onChange={e => onCategoryChange(e.target.value)}
         className="block appearance-none w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 py-2 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200 ease-in-out"
       >
         <option value="all">Produits</option>
-        {categories.map((category) => (
+        {categories.map(category => (
           <option key={category.id} value={category.id}>
             {category.name}
           </option>
         ))}
       </select>
-      {/* Custom Dropdown Arrow */}
       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-200">
         <svg
           className="fill-current h-4 w-4"

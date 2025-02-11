@@ -90,7 +90,7 @@ export function MenuManagement() {
     }
   };
 
-  const filteredItems = items.filter((item, index) => {
+  const filteredItems = items.filter(item => {
     const matchesSearch =
       item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -114,7 +114,7 @@ export function MenuManagement() {
 
           <Button onClick={() => setIsFormOpen(true)}>
             <Plus className="w-5 h-5 mr-2" />
-            Ajouter un Item
+            {t('menu:add-item')}
           </Button>
         </div>
       </div>
@@ -165,8 +165,8 @@ export function MenuManagement() {
         isOpen={deleteConfirmation.isOpen}
         onClose={() => setDeleteConfirmation({ isOpen: false })}
         onConfirm={confirmDelete}
-        title="Supprimer le produit"
-        message="Voulez-vous vraiment supprimer ce produit ?"
+        title={t('menu:delete-product')}
+        message={t('menu:delete-confirmation-modal')}
       />
     </div>
   );

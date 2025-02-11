@@ -375,7 +375,7 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
                 }}
               >
                 <Plus className="w-4 h-4 mr-2" />
-                Ajouter une connexion
+                Ajouter une connexion sjhdzb
               </Button>
             </div>
           </div>

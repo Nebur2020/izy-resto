@@ -1,5 +1,6 @@
 import { X } from 'lucide-react';
 import { Button } from './Button';
+import { useTranslation } from 'react-i18next';
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -16,6 +17,7 @@ export function ConfirmationModal({
   title,
   message,
 }: ConfirmationModalProps) {
+  const { t } = useTranslation();
   if (!isOpen) return null;
 
   return (
@@ -32,10 +34,10 @@ export function ConfirmationModal({
         </div>
         <div className="flex justify-end gap-4 p-6 border-t dark:border-gray-700">
           <Button variant="secondary" onClick={onClose}>
-            Annuler
+            {t('common:cancel')}
           </Button>
           <Button variant="danger" onClick={onConfirm}>
-            Supprimer
+            {t('common:delete')}
           </Button>
         </div>
       </div>

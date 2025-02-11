@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { X, Search, Grid, List } from 'lucide-react';
+import { X, Search, Grid } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { MediaGrid } from '../dashboard/components/media/MediaGrid';
-import { MediaList } from '../dashboard/components/media/MediaList';
 import { MediaUploader } from '../dashboard/components/media/MediaUploader';
 import { MediaFile } from '../../types/media';
 import { Pagination } from '../ui/Pagination';
+import { useTranslation } from 'react-i18next';
 
 const ITEMS_PER_PAGE = 12;
 
@@ -27,6 +27,7 @@ export function MediaLibraryModal({
   const [searchTerm, setSearchTerm] = useState('');
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const { t } = useTranslation();
 
   const filteredFiles = files.filter(file =>
     file.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -54,14 +55,13 @@ export function MediaLibraryModal({
         animate={{ opacity: 1, scale: 1 }}
         className="relative w-full max-w-4xl max-h-[80vh] rounded-xl bg-white p-6 shadow-xl dark:bg-gray-800 overflow-hidden flex flex-col"
       >
-        {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Bibliothèque Média
+              {t('menu:bibliotheque-media')}
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              {files.length} fichiers au total
+              {files.length} {t('menu:total-file')}
             </p>
           </div>
           <button
@@ -78,7 +78,7 @@ export function MediaLibraryModal({
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
-              placeholder="Rechercher..."
+              placeholder={t('common:search')}
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               className="w-full rounded-lg border pl-10 pr-4 py-2 dark:border-gray-700 dark:bg-gray-800"

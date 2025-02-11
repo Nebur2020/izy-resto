@@ -5,7 +5,7 @@ import { Button } from '../../ui/Button';
 import { Variant } from '../../../types/variant';
 import { MenuItemVariantPrice } from '../../../types/menu';
 import { VariantCombination } from './VariantCombination';
-// import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 interface VariantManagerProps {
   variants: Variant[];
@@ -18,6 +18,7 @@ export function VariantManager({
   value,
   onChange,
 }: VariantManagerProps) {
+  const { t } = useTranslation();
   const handleAddCombination = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -37,7 +38,6 @@ export function VariantManager({
   };
 
   const handleRemoveCombination = (index: number, e?: React.MouseEvent) => {
-    // Prevent form submission
     if (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -46,7 +46,6 @@ export function VariantManager({
   };
 
   const handleCombinationChange = (index: number, combination: string[]) => {
-    // Check if combination already exists in other variants
     const newVariants = [...value];
     newVariants[index] = {
       ...newVariants[index],
@@ -60,18 +59,15 @@ export function VariantManager({
       <div className="flex justify-between items-center pb-4 border-b dark:border-gray-700">
         <div>
           <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-            Combinaisons de variantes
+            {t('menu:variant-combination')}
           </h3>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Gérez les différentes combinaisons de variantes et leurs prix
+            {t('menu:manage-variant-combination')}
           </p>
         </div>
-        <Button
-          type="button" // Add type="button"
-          onClick={handleAddCombination}
-        >
+        <Button type="button" onClick={handleAddCombination}>
           <Plus className="w-4 h-4 mr-2" />
-          Ajouter une combinaison
+          {t('menu:add-combination')}
         </Button>
       </div>
 
@@ -85,10 +81,10 @@ export function VariantManager({
             <div className="max-w-sm mx-auto">
               <XCircle className="mx-auto h-12 w-12 text-gray-400" />
               <h3 className="mt-4 text-sm font-medium text-gray-900 dark:text-white">
-                Aucune combinaison
+                {t('menu:no-combination')}
               </h3>
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Commencez par ajouter une combinaison de variantes
+                {t('menu:add-new-combination')}
               </p>
             </div>
           </motion.div>

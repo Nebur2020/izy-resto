@@ -15,12 +15,7 @@ import { motion } from 'framer-motion';
 import { VariantManager } from './variants/VariantManager';
 import { Button } from '../ui';
 import { Tabs } from '../ui/Tabs';
-
-const tabs = [
-  { id: 'product', label: 'Produit' },
-  { id: 'variants', label: 'Combinaisons de variantes' },
-  { id: 'inventory', label: "Connexions à l'inventaire" },
-];
+import { useTranslation } from 'react-i18next';
 
 interface MenuItemFormProps {
   item?: MenuItem | null;
@@ -60,6 +55,7 @@ interface ProductTabProps {
   }>;
   selectedCategory: string;
   handleCategoryChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  t: (key: string) => string;
 }
 
 interface InventoryConnectionsTabProps {
@@ -71,6 +67,7 @@ interface InventoryConnectionsTabProps {
     name: string;
     [key: string]: any;
   }>;
+  t: (key: string) => string;
 }
 
 interface VariantsTabProps {
@@ -97,18 +94,6 @@ interface VariantsTabProps {
   >;
 }
 
-interface ProductSelectProps {
-  index: number;
-  register: UseFormReturn<FormInputs>['register'];
-  watch: UseFormReturn<FormInputs>['watch'];
-  setValue: UseFormReturn<FormInputs>['setValue'];
-  inventory: Array<{
-    id: string;
-    name: string;
-  }>;
-}
-
-// Updating the ProductTab to include complete price and stock fields
 const ProductTab: React.FC<ProductTabProps> = ({
   register,
   errors,
@@ -118,16 +103,19 @@ const ProductTab: React.FC<ProductTabProps> = ({
   categories,
   selectedCategory,
   handleCategoryChange,
+  t,
 }) => (
   <div className="space-y-6">
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
       <div>
-        <label className="block text-sm font-medium mb-1">Nom</label>
+        <label className="block text-sm font-medium mb-1">
+          {t('common:name')}
+        </label>
         <input
           type="text"
-          {...register('name', { required: 'Le nom est requis' })}
+          {...register('name', { required: t('common:name-required') })}
           className="w-full rounded-lg border p-2.5 dark:bg-gray-700"
-          placeholder="Nom du produit"
+          placeholder={t('common:product-name')}
         />
         {errors.name && (
           <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
@@ -135,14 +123,18 @@ const ProductTab: React.FC<ProductTabProps> = ({
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">Catégorie</label>
+        <label className="block text-sm font-medium mb-1">
+          {t('common:category')}
+        </label>
         <select
-          {...register('categoryId', { required: 'La catégorie est requise' })}
+          {...register('categoryId', {
+            required: t('common:category-is-required'),
+          })}
           value={selectedCategory}
           onChange={handleCategoryChange}
           className="w-full rounded-lg border p-2.5 dark:bg-gray-700"
         >
-          <option value="">Sélectionner une catégorie</option>
+          <option value="">{t('common:select-category')}</option>
           {categories.map(category => (
             <option key={category.id} value={category.id}>
               {category.name}
@@ -157,14 +149,16 @@ const ProductTab: React.FC<ProductTabProps> = ({
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">Prix</label>
+        <label className="block text-sm font-medium mb-1">
+          {t('common:price')}
+        </label>
         <div className="relative">
           <input
             type="number"
             step={settings?.currency === 'XOF' ? '1' : '0.01'}
             {...register('price', {
-              required: 'Le prix est requis',
-              min: { value: 0, message: 'Le prix doit être positif' },
+              required: t('common:price-required'),
+              min: { value: 0, message: t('common:positive-price') },
             })}
             className="w-full rounded-lg border p-2.5 dark:bg-gray-700 pr-12"
             placeholder="0.00"
@@ -177,14 +171,15 @@ const ProductTab: React.FC<ProductTabProps> = ({
           <p className="mt-1 text-sm text-red-500">{errors.price.message}</p>
         )}
       </div>
-
       <div>
-        <label className="block text-sm font-medium mb-1">Stock</label>
+        <label className="block text-sm font-medium mb-1">
+          {t('common:stock')}
+        </label>
         <input
           type="number"
           {...register('stockQuantity', {
-            required: 'Le stock est requis',
-            min: { value: 0, message: 'Le stock doit être positif' },
+            required: t('common:stock-required'),
+            min: { value: 0, message: t('common:positive-stock') },
           })}
           className="w-full rounded-lg border p-2.5 dark:bg-gray-700"
           placeholder="0"
@@ -197,14 +192,16 @@ const ProductTab: React.FC<ProductTabProps> = ({
       </div>
 
       <div className="md:col-span-2">
-        <label className="block text-sm font-medium mb-1">Description</label>
+        <label className="block text-sm font-medium mb-1">
+          {t('common:descritpion')}
+        </label>
         <textarea
           {...register('description', {
-            required: 'La description est requise',
+            required: t('common:description-required'),
           })}
           rows={3}
           className="w-full rounded-lg border p-2.5 dark:bg-gray-700"
-          placeholder="Description du produit"
+          placeholder={t('common:description-title')}
         />
         {errors.description && (
           <p className="mt-1 text-sm text-red-500">
@@ -217,20 +214,20 @@ const ProductTab: React.FC<ProductTabProps> = ({
         <LogoUploader
           value={watch('image')}
           onChange={url => setValue('image', url, { shouldDirty: true })}
-          label="Image du produit"
-          description="Format recommandé: JPG ou PNG en haute résolution (1920x1080px minimum)"
+          label={t('common:product-image')}
+          description={t('common:product-image-description')}
         />
       </div>
     </div>
   </div>
 );
 
-// Completing the InventoryConnectionsTab with the full ratio input field
 const InventoryConnectionsTab: React.FC<InventoryConnectionsTabProps> = ({
   register,
   watch,
   setValue,
   inventory,
+  t,
 }) => {
   const ProductSelect = ({ index }: { index: number }) => (
     <div
@@ -239,13 +236,13 @@ const InventoryConnectionsTab: React.FC<InventoryConnectionsTabProps> = ({
     >
       <div className="flex flex-col">
         <label className="block text-sm font-medium mb-2">
-          Produit d'inventaire
+          {t('common:inventory-product')}
         </label>
         <select
           {...register(`inventoryConnections.${index}.itemId`)}
           className="w-full rounded-lg border p-2.5 dark:bg-gray-700"
         >
-          <option value="">Sélectionner un produit</option>
+          <option value="">{t("common:choose-product")}</option>
           {inventory.map(item => (
             <option key={item.id} value={item.id}>
               {item.name}
@@ -272,8 +269,7 @@ const InventoryConnectionsTab: React.FC<InventoryConnectionsTabProps> = ({
           placeholder="Ex: 3 pour 1:3"
         />
         <span className="text-xs mt-1 text-gray-500 dark:text-gray-400">
-          Le ratio est une règle de proportion simple entre le produit
-          d'inventaire et le produit du menu
+          {t('menu:ratio-condition')}
         </span>
       </div>
 
@@ -314,7 +310,7 @@ const InventoryConnectionsTab: React.FC<InventoryConnectionsTabProps> = ({
         }}
       >
         <Plus className="w-4 h-4 mr-2" />
-        Ajouter une connexion
+        {t('menu:add-connexion')}
       </Button>
     </div>
   );
@@ -342,6 +338,7 @@ const VariantsTab: React.FC<VariantsTabProps> = ({
 );
 
 export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('product');
   const { categories } = useCategories();
   const { settings } = useSettings();
@@ -353,6 +350,12 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
   const [variantPrices, setVariantPrices] = useState(
     (item as MenuItemWithVariants)?.variantPrices || []
   );
+
+  const tabs = [
+    { id: 'product', label: t('common:product') },
+    { id: 'variants', label: t('menu:variant-combination') },
+    { id: 'inventory', label: t('menu:inventory-connexion') },
+  ];
 
   const methods = useForm({
     defaultValues: {
@@ -396,6 +399,7 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
             categories={categories}
             selectedCategory={selectedCategory}
             handleCategoryChange={handleCategoryChange}
+            t={t}
           />
         );
       case 'inventory':
@@ -405,6 +409,7 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
             watch={watch}
             setValue={setValue}
             inventory={inventory}
+            t={t}
           />
         );
       case 'variants':
@@ -430,7 +435,7 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
       >
         <div className="flex justify-between items-center p-4 md:p-6 border-b dark:border-gray-700/80">
           <h2 className="text-lg md:text-xl font-semibold">
-            {item ? 'Modifier le produit' : 'Nouveau produit'}
+            {item ? t('menu:update-product') : t('menu:create-product')}
           </h2>
           <button
             onClick={onCancel}
@@ -456,7 +461,7 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
             <div className="p-4 md:p-6 border-t dark:border-gray-700/80 mt-auto">
               <div className="flex justify-end gap-4">
                 <Button type="button" variant="ghost" onClick={onCancel}>
-                  Annuler
+                  {t('common:cancel')}
                 </Button>
                 <Button
                   type="submit"
@@ -471,7 +476,7 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
                     }
                   `}
                 >
-                  {item ? 'Mettre à jour' : 'Ajouter'}
+                  {item ? t('menu:update') : t('common:add')}
                 </Button>
               </div>
             </div>

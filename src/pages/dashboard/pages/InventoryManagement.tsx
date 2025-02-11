@@ -16,6 +16,7 @@ import {
   StockHistory as StockHistoryType,
 } from '../../../types';
 import { DateFilter } from '../../../components/dashboard/components/accounting/DateFilter';
+import { useTranslation } from 'react-i18next';
 
 const tabs = [
   { id: 'inventory', label: 'Inventaire' },
@@ -48,10 +49,10 @@ export function InventoryManagement() {
     startDate: new Date(new Date().setHours(0, 0, 0, 0)),
     endDate: new Date(),
   });
+  const { t } = useTranslation();
 
   const { items, isLoading, addItem, updateItem, deleteItem } = useInventory();
 
-  // Load stock history when tab changes or page changes
   useEffect(() => {
     if (activeTab === 'history') {
       loadStockHistory();
@@ -109,17 +110,14 @@ export function InventoryManagement() {
 
   const handleStockUpdate = async (updates: StockUpdate[]) => {
     try {
-      // Process each update
       for (const update of updates) {
         const item = items.find(i => i.id === update.itemId);
         if (!item) continue;
 
-        // Update item stock
         await updateItem(update.itemId, {
           quantity: item.quantity - update.quantity,
         });
 
-        // Record in history
         await stockHistoryService.addUpdate({
           itemId: update.itemId,
           itemName: item.name,
@@ -133,7 +131,6 @@ export function InventoryManagement() {
 
       setIsUpdateFormOpen(false);
 
-      // Refresh history if we're on that tab
       if (activeTab === 'history') {
         loadStockHistory();
       }
@@ -144,7 +141,7 @@ export function InventoryManagement() {
 
   const handleDateChange = (start: Date, end: Date) => {
     setDateRange({ startDate: start, endDate: end });
-    setCurrentPage(1); // Reset to first page when date range changes
+    setCurrentPage(1);
   };
 
   const filteredItems = items.filter(item => {
@@ -285,9 +282,11 @@ export function InventoryManagement() {
 
       <ConfirmDialog
         isOpen={deleteConfirmation.isOpen}
-        title="Supprimer le produit"
-        message={`Êtes-vous sûr de vouloir supprimer "${deleteConfirmation.itemName}" ? Cette action est irréversible.`}
-        confirmLabel="Supprimer"
+        title={t('menu:delete-product')}
+        message={t('menu:delete-confirmation', {
+          deleteConfirmation: deleteConfirmation.itemName,
+        })}
+        confirmLabel={t('common:delete')}
         onConfirm={handleDelete}
         onCancel={() => setDeleteConfirmation({ isOpen: false })}
         isLoading={isDeleting}
