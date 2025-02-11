@@ -114,13 +114,13 @@ export function ProductSalesStats({ orders }: ProductSalesStatsProps) {
                       ),
                       'fr-FR'
                     )}
-                    % des ventes
+                    {t('common:percent-of-sales')}
                   </p>
                 </div>
               </div>
               <div className="text-right">
                 <p className="font-medium text-sm sm:text-base text-gray-900 dark:text-white">
-                  {stat.quantity} vendus
+                  {stat.quantity} {t('common:sales')}
                 </p>
                 <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                   {formatCurrency(stat.revenue, settings?.currency)}

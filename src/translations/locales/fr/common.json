@@ -76,5 +76,11 @@
   "payment-on-site": "PAIEMENT SUR PLACE",
   "payment-receive": "PAIEMENT REÇU",
   "serve-by": "Vous avez été servi par",
-  "payment-on-delivery": "Paiement à la livraison"
+  "payment-on-delivery": "Paiement à la livraison",
+  "percent-of-sales": " % des ventes",
+  "sales": "vendus",
+  "preparing": "En cours de préparation",
+  "ready": "Prêt",
+  "item-ordered": "Articles commandés",
+  "client-details": "Détails Client"
 }

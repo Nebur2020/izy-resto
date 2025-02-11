@@ -24,7 +24,7 @@ export function DateFilter({
   const { t, i18n } = useTranslation('dashboard');
 
   const presets = [
-    { label: t('this-day'), days: 0 },
+    { label: t('today'), days: 0 },
     { label: isMobile ? '7j' : t('last-week'), days: 7 },
     { label: isMobile ? '30j' : t('last-month'), days: 30 },
   ];

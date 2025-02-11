@@ -72,5 +72,11 @@
   "payment-receive": "Payment received",
   "serve-by": "You were served by",
   "payment-on-delivery": "Payment on delivery",
-  "in-cooking": "Cooking"
+  "in-cooking": "Cooking",
+  "percent-of-sales": " % of sales",
+  "sales": "sold",
+  "preparing": "Preparing",
+  "ready": "Ready",
+  "item-ordered": "Item ordered",
+  "client-details": "Client details"
 }

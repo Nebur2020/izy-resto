@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Order } from '../../types';
+import { Language, Order } from '../../types';
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '../../hooks/useSettings';
 import { formatCurrency } from '../../utils/currency';
@@ -17,7 +17,8 @@ export function PaginatedRecentOrders({
   orders,
   itemsPerPage,
 }: PaginatedRecentOrdersProps) {
-  const { t } = useTranslation('order');
+  const { t, i18n } = useTranslation('order');
+  const lng = i18n.language as Language;
   const { settings } = useSettings();
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -52,7 +53,7 @@ export function PaginatedRecentOrders({
                 {t('order-number')} {order.id.slice(0, 8)}
               </h4>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                {formatFirestoreTimestamp(order.createdAt)}
+                {formatFirestoreTimestamp(order.createdAt, lng)}
               </p>
             </div>
             <div className="text-right">
