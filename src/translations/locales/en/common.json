@@ -78,7 +78,7 @@
   "preparing": "Preparing",
   "ready": "Ready",
   "item-ordered": "Item ordered",
-  "client-details": "Client details"
+  "client-details": "Client details",
   "description-max-limit": "Description cannot exceed {{maxLimit}} characters",
   "description-min-limit": "Description must contain at least {{minLimit}} characters"
 }
