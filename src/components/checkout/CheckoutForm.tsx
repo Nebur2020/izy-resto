@@ -13,8 +13,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { DeliveryZoneSelect } from './DeliveryZoneSelect';
 import { formatCurrency } from '../../utils/currency';
 import { useTranslation } from 'react-i18next';
-import PhoneInput from 'react-phone-input-2';
+import PhoneInput, { CountryData } from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+import { CountryCode, isValidPhoneNumber } from 'libphonenumber-js';
 
 interface CheckoutFormData {
   name?: string;
@@ -60,7 +61,13 @@ export function CheckoutForm(props: ICheckoutFormProps) {
 
   const [step, setStep] = useState<CheckoutStep>('form');
   const [rateLimitError, setRateLimitError] = useState<string | null>(null);
-  const [selectedCode, setSelectedCode] = useState('+221');
+  const [selectedCode, setSelectedCode] = useState<{
+    countryCode: string;
+    dialCode: string;
+  }>({
+    countryCode: 'sn',
+    dialCode: '+221',
+  });
 
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<PaymentMethod | null>(null);
@@ -84,21 +91,22 @@ export function CheckoutForm(props: ICheckoutFormProps) {
   const validatePhone = (value: string) => {
     if (diningOption === 'dine-in' && !value) return true;
 
-    const cleanedNumber = value.replace(/[^\d+]/g, '');
+    console.group('Phone number validation');
+    console.info('value: ', value);
+    console.info(
+      'selectedCode.countryCode: ',
+      selectedCode.countryCode.toLocaleUpperCase()
+    );
+    console.log(
+      'isValidPhoneNumber: ',
+      isValidPhoneNumber(value, selectedCode.countryCode as CountryCode)
+    );
+    console.groupEnd();
 
-    if (cleanedNumber.replace('+', '').length < 8) {
-      return t('error-phone-number-length');
-    }
-
-    if (cleanedNumber.startsWith('+')) {
-      if (!/^\+\d{8,}$/.test(cleanedNumber)) {
-        return t('error-phone-number-format');
-      }
-    } else if (!/^\d{8,}$/.test(cleanedNumber)) {
-      return t('error-phone-number-only-digits');
-    }
-
-    return true;
+    return isValidPhoneNumber(
+      value,
+      selectedCode.countryCode.toLocaleUpperCase() as CountryCode
+    );
   };
 
   const onSubmit = async (data: CheckoutFormData) => {
@@ -122,7 +130,7 @@ export function CheckoutForm(props: ICheckoutFormProps) {
         total,
         tip,
         customerName: name,
-        customerPhone: `${selectedCode}${data.phone}`,
+        customerPhone: `${selectedCode.dialCode}${data.phone}`,
         customerAddress: diningOption === 'delivery' ? data.address : undefined,
         tableNumber: diningOption === 'dine-in' ? data.tableNumber : undefined,
         diningOption,
@@ -182,7 +190,7 @@ export function CheckoutForm(props: ICheckoutFormProps) {
         customerData={{
           ...formData,
           diningOption,
-          selectedCode,
+          selectedCode: selectedCode.dialCode,
         }}
         onConfirm={() => handleSubmit(onSubmit)()}
         onBack={() => setStep('form')}
@@ -268,9 +276,20 @@ export function CheckoutForm(props: ICheckoutFormProps) {
           <div className="relative w-full">
             <div className="relative flex items-center border rounded-lg w-full focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-400border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
               <PhoneInput
-                country={'sn'}
-                value={selectedCode}
-                onChange={setSelectedCode}
+                country={selectedCode.countryCode}
+                value={selectedCode.dialCode}
+                onChange={(value, country) => {
+                  if (
+                    country &&
+                    (country as CountryData).countryCode &&
+                    (country as CountryData).dialCode
+                  ) {
+                    setSelectedCode({
+                      countryCode: (country as CountryData).countryCode,
+                      dialCode: `+${(country as CountryData).dialCode}`,
+                    });
+                  }
+                }}
                 containerClass="w-[120px] flex items-center border-r border-gray-300 dark:border-gray-600"
                 inputClass="!w-full !border-none bg-transparent pl-2 text-sm text-gray-700 dark:text-gray-300"
                 buttonClass="!bg-transparent !border-none p-0 flex items-center"
