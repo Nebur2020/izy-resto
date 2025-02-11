@@ -56,7 +56,9 @@ export function OrderTrackingDetails({ order }: OrderTrackingDetailsProps) {
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-        <h2 className="text-lg font-semibold mb-4">{t('item-ordered')}</h2>
+        <h2 className="text-lg font-semibold mb-4">
+          {t('common:item-ordered')}
+        </h2>
         <div className="space-y-3">
           {order.items.map(item => (
             <div key={item.id} className="flex justify-between items-center">
