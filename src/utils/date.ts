@@ -18,7 +18,6 @@ export function formatFirestoreTimestamp(
     } else if (typeof timestamp === 'string') {
       date = new Date(timestamp);
     } else if (timestamp.seconds) {
-      // Cas d'un objet timestamp Firestore brut
       date = new Date(timestamp.seconds * 1000);
     } else {
       throw new Error('Invalid timestamp format');
@@ -48,7 +47,6 @@ export function formatDate(
     } else if (typeof date === 'string') {
       dateObj = new Date(date);
     } else if (date.seconds) {
-      // Cas d'un objet timestamp Firestore brut
       dateObj = new Date(date.seconds * 1000);
     } else if (date instanceof Date) {
       dateObj = date;
@@ -58,7 +56,6 @@ export function formatDate(
 
     const locale = lang === 'fr' ? fr : enUS;
 
-    // Format de date adapté selon la langue et l'option avec heures
     const formatString = withHours
       ? lang === 'fr'
         ? "dd MMMM yyyy 'à' HH:mm:ss"

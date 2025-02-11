@@ -84,10 +84,12 @@
   "payment-method-names": {
     "Paiement à la livraison": "Paiement à la livraison",
     "CinetPay": "Payer avec CinetPay",
+    "Orange Money": "Payer avec Orange Money",
     "PayTech": "Payer avec PayTech",
     "Stripe": "Payer avec Stripe",
     "Wave": "Payer avec Wave",
     "Money Fusion": "Payer avec Money Fusion",
     "Paiement à la caisse": "Paiement à la caisse"
-  }
+  },
+  "at-table": "A table"
 }

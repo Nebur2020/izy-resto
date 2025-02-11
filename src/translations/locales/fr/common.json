@@ -76,5 +76,7 @@
   "payment-on-site": "PAIEMENT SUR PLACE",
   "payment-receive": "PAIEMENT REÇU",
   "serve-by": "Vous avez été servi par",
-  "payment-on-delivery": "Paiement à la livraison"
+  "payment-on-delivery": "Paiement à la livraison",
+  "update-status": "Statut mis à jour",
+  "cancel-confirmation": "Êtes-vous sûr de vouloir annuler cette commande ? Cette action est irréversible."
 }

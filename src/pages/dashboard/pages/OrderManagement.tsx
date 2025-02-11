@@ -5,8 +5,10 @@ import { OrderFilters } from '../../../components/orders/OrderFilters';
 import { OrderStatus } from '../../../types';
 import { useOrders } from '../../../context/OrderContext';
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
+import { useTranslation } from 'react-i18next';
 
 export function OrderManagement() {
+  const { t } = useTranslation('common');
   const { orders, updateOrderStatus } = useOrders();
   const [statusFilter, setStatusFilter] = useState<OrderStatus | 'all'>('all');
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
@@ -22,16 +24,13 @@ export function OrderManagement() {
     setSearchTerm(value);
   };
 
-  // Filter orders based on current filters
   const filteredOrders = useMemo(() => {
     return orders
       .filter(order => {
-        // Status filter
         if (statusFilter !== 'all' && order.status !== statusFilter) {
           return false;
         }
 
-        // Date range filter
         if (dateRange.from || dateRange.to) {
           const orderDate = new Date(order.createdAt.seconds * 1000);
           if (dateRange.from && orderDate < dateRange.from) {
@@ -102,7 +101,7 @@ export function OrderManagement() {
           type="text"
           value={searchTerm}
           onChange={handleChange}
-          placeholder="Lancer une recherche..."
+          placeholder={t('menu:search-items')}
           className="w-full pl-12 pr-10 py-3 rounded-full border border-gray-200 dark:border-gray-700 
                    bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm
                    focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400
@@ -133,9 +132,10 @@ export function OrderManagement() {
 
       <ConfirmDialog
         isOpen={cancelConfirmation.isOpen}
-        title="Annuler la commande"
-        message="Êtes-vous sûr de vouloir annuler cette commande ? Cette action est irréversible."
-        confirmLabel="Annuler la commande"
+        title={t('order:cancel-order')}
+        message={t('common:cancel-confirmation')}
+        confirmLabel={t('order:cancel-order')}
+        cancelLabel={t('common:cancel')}
         onConfirm={handleCancelOrder}
         onCancel={() => setCancelConfirmation({ isOpen: false })}
       />

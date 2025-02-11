@@ -72,5 +72,7 @@
   "payment-receive": "Payment received",
   "serve-by": "You were served by",
   "payment-on-delivery": "Payment on delivery",
-  "in-cooking": "Cooking"
+  "in-cooking": "Cooking",
+  "update-status": "Status updated",
+  "cancel-confirmation": "Are you sure you want to cancel this order?"
 }

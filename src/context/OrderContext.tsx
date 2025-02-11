@@ -2,14 +2,13 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Order, OrderStatus } from '../types';
 import { orderService } from '../services/orders/order.service';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 import {
   collection,
   query,
   where,
   getDocs,
-  runTransaction,
-  doc,
   Timestamp,
 } from 'firebase/firestore';
 import { db } from '../lib/firebase/config';
@@ -36,7 +35,7 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  // const [isUpdating, setIsUpdating] = useState(false);
+  const { t } = useTranslation('common');
 
   useEffect(() => {
     const unsubscribe = orderService.subscribeToOrders(
@@ -83,10 +82,9 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
   const updateOrderStatus = async (orderId: string, status: OrderStatus) => {
     try {
       await orderService.updateOrderStatus(orderId, status);
-      toast.success('Statut mis à jour');
+      toast.success(t('update-status'));
     } catch (error) {
       console.error('Error updating order status:', error);
-      // toast.error('Échec de la mise à jour');
       throw error;
     }
   };
@@ -100,7 +98,6 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
     return orders.filter(order => order.status === status);
   };
 
-  // Memoized filtered lists
   const deliveredOrders = orders.filter(order => order.status === 'delivered');
   const pendingOrders = orders.filter(order => order.status === 'pending');
   const preparingOrders = orders.filter(order => order.status === 'preparing');

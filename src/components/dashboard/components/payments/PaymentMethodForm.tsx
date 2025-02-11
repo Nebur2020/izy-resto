@@ -41,7 +41,6 @@ const PAYMENT_TYPES: Record<string, PaymentMethodType> = {
   'Paiement à la livraison': 'Paiement à la livraison',
 };
 
-// Form Components
 const PaymentTypeSelect = ({
   value,
   onChange,

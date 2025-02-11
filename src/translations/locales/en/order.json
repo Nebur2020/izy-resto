@@ -86,10 +86,12 @@
   "payment-method-names": {
     "Paiement à la livraison": "Cash on delivery",
     "CinetPay": "Pay with CinetPay",
+    "Orange Money": "Pay with Orange Money",
     "PayTech": "Pay with PayTech",
     "Stripe": "Pay with Stripe",
     "Wave": "Pay with Wave",
     "Money Fusion": "Pay with Money Fusion",
     "Paiement à la caisse": "Payment at checkout"
-  }
+  },
+  "at-table": "Dine in"
 }

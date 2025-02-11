@@ -1,5 +1,5 @@
 import { Utensils, Truck } from 'lucide-react';
-import { Order } from '../../../types';
+import { Order, Language } from '../../../types';
 import { useSettings } from '../../../hooks/useSettings';
 import { formatCurrency } from '../../../utils/currency';
 import { formatFirestoreTimestamp } from '../../../utils/date';
@@ -12,7 +12,8 @@ interface OrderCardHeaderProps {
 export function OrderCardHeader({ order }: OrderCardHeaderProps) {
   const { settings } = useSettings();
   const totalItems = order.items.reduce((sum, item) => sum + item.quantity, 0);
-  const { t } = useTranslation(['order', 'common']);
+  const { t, i18n } = useTranslation(['order', 'common']);
+   const lang = i18n.language as Language;
 
   return (
     <div className="flex justify-between items-start">
@@ -35,7 +36,7 @@ export function OrderCardHeader({ order }: OrderCardHeaderProps) {
           )}
         </div>
         <p className="text-sm text-gray-500 dark:text-gray-400">
-          {formatFirestoreTimestamp(order.createdAt)}
+          {formatFirestoreTimestamp(order.createdAt, lang)}
         </p>
       </div>
 
