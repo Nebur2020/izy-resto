@@ -76,5 +76,19 @@
   "payment-on-site": "PAIEMENT SUR PLACE",
   "payment-receive": "PAIEMENT REÇU",
   "serve-by": "Vous avez été servi par",
-  "payment-on-delivery": "Paiement à la livraison"
+  "payment-on-delivery": "Paiement à la livraison",
+  "tota-income": "Revenu total",
+  "unique-customers": "Clients uniques",
+  "cancellation-rate": "Taux d'Annulation",
+  "on-site": "Sur place",
+  "order-cancel": "Commandes Annulées",
+  "sell": "vendus",
+  "no-data-available": "Aucune donnée disponible",
+  "last-month": "30 derniers jours",
+  "last-week": "7 derniers jours",
+  "today": "Aujourd'hui",
+  "average-rate": "Note moyenne",
+  "total-note": "Total avis",
+  "notification-rate": "Total avis",
+  "note-dispatching": "Distribution des notes"
 }

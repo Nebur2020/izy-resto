@@ -20,13 +20,10 @@ import {
 } from '../../../utils/currency';
 import { Tabs } from '../../../components/ui/Tabs';
 import { FeedbackAnalytics } from '../../../components/dashboard/components/analytics/FeedbackAnalytics';
-
-const tabs = [
-  { id: 'overview', label: "Vue d'ensemble" },
-  { id: 'feedback', label: 'Avis clients' },
-];
+import { useTranslation } from 'react-i18next';
 
 export function TrafficAnalytics() {
+  const { t } = useTranslation('analyse');
   const { orders } = useOrdersRealtime();
   const { settings } = useSettings();
   const [activeTab, setActiveTab] = useState('overview');
@@ -38,7 +35,11 @@ export function TrafficAnalytics() {
 
   const stats = useTrafficStats(orders, dateRange);
 
-  // Calculate additional metrics
+  const tabs = [
+    { id: 'overview', label: t('dashboard:overview') },
+    { id: 'feedback', label: t('client-note') },
+  ];
+
   const metrics = useMemo(() => {
     const filteredOrders = orders.filter(order => {
       const orderDate = new Date(order.createdAt.seconds * 1000);
@@ -99,19 +100,16 @@ export function TrafficAnalytics() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Analyse du Trafic</h1>
+        <h1 className="text-2xl font-bold">{t('trafic-title')}</h1>
         <DateFilter
           startDate={dateRange.start}
           endDate={dateRange.end}
           onDateChange={handleDateChange}
         />
       </div>
-
       <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
-
       {activeTab === 'overview' ? (
         <>
-          {/* Primary Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -124,7 +122,7 @@ export function TrafficAnalytics() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Revenu Total
+                    {t('common:tota-income')}
                   </p>
                   <p className="text-2xl font-semibold">
                     {formatCurrency(metrics.totalRevenue, settings?.currency)}
@@ -145,7 +143,7 @@ export function TrafficAnalytics() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Panier Moyen
+                    {t('average-order')}
                   </p>
                   <p className="text-2xl font-semibold">
                     {formatCurrency(
@@ -169,7 +167,7 @@ export function TrafficAnalytics() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Clients Uniques
+                    {t('common:unique-customers')}
                   </p>
                   <p className="text-2xl font-semibold">
                     {metrics.uniqueCustomers}
@@ -190,7 +188,7 @@ export function TrafficAnalytics() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Taux d'Annulation
+                    {t('common:cancellation-rate')}
                   </p>
                   <p className="text-2xl font-semibold">
                     {formatNumberByLanguage(
@@ -203,8 +201,6 @@ export function TrafficAnalytics() {
               </div>
             </motion.div>
           </div>
-
-          {/* Secondary Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -217,7 +213,7 @@ export function TrafficAnalytics() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    En Attente
+                    {t('common:pending')}
                   </p>
                   <p className="text-2xl font-semibold">
                     {stats.pendingOrders}
@@ -225,7 +221,6 @@ export function TrafficAnalytics() {
                 </div>
               </div>
             </motion.div>
-
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -238,7 +233,7 @@ export function TrafficAnalytics() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Livraisons
+                    {t('common:delivery')}
                   </p>
                   <p className="text-2xl font-semibold">
                     {metrics.deliveryOrders}
@@ -246,7 +241,6 @@ export function TrafficAnalytics() {
                 </div>
               </div>
             </motion.div>
-
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -259,7 +253,7 @@ export function TrafficAnalytics() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Sur Place
+                    {t('common:on-site')}
                   </p>
                   <p className="text-2xl font-semibold">
                     {metrics.dineInOrders} (
@@ -272,7 +266,6 @@ export function TrafficAnalytics() {
                 </div>
               </div>
             </motion.div>
-
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -285,7 +278,7 @@ export function TrafficAnalytics() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Commandes Annulées
+                    {t('common:order-cancel')}
                   </p>
                   <p className="text-2xl font-semibold">
                     {metrics.canceledOrders}
@@ -294,10 +287,8 @@ export function TrafficAnalytics() {
               </div>
             </motion.div>
           </div>
-
-          {/* Best Sellers */}
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-            <h2 className="text-xl font-semibold mb-6">Meilleures Ventes</h2>
+            <h2 className="text-xl font-semibold mb-6">{t('best-selling')}</h2>
             <div className="space-y-4">
               {stats.bestSellers.map((item, index) => (
                 <motion.div
@@ -314,7 +305,7 @@ export function TrafficAnalytics() {
                     <div>
                       <h3 className="font-medium">{item.name}</h3>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {item.quantity} vendus
+                        {item.quantity} {t('sell')}
                       </p>
                     </div>
                   </div>

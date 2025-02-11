@@ -77,7 +77,6 @@ export function ProductSalesStats({ orders }: ProductSalesStatsProps) {
       animate={{ opacity: 1, y: 0 }}
       className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 shadow-sm"
     >
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
@@ -92,17 +91,8 @@ export function ProductSalesStats({ orders }: ProductSalesStatsProps) {
             </p>
           </div>
         </div>
-        {/* <div className="text-right">
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-            Revenu total
-          </p>
-          <p className="text-base sm:text-lg font-semibold text-blue-600 dark:text-blue-400">
-            {formatCurrency(totalRevenue, settings?.currency)}
-          </p>
-        </div> */}
       </div>
 
-      {/* Stats Grid */}
       <div className="space-y-3">
         <AnimatePresence mode="wait">
           {paginatedStats.map((stat, index) => (

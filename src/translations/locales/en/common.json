@@ -72,5 +72,19 @@
   "payment-receive": "Payment received",
   "serve-by": "You were served by",
   "payment-on-delivery": "Payment on delivery",
-  "in-cooking": "Cooking"
+  "in-cooking": "Cooking",
+  "tota-income": "Total income",
+  "unique-customers": "Unique customers",
+  "cancellation-rate": "Cancellation rate",
+  "on-site": "On site",
+  "order-cancel": "Order Cancelled",
+  "sell": "sold",
+  "no-data-available": "No data available",
+  "last-month": "30 last days",
+  "last-week": "7 last days",
+  "today": "Today",
+  "average-rate": "Average rate",
+  "total-note": "Total reveiws",
+  "notification-rate": "Total notifications",
+  "note-dispatching": "Note dispatching"
 }
