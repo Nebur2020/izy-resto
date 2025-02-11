@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Plus, Search } from 'lucide-react';
 import { useVariants } from '../../../hooks/useVariants';
 import { useCategories } from '../../../hooks/useCategories';
@@ -27,6 +27,8 @@ export function VariantManagement() {
         value.toLowerCase().includes(searchTerm.toLowerCase())
       )
   );
+
+  console.log('Gestion des Variantes', filteredVariants);
 
   const handleSave = async (data: any) => {
     try {

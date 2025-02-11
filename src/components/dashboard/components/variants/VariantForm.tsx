@@ -1,8 +1,9 @@
 import { useForm } from 'react-hook-form';
-import { X, Plus, Minus, Type, Layers, List } from 'lucide-react';
+import { X, Plus, Minus, Type, Layers, List, Package } from 'lucide-react';
 import { Button } from '../../../ui/Button';
 import { Variant } from '../../../../types/variant';
 import { Category } from '../../../../types';
+import { useInventory } from '../../../../hooks/useInventory';
 
 interface VariantFormProps {
   variant?: Variant | null;
@@ -17,6 +18,8 @@ export function VariantForm({
   onSave,
   onCancel,
 }: VariantFormProps) {
+  const { items: inventory } = useInventory();
+
   const {
     register,
     handleSubmit,
@@ -28,12 +31,16 @@ export function VariantForm({
       ? {
           ...variant,
           prices: variant?.prices || variant.values.map(() => 0),
+          inventory:
+            variant?.inventory ||
+            variant.values.map(() => ({ itemId: '', ratio: 1 })),
         }
       : {
           name: '',
           type: '',
           values: [''],
           prices: [0],
+          inventory: [{ itemId: '', ratio: 1 }],
           categoryIds: [],
           isRequired: false,
         },
@@ -41,11 +48,15 @@ export function VariantForm({
 
   const values = watch('values');
   const prices = watch('prices') || [];
+  const inventoryConnections = watch('inventory') || [];
   const selectedCategories = watch('categoryIds');
 
   const addValue = () => {
     setValue('values', [...values, ''], { shouldDirty: true });
     setValue('prices', [...prices, 0], { shouldDirty: true });
+    setValue('inventory', [...inventoryConnections, { itemId: '', ratio: 1 }], {
+      shouldDirty: true,
+    });
   };
 
   const removeValue = (index: number) => {
@@ -57,6 +68,11 @@ export function VariantForm({
     setValue(
       'prices',
       prices.filter((_, i) => i !== index),
+      { shouldDirty: true }
+    );
+    setValue(
+      'inventory',
+      inventoryConnections.filter((_, i) => i !== index),
       { shouldDirty: true }
     );
   };
@@ -163,12 +179,12 @@ export function VariantForm({
               )}
             </div>
 
-            {/* Values and Prices Management */}
+            {/* Values, Prices, and Inventory Management */}
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                   <Layers className="w-4 h-4" />
-                  Valeurs et Prix
+                  Valeurs, Prix et Stock
                 </label>
                 <Button
                   type="button"
@@ -182,31 +198,60 @@ export function VariantForm({
 
               <div className="space-y-2">
                 {values.map((_, index) => (
-                  <div key={index} className="flex gap-2">
-                    <input
-                      {...register(`values.${index}`, {
-                        required: 'La valeur est requise',
-                      })}
-                      className="flex-1 px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-shadow"
-                      placeholder={`Option ${index + 1}`}
-                    />
-                    <input
-                      type="number"
-                      {...register(`prices.${index}`, {
-                        valueAsNumber: true,
-                      })}
-                      className="w-32 px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-shadow"
-                      placeholder="Prix"
-                    />
-                    {values.length > 1 && (
-                      <Button
-                        type="button"
-                        onClick={() => removeValue(index)}
-                        className="px-2.5 text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20"
+                  <div key={index} className="space-y-2">
+                    <div className="flex gap-2">
+                      <input
+                        {...register(`values.${index}`, {
+                          required: 'La valeur est requise',
+                        })}
+                        className="flex-1 px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-shadow"
+                        placeholder={`Option ${index + 1}`}
+                      />
+                      <input
+                        type="number"
+                        {...register(`prices.${index}`, {
+                          valueAsNumber: true,
+                        })}
+                        className="w-32 px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-shadow"
+                        placeholder="Prix"
+                      />
+                      {values.length > 1 && (
+                        <Button
+                          type="button"
+                          onClick={() => removeValue(index)}
+                          className="px-2.5 text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20"
+                        >
+                          <Minus className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </div>
+
+                    {/* Inventory Connection */}
+                    <div className="flex gap-2 items-center pl-4 border-l-2 border-gray-200 dark:border-gray-700">
+                      <Package className="w-4 h-4 text-gray-400" />
+                      <select
+                        {...register(`inventory.${index}.itemId`)}
+                        value={watch(`inventory.${index}.itemId`)}
+                        className="flex-1 px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-shadow"
                       >
-                        <Minus className="w-4 h-4" />
-                      </Button>
-                    )}
+                        <option value="">Sélectionner un article</option>
+                        {inventory.map(item => (
+                          <option key={item.id} value={item.id}>
+                            {item.name} ({item.quantity} {item.unit})
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        type="number"
+                        {...register(`inventory.${index}.ratio`, {
+                          valueAsNumber: true,
+                          min: 0.01,
+                        })}
+                        className="w-32 px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-shadow"
+                        placeholder="Ratio"
+                        step="0.01"
+                      />
+                    </div>
                   </div>
                 ))}
               </div>

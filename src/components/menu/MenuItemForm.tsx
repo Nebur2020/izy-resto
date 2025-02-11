@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, X } from 'lucide-react';
 import { useForm, FormProvider, UseFormReturn } from 'react-hook-form';
 import {
@@ -21,12 +21,6 @@ const tabs = [
   { id: 'variants', label: 'Combinaisons de variantes' },
   { id: 'inventory', label: "Connexions à l'inventaire" },
 ];
-
-interface MenuItemFormProps {
-  item?: MenuItem | null;
-  onSave: (data: MenuItemWithVariants) => void;
-  onCancel: () => void;
-}
 
 interface MenuItemFormProps {
   item?: MenuItem | null;
@@ -95,20 +89,9 @@ interface VariantsTabProps {
       }>
     >
   >;
+  onVariantChange: () => void;
 }
 
-interface ProductSelectProps {
-  index: number;
-  register: UseFormReturn<FormInputs>['register'];
-  watch: UseFormReturn<FormInputs>['watch'];
-  setValue: UseFormReturn<FormInputs>['setValue'];
-  inventory: Array<{
-    id: string;
-    name: string;
-  }>;
-}
-
-// Updating the ProductTab to include complete price and stock fields
 const ProductTab: React.FC<ProductTabProps> = ({
   register,
   errors,
@@ -225,7 +208,6 @@ const ProductTab: React.FC<ProductTabProps> = ({
   </div>
 );
 
-// Completing the InventoryConnectionsTab with the full ratio input field
 const InventoryConnectionsTab: React.FC<InventoryConnectionsTabProps> = ({
   register,
   watch,
@@ -325,13 +307,17 @@ const VariantsTab: React.FC<VariantsTabProps> = ({
   variants,
   variantPrices,
   setVariantPrices,
+  onVariantChange,
 }) => (
   <div>
     {selectedCategory && variants.length > 0 ? (
       <VariantManager
         variants={variants}
         value={variantPrices}
-        onChange={setVariantPrices}
+        onChange={newPrices => {
+          setVariantPrices(newPrices);
+          onVariantChange();
+        }}
       />
     ) : (
       <div className="text-center py-8 text-gray-500">
@@ -354,7 +340,12 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
     (item as MenuItemWithVariants)?.variantPrices || []
   );
 
-  const methods = useForm({
+  console.log(item);
+
+  // Track if variant prices have changed
+  const [isVariantPricesDirty, setIsVariantPricesDirty] = useState(false);
+
+  const methods = useForm<FormInputs>({
     defaultValues: {
       name: item?.name || '',
       description: item?.description || '',
@@ -374,13 +365,37 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
     formState: { errors, isDirty },
   } = methods;
 
+  // Track the initial variant prices for comparison
+  const [initialVariantPrices] = useState(
+    JSON.stringify((item as MenuItemWithVariants)?.variantPrices || [])
+  );
+
+  // Check if variant prices have changed whenever they're updated
+  useEffect(() => {
+    const currentVariantPrices = JSON.stringify(variantPrices);
+    setIsVariantPricesDirty(currentVariantPrices !== initialVariantPrices);
+  }, [variantPrices, initialVariantPrices]);
+
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     setSelectedCategory(value);
     setValue('categoryId', value, { shouldDirty: true });
     if (value !== item?.categoryId) {
       setVariantPrices([]);
+      setIsVariantPricesDirty(true);
     }
+  };
+
+  const onSubmitHandler = (data: FormInputs) => {
+    const finalData = {
+      ...data,
+      variantPrices,
+    };
+    onSave(finalData as MenuItemWithVariants);
+  };
+
+  const handleVariantChange = () => {
+    setIsVariantPricesDirty(true);
   };
 
   const renderTabContent = () => {
@@ -414,6 +429,7 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
             variants={variants}
             variantPrices={variantPrices}
             setVariantPrices={setVariantPrices}
+            onVariantChange={handleVariantChange}
           />
         );
       default:
@@ -442,12 +458,11 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
 
         <FormProvider {...methods}>
           <form
-            onSubmit={handleSubmit(onSave)}
+            onSubmit={handleSubmit(onSubmitHandler)}
             className="flex flex-col flex-1 overflow-hidden"
           >
             <div className="flex-1 flex flex-col overflow-hidden p-2">
               <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
-
               <div className="flex-1 overflow-y-auto p-4 md:p-6">
                 {renderTabContent()}
               </div>
@@ -460,12 +475,12 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
                 </Button>
                 <Button
                   type="submit"
-                  disabled={!isDirty}
+                  disabled={!isDirty && !isVariantPricesDirty}
                   className={`
                     px-6 py-2 rounded-lg font-medium text-white
                     transition-all duration-200
                     ${
-                      isDirty
+                      isDirty || isVariantPricesDirty
                         ? 'bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl'
                         : 'bg-gray-400 cursor-not-allowed'
                     }

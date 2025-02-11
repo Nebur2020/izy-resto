@@ -1,3 +1,5 @@
+import { InventoryConnection } from './menu';
+
 export interface Variant {
   id: string;
   name: string;
@@ -8,6 +10,7 @@ export interface Variant {
   isRequired?: boolean;
   createdAt: string;
   updatedAt: string;
+  inventory?: InventoryConnection[];
 }
 
 export interface VariantOption {
