@@ -76,5 +76,16 @@
   "payment-on-site": "PAIEMENT SUR PLACE",
   "payment-receive": "PAIEMENT REÇU",
   "serve-by": "Vous avez été servi par",
-  "payment-on-delivery": "Paiement à la livraison"
+  "payment-on-delivery": "Paiement à la livraison",
+  "delete-product": "Supprimer le produit",
+  "ingrédients": "Ingrédients",
+  "beverages": "Boissons",
+  "supplies": "Fournitures",
+  "packaging": "Emballage",
+  "maintenant-product": "Produits d'entretien",
+  "no-product-in-stock": "Aucun produit en stock",
+  "no-product-in-stock-description": "Il n'y a actuellement aucun produit dans votre inventaire. Commencez par en ajouter un.",
+  "update-in-progress": "Mise à jour en cours...",
+  "saving": "Enregistrement...",
+  "deleting": "Suppression..."
 }

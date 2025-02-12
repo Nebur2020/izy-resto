@@ -72,5 +72,16 @@
   "payment-receive": "Payment received",
   "serve-by": "You were served by",
   "payment-on-delivery": "Payment on delivery",
-  "in-cooking": "Cooking"
+  "in-cooking": "Cooking",
+  "delete-product": "Delete product",
+  "ingrédients": "Ingredients",
+  "beverages": "Beverages",
+  "supplies": "Supplies",
+  "packaging": "Packaging",
+  "maintenant-product": "Maintenant Product",
+  "no-product-in-stock": "No product in stock",
+  "no-product-in-stock-description": "There is no product in stock for the moment. Please add some products to your inventory.",
+  "update-in-progress": "Update in progress...",
+  "saving": "Saving...",
+  "deleting": "Deleting..."
 }

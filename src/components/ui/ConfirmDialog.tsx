@@ -1,9 +1,9 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { AlertTriangle, X } from 'lucide-react';
 import { Button } from './Button';
+import { useTranslation } from 'react-i18next';
 
-interface ConfirmDialogProps {
+interface IConfirmDialogProps {
   isOpen: boolean;
   title: string;
   message: string;
@@ -14,16 +14,18 @@ interface ConfirmDialogProps {
   isLoading?: boolean;
 }
 
-export function ConfirmDialog({
-  isOpen,
-  title,
-  message,
-  confirmLabel = 'Confirmer',
-  cancelLabel = 'Annuler',
-  onConfirm,
-  onCancel,
-  isLoading = false
-}: ConfirmDialogProps) {
+export function ConfirmDialog(props: IConfirmDialogProps) {
+  const {
+    isOpen,
+    title,
+    message,
+    confirmLabel = 'Delete',
+    cancelLabel = 'Cancel',
+    onConfirm,
+    onCancel,
+    isLoading,
+  } = props;
+  const { t } = useTranslation();
   if (!isOpen) return null;
 
   return (
@@ -57,19 +59,11 @@ export function ConfirmDialog({
 
         {/* Actions */}
         <div className="flex justify-end gap-3 p-6 bg-gray-50 dark:bg-gray-800/50">
-          <Button
-            variant="secondary"
-            onClick={onCancel}
-            disabled={isLoading}
-          >
+          <Button variant="secondary" onClick={onCancel} disabled={isLoading}>
             {cancelLabel}
           </Button>
-          <Button
-            variant="danger"
-            onClick={onConfirm}
-            disabled={isLoading}
-          >
-            {isLoading ? 'Suppression...' : confirmLabel}
+          <Button variant="danger" onClick={onConfirm} disabled={isLoading}>
+            {isLoading ? t('common:deleting') : confirmLabel}
           </Button>
         </div>
       </motion.div>
