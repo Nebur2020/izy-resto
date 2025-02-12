@@ -3,20 +3,18 @@ import { X, Plus, Minus, Type, Layers, List } from 'lucide-react';
 import { Button } from '../../../ui/Button';
 import { Variant } from '../../../../types/variant';
 import { Category } from '../../../../types';
+import { useTranslation } from 'react-i18next';
 
-interface VariantFormProps {
+interface IVariantFormProps {
   variant?: Variant | null;
   categories: Category[];
   onSave: (data: Omit<Variant, 'id'>) => Promise<void>;
   onCancel: () => void;
 }
 
-export function VariantForm({
-  variant,
-  categories,
-  onSave,
-  onCancel,
-}: VariantFormProps) {
+export function VariantForm(props: IVariantFormProps) {
+  const { t } = useTranslation();
+  const { variant, categories, onSave, onCancel } = props;
   const {
     register,
     handleSubmit,
@@ -64,17 +62,16 @@ export function VariantForm({
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
-        {/* Header */}
         <div className="relative border-b dark:border-gray-700">
           <div className="px-6 py-4">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
               <Layers className="w-5 h-5 text-blue-500" />
-              {variant ? 'Modifier la Variante' : 'Nouvelle Variante'}
+              {variant ? t('variant:update-variant') : t('variant:new-variant')}
             </h2>
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               {variant
-                ? 'Modifier les options de cette variante'
-                : 'Ajouter une nouvelle variante au menu'}
+                ? t('variant:update-variant-option')
+                : t('variant:add-new-variant')}
             </p>
           </div>
           <button
@@ -84,18 +81,15 @@ export function VariantForm({
             <X className="w-5 h-5" />
           </button>
         </div>
-
-        {/* Form Content */}
         <form
           onSubmit={handleSubmit(onSave)}
           className="overflow-y-auto max-h-[calc(90vh-80px)]"
         >
           <div className="p-6 space-y-6">
-            {/* Basic Information */}
             <div className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                 <Type className="w-4 h-4" />
-                Nom de la Variante
+                {t('variant:variant-name')}
               </label>
               <input
                 type="text"
@@ -118,15 +112,13 @@ export function VariantForm({
                   {...register('isRequired')}
                   className="rounded border-gray-300 dark:border-gray-600"
                 />
-                <span>Obligatoire</span>
+                <span>{t('variant:variant-required')}</span>
               </label>
             </div>
-
-            {/* Categories Selection */}
             <div className="space-y-3">
               <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                 <List className="w-4 h-4" />
-                Catégories Applicables
+                {t('variant:variant-category-applicable')}
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {categories.map(category => (
@@ -162,13 +154,11 @@ export function VariantForm({
                 </p>
               )}
             </div>
-
-            {/* Values and Prices Management */}
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                   <Layers className="w-4 h-4" />
-                  Valeurs et Prix
+                  {t('variant:variant-and-value')}
                 </label>
                 <Button
                   type="button"
@@ -176,7 +166,7 @@ export function VariantForm({
                   className="px-3 py-1.5 text-sm bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-400"
                 >
                   <Plus className="w-4 h-4 mr-1" />
-                  Ajouter
+                  {t('common:add')}
                 </Button>
               </div>
 
@@ -213,13 +203,11 @@ export function VariantForm({
               {errors.values && (
                 <p className="text-sm text-red-500 flex items-center gap-1">
                   <span className="w-1 h-1 rounded-full bg-red-500" />
-                  Toutes les valeurs sont requises
+                  {t('variant:variant-value-required')}
                 </p>
               )}
             </div>
           </div>
-
-          {/* Footer */}
           <div className="border-t dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-800/50">
             <div className="flex justify-end gap-3">
               <Button
@@ -227,14 +215,14 @@ export function VariantForm({
                 onClick={onCancel}
                 className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
-                Annuler
+                {t('common:cancel')}
               </Button>
               <Button
                 type="submit"
                 disabled={!isDirty}
                 className="px-6 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white shadow-sm disabled:opacity-50"
               >
-                {variant ? 'Mettre à jour' : 'Ajouter'}
+                {variant ? t('common:update') : t('common:add')}
               </Button>
             </div>
           </div>
