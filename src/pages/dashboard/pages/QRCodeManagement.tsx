@@ -1,33 +1,30 @@
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  QrCode, 
-  Copy, 
-  Download, 
-  Link as LinkIcon, 
+import {
+  QrCode,
+  Copy,
+  Download,
+  Link as LinkIcon,
   CheckCircle,
   Sparkles,
   Info,
-  AlertCircle
+  AlertCircle,
 } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import QRCode from 'qrcode';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 function isValidUrl(url: string): { isValid: boolean; formattedUrl: string } {
-  // Remove any trailing slashes and whitespace
   url = url.trim().replace(/\/+$/, '');
 
-  // If URL doesn't start with a protocol, add https://
   if (!url.startsWith('http://') && !url.startsWith('https://')) {
     url = 'https://' + url;
   }
 
   try {
-    // Try to construct a URL object (this will validate the basic URL structure)
     const urlObject = new URL(url);
-    
-    // Check if the hostname has valid format
+
     const hostnameRegex = /^([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}$/;
     if (!hostnameRegex.test(urlObject.hostname)) {
       return { isValid: false, formattedUrl: url };
@@ -40,6 +37,7 @@ function isValidUrl(url: string): { isValid: boolean; formattedUrl: string } {
 }
 
 export function QRCodeManagement() {
+  const { t } = useTranslation();
   const [url, setUrl] = useState('');
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -60,15 +58,15 @@ export function QRCodeManagement() {
 
     const { isValid, formattedUrl } = isValidUrl(url);
     if (!isValid) {
-      setUrlError('Format d\'URL invalide');
-      toast.error('Format d\'URL invalide');
+      setUrlError("Format d'URL invalide");
+      toast.error("Format d'URL invalide");
       return;
     }
 
     try {
       setIsGenerating(true);
       setUrlError(null);
-      
+
       const dataUrl = await QRCode.toDataURL(formattedUrl, {
         width: 512,
         margin: 2,
@@ -76,9 +74,9 @@ export function QRCodeManagement() {
           dark: '#000000',
           light: '#ffffff',
         },
-        errorCorrectionLevel: 'H'
+        errorCorrectionLevel: 'H',
       });
-      
+
       setQrCodeDataUrl(dataUrl);
       setUrl(formattedUrl);
       toast.success('QR Code généré avec succès');
@@ -120,7 +118,6 @@ export function QRCodeManagement() {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-3xl space-y-8"
       >
-        {/* Header */}
         <div className="text-center space-y-4">
           <motion.div
             initial={{ scale: 0 }}
@@ -133,21 +130,18 @@ export function QRCodeManagement() {
               <QrCode className="h-8 w-8 text-white" />
             </div>
           </motion.div>
-          
+
           <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-            Générateur de QR Code
+            {t('qrCode:qr-code-generator')}
           </h1>
           <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto text-lg">
-            Générez facilement des QR codes pour vos liens
+            {t('qrCode:qr-code-description')}
           </p>
         </div>
-
-        {/* Main Card */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200/50 dark:border-gray-700/50 backdrop-blur-xl">
-          {/* URL Input Section */}
           <div className="p-6 space-y-4">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              URL à convertir
+              {t('qrCode:cover-link')}
             </label>
             <div className="flex gap-3">
               <div className="relative flex-1">
@@ -162,13 +156,17 @@ export function QRCodeManagement() {
                   className={`
                     block w-full rounded-xl border pl-10 pr-12 py-3
                     transition-colors
-                    ${urlError 
-                      ? 'border-red-300 dark:border-red-500 bg-red-50 dark:bg-red-900/10' 
-                      : 'border-gray-200 dark:border-gray-600 dark:bg-gray-700/50'}
+                    ${
+                      urlError
+                        ? 'border-red-300 dark:border-red-500 bg-red-50 dark:bg-red-900/10'
+                        : 'border-gray-200 dark:border-gray-600 dark:bg-gray-700/50'
+                    }
                     focus:outline-none focus:ring-2
-                    ${urlError 
-                      ? 'focus:ring-red-500 focus:border-red-500' 
-                      : 'focus:ring-blue-500 focus:border-blue-500'}
+                    ${
+                      urlError
+                        ? 'focus:ring-red-500 focus:border-red-500'
+                        : 'focus:ring-blue-500 focus:border-blue-500'
+                    }
                   `}
                 />
                 <AnimatePresence>
@@ -190,7 +188,7 @@ export function QRCodeManagement() {
                   )}
                 </AnimatePresence>
               </div>
-              
+
               <Button
                 onClick={generateQRCode}
                 disabled={!url || isGenerating}
@@ -207,10 +205,16 @@ export function QRCodeManagement() {
                   disabled:from-gray-400 disabled:to-gray-500
                 `}
               >
-                <Sparkles 
-                  className={`w-4 h-4 mr-2 text-white ${isGenerating ? 'animate-spin' : ''}`}
+                <Sparkles
+                  className={`w-4 h-4 mr-2 text-white ${
+                    isGenerating ? 'animate-spin' : ''
+                  }`}
                 />
-                <span>{isGenerating ? 'Génération...' : 'Générer'}</span>
+                <span>
+                  {isGenerating
+                    ? t('qrCode:generating')
+                    : t('qrCode:generator')}
+                </span>
               </Button>
             </div>
 
@@ -255,7 +259,7 @@ export function QRCodeManagement() {
                              active:scale-95 group flex items-center"
                   >
                     <Download className="w-4 h-4 mr-2 transition-transform group-hover:scale-110" />
-                    <span>Télécharger le QR Code</span>
+                    <span>{t('qrCode:download-qr-code')}</span>
                   </Button>
                 </div>
               </motion.div>
@@ -272,7 +276,7 @@ export function QRCodeManagement() {
                     <div className="absolute inset-0 bg-gray-100 dark:bg-gray-700/50 rounded-xl blur-xl" />
                     <QrCode className="relative w-16 h-16 mb-4" />
                   </div>
-                  <p className="text-sm mt-4">Le QR code s'affichera ici</p>
+                  <p className="text-sm mt-4">{t('qrCode:qr-dont-display')}</p>
                 </div>
               </motion.div>
             )}
@@ -292,21 +296,21 @@ export function QRCodeManagement() {
                 <Info className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
               <h3 className="font-semibold text-blue-900 dark:text-blue-100">
-                Conseils d'utilisation
+                {t('qrCode:used-direction')}
               </h3>
             </div>
             <ul className="space-y-3 text-sm text-blue-800 dark:text-blue-200">
               <li className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                Utilisez des URLs courtes pour de meilleurs résultats
+                {t('qrCode:used-1')}
               </li>
               <li className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                Testez le QR code avant de l'imprimer
+                {t('qrCode:used-2')}
               </li>
               <li className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                Évitez les caractères spéciaux dans l'URL
+                {t('qrCode:used-3')}
               </li>
             </ul>
           </motion.div>
@@ -322,33 +326,34 @@ export function QRCodeManagement() {
                 <Sparkles className="w-5 h-5 text-gray-600 dark:text-gray-400" />
               </div>
               <h3 className="font-semibold text-gray-900 dark:text-gray-100">
-                Applications
+                {t('qrCode:applications')}
               </h3>
             </div>
             <ul className="space-y-3 text-sm text-gray-600 dark:text-gray-300">
               <li className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
-                Menu digital pour votre restaurant
+                {t('qrCode:applications-description-1')}
               </li>
               <li className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
-                Cartes de visite numériques
+                {t('qrCode:applications-description-2')}
               </li>
               <li className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
-                Promotions et événements spéciaux
+                {t('qrCode:applications-description-3')}
               </li>
             </ul>
           </motion.div>
         </div>
-
-        {/* Footer note - New addition */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center text-sm text-gray-500 dark:text-gray-400"
         >
-          <p>Formats d'URL acceptés : google.com, www.google.com, https://google.com</p>
+          <p>
+            {t('qrCode:url-format-accepted')} google.com, www.google.com,
+            https://google.com
+          </p>
         </motion.div>
       </motion.div>
     </div>
