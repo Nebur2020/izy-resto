@@ -76,5 +76,6 @@
   "descending": "Descending",
   "ascending": "Ascending",
   "name": "Name",
-  "description": "Description"
+  "description": "Description",
+  "update": "Update"
 }

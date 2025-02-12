@@ -80,5 +80,6 @@
   "descending": "Décroissant",
   "ascending": "Croissant",
   "name": "Nom",
-  "description": "Description"
+  "description": "Description",
+  "update": "Mettre à jour"
 }

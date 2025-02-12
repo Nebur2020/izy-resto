@@ -83,8 +83,6 @@ export function CategoryForm(props: CategoryFormProps) {
               )}
             </div>
           </div>
-
-          {/* Description Field */}
           <div className="space-y-2">
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
               <AlignLeft className="w-4 h-4" />
@@ -104,8 +102,6 @@ export function CategoryForm(props: CategoryFormProps) {
               placeholder={t('category:description-placeholder')}
             />
           </div>
-
-          {/* Display Order Field */}
           <div className="space-y-2">
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
               <Hash className="w-4 h-4" />
@@ -128,8 +124,6 @@ export function CategoryForm(props: CategoryFormProps) {
               placeholder="0"
             />
           </div>
-
-          {/* Actions */}
           <div className="flex justify-end gap-3 pt-2">
             <Button
               type="button"
@@ -137,14 +131,14 @@ export function CategoryForm(props: CategoryFormProps) {
               onClick={onCancel}
               className="px-4"
             >
-              Annuler
+              {t('common:cancel')}
             </Button>
             <Button
               type="submit"
               disabled={!isDirty || isLoading}
               className="px-6 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600"
             >
-              {category ? 'Mettre à jour' : 'Ajouter'}
+              {category ? t("common:update") : t("common:add")}
             </Button>
           </div>
         </form>
