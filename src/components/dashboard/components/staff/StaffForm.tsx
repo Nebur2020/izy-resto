@@ -3,6 +3,7 @@ import { X, User, Mail, Lock, Shield } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '../../../ui/Button';
 import { StaffFormData, StaffMember } from '../../../../types/staff';
+import { useTranslation } from 'react-i18next';
 
 interface StaffFormProps {
   staff?: StaffMember | null;
@@ -11,6 +12,7 @@ interface StaffFormProps {
 }
 
 export function StaffForm({ staff, onSave, onCancel }: StaffFormProps) {
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
@@ -36,7 +38,7 @@ export function StaffForm({ staff, onSave, onCancel }: StaffFormProps) {
       >
         <div className="flex justify-between items-center p-6 border-b dark:border-gray-700">
           <h2 className="text-xl font-semibold">
-            {staff ? 'Modifier le membre' : 'Nouveau membre du personnel'}
+            {staff ? t("personal:update-menber") : t("personal:new-personal")}
           </h2>
           <button onClick={onCancel}>
             <X className="w-5 h-5" />
@@ -44,20 +46,19 @@ export function StaffForm({ staff, onSave, onCancel }: StaffFormProps) {
         </div>
 
         <form onSubmit={handleSubmit(onSave)} className="p-6 space-y-4">
-          {/* Name Field */}
           <div>
             <label className="block text-sm font-medium mb-2">
-              Nom complet
+              {t('personal:personal-name')}
             </label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
               <input
                 type="text"
                 {...register('name', {
-                  required: 'Le nom est requis',
+                  required: t('personal:name-required'),
                   minLength: {
                     value: 2,
-                    message: 'Le nom doit contenir au moins 2 caractères',
+                    message: t('personal:name-min-length'),
                   },
                 })}
                 className="w-full pl-10 pr-4 py-2 rounded-lg border dark:border-gray-600 dark:bg-gray-700"
@@ -68,16 +69,16 @@ export function StaffForm({ staff, onSave, onCancel }: StaffFormProps) {
               <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
             )}
           </div>
-
-          {/* Email Field */}
           <div>
-            <label className="block text-sm font-medium mb-2">Email</label>
+            <label className="block text-sm font-medium mb-2">
+              {t('personal:personal-email')}
+            </label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
               <input
                 type="email"
                 {...register('email', {
-                  required: "L'email est requis",
+                  required: t('personal:email-required'),
                   pattern: {
                     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                     message: 'Adresse email invalide',
@@ -94,23 +95,20 @@ export function StaffForm({ staff, onSave, onCancel }: StaffFormProps) {
               </p>
             )}
           </div>
-
-          {/* Password Field - Only for new staff */}
           {!staff && (
             <div>
               <label className="block text-sm font-medium mb-2">
-                Mot de passe
+                {t('personal:personal-password')}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <input
                   type="password"
                   {...register('password', {
-                    required: 'Le mot de passe est requis',
+                    required: t('personal:password-required'),
                     minLength: {
                       value: 6,
-                      message:
-                        'Le mot de passe doit contenir au moins 6 caractères',
+                      message: t('personal:min-password-length'),
                     },
                   })}
                   className="w-full pl-10 pr-4 py-2 rounded-lg border dark:border-gray-600 dark:bg-gray-700"
@@ -124,10 +122,10 @@ export function StaffForm({ staff, onSave, onCancel }: StaffFormProps) {
               )}
             </div>
           )}
-
-          {/* Role Selection */}
           <div>
-            <label className="block text-sm font-medium mb-2">Rôle</label>
+            <label className="block text-sm font-medium mb-2">
+              {t('personal:personal-role')}
+            </label>
             <div className="relative">
               <Shield className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
               <select
@@ -143,14 +141,14 @@ export function StaffForm({ staff, onSave, onCancel }: StaffFormProps) {
           {/* Form Actions */}
           <div className="flex justify-end space-x-4 mt-6 pt-4 border-t dark:border-gray-700">
             <Button type="button" variant="secondary" onClick={onCancel}>
-              Annuler
+              {t('common:cancel')}
             </Button>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting
-                ? 'Enregistrement...'
+                ? t('common:saving')
                 : staff
-                ? 'Mettre à jour'
-                : 'Créer le compte'}
+                ? t('common:update')
+                :   t('personal:create-account')}
             </Button>
           </div>
         </form>
