@@ -4,13 +4,16 @@ import { useSettings } from '../../../hooks/useSettings';
 import { formatCurrency } from '../../../utils/currency';
 import { CustomerStats } from '../../../types/customer';
 import { Button } from '../../ui/Button';
+import { useTranslation } from 'react-i18next';
 
-interface CustomerListProps {
+interface ICustomerListProps {
   customers: CustomerStats[];
   onViewDetails: (customerId: string) => void;
 }
 
-export function CustomerList({ customers, onViewDetails }: CustomerListProps) {
+export function CustomerList(props: ICustomerListProps) {
+  const { t } = useTranslation();
+  const { customers, onViewDetails } = props;
   const { settings } = useSettings();
   return (
     <div className="grid gap-4">
@@ -42,8 +45,7 @@ export function CustomerList({ customers, onViewDetails }: CustomerListProps) {
               <div className="flex items-center gap-2">
                 <ShoppingBag className="w-4 h-4 text-blue-500" />
                 <span className="text-sm font-medium">
-                  {customer.orderCount} commande
-                  {customer.orderCount > 1 ? 's' : ''}
+                  {customer.orderCount} {t('order:orders')}
                 </span>
               </div>
               <p className="text-lg font-semibold text-blue-600 dark:text-blue-400">
@@ -55,7 +57,7 @@ export function CustomerList({ customers, onViewDetails }: CustomerListProps) {
                 size="sm"
                 onClick={() => onViewDetails(customer.id)}
               >
-                Voir détails
+                {t('client:view-details')}
               </Button>
             </div>
           </div>
