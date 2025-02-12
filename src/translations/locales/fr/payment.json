@@ -1,0 +1,17 @@
+{
+  "payment-method": "Méthodes de Paiement",
+  "payment-method-managment": "Gérez les méthodes de paiement disponibles",
+  "add-payment-method": "Ajouter une méthode",
+  "delete-payment-method": "Supprimer la méthode de paiement",
+  "delete-payment-method-confirmation": "Êtes-vous sûr de vouloir supprimer cette méthode de paiement ?",
+  "new-payment-method": "Nouvelle méthode de paiement",
+  "update-payment-method": "Modifier la méthode",
+  "payment-type": "Type de méthode",
+  "methode-name": "Nom de la méthode",
+  "name-is-required": "Le nom est requis",
+  "payment-qr-code-title": "QR Code de paiement",
+  "recommended-format": "Format recommandé: PNG avec fond transparent",
+  "instruction-to-user": "Consigne à l'utilisateur pour ce type de paiement",
+  "choose-bibliotheque": "Choisir depuis la bibliothèque",
+  "instruction-placeholder": "Consigne ou instruction à partager pendant le paiement..."
+}

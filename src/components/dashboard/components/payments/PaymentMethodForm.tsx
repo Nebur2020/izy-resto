@@ -5,8 +5,8 @@ import { Button } from '../../../ui/Button';
 import { LogoUploader } from '../../../settings/LogoUploader';
 import { paymentService } from '../../../../services/payments/payment.service';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
-// Types
 type PaymentMethodType =
   | 'Wave'
   | 'PayTech'
@@ -41,31 +41,41 @@ const PAYMENT_TYPES: Record<string, PaymentMethodType> = {
   'Paiement à la livraison': 'Paiement à la livraison',
 };
 
-// Form Components
 const PaymentTypeSelect = ({
   value,
   onChange,
   disabled,
+  t,
 }: {
   value: PaymentMethodType;
   onChange: (value: PaymentMethodType) => void;
   disabled?: boolean;
+  t: (key: string) => string;
 }) => (
   <div className="space-y-1">
-    <label className="block text-sm font-medium">Type de méthode</label>
+    <label className="block text-sm font-medium">
+      {t('payment:payment-type')}
+    </label>
     <select
       value={value}
       onChange={e => onChange(e.target.value as PaymentMethodType)}
       disabled={disabled}
       className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
     >
-      <option value="Paiement à la livraison">Paiement à la livraison</option>
-      <option value="CinetPay">CinetPay</option>
-      <option value="PayTech">PayTech</option>
-      <option value="Stripe">Stripe</option>
-      <option value="Wave">Wave</option>
-      <option value="Money Fusion">Money Fusion</option>
-      <option value="Autres">Autres</option>
+      {Object.entries({
+        'Paiement à la livraison': 'Paiement à la livraison',
+        CinetPay: 'Payer avec CinetPay',
+        PayTech: 'Payer avec PayTech',
+        Stripe: 'Payer avec Stripe',
+        Wave: 'Payer avec Wave',
+        'Money Fusion': 'Payer avec Money Fusion',
+        'Paiement à la caisse': 'Paiement à la caisse',
+        Autres: 'Autres',
+      }).map(([key, value]) => (
+        <option key={key} value={key}>
+          {t(`order:payment-method-names.${key}`)}
+        </option>
+      ))}
     </select>
   </div>
 );
@@ -75,6 +85,7 @@ export function PaymentMethodForm({
   onSave,
   onCancel,
 }: PaymentMethodFormProps) {
+  const { t } = useTranslation();
   const [methodType, setMethodType] = useState<PaymentMethodType>(
     PAYMENT_TYPES[`${method?.name}`] ?? 'Autres'
   );
@@ -277,12 +288,12 @@ export function PaymentMethodForm({
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-1">
-                Nom de la méthode
+                {t('payment:methode-name')}
               </label>
               <input
                 type="text"
                 {...register('name', {
-                  required: 'Le nom est requis',
+                  required: t('payment:name-is-required'),
                 })}
                 className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
               />
@@ -299,8 +310,8 @@ export function PaymentMethodForm({
                 <LogoUploader
                   value={field.value}
                   onChange={field.onChange}
-                  label="QR Code de paiement"
-                  description="Format recommandé: PNG avec fond transparent"
+                  label={t('payment:payment-qr-code-title')}
+                  description={t('payment:recommended-format')}
                 />
               )}
             />
@@ -317,7 +328,9 @@ export function PaymentMethodForm({
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-[90vw] max-w-2xl h-[75vh] flex flex-col">
         <div className="flex justify-between items-center p-4 md:p-6 border-b dark:border-gray-700">
           <h2 className="text-lg md:text-xl font-semibold">
-            {method ? 'Modifier la méthode' : 'Nouvelle méthode de paiement'}
+            {method
+              ? t('payment:update-payment-method')
+              : t('payment:new-payment-method')}
           </h2>
           <button
             onClick={onCancel}
@@ -336,19 +349,18 @@ export function PaymentMethodForm({
               value={methodType}
               onChange={setMethodType}
               disabled={isEditing}
+              t={t}
             />
-
             {renderPaymentFields()}
-
             <div>
               <label className="block text-sm font-medium mb-1">
-                Consigne à l'utilisateur pour ce type de paiement
+                {t('payment:instruction-to-user')}
               </label>
               <textarea
                 {...register('instruction')}
                 rows={2}
                 className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
-                placeholder="Consigne ou instruction à partager pendant le paiement..."
+                placeholder={t('payment:instruction-placeholder')}
               />
             </div>
           </div>
@@ -356,14 +368,14 @@ export function PaymentMethodForm({
           <div className="p-4 md:p-6 border-t dark:border-gray-700 mt-auto">
             <div className="flex justify-end gap-4">
               <Button type="button" variant="secondary" onClick={onCancel}>
-                Annuler
+                {t('common:cancel')}
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting
-                  ? 'Enregistrement...'
+                  ? t('common:saving')
                   : method
-                  ? 'Mettre à jour'
-                  : 'Ajouter'}
+                  ? t('common:update')
+                  : t('common:add')}
               </Button>
             </div>
           </div>

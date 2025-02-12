@@ -88,6 +88,7 @@
     "Stripe": "Payer avec Stripe",
     "Wave": "Payer avec Wave",
     "Money Fusion": "Payer avec Money Fusion",
-    "Paiement à la caisse": "Paiement à la caisse"
+    "Paiement à la caisse": "Paiement à la caisse",
+    "Autres": "Autre"
   }
 }
