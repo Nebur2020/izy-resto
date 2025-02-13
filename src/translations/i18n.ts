@@ -25,6 +25,9 @@ import frOrder from './locales/fr/order.json';
 import frTicket from './locales/fr/ticket.json';
 import enTicket from './locales/en/ticket.json';
 
+import frSettingData from './locales/fr/setting-data.json';
+import enSettingData from './locales/en/setting-data.json';
+
 i18n.use(initReactI18next).init({
   resources: {
     en: {
@@ -36,6 +39,7 @@ i18n.use(initReactI18next).init({
       hero: enHero,
       order: enOrder,
       ticket: enTicket,
+      settingData: enSettingData,
     },
     fr: {
       cart: frCart,
@@ -46,6 +50,7 @@ i18n.use(initReactI18next).init({
       hero: frHero,
       order: frOrder,
       ticket: frTicket,
+      settingData: frSettingData,
     },
   },
   fallbackLng: 'fr',
