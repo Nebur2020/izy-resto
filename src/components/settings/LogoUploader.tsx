@@ -4,20 +4,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../ui/Button';
 import { MediaLibraryModal } from './MediaLibraryModal';
 import { useMedia } from '../../hooks/useMedia';
+import { useTranslation } from 'react-i18next';
 
-interface LogoUploaderProps {
+interface ILogoUploaderProps {
   value?: string;
   onChange: (value: string) => void;
   label?: string;
   description?: string;
 }
 
-export function LogoUploader({ 
-  value, 
-  onChange,
-  label = "Logo du Restaurant",
-  description = "Format recommandé: PNG ou SVG avec fond transparent"
-}: LogoUploaderProps) {
+export function LogoUploader(props: ILogoUploaderProps) {
+  const { t } = useTranslation();
+  const { value, onChange, label = t("setting:restaurant-logo"), description = t("setting:recommanded-format") } = props;
   const [isMediaLibraryOpen, setIsMediaLibraryOpen] = useState(false);
   const { files, uploadFile } = useMedia();
 
@@ -74,16 +72,16 @@ export function LogoUploader({
                 className="flex flex-col items-center justify-center text-center text-gray-400 dark:text-gray-500"
               >
                 <ImageIcon className="h-10 w-10 mb-2" />
-                <span className="text-xs text-center px-2">Aucun logo</span>
+                <span className="text-xs text-center px-2">
+                  {t("setting:no-logo")}
+                </span>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
-
-        {/* Action Buttons */}
         <div className="w-full md:flex-1 space-y-4">
           <Button
-            type="button" // Add type="button"
+            type="button"
             onClick={handleMediaLibraryClick}
             variant="secondary"
             className="w-full flex items-center justify-center gap-2 
@@ -95,7 +93,9 @@ export function LogoUploader({
               group"
           >
             <Upload className="h-5 w-5 transition-transform group-hover:rotate-6" />
-            Choisir depuis la bibliothèque
+            {
+              t("setting:select-image")
+            }
           </Button>
           
           <AnimatePresence>
@@ -107,7 +107,7 @@ export function LogoUploader({
                 className="overflow-hidden"
               >
                 <Button
-                  type="button" // Add type="button"
+                  type="button"
                   variant="danger"
                   onClick={(e) => {
                     e.preventDefault();
@@ -123,7 +123,7 @@ export function LogoUploader({
                     group"
                 >
                   <X className="h-5 w-5 transition-transform group-hover:rotate-6" />
-                  Supprimer l'image
+                  {t("setting:remove-image")}
                 </Button>
               </motion.div>
             )}
@@ -134,8 +134,6 @@ export function LogoUploader({
       <p className="text-sm text-gray-500 dark:text-gray-400 px-1">
         {description}
       </p>
-
-      {/* Media Library Modal */}
       {isMediaLibraryOpen && (
         <MediaLibraryModal
           onSelect={handleMediaSelect}
