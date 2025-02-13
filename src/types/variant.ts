@@ -10,7 +10,7 @@ export interface Variant {
   isRequired?: boolean;
   createdAt: string;
   updatedAt: string;
-  inventory?: InventoryConnection[];
+  inventory?: InventoryConnection[][];
 }
 
 export interface VariantOption {

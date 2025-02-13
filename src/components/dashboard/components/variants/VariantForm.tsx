@@ -1,9 +1,35 @@
 import { useForm } from 'react-hook-form';
 import { X, Plus, Minus, Type, Layers, List, Package } from 'lucide-react';
 import { Button } from '../../../ui/Button';
-import { Variant } from '../../../../types/variant';
 import { Category } from '../../../../types';
 import { useInventory } from '../../../../hooks/useInventory';
+
+interface InventoryConnection {
+  itemId: string;
+  ratio: number;
+}
+
+interface Variant {
+  id?: string;
+  name: string;
+  type: string;
+  categoryIds: string[];
+  isRequired: boolean;
+  values: string[];
+  prices: number[];
+  inventory: InventoryConnection[][]; // Array of inventory connections for each value
+}
+
+interface RuntimeVariant {
+  id?: string;
+  name: string;
+  type: string;
+  categoryIds: string[];
+  isRequired: boolean;
+  values: string[];
+  prices: number[];
+  inventory: InventoryConnection[][];
+}
 
 interface VariantFormProps {
   variant?: Variant | null;
@@ -20,43 +46,68 @@ export function VariantForm({
 }: VariantFormProps) {
   const { items: inventory } = useInventory();
 
+  // Transform old inventory format to new format
+  const transformInventory = (
+    variant: Variant | null | undefined
+  ): RuntimeVariant | null => {
+    if (!variant) return null;
+
+    try {
+      // Parse the stringified inventory or create a default structure
+      const parsedInventory = variant.inventory
+        ? JSON.parse(variant.inventory as any)
+        : variant.values.map(() => [{ itemId: '', ratio: 1 }]);
+
+      // Ensure each value has an inventory array
+      const initializedInventory = parsedInventory.map(
+        (connections: InventoryConnection[] | InventoryConnection) =>
+          Array.isArray(connections) ? connections : [connections]
+      );
+
+      return {
+        ...variant,
+        inventory: initializedInventory,
+      };
+    } catch (error) {
+      // If parsing fails, return default structure
+      console.error('Error parsing inventory:', error);
+      return {
+        ...variant,
+        inventory: variant.values.map(() => [{ itemId: '', ratio: 1 }]),
+      };
+    }
+  };
+
   const {
     register,
     handleSubmit,
     watch,
     setValue,
     formState: { errors, isDirty },
-  } = useForm<Variant>({
-    defaultValues: variant
-      ? {
-          ...variant,
-          prices: variant?.prices || variant.values.map(() => 0),
-          inventory:
-            variant?.inventory ||
-            variant.values.map(() => ({ itemId: '', ratio: 1 })),
-        }
-      : {
-          name: '',
-          type: '',
-          values: [''],
-          prices: [0],
-          inventory: [{ itemId: '', ratio: 1 }],
-          categoryIds: [],
-          isRequired: false,
-        },
+  } = useForm<RuntimeVariant>({
+    defaultValues: transformInventory(variant) || {
+      name: '',
+      type: '',
+      values: [''],
+      prices: [0],
+      inventory: [[{ itemId: '', ratio: 1 }]],
+      categoryIds: [],
+      isRequired: false,
+    },
   });
 
   const values = watch('values');
-  const prices = watch('prices') || [];
-  const inventoryConnections = watch('inventory') || [];
-  const selectedCategories = watch('categoryIds');
+  const prices = watch('prices');
+  const inventoryConnections = watch('inventory');
 
   const addValue = () => {
     setValue('values', [...values, ''], { shouldDirty: true });
     setValue('prices', [...prices, 0], { shouldDirty: true });
-    setValue('inventory', [...inventoryConnections, { itemId: '', ratio: 1 }], {
-      shouldDirty: true,
-    });
+    setValue(
+      'inventory',
+      [...inventoryConnections, [{ itemId: '', ratio: 1 }]],
+      { shouldDirty: true }
+    );
   };
 
   const removeValue = (index: number) => {
@@ -75,6 +126,38 @@ export function VariantForm({
       inventoryConnections.filter((_, i) => i !== index),
       { shouldDirty: true }
     );
+  };
+
+  const addInventoryConnection = (valueIndex: number) => {
+    const newInventoryConnections = [...(inventoryConnections || [])];
+    const currentConnections = newInventoryConnections[valueIndex] || [];
+    newInventoryConnections[valueIndex] = [
+      ...currentConnections,
+      { itemId: '', ratio: 1 },
+    ];
+    setValue('inventory', newInventoryConnections, { shouldDirty: true });
+  };
+
+  const removeInventoryConnection = (
+    valueIndex: number,
+    connectionIndex: number
+  ) => {
+    const newInventoryConnections = [...(inventoryConnections || [])];
+    if (newInventoryConnections[valueIndex]) {
+      newInventoryConnections[valueIndex] = newInventoryConnections[
+        valueIndex
+      ].filter((_, i) => i !== connectionIndex);
+      setValue('inventory', newInventoryConnections, { shouldDirty: true });
+    }
+  };
+
+  const onSubmitWrapper = (data: RuntimeVariant) => {
+    // Convert the runtime variant with inventory array to Firestore variant with stringified inventory
+    const firestoreVariant: Omit<Variant, 'id'> = {
+      ...data,
+      inventory: JSON.stringify(data.inventory) as any,
+    };
+    onSave(firestoreVariant);
   };
 
   return (
@@ -103,7 +186,7 @@ export function VariantForm({
 
         {/* Form Content */}
         <form
-          onSubmit={handleSubmit(onSave)}
+          onSubmit={handleSubmit(onSubmitWrapper)}
           className="overflow-y-auto max-h-[calc(90vh-80px)]"
         >
           <div className="p-6 space-y-6">
@@ -151,7 +234,7 @@ export function VariantForm({
                     className={`
                       group flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all duration-200
                       ${
-                        selectedCategories?.includes(category.id)
+                        watch('categoryIds')?.includes(category.id)
                           ? 'bg-blue-50 border-blue-500 dark:bg-blue-900/20 dark:border-blue-400'
                           : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600'
                       }
@@ -192,24 +275,27 @@ export function VariantForm({
                   className="px-3 py-1.5 text-sm bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-400"
                 >
                   <Plus className="w-4 h-4 mr-1" />
-                  Ajouter
+                  Ajouter une valeur
                 </Button>
               </div>
 
-              <div className="space-y-2">
-                {values.map((_, index) => (
-                  <div key={index} className="space-y-2">
+              <div className="space-y-4">
+                {values.map((_, valueIndex) => (
+                  <div
+                    key={valueIndex}
+                    className="space-y-2 p-4 border rounded-lg dark:border-gray-700"
+                  >
                     <div className="flex gap-2">
                       <input
-                        {...register(`values.${index}`, {
+                        {...register(`values.${valueIndex}`, {
                           required: 'La valeur est requise',
                         })}
                         className="flex-1 px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-shadow"
-                        placeholder={`Option ${index + 1}`}
+                        placeholder={`Option ${valueIndex + 1}`}
                       />
                       <input
                         type="number"
-                        {...register(`prices.${index}`, {
+                        {...register(`prices.${valueIndex}`, {
                           valueAsNumber: true,
                         })}
                         className="w-32 px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-shadow"
@@ -218,7 +304,7 @@ export function VariantForm({
                       {values.length > 1 && (
                         <Button
                           type="button"
-                          onClick={() => removeValue(index)}
+                          onClick={() => removeValue(valueIndex)}
                           className="px-2.5 text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20"
                         >
                           <Minus className="w-4 h-4" />
@@ -226,41 +312,73 @@ export function VariantForm({
                       )}
                     </div>
 
-                    {/* Inventory Connection */}
-                    <div className="flex gap-2 items-center pl-4 border-l-2 border-gray-200 dark:border-gray-700">
-                      <Package className="w-4 h-4 text-gray-400" />
-                      <select
-                        {...register(`inventory.${index}.itemId`)}
-                        value={watch(`inventory.${index}.itemId`)}
-                        className="flex-1 px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-shadow"
+                    {/* Multiple Inventory Connections */}
+                    <div className="space-y-2 pl-4 border-l-2 border-gray-200 dark:border-gray-700">
+                      {(inventoryConnections?.[valueIndex] || []).map(
+                        (_, connectionIndex) => (
+                          <div
+                            key={connectionIndex}
+                            className="flex gap-2 items-center"
+                          >
+                            <Package className="w-4 h-4 text-gray-400" />
+                            <select
+                              value={watch(
+                                `inventory.${valueIndex}.${connectionIndex}.itemId`
+                              )}
+                              {...register(
+                                `inventory.${valueIndex}.${connectionIndex}.itemId`
+                              )}
+                              className="flex-1 px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-shadow"
+                            >
+                              <option value="">Sélectionner un article</option>
+                              {inventory.map(item => (
+                                <option key={item.id} value={item.id}>
+                                  {item.name} ({item.quantity} {item.unit})
+                                </option>
+                              ))}
+                            </select>
+                            <input
+                              type="number"
+                              {...register(
+                                `inventory.${valueIndex}.${connectionIndex}.ratio`,
+                                {
+                                  valueAsNumber: true,
+                                  min: 0.01,
+                                }
+                              )}
+                              className="w-32 px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-shadow"
+                              placeholder="Ratio"
+                              step="0.01"
+                            />
+                            {inventoryConnections[valueIndex].length > 1 && (
+                              <Button
+                                type="button"
+                                onClick={() =>
+                                  removeInventoryConnection(
+                                    valueIndex,
+                                    connectionIndex
+                                  )
+                                }
+                                className="px-2.5 text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20"
+                              >
+                                <Minus className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </div>
+                        )
+                      )}
+                      <Button
+                        type="button"
+                        onClick={() => addInventoryConnection(valueIndex)}
+                        className="mt-2 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20"
                       >
-                        <option value="">Sélectionner un article</option>
-                        {inventory.map(item => (
-                          <option key={item.id} value={item.id}>
-                            {item.name} ({item.quantity} {item.unit})
-                          </option>
-                        ))}
-                      </select>
-                      <input
-                        type="number"
-                        {...register(`inventory.${index}.ratio`, {
-                          valueAsNumber: true,
-                          min: 0.01,
-                        })}
-                        className="w-32 px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-shadow"
-                        placeholder="Ratio"
-                        step="0.01"
-                      />
+                        <Plus className="w-4 h-4 mr-1" />
+                        Ajouter un article
+                      </Button>
                     </div>
                   </div>
                 ))}
               </div>
-              {errors.values && (
-                <p className="text-sm text-red-500 flex items-center gap-1">
-                  <span className="w-1 h-1 rounded-full bg-red-500" />
-                  Toutes les valeurs sont requises
-                </p>
-              )}
             </div>
           </div>
 
