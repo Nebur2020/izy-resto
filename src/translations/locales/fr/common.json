@@ -77,6 +77,10 @@
   "payment-receive": "PAIEMENT REÇU",
   "serve-by": "Vous avez été servi par",
   "payment-on-delivery": "Paiement à la livraison",
+  "Actif": "Actif",
+  "Inactif": "Inactif",
+  "Admin": "Admin",
+  "Staff": "Staff"
   "percent-of-sales": " % des ventes",
   "sales": "vendus",
   "preparing": "En cours de préparation",

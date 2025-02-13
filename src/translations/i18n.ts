@@ -25,6 +25,8 @@ import frOrder from './locales/fr/order.json';
 import frTicket from './locales/fr/ticket.json';
 import enTicket from './locales/en/ticket.json';
 
+import enPersonal from './locales/en/personal.json';
+import frPersonal from './locales/fr/personal.json';
 import frMedia from './locales/fr/media.json';
 import enMedia from './locales/en/media.json';
 
@@ -39,6 +41,7 @@ i18n.use(initReactI18next).init({
       hero: enHero,
       order: enOrder,
       ticket: enTicket,
+      personal: enPersonal,
       media: enMedia,
     },
     fr: {
@@ -50,6 +53,7 @@ i18n.use(initReactI18next).init({
       hero: frHero,
       order: frOrder,
       ticket: frTicket,
+      personal: frPersonal,
       media: frMedia,
     },
   },
