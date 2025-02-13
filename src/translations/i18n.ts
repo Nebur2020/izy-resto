@@ -27,6 +27,8 @@ import enTicket from './locales/en/ticket.json';
 
 import enPyament from './locales/en/payment.json';
 import frPayment from './locales/fr/payment.json';
+import frMedia from './locales/fr/media.json';
+import enMedia from './locales/en/media.json';
 
 i18n.use(initReactI18next).init({
   resources: {
@@ -40,6 +42,7 @@ i18n.use(initReactI18next).init({
       order: enOrder,
       ticket: enTicket,
       payment: enPyament,
+      media: enMedia,
     },
     fr: {
       cart: frCart,
@@ -51,6 +54,7 @@ i18n.use(initReactI18next).init({
       order: frOrder,
       ticket: frTicket,
       payment: frPayment,
+      media: frMedia,
     },
   },
   fallbackLng: 'fr',
