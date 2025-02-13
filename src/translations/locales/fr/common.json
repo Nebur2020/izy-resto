@@ -81,4 +81,12 @@
   "Inactif": "Inactif",
   "Admin": "Admin",
   "Staff": "Staff"
+  "percent-of-sales": " % des ventes",
+  "sales": "vendus",
+  "preparing": "En cours de préparation",
+  "ready": "Prêt",
+  "item-ordered": "Articles commandés",
+  "client-details": "Détails Client",
+  "description-max-limit": "La description ne peut pas dépasser {{maxLimit}} caractères",
+  "description-min-limit": "La description doit contenir au moins {{minLimit}} caractères"
 }
