@@ -1,0 +1,18 @@
+{
+  "contact-information": "Contact & Location",
+  "business-hours": "Exceptional Closing",
+  "enable-holiday-closure": "Enable exceptional closing",
+  "start-date": "Start Date",
+  "end-date": "End Date",
+  "reason": "Reason (optional)",
+  "reason-placeholder": "Ex: Annual closing",
+  "time-zone": "Time Zone",
+  "time-zone-required": "Time zone is required",
+  "select-time-zone": "Select a time zone",
+  "time-zone-description": "This time zone will be used for all opening hours",
+  "opening-hours": "Opening Hours",
+  "closed": "Closed",
+  "to": "to",
+  "service-options": "Service Options",
+  "payment-on-dine-in": "Enable payment on dine-in"
+}
