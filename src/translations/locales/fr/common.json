@@ -76,5 +76,8 @@
   "payment-on-site": "PAIEMENT SUR PLACE",
   "payment-receive": "PAIEMENT REÇU",
   "serve-by": "Vous avez été servi par",
-  "payment-on-delivery": "Paiement à la livraison"
+  "payment-on-delivery": "Paiement à la livraison",
+  "select-upload-image": "Choisir depuis la bibliothèque",
+  "remove-image": "Supprimer l'image",
+  "no-logo-placeholder": "Aucun logo"
 }

@@ -72,5 +72,8 @@
   "payment-receive": "Payment received",
   "serve-by": "You were served by",
   "payment-on-delivery": "Payment on delivery",
-  "in-cooking": "Cooking"
+  "in-cooking": "Cooking",
+  "select-upload-image": "Select from library",
+  "remove-image": "Remove image",
+  "no-logo-placeholder": "No logo"
 }
