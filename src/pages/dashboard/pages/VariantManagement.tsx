@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Plus, Search } from 'lucide-react';
 import { useVariants } from '../../../hooks/useVariants';
 import { useCategories } from '../../../hooks/useCategories';
@@ -31,7 +31,7 @@ export function VariantManagement() {
   const handleSave = async (data: any) => {
     try {
       if (editingVariant) {
-        await updateVariant(editingVariant.id, data);
+        await updateVariant((editingVariant as any).id, data);
       } else {
         await addVariant(data);
       }

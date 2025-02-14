@@ -63,10 +63,11 @@ export function Overview() {
       <div className="p-4 space-y-6">
         <div className="text-center bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
           <Laptop className="w-12 h-12 mx-auto text-blue-500 mb-4" />
-          <h2 className="text-xl font-semibold mb-2">Vue limitée sur mobile</h2>
+          <h2 className="text-xl font-semibold mb-2">
+            {t('limit-view-on-mobile')}
+          </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-4">
-            Pour une meilleure expérience et accéder à toutes les
-            fonctionnalités, veuillez utiliser un écran plus large.
+            {t('best-experience')}
           </p>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
@@ -113,7 +114,7 @@ export function Overview() {
           animate={{ opacity: 1, y: 0 }}
           className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
         >
-          <h3 className="text-lg font-semibold mb-4">État des commandes</h3>
+          <h3 className="text-lg font-semibold mb-4">{t('order-status')}</h3>
           <AnalyticsChart
             data={deliveredOrders.reduce((acc, order) => {
               acc[order.status] = (acc[order.status] || 0) + 1;
@@ -138,7 +139,7 @@ export function Overview() {
           animate={{ opacity: 1, y: 0 }}
           className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
         >
-          <h3 className="text-lg font-semibold mb-4">Meilleurs clients</h3>
+          <h3 className="text-lg font-semibold mb-4">{t('best-customer')}</h3>
           <PaginatedCustomerList
             orders={deliveredOrders.filter(order => !!order.customerPhone)}
             itemsPerPage={5}
