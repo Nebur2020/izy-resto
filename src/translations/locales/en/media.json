@@ -1,0 +1,14 @@
+{
+  "media-title": "Media Gallery",
+  "add-media": "Add Media",
+  "dnd-descrption": "Drag and drop multiple files here, or",
+  "select-files": "click to select",
+  "file-type": "PNG, JPG, GIF up to {{maxSize}}MB",
+  "delete-file": "Delete File",
+  "delete-files": "Delete Files",
+  "deleting-confirmation": "Are you sure you want to delete this file? This action is irreversible.",
+  "deleting-files-confirmation": "Are you sure you want to delete {{count}} files? This action is irreversible.",
+  "media-files": "Files",
+  "element": "Element",
+  "selected": "selected"
+}
