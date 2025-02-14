@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TrendingUp, Package, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Order } from '../../../../types';
@@ -8,6 +8,7 @@ import {
   formatNumberByLanguage,
 } from '../../../../utils/currency';
 import { Button } from '../../../ui/Button';
+import { useTranslation } from 'react-i18next';
 
 interface ProductSalesStats {
   id: string;
@@ -25,11 +26,11 @@ const ITEMS_PER_PAGE = 5;
 export function ProductSalesStats({ orders }: ProductSalesStatsProps) {
   const { settings } = useSettings();
   const [currentPage, setCurrentPage] = useState(1);
+  const { t } = useTranslation('dashboard');
 
   const productStats = useMemo(() => {
     const stats = new Map<string, ProductSalesStats>();
 
-    // Only consider delivered orders for accurate stats
     const deliveredOrders = orders.filter(
       order => order.status === 'delivered'
     );
@@ -51,7 +52,6 @@ export function ProductSalesStats({ orders }: ProductSalesStatsProps) {
       });
     });
 
-    // Convert to array and sort by quantity sold
     return Array.from(stats.values()).sort((a, b) => b.quantity - a.quantity);
   }, [orders]);
 
@@ -59,12 +59,7 @@ export function ProductSalesStats({ orders }: ProductSalesStatsProps) {
     (sum, stat) => sum + stat.quantity,
     0
   );
-  const totalRevenue = productStats.reduce(
-    (sum, stat) => sum + stat.revenue,
-    0
-  );
 
-  // Calculate pagination
   const totalPages = Math.ceil(productStats.length / ITEMS_PER_PAGE);
   const paginatedStats = productStats.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
@@ -84,10 +79,10 @@ export function ProductSalesStats({ orders }: ProductSalesStatsProps) {
           </div>
           <div>
             <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
-              Ventes par Produit
+              {t('pales-by-product')}
             </h3>
             <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-              {productStats.length} produits vendus
+              {productStats.length} {t('products-sold')}
             </p>
           </div>
         </div>
@@ -119,13 +114,13 @@ export function ProductSalesStats({ orders }: ProductSalesStatsProps) {
                       ),
                       'fr-FR'
                     )}
-                    % des ventes
+                    {t('common:percent-of-sales')}
                   </p>
                 </div>
               </div>
               <div className="text-right">
                 <p className="font-medium text-sm sm:text-base text-gray-900 dark:text-white">
-                  {stat.quantity} vendus
+                  {stat.quantity} {t('common:sales')}
                 </p>
                 <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                   {formatCurrency(stat.revenue, settings?.currency)}
@@ -134,8 +129,6 @@ export function ProductSalesStats({ orders }: ProductSalesStatsProps) {
             </motion.div>
           ))}
         </AnimatePresence>
-
-        {/* Pagination Controls */}
         {totalPages > 1 && (
           <div className="flex justify-between items-center pt-4 border-t dark:border-gray-700">
             <Button
@@ -161,13 +154,11 @@ export function ProductSalesStats({ orders }: ProductSalesStatsProps) {
             </Button>
           </div>
         )}
-
-        {/* Empty State */}
         {productStats.length === 0 && (
           <div className="text-center py-12">
             <TrendingUp className="w-8 h-8 sm:w-12 sm:h-12 mx-auto text-gray-400 mb-4" />
             <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">
-              Aucune vente enregistrée pour le moment
+              {t('no-product-sales')}
             </p>
           </div>
         )}

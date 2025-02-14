@@ -86,5 +86,17 @@
   "average-rate": "Average rate",
   "total-note": "Total reveiws",
   "notification-rate": "Total notifications",
-  "note-dispatching": "Note dispatching"
+  "note-dispatching": "Note dispatching",
+  "Actif": "Active",
+  "Inactif": "Inactive",
+  "Admin": "Admin",
+  "Staff": "Staff",
+  "percent-of-sales": " % of sales",
+  "sales": "sold",
+  "preparing": "Preparing",
+  "ready": "Ready",
+  "item-ordered": "Item ordered",
+  "client-details": "Client details",
+  "description-max-limit": "Description cannot exceed {{maxLimit}} characters",
+  "description-min-limit": "Description must contain at least {{minLimit}} characters"
 }
