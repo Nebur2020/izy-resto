@@ -13,5 +13,14 @@
   "recommended-format": "Recommended format: PNG with transparent background",
   "instruction-to-user": "Instruction to user for this payment type",
   "choose-bibliotheque": "Choose from library",
-  "instruction-placeholder": "Instruction or guideline to share during payment..."
+  "instruction-placeholder": "Instruction or guideline to share during payment...",
+  "payment-methode-with-same-name-already-exist": "A payment method with this name already exists",
+  "methode-with-same-name-already-exist": "A payment method with this name already exists",
+  "an-error-occur": "An error occurred",
+  "wave-payment-link": "Wave Payment Link",
+  "wave-link-required": "Wave link is required",
+  "past-merchand-wavepayment-link": "Paste your merchant wave payment link",
+  "api-key-is-required": "API key is required",
+  "site-id": "SITE ID",
+  "api-key": "API KEY"
 }
