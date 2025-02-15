@@ -5,6 +5,7 @@ import { RestaurantSettings } from '../../../../../types';
 import { SocialMediaSettings } from './SocialMediaSettings';
 import { allCurrencies } from '../../../../../constants/defaultSettings';
 import LanguageSwitcher from './LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 export function GeneralSettings() {
   const {
@@ -26,6 +27,8 @@ export function GeneralSettings() {
 
   const currency = watch('currency');
   const currencyObject = allCurrencies.find(cur => cur.value === currency);
+
+  const { t } = useTranslation('common');
 
   return (
     <div className="space-y-8">
@@ -64,13 +67,14 @@ export function GeneralSettings() {
               {...register('description', {
                 required: 'La description est requise',
                 maxLength: {
-                  value: 150,
-                  message: 'La description ne peut pas dépasser 150 caractères',
+                  value: 250,
+                  message: t('description-max-limit', {
+                    maxLimit: 250,
+                  }),
                 },
                 minLength: {
                   value: 10,
-                  message:
-                    'La description doit contenir au moins 10 caractères',
+                  message: t('description-min-limit', { minLimit: 10 }),
                 },
               })}
               rows={3}

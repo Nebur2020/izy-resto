@@ -15,6 +15,7 @@ export const useDeployment = () => {
     } catch (error: any) {
       console.log(error);
       setError(error?.message || 'une erruer est survenue...');
+      throw error;
     } finally {
       setIsDeploying(false);
     }
