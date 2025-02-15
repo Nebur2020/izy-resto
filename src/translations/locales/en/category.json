@@ -7,5 +7,14 @@
   "add-new-category": "Add a new category to the menu",
   "update-category-details": "Update category details",
   "description-placeholder": "Category description",
-  "display-order": "Display Order"
+  "display-order": "Display Order",
+  "delete-category": "Delete category?",
+  "delete-category-message": "Are you sure you want to delete the category {{categoryName}}?",
+  "category-updated": "Category updated successfully",
+  "category-created": "Category created successfully",
+  "category-error": "An error occurred",
+  "category-deleted": "Category deleted successfully",
+  "category-loading": "Loading categories...",
+  "no-category-found": "Try other search terms",
+  "no-category-description": "Start by creating a category"
 }
