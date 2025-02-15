@@ -14,5 +14,12 @@
   "applications-description-3": "Promotions et événements spéciaux",
   "url-format-accepted": "Formats d'URL acceptés :",
   "generating": "Génération...",
-  "download-qr-code": "Télécharger le QR Code"
+  "download-qr-code": "Télécharger le QR Code",
+  "empty-url": "Veuillez saisir une adresse URL",
+  "invalid-url": "Format d'URL invalide",
+  "qr-code-generated": "QR Code généré avec succès",
+  "qr-code-generation-failed": "Échec de la génération du QR code",
+  "copied": "URL copiée",
+  "copy-failed": "Échec de la copie",
+  "qr-code-downloaded": "QR Code téléchargé"
 }

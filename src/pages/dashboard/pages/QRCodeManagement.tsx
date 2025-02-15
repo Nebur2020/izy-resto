@@ -47,19 +47,19 @@ export function QRCodeManagement() {
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setUrl(value);
-    setUrlError(null); // Clear error when input changes
+    setUrlError(null);
   };
 
   const generateQRCode = useCallback(async () => {
     if (!url) {
-      toast.error('Veuillez saisir une adresse URL');
+      toast.error(t('qrCode:empty-url'));
       return;
     }
 
     const { isValid, formattedUrl } = isValidUrl(url);
     if (!isValid) {
-      setUrlError("Format d'URL invalide");
-      toast.error("Format d'URL invalide");
+      setUrlError(t('qrCode:invalid-url'));
+      toast.error(t('qrCode:invalid-url'));
       return;
     }
 
@@ -79,10 +79,10 @@ export function QRCodeManagement() {
 
       setQrCodeDataUrl(dataUrl);
       setUrl(formattedUrl);
-      toast.success('QR Code généré avec succès');
+      toast.success(t('qrCode:qr-code-generated'));
     } catch (error) {
       console.error('Erreur lors de la génération du QR code:', error);
-      toast.error('Échec de la génération du QR code');
+      toast.error(t('qrCode:qr-code-generation-failed'));
     } finally {
       setIsGenerating(false);
     }
@@ -92,11 +92,11 @@ export function QRCodeManagement() {
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
-      toast.success('URL copiée');
+      toast.success(t('qrCode:copied'));
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
       console.error('Erreur lors de la copie:', error);
-      toast.error('Échec de la copie');
+      toast.error(t('qrCode:copy-failed'));
     }
   };
 
@@ -108,7 +108,7 @@ export function QRCodeManagement() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    toast.success('QR Code téléchargé');
+    toast.success(t('qrCode:qr-code-downloaded'));
   };
 
   return (
@@ -229,8 +229,6 @@ export function QRCodeManagement() {
               </motion.p>
             )}
           </div>
-
-          {/* QR Code Preview */}
           <AnimatePresence mode="wait">
             {qrCodeDataUrl ? (
               <motion.div
@@ -282,8 +280,6 @@ export function QRCodeManagement() {
             )}
           </AnimatePresence>
         </div>
-
-        {/* Tips & Applications */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -314,7 +310,6 @@ export function QRCodeManagement() {
               </li>
             </ul>
           </motion.div>
-
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
