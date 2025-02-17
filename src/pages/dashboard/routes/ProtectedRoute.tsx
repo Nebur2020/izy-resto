@@ -1,6 +1,5 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useStaffPermissions } from '../../../hooks/useStaffPermissions';
 import { PUBLIC_ROUTES } from '../../../constants/routes';
 import type { DashboardRoute } from '../../../constants/routes';
 import { StaffMember } from '../../../types/staff';
