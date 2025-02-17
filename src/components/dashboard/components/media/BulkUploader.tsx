@@ -1,11 +1,11 @@
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, X, AlertCircle } from 'lucide-react';
-import { Button } from '../../../ui/Button';
 import { ProgressBar } from '../../../ui/ProgressBar';
+import { useTranslation } from 'react-i18next';
 
-interface BulkUploaderProps {
+interface IBulkUploaderProps {
   onClose: () => void;
   onUpload: (files: File[]) => Promise<void>;
   maxSizeMB?: number;
@@ -20,12 +20,9 @@ interface UploadStatus {
   };
 }
 
-export function BulkUploader({
-  onClose,
-  onUpload,
-  maxSizeMB = 5,
-  acceptedFileTypes = ['.png', '.jpg', '.jpeg', '.gif'],
-}: BulkUploaderProps) {
+export function BulkUploader(props: IBulkUploaderProps) {
+  const { t } = useTranslation();
+  const { onClose, onUpload, maxSizeMB = 10, acceptedFileTypes = ['image/*'] } = props;
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>({});
   const [isUploading, setIsUploading] = useState(false);
 
@@ -34,8 +31,6 @@ export function BulkUploader({
       if (acceptedFiles.length === 0) return;
 
       setIsUploading(true);
-
-      // Initialize upload status for each file
       const initialStatus: UploadStatus = {};
       acceptedFiles.forEach(file => {
         initialStatus[file.name] = { progress: 0 };
@@ -43,9 +38,7 @@ export function BulkUploader({
       setUploadStatus(initialStatus);
 
       try {
-        // Create an array of promises for each file upload
         const uploadPromises = acceptedFiles.map(async file => {
-          // Simulate progress updates
           const interval = setInterval(() => {
             setUploadStatus(prev => {
               const currentProgress = prev[file.name]?.progress || 0;
@@ -83,7 +76,6 @@ export function BulkUploader({
 
         await Promise.all(uploadPromises);
 
-        // Close after a short delay to show completion
         setTimeout(onClose, 1500);
       } catch (error) {
         console.error('Upload error:', error);
@@ -118,7 +110,9 @@ export function BulkUploader({
           <X className="w-5 h-5" />
         </button>
 
-        <h2 className="text-xl font-semibold mb-6">Ajouter des médias</h2>
+        <h2 className="text-xl font-semibold mb-6">
+          {t('media:add-media')}
+        </h2>
 
         <div
           {...getRootProps()}
@@ -148,21 +142,19 @@ export function BulkUploader({
               'Déposez les fichiers ici...'
             ) : (
               <>
-                Glissez et déposez plusieurs fichiers ici, ou
+                {t('media:dnd-descrption')}
                 <br />
                 <span className="text-blue-500 dark:text-blue-400">
-                  cliquez pour sélectionner
+                  {t('media:select-files')}
                 </span>
               </>
             )}
           </p>
 
           <p className="text-sm text-amber-700 dark:text-amber-300 font-bold">
-            PNG, JPG, GIF jusqu'à {maxSizeMB}MB
+            {t('media:file-type', { maxSize: maxSizeMB })}
           </p>
         </div>
-
-        {/* Upload Status */}
         <AnimatePresence>
           {Object.entries(uploadStatus).length > 0 && (
             <motion.div
