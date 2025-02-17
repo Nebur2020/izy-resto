@@ -16,6 +16,13 @@ interface ILogoUploaderProps {
 export function LogoUploader(props: ILogoUploaderProps) {
   const { t } = useTranslation();
   const { value, onChange, label = t("setting:restaurant-logo"), description = t("setting:recommanded-format") } = props;
+  const {
+    value = '',
+    onChange,
+    label = 'Logo',
+    description = t('settingSeo:add-restaurent-logo'),
+  } = props;
+  
   const [isMediaLibraryOpen, setIsMediaLibraryOpen] = useState(false);
   const { files, uploadFile } = useMedia();
 
@@ -35,27 +42,28 @@ export function LogoUploader(props: ILogoUploaderProps) {
       <label className="block text-base font-semibold text-gray-900 dark:text-gray-100">
         {label}
       </label>
-      
-      <motion.div 
+
+      <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
         className="flex flex-col md:flex-row items-center gap-6 bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm"
       >
-        {/* Image Preview */}
-        <div className={`relative h-32 w-32 flex-shrink-0 overflow-hidden rounded-xl 
+        <div
+          className={`relative h-32 w-32 flex-shrink-0 overflow-hidden rounded-xl 
           border-2 border-dashed 
-          ${value 
-            ? 'border-blue-500/30 bg-blue-50/20' 
-            : 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800'
+          ${
+            value
+              ? 'border-blue-500/30 bg-blue-50/20'
+              : 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800'
           } 
           flex items-center justify-center transition-all duration-300 hover:border-blue-500`}
         >
           <AnimatePresence mode="wait">
             {value ? (
-              <motion.img 
+              <motion.img
                 key="logo"
-                src={value} 
+                src={value}
                 alt="Logo preview"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -64,7 +72,7 @@ export function LogoUploader(props: ILogoUploaderProps) {
                 onError={() => onChange('')}
               />
             ) : (
-              <motion.div 
+              <motion.div
                 key="placeholder"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -73,7 +81,7 @@ export function LogoUploader(props: ILogoUploaderProps) {
               >
                 <ImageIcon className="h-10 w-10 mb-2" />
                 <span className="text-xs text-center px-2">
-                  {t("setting:no-logo")}
+                  {t('common:no-logo-placeholder')}
                 </span>
               </motion.div>
             )}
@@ -93,11 +101,9 @@ export function LogoUploader(props: ILogoUploaderProps) {
               group"
           >
             <Upload className="h-5 w-5 transition-transform group-hover:rotate-6" />
-            {
-              t("setting:select-image")
-            }
+            {t('common:select-upload-image')}
           </Button>
-          
+
           <AnimatePresence>
             {value && (
               <motion.div
@@ -109,7 +115,7 @@ export function LogoUploader(props: ILogoUploaderProps) {
                 <Button
                   type="button"
                   variant="danger"
-                  onClick={(e) => {
+                  onClick={e => {
                     e.preventDefault();
                     e.stopPropagation();
                     onChange('');
@@ -123,7 +129,7 @@ export function LogoUploader(props: ILogoUploaderProps) {
                     group"
                 >
                   <X className="h-5 w-5 transition-transform group-hover:rotate-6" />
-                  {t("setting:remove-image")}
+                  {t('common:remove-image')}
                 </Button>
               </motion.div>
             )}
