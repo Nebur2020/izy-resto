@@ -15,12 +15,14 @@ interface ILogoUploaderProps {
 
 export function LogoUploader(props: ILogoUploaderProps) {
   const { t } = useTranslation();
+  const { value, onChange, label = t("setting:restaurant-logo"), description = t("setting:recommanded-format") } = props;
   const {
     value = '',
     onChange,
     label = 'Logo',
     description = t('settingSeo:add-restaurent-logo'),
   } = props;
+  
   const [isMediaLibraryOpen, setIsMediaLibraryOpen] = useState(false);
   const { files, uploadFile } = useMedia();
 
@@ -138,8 +140,6 @@ export function LogoUploader(props: ILogoUploaderProps) {
       <p className="text-sm text-gray-500 dark:text-gray-400 px-1">
         {description}
       </p>
-
-      {/* Media Library Modal */}
       {isMediaLibraryOpen && (
         <MediaLibraryModal
           onSelect={handleMediaSelect}
