@@ -32,7 +32,7 @@ export function VariantManagement() {
   const handleSave = async (data: any) => {
     try {
       if (editingVariant) {
-        await updateVariant(editingVariant.id, data);
+        await updateVariant((editingVariant as any).id, data);
       } else {
         await addVariant(data);
       }

@@ -5,6 +5,7 @@ import { Badge } from '../../../ui/Badge';
 import { Button } from '../../../ui/Button';
 import { useAuth } from '../../../../hooks';
 import { useStaffCheck } from '../../../../hooks/useStaffCheck';
+import { useTranslation } from 'react-i18next';
 
 interface StaffListProps {
   staff: StaffMember[];
@@ -21,6 +22,7 @@ export function StaffList({
 }: StaffListProps) {
   const { user } = useAuth();
   const { isStaff, staffData } = useStaffCheck();
+  const { t } = useTranslation('common');
 
   if (isLoading) {
     return (
@@ -62,10 +64,11 @@ export function StaffList({
                 <Badge
                   variant={member.role === 'admin' ? 'success' : 'default'}
                 >
-                  {member.role === 'admin' ? 'Admin' : 'Staff'}
+                  {member.role === 'admin' ? t('Admin') : t('Staff')}
+                  {}
                 </Badge>
                 <Badge variant={member.active ? 'success' : 'warning'}>
-                  {member.active ? 'Actif' : 'Inactif'}
+                  {member.active ? t('Actif') : t('Inactif')}
                 </Badge>
                 <div className="flex gap-2">
                   {((isStaff && staffData?.role === 'admin') || !isStaff) && (
