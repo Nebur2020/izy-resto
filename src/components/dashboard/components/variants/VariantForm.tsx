@@ -254,12 +254,11 @@ export function VariantForm(props: IVariantFormProps) {
               )}
             </div>
 
-            {/* Values, Prices, and Inventory Management */}
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                   <Layers className="w-4 h-4" />
-                  {t('variant:variant-and-value')
+                  {t('variant:variant-and-value')}
                 </label>
                 <Button
                   type="button"

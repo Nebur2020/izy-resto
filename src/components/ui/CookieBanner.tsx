@@ -3,19 +3,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Cookie, X } from 'lucide-react';
 import { Button } from './Button';
 import { useLayoutMount } from '../../hooks/useLayoutMount';
+import { useTranslation } from 'react-i18next';
 
 export function CookieBanner() {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const { isLoading } = useLayoutMount();
 
   useEffect(() => {
-    // Only check cookies after loading is complete
     if (!isLoading) {
       const hasAcceptedCookies = !!localStorage.getItem('cookiesAccepted')
         ? localStorage.getItem('cookiesAccepted') === 'true'
         : false;
       if (!hasAcceptedCookies) {
-        // Show banner with a delay after loading
         const timer = setTimeout(() => setIsVisible(true), 1500);
         return () => clearTimeout(timer);
       }
@@ -62,12 +62,10 @@ export function CookieBanner() {
                 {/* Content */}
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                    Nous utilisons des cookies 🍪
+                    {t('common:cookie-banner-title')}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">
-                    Nous utilisons des cookies et des technologies similaires
-                    pour améliorer votre expérience de navigation, personnaliser
-                    le contenu et analyser le trafic de notre site.
+                    {t('common:cookie-banner-description')}
                   </p>
                 </div>
 
@@ -78,14 +76,14 @@ export function CookieBanner() {
                     onClick={handleAccept}
                     className="w-full text-white sm:w-auto whitespace-nowrap bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
                   >
-                    Accepter
+                    {t('common:accepted')}
                   </Button>
                   <Button
                     variant="secondary"
                     onClick={handleDismiss}
                     className="w-full sm:w-auto whitespace-nowrap"
                   >
-                    Plus tard
+                    {t('common:cookie-banner-dismiss')}
                   </Button>
                 </div>
               </div>

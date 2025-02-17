@@ -7,7 +7,6 @@ import { fr, enUS as en } from 'date-fns/locale';
 import { Language } from '../../../../types';
 import { useIsMobile } from '../../../../hooks/useIsMobile';
 import { useTranslation } from 'react-i18next';
-import { Language } from '../../../../types';
 
 interface IDateFilterProps {
   startDate: Date;
@@ -21,7 +20,6 @@ export function DateFilter(props: IDateFilterProps) {
   const [isStartPickerOpen, setIsStartPickerOpen] = useState(false);
   const [isEndPickerOpen, setIsEndPickerOpen] = useState(false);
   const isMobile = useIsMobile();
-  const { t, i18n } = useTranslation(['common', 'dashboard']);
   const lng = i18n.language as Language;
 
   const localesMap: Record<Language, Locale> = {
@@ -33,11 +31,6 @@ export function DateFilter(props: IDateFilterProps) {
 
   const formattedStartedDate = format(startDate, 'dd MMM yyyy', { locale });
   const formattedEndDate = format(endDate, 'dd MMM yyyy', { locale });
-
-  const lng = i18n.language as Language;
-
-  const formatedStartDate = format(startDate, 'dd MMM yyyy', { locale: lng === 'fr' ? fr : en });
-  const formatedEndDate = format(endDate, 'dd MMM yyyy', { locale: lng === 'fr' ? fr : en });
 
   const presets = [
     { label: t('common:today'), days: 0 },

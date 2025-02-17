@@ -1,6 +1,7 @@
 {
   "add": "Add",
   "home": "Home",
+  "accepted": "Accept",
   "back": "Back",
   "cancel": "Cancel",
   "close": "Close",
@@ -81,7 +82,6 @@
   "tax-and-tips": "Taxes and Tips",
   "validated-order": "Order validated",
   "processing": "Processing...",
-  "name": "Name",
   "client-name": "Client Name",
   "client-phone-number": "Client Phone Number",
   "phone-number": "Phone Number",
@@ -141,9 +141,14 @@
   "thu": "Thu",
   "fri": "Fri",
   "sat": "Sat",
-  "sun": "Sun"
+  "sun": "Sun",
   "filed-is-required": "This field is required",
   "no-logo": "No logo",
   "choose-from-bibliotheque": "Choose from library",
-  "delete-image": "Delete image"
+  "delete-image": "Delete image",
+  "login-success": "Login successful",
+  "login-failed": "Login failed",
+  "cookie-banner-title": "We use cookies 🍪",
+  "cookie-banner-description": "We use cookies to provide you with a better browsing experience. By continuing to browse, you accept our cookie policy.",
+  "cookie-banner-dismiss": "Later"
 }

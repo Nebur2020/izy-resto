@@ -29,8 +29,6 @@ export function GeneralSettings() {
   const currency = watch('currency');
   const currencyObject = allCurrencies.find(cur => cur.value === currency);
 
-  const { t } = useTranslation('common');
-
   return (
     <div className="space-y-8">
       <section className="space-y-6">
