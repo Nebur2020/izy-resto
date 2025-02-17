@@ -40,5 +40,6 @@
   "price-must-be-positive": "Price must be positive",
   "supplier": "Supplier",
   "description": "Description",
-  "confirm-delete-product": "Are you sure you want to delete {{deleteConfirmationProduct}}? This action is irreversible."
+  "confirm-delete-product": "Are you sure you want to delete {{deleteConfirmationProduct}}? This action is irreversible.",
+  "select-category-to-add-variants": "Select a category to add variants"
 }

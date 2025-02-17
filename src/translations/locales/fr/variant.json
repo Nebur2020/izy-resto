@@ -14,5 +14,18 @@
   "variant-value-required": "Toutes les valeurs sont requises",
   "delete-variant": "Supprimer la variante",
   "confirm-delete-variant": "Êtes-vous sûr de vouloir supprimer cette variante ? Cette action est irréversible.",
+  "variants-combination": "Combinaisons de variantes",
+  "variants-combination-description": "Gérez les différentes combinaisons de variantes et leurs prix",
+  "add-combination": "Ajouter une combinaison",
+  "no-variant-combination": "Aucune combinaison",
+  "no-variant-combination-description": "Commencez par ajouter une combinaison de variantes",
+  "variant-image": "Image de la variante",
+  "variant-image-description": "Image spécifique pour cette combinaison (optionnel)",
+  "select-variant-value": "Sélectionner une valeur",
+  "add-inventory-connection": "Ajouter une connexion",
+  "ratio-description": "Le ratio est une règle de proportion simple entre le produit d'inventaire et le produit du menu",
+  "select-inventory-product": "Sélectionner un produit",
+  "product": "Produit d'inventaire",
+  "add-item": "Ajouter un Item",
   "variant-and-value": "Variante et Valeurs"
 }

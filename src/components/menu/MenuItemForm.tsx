@@ -15,6 +15,7 @@ import { useInventory } from '../../hooks/useInventory';
 import { Tabs } from '../../components/ui/Tabs';
 import { motion } from 'framer-motion';
 import { VariantManager } from './variants/VariantManager';
+import { useTranslation } from 'react-i18next';
 
 interface MenuItemFormProps {
   item?: MenuItem | null;
@@ -50,17 +51,6 @@ interface ProductTabProps {
   handleCategoryChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
-interface InventoryConnectionsTabProps {
-  register: UseFormReturn<FormInputs>['register'];
-  watch: UseFormReturn<FormInputs>['watch'];
-  setValue: UseFormReturn<FormInputs>['setValue'];
-  inventory: Array<{
-    id: string;
-    name: string;
-    [key: string]: any;
-  }>;
-}
-
 interface VariantsTabProps {
   selectedCategory: string;
   variants: Array<{
@@ -86,224 +76,8 @@ interface VariantsTabProps {
   onVariantChange: () => void;
 }
 
-const tabs = [
-  { id: 'product', label: 'Informations de base' },
-  { id: 'variants', label: 'Variantes' },
-  { id: 'inventory', label: 'Inventaire' },
-];
-
-// Basic Info Tab Component
-const BasicInfoTab = ({
-  register,
-  errors,
-  watch,
-  setValue,
-  settings,
-  categories,
-  selectedCategory,
-  handleCategoryChange,
-}: ProductTabProps) => (
-  <div className="space-y-6">
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <label className="block text-sm font-medium mb-1">Nom</label>
-        <input
-          type="text"
-          {...register('name', { required: 'Le nom est requis' })}
-          className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
-        />
-        {errors.name && (
-          <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
-        )}
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium mb-1">Catégorie</label>
-        <select
-          {...register('categoryId', { required: 'La catégorie est requise' })}
-          onChange={handleCategoryChange} // Use handleCategoryChange directly
-          value={selectedCategory}
-          className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
-        >
-          <option value="">Sélectionner une catégorie</option>
-          {categories.map(category => (
-            <option key={category.id} value={category.id}>
-              {category.name}
-            </option>
-          ))}
-        </select>
-        {errors.categoryId && (
-          <p className="mt-1 text-sm text-red-500">
-            {errors.categoryId.message}
-          </p>
-        )}
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium mb-1">Prix</label>
-        <input
-          type="number"
-          step={settings?.currency === 'XOF' ? '1' : '0.01'}
-          {...register('price', {
-            required: 'Le prix est requis',
-            min: { value: 0, message: 'Le prix doit être positif' },
-          })}
-          className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
-        />
-        {errors.price && (
-          <p className="mt-1 text-sm text-red-500">{errors.price.message}</p>
-        )}
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium mb-1">Stock</label>
-        <input
-          type="number"
-          {...register('stockQuantity', {
-            required: 'Le stock est requis',
-            min: { value: 0, message: 'Le stock doit être positif' },
-          })}
-          className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
-        />
-        {errors.stockQuantity && (
-          <p className="mt-1 text-sm text-red-500">
-            {errors.stockQuantity.message}
-          </p>
-        )}
-      </div>
-
-      <div className="md:col-span-2">
-        <label className="block text-sm font-medium mb-1">Description</label>
-        <textarea
-          {...register('description', {
-            required: 'La description est requise',
-          })}
-          rows={3}
-          className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
-        />
-        {errors.description && (
-          <p className="mt-1 text-sm text-red-500">
-            {errors.description.message}
-          </p>
-        )}
-      </div>
-
-      <div className="md:col-span-2">
-        <LogoUploader
-          value={watch('image')}
-          onChange={url => setValue('image', url, { shouldDirty: true })}
-          label="Image du produit"
-          description="Format recommandé: JPG ou PNG en haute résolution (1920x1080px minimum)"
-        />
-      </div>
-    </div>
-  </div>
-);
-
-// Variants Tab Component
-const VariantsTab: React.FC<VariantsTabProps> = ({
-  selectedCategory,
-  variants,
-  variantPrices,
-  setVariantPrices,
-  onVariantChange,
-}: any) => (
-  <div>
-    {selectedCategory && variants.length > 0 ? (
-      <VariantManager
-        variants={variants}
-        value={variantPrices}
-        onChange={newPrices => {
-          setVariantPrices(newPrices);
-          onVariantChange();
-        }}
-      />
-    ) : (
-      <div className="text-center py-8 text-gray-500">
-        Sélectionnez une catégorie pour gérer les variantes
-      </div>
-    )}
-  </div>
-);
-// Inventory Tab Component
-const InventoryTab = ({ register, watch, setValue, inventory }) => (
-  <div className="space-y-4">
-    {watch('inventoryConnections')?.map((connection: any, index: number) => (
-      <div key={index} className="flex items-center gap-4">
-        <div className="flex-1">
-          <label className="block text-sm font-medium mb-1">
-            Produit d'inventaire
-          </label>
-          <select
-            {...register(`inventoryConnections.${index}.itemId`)}
-            className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
-          >
-            <option value="">Sélectionner un produit</option>
-            {inventory.map(item => (
-              <option key={item.id} value={item.id}>
-                {item.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex-1">
-          <label className="block text-sm font-medium mb-1">
-            Ratio (1:{watch(`inventoryConnections.${index}.ratio`) || '0'})
-          </label>
-          <span className="text-sm">
-            Le ratio est une règle de proportion simple entre le produit
-            d'inventaire et le produit du menu
-          </span>
-          <input
-            type="number"
-            step="0.01"
-            min="0.01"
-            {...register(`inventoryConnections.${index}.ratio`)}
-            className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
-            placeholder="Ex: 3 pour 1:3"
-          />
-        </div>
-
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={() => {
-            const connections = watch('inventoryConnections');
-            const value = connections.filter((_, i) => i !== index);
-            setValue('inventoryConnections', [...value], {
-              shouldDirty: true,
-            });
-          }}
-          className="mt-6"
-        >
-          <X className="w-4 h-4" />
-        </Button>
-      </div>
-    ))}
-
-    <Button
-      type="button"
-      variant="secondary"
-      onClick={() => {
-        const connections = watch('inventoryConnections') || [];
-        setValue(
-          'inventoryConnections',
-          [...connections, { itemId: '', ratio: 1 }],
-          {
-            shouldDirty: true,
-            shouldTouch: true,
-          }
-        );
-      }}
-    >
-      <Plus className="w-4 h-4 mr-2" />
-      Ajouter une connexion
-    </Button>
-  </div>
-);
-
 export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('product');
   const { categories } = useCategories();
   const { settings } = useSettings();
@@ -316,9 +90,6 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
     (item as MenuItemWithVariants)?.variantPrices || []
   );
 
-  console.log(item);
-
-  // Track if variant prices have changed
   const [isVariantPricesDirty, setIsVariantPricesDirty] = useState(false);
 
   const methods = useForm<FormInputs>({
@@ -338,23 +109,18 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
     handleSubmit,
     watch,
     setValue,
-    formState: { errors, isDirty },
+    formState: { errors },
   } = methods;
 
-  // console.log(watch('inventoryConnections'));
-
-  // Track the initial variant prices for comparison
   const [initialVariantPrices] = useState(
     JSON.stringify((item as MenuItemWithVariants)?.variantPrices || [])
   );
 
-  // Check if variant prices have changed whenever they're updated
   useEffect(() => {
     const currentVariantPrices = JSON.stringify(variantPrices);
     setIsVariantPricesDirty(currentVariantPrices !== initialVariantPrices);
   }, [variantPrices, initialVariantPrices]);
 
-  // Helper function to get price modifier for a specific variant value
   const getVariantPriceModifier = (
     variantName: string,
     value: string
@@ -368,7 +134,6 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
     return priceModifier;
   };
 
-  // Calculate total price modifier for a combination
   const calculatePriceModifiers = (combination: string[]): number => {
     return combination.reduce((total, variantStr) => {
       const [variantName, value] = variantStr.split(': ');
@@ -397,7 +162,6 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
     const allCombinations = getVariantCombinations();
     const basePrice = Number(formData.price);
 
-    // Create defaultVariantPrices for combinations not in variantPrices
     const defaultVariantPrices = allCombinations
       .filter(
         combination =>
@@ -408,17 +172,14 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
           )
       )
       .map(combination => {
-        // Calculate total price modifiers for this combination
         const priceModifier = calculatePriceModifiers(combination);
 
         return {
           variantCombination: combination,
-          price: basePrice + priceModifier, // Add the modifier to base price
-          image: formData.image, // Use the main product image as default
+          price: basePrice + priceModifier,
+          image: formData.image,
         };
       });
-
-    console.log(defaultVariantPrices);
 
     const menuItem: MenuItemWithVariants = {
       ...formData,
@@ -443,13 +204,6 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
     setIsVariantPricesDirty(true);
   };
 
-  // // Also update the UI to show the calculated price with modifiers
-  // const getDefaultPriceForCombination = (combination: string[]): number => {
-  //   const basePrice = watch('price');
-  //   const priceModifier = calculatePriceModifiers(combination);
-  //   return basePrice + priceModifier;
-  // };
-
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     setSelectedCategory(value);
@@ -459,6 +213,230 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
       setIsVariantPricesDirty(true);
     }
   };
+
+  const InventoryTab = ({ register, watch, setValue, inventory }) => (
+    <div className="space-y-4">
+      {watch('inventoryConnections')?.map((connection: any, index: number) => (
+        <div key={index} className="flex items-center gap-4">
+          <div className="flex-1">
+            <label className="block text-sm font-medium mb-1">
+              {t('variant:product')}
+            </label>
+            <select
+              {...register(`inventoryConnections.${index}.itemId`)}
+              className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
+            >
+              <option value="">{t('variant:select-inventory-product')}</option>
+              {inventory.map(item => (
+                <option key={item.id} value={item.id}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex-1">
+            <label className="block text-sm font-medium mb-1">
+              Ratio (1:{watch(`inventoryConnections.${index}.ratio`) || '0'})
+            </label>
+            <span className="text-sm">{t('variant:ratio-description')}</span>
+            <input
+              type="number"
+              step="0.01"
+              min="0.01"
+              {...register(`inventoryConnections.${index}.ratio`)}
+              className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
+              placeholder="Ex: 3 pour 1:3"
+            />
+          </div>
+
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => {
+              const connections = watch('inventoryConnections');
+              const value = connections.filter((_, i) => i !== index);
+              setValue('inventoryConnections', [...value], {
+                shouldDirty: true,
+              });
+            }}
+            className="mt-6"
+          >
+            <X className="w-4 h-4" />
+          </Button>
+        </div>
+      ))}
+
+      <Button
+        type="button"
+        variant="secondary"
+        onClick={() => {
+          const connections = watch('inventoryConnections') || [];
+          setValue(
+            'inventoryConnections',
+            [...connections, { itemId: '', ratio: 1 }],
+            {
+              shouldDirty: true,
+              shouldTouch: true,
+            }
+          );
+        }}
+      >
+        <Plus className="w-4 h-4 mr-2" />
+        {t('variant:add-inventory-connection')}
+      </Button>
+    </div>
+  );
+
+  const BasicInfoTab = ({
+    register,
+    errors,
+    watch,
+    setValue,
+    settings,
+    categories,
+    selectedCategory,
+    handleCategoryChange,
+  }: ProductTabProps) => (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            {t('common:name')}
+          </label>
+          <input
+            type="text"
+            {...register('name', { required: t('common:name-is-required') })}
+            className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
+          />
+          {errors.name && (
+            <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            {t('common:category')}
+          </label>
+          <select
+            {...register('categoryId', {
+              required: t('common:category-is-required'),
+            })}
+            onChange={handleCategoryChange}
+            value={selectedCategory}
+            className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
+          >
+            <option value="">{t('common:select-category')}</option>
+            {categories.map(category => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+          {errors.categoryId && (
+            <p className="mt-1 text-sm text-red-500">
+              {errors.categoryId.message}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            {t('common:price')}
+          </label>
+          <input
+            type="number"
+            step={settings?.currency === 'XOF' ? '1' : '0.01'}
+            {...register('price', {
+              required: t('common:price-is-required'),
+              min: { value: 0, message: t('common:price-must-be-positive') },
+            })}
+            className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
+          />
+          {errors.price && (
+            <p className="mt-1 text-sm text-red-500">{errors.price.message}</p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            {t('common:stock-quantity')}
+          </label>
+          <input
+            type="number"
+            {...register('stockQuantity', {
+              required: t('common:stock-quantity-is-required'),
+              min: { value: 0, message: 'Le stock doit être positif' },
+            })}
+            className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
+          />
+          {errors.stockQuantity && (
+            <p className="mt-1 text-sm text-red-500">
+              {errors.stockQuantity.message}
+            </p>
+          )}
+        </div>
+
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium mb-1">
+            {t('common:description')}
+          </label>
+          <textarea
+            {...register('description', {
+              required: t('common:description-is-required'),
+            })}
+            rows={3}
+            className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
+          />
+          {errors.description && (
+            <p className="mt-1 text-sm text-red-500">
+              {errors.description.message}
+            </p>
+          )}
+        </div>
+
+        <div className="md:col-span-2">
+          <LogoUploader
+            value={watch('image')}
+            onChange={url => setValue('image', url, { shouldDirty: true })}
+            label={t('common:product-image')}
+            description={t('common:product-image-description')}
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  const tabs = [
+    { id: 'product', label: t('common:base-information') },
+    { id: 'variants', label: t('common:variants') },
+    { id: 'inventory', label: t('common:inventory') },
+  ];
+
+  const VariantsTab: React.FC<VariantsTabProps> = ({
+    selectedCategory,
+    variants,
+    variantPrices,
+    setVariantPrices,
+    onVariantChange,
+  }: any) => (
+    <div>
+      {selectedCategory && variants.length > 0 ? (
+        <VariantManager
+          variants={variants}
+          value={variantPrices}
+          onChange={newPrices => {
+            setVariantPrices(newPrices);
+            onVariantChange();
+          }}
+        />
+      ) : (
+        <div className="text-center py-8 text-gray-500">
+          {t('inventory:select-category-to-add-variants')}
+        </div>
+      )}
+    </div>
+  );
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -472,7 +450,7 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
             settings={settings!}
             categories={categories}
             selectedCategory={selectedCategory}
-            handleCategoryChange={handleCategoryChange} // Pass handleCategoryChange instead of setSelectedCategory
+            handleCategoryChange={handleCategoryChange}
           />
         );
       case 'inventory':
@@ -508,7 +486,7 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
       >
         <div className="flex justify-between items-center p-4 md:p-6 border-b dark:border-gray-700/80">
           <h2 className="text-lg md:text-xl font-semibold">
-            {item ? 'Modifier le produit' : 'Nouveau produit'}
+            {item ? t('inventory:update-product') : t('inventory:new-product')}
           </h2>
           <button
             onClick={onCancel}
@@ -533,7 +511,7 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
             <div className="p-4 md:p-6 border-t dark:border-gray-700/80 mt-auto">
               <div className="flex justify-end gap-4">
                 <Button type="button" variant="ghost" onClick={onCancel}>
-                  Annuler
+                  {t('common:cancel')}
                 </Button>
                 <Button
                   type="submit"
@@ -543,7 +521,7 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
                     bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl
                   `}
                 >
-                  {item ? 'Mettre à jour' : 'Ajouter'}
+                  {item ? t('common:update') : t('common:add')}
                 </Button>
               </div>
             </div>
