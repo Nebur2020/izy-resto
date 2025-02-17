@@ -20,6 +20,7 @@ export function DateFilter(props: IDateFilterProps) {
   const [isStartPickerOpen, setIsStartPickerOpen] = useState(false);
   const [isEndPickerOpen, setIsEndPickerOpen] = useState(false);
   const isMobile = useIsMobile();
+  const { t, i18n } = useTranslation('dashboard');
 
   const lng = i18n.language as Language;
 
@@ -72,9 +73,10 @@ export function DateFilter(props: IDateFilterProps) {
               className="w-full sm:w-[140px] justify-start text-xs sm:text-sm"
             >
               <CalendarIcon className="mr-2 h-3 w-3 sm:h-4 sm:w-4 text-gray-500" />
-              {formatedStartDate}
+              {format(startDate, 'dd MMM yyyy', {
+                locale: i18n.language === 'en' ? en : fr,
+              })}
             </Button>
-
             {isStartPickerOpen && (
               <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center">
                 <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl p-4 max-w-fit mx-auto">
@@ -117,7 +119,9 @@ export function DateFilter(props: IDateFilterProps) {
               className="w-full sm:w-[140px] justify-start text-xs sm:text-sm"
             >
               <CalendarIcon className="mr-2 h-3 w-3 sm:h-4 sm:w-4 text-gray-500" />
-              {formatedEndDate}
+              {format(startDate, 'dd MMM yyyy', {
+                locale: i18n.language === 'en' ? en : fr,
+              })}
             </Button>
             {isEndPickerOpen && (
               <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center">

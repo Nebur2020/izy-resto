@@ -22,7 +22,7 @@ export function OrderFilters(props: IOrderFiltersProps) {
   ];
 
   const presets = [
-    { label: t('dashboard:this-day'), days: 0 },
+    { label: t('dashboard:today'), days: 0 },
     { label: t('dashboard:last-week'), days: 7 },
     { label: t('dashboard:last-month'), days: 30 },
   ];

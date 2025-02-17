@@ -20,7 +20,6 @@ class AnonymousAuthService {
       return user;
     } catch (error) {
       console.error('Error signing in anonymously:', error);
-      // throw error;
     }
   }
 
@@ -41,7 +40,6 @@ class AnonymousAuthService {
     uid: string
   ): Promise<{ canOrder: boolean; reason?: string }> {
     try {
-      // Get rate limit settings
       const settingsDoc = await getDoc(doc(db, 'settings', 'restaurant'));
 
       const settings = settingsDoc.data()?.rateLimits || {
@@ -52,14 +50,13 @@ class AnonymousAuthService {
       const userRef = doc(db, this.COLLECTION, uid);
       const nowMillis = Timestamp.now().toMillis();
       const timeWindowMillis =
-        Number(settings.timeWindowHours) * 60 * 60 * 1000; // Convert hours to milliseconds
+        Number(settings.timeWindowHours) * 60 * 60 * 1000;
       const windowStartMillis = nowMillis - timeWindowMillis;
 
       const result = await runTransaction(db, async transaction => {
         const userDoc = await transaction.get(userRef);
 
         if (!userDoc.exists()) {
-          // If user doesn't exist, create a new document with initial order
           transaction.set(userRef, {
             orderCount: 1,
             lastOrderAt: Timestamp.now(),
@@ -76,22 +73,18 @@ class AnonymousAuthService {
           userData.orderCount >= settings.maxOrders &&
           lastOrderMillis >= windowStartMillis
         ) {
-          // User has reached the limit
           return {
             canOrder: false,
             reason: `Maximum ${settings.maxOrders} commandes autorisées par période de ${settings.timeWindowHours}h`,
           };
         }
 
-        // Check if the last order is outside the current time window
         if (lastOrderMillis < windowStartMillis) {
-          // Reset order count and set lastOrderAt to now
           transaction.update(userRef, {
-            orderCount: 1, // Reset to 1 for the current order
+            orderCount: 1,
             lastOrderAt: Timestamp.now(),
           });
         } else {
-          // Increment order count and update lastOrderAt
           transaction.update(userRef, {
             orderCount: increment(1),
             lastOrderAt: Timestamp.now(),
