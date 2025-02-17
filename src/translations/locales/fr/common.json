@@ -1,6 +1,7 @@
 {
   "add": "Ajouter",
   "home": "Accueil",
+  "accepted": "Accepter",
   "back": "Retour",
   "cancel": "Annuler",
   "close": "Fermer",
@@ -85,7 +86,6 @@
   "tax-and-tips": "Taxes et pourboires",
   "validated-order": "Valider la commande",
   "processing": "Traitement...",
-  "name": "Nom",
   "client-name": "Nom du client",
   "client-phone-number": "Numéro de téléphone",
   "phone-number": "Téléphone",
@@ -139,16 +139,21 @@
   "client-details": "Détails Client",
   "description-max-limit": "La description ne peut pas dépasser {{maxLimit}} caractères",
   "description-min-limit": "La description doit contenir au moins {{minLimit}} caractères",
-  "name-is-required": "Le nom est requis"
+  "name-is-required": "Le nom est requis",
   "mon": "Lun",
   "tue": "Mar",
   "wed": "Mer",
   "thu": "Jeu",
   "fri": "Ven",
   "sat": "Sam",
-  "sun": "Dim"
+  "sun": "Dim",
   "filed-is-required": "Ce champ est requis",
   "no-logo": "Aucun logo",
   "choose-from-bibliotheque": "Choisir depuis la bibliothèque",
-  "delete-image": "Supprimer l'image"
+  "delete-image": "Supprimer l'image",
+  "login-success": "Connexion réussie",
+  "login-failed": "Échec de la connexion",
+  "cookie-banner-title": "Nous utilisons des cookies 🍪",
+  "cookie-banner-description": "Nous utilisons des cookies et des technologies similaires pour améliorer votre expérience de navigation, personnaliser le contenu et analyser le trafic de notre site.",
+  "cookie-banner-dismiss": "Plus tard"
 }
