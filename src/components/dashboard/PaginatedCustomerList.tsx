@@ -6,6 +6,7 @@ import { formatCurrency } from '../../utils/currency';
 import { Pagination } from '../ui/Pagination';
 import { CustomerDetailsModal } from './CustomerDetailsModal';
 import { Phone, User } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface PaginatedCustomerListProps {
   orders: Order[];
@@ -23,6 +24,7 @@ export function PaginatedCustomerList({
     email?: string | null;
     phone: string;
   } | null>(null);
+  const { t } = useTranslation('order');
 
   const customers = useMemo(() => {
     const customerMap = orders.reduce((acc, order) => {
@@ -96,7 +98,7 @@ export function PaginatedCustomerList({
                 {customer.phone}
               </span>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                {customer.totalOrders} commandes
+                {customer.totalOrders} {t('orders')}
               </p>
             </div>
             <div className="text-right">

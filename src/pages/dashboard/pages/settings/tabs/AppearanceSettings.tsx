@@ -19,6 +19,7 @@ import { TemplateOption } from './components/TemplateOption';
 import { useAppVersion } from '../../../../../hooks/useAppVersion';
 import { useDeployment } from '../../../../../hooks/useDeployment';
 import packageJson from '../../../../../../package.json';
+import { Version } from '../../../../../services/version/version.service';
 
 const COOLDOWN_DURATION = 6 * 60; // 10 minutes in seconds
 const DEPLOY_STORAGE_KEY = 'deploymentCooldown';
@@ -67,10 +68,11 @@ export function AppearanceSettings() {
   const { register, watch, setValue } = useFormContext<RestaurantSettings>();
   const { theme, toggleTheme } = useTheme();
 
-  const { version, loading, errorLoading, refresh } = useAppVersion();
+  const { version, loading, errorLoading, versions } = useAppVersion();
   const { redeploy, isDeploying, error } = useDeployment();
 
   const [cooldownTime, setCooldownTime] = useState(0);
+  const [selectedVersion, setSelectedVersion] = useState<Version | null>(null);
 
   // Initialize cooldown state from localStorage
   useEffect(() => {
@@ -85,6 +87,13 @@ export function AppearanceSettings() {
       }
     }
   }, []);
+
+  useEffect(() => {
+    if (versions.length > 0) {
+      const vers = versions.find(v => v.value === packageJson.version);
+      setSelectedVersion(vers || null);
+    }
+  }, [versions]);
 
   // Update cooldown timer
   useEffect(() => {
@@ -137,8 +146,14 @@ export function AppearanceSettings() {
 
   const handleRedeploy = async () => {
     try {
-      if (!version?.value || packageJson.version === version?.value) return;
-      await redeploy(version?.value);
+      if (
+        !selectedVersion?.value ||
+        packageJson.version === selectedVersion?.value
+      ) {
+        return;
+      }
+
+      await redeploy(selectedVersion.value);
       // Only set cooldown if deployment was successful
       setStoredCooldown(packageJson.version);
       setCooldownTime(COOLDOWN_DURATION);
@@ -284,14 +299,31 @@ export function AppearanceSettings() {
         <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
           <div className="space-y-2">
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Version actuelle: {packageJson.version || 'Chargement...'}
+              Version actuelle:{' '}
+              {packageJson.version
+                ? `v${packageJson.version}`
+                : 'Chargement...'}
             </p>
+            <select
+              value={`${selectedVersion?.value}`}
+              className={`rounded-lg border p-2 dark:bg-gray-700`}
+              onChange={vers => {
+                const value = versions.find(v => v.value === vers.target.value);
+                setSelectedVersion(value || null);
+              }}
+            >
+              <option value="">Selectionner une version</option>
+              {versions.map(vers => (
+                <option key={vers.id} value={vers.value}>
+                  v{vers.value}
+                </option>
+              ))}
+            </select>
             {version?.value && (
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Nouvelle version: {version?.value}
+                derniere versions: v{version?.value}
               </p>
             )}
-
             {cooldownTime > 0 && (
               <p className="text-sm text-amber-600 dark:text-amber-400">
                 Déploiement en cours, rafraichissez votre site dans exactement:{' '}
@@ -299,7 +331,6 @@ export function AppearanceSettings() {
               </p>
             )}
           </div>
-
           {error && (
             <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
               <p className="text-sm text-red-600 dark:text-red-400">
@@ -315,7 +346,8 @@ export function AppearanceSettings() {
               loading ||
               !!errorLoading ||
               cooldownTime > 0 ||
-              packageJson.version === version?.value
+              packageJson.version === selectedVersion?.value ||
+              !selectedVersion
             }
             className="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors
                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring

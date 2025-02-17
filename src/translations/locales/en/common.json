@@ -75,5 +75,17 @@
   "in-cooking": "Cooking",
   "select-upload-image": "Select from library",
   "remove-image": "Remove image",
-  "no-logo-placeholder": "No logo"
+  "no-logo-placeholder": "No logo",
+  "Actif": "Active",
+  "Inactif": "Inactive",
+  "Admin": "Admin",
+  "Staff": "Staff",
+  "percent-of-sales": " % of sales",
+  "sales": "sold",
+  "preparing": "Preparing",
+  "ready": "Ready",
+  "item-ordered": "Item ordered",
+  "client-details": "Client details",
+  "description-max-limit": "Description cannot exceed {{maxLimit}} characters",
+  "description-min-limit": "Description must contain at least {{minLimit}} characters"
 }

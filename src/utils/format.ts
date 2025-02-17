@@ -1,3 +1,5 @@
+import { Language } from '../types';
+
 export function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 B';
 
@@ -8,8 +10,18 @@ export function formatFileSize(bytes: number): string {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 }
 
-export function formatDate(date: string): string {
-  return new Date(date).toLocaleDateString('fr-FR', {
+type LocaleLanguage = 'en-US' | 'fr-FR';
+
+export const localeDateMatch: Record<Language, LocaleLanguage> = {
+  en: 'en-US',
+  fr: 'fr-FR',
+};
+
+export function formatDate(
+  date: string,
+  local: LocaleLanguage = 'fr-FR'
+): string {
+  return new Date(date).toLocaleDateString(local, {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
