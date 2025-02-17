@@ -2,18 +2,17 @@ import React from 'react';
 import { X, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../../ui/Button';
+import { useTranslation } from 'react-i18next';
 
-interface KeywordsInputProps {
+interface IKeywordsInputProps {
   value: string[];
   onChange: (keywords: string[]) => void;
   type?: 'text' | 'number';
 }
 
-export function KeywordsInput({
-  value,
-  onChange,
-  type = 'text',
-}: KeywordsInputProps) {
+export function KeywordsInput(props: IKeywordsInputProps) {
+  const { value, onChange, type = 'text' } = props;
+  const { t } = useTranslation();
   const [input, setInput] = React.useState('');
 
   const handleAdd = (e?: React.FormEvent) => {
@@ -48,7 +47,7 @@ export function KeywordsInput({
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder="Ajouter un mot-clé..."
+          placeholder={t('settingSeo:seo-keywords-placeholder')}
           className="flex-1 rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
         />
         <Button
@@ -57,7 +56,7 @@ export function KeywordsInput({
           disabled={!input.trim()}
         >
           <Plus className="w-4 h-4 mr-2" />
-          Ajouter
+          {t('common:add')}
         </Button>
       </div>
 

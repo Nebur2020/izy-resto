@@ -3,30 +3,34 @@ import { Calendar as CalendarIcon } from 'lucide-react';
 import { Button } from '../../../ui/Button';
 import { DatePicker } from '../../../ui/DatePicker';
 import { format } from 'date-fns';
-import { enUS as en, fr } from 'date-fns/locale';
+import { fr, enUS as en } from 'date-fns/locale';
 import { useIsMobile } from '../../../../hooks/useIsMobile';
 import { useTranslation } from 'react-i18next';
+import { Language } from '../../../../types';
 
-interface DateFilterProps {
+interface IDateFilterProps {
   startDate: Date;
   endDate: Date;
   onDateChange: (start: Date, end: Date) => void;
 }
 
-export function DateFilter({
-  startDate,
-  endDate,
-  onDateChange,
-}: DateFilterProps) {
+export function DateFilter(props: IDateFilterProps) {
+  const { startDate, endDate, onDateChange } = props;
+  const { t, i18n } = useTranslation();
   const [isStartPickerOpen, setIsStartPickerOpen] = useState(false);
   const [isEndPickerOpen, setIsEndPickerOpen] = useState(false);
   const isMobile = useIsMobile();
   const { t, i18n } = useTranslation('dashboard');
 
+  const lng = i18n.language as Language;
+
+  const formatedStartDate = format(startDate, 'dd MMM yyyy', { locale: lng === 'fr' ? fr : en });
+  const formatedEndDate = format(endDate, 'dd MMM yyyy', { locale: lng === 'fr' ? fr : en });
+
   const presets = [
-    { label: t('today'), days: 0 },
-    { label: isMobile ? '7j' : t('last-week'), days: 7 },
-    { label: isMobile ? '30j' : t('last-month'), days: 30 },
+    { label: t('common:today'), days: 0 },
+    { label: isMobile ? '7j' : t('common:last-week'), days: 7 },
+    { label: isMobile ? '30j' : t('common:last-month'), days: 30 },
   ];
 
   const handlePresetClick = (days: number) => {
@@ -56,6 +60,7 @@ export function DateFilter({
             </Button>
           ))}
         </div>
+
         <div className="flex items-center gap-2 order-1 sm:order-2">
           <div className="relative flex-1 sm:flex-initial">
             <Button
@@ -98,8 +103,9 @@ export function DateFilter({
               </div>
             )}
           </div>
+
           <span className="text-gray-500 dark:text-gray-400">
-            {i18n.language === 'en' ? 'to' : 'à'}
+            {lng === 'fr' ? 'à' : 'to'}
           </span>
 
           <div className="relative flex-1 sm:flex-initial">

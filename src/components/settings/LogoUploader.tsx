@@ -4,20 +4,25 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../ui/Button';
 import { MediaLibraryModal } from './MediaLibraryModal';
 import { useMedia } from '../../hooks/useMedia';
+import { useTranslation } from 'react-i18next';
 
-interface LogoUploaderProps {
+interface ILogoUploaderProps {
   value?: string;
   onChange: (value: string) => void;
   label?: string;
   description?: string;
 }
 
-export function LogoUploader({ 
-  value, 
-  onChange,
-  label = "Logo du Restaurant",
-  description = "Format recommandé: PNG ou SVG avec fond transparent"
-}: LogoUploaderProps) {
+export function LogoUploader(props: ILogoUploaderProps) {
+  const { t } = useTranslation();
+  const { value, onChange, label = t("setting:restaurant-logo"), description = t("setting:recommanded-format") } = props;
+  const {
+    value = '',
+    onChange,
+    label = 'Logo',
+    description = t('settingSeo:add-restaurent-logo'),
+  } = props;
+  
   const [isMediaLibraryOpen, setIsMediaLibraryOpen] = useState(false);
   const { files, uploadFile } = useMedia();
 
@@ -37,27 +42,28 @@ export function LogoUploader({
       <label className="block text-base font-semibold text-gray-900 dark:text-gray-100">
         {label}
       </label>
-      
-      <motion.div 
+
+      <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
         className="flex flex-col md:flex-row items-center gap-6 bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm"
       >
-        {/* Image Preview */}
-        <div className={`relative h-32 w-32 flex-shrink-0 overflow-hidden rounded-xl 
+        <div
+          className={`relative h-32 w-32 flex-shrink-0 overflow-hidden rounded-xl 
           border-2 border-dashed 
-          ${value 
-            ? 'border-blue-500/30 bg-blue-50/20' 
-            : 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800'
+          ${
+            value
+              ? 'border-blue-500/30 bg-blue-50/20'
+              : 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800'
           } 
           flex items-center justify-center transition-all duration-300 hover:border-blue-500`}
         >
           <AnimatePresence mode="wait">
             {value ? (
-              <motion.img 
+              <motion.img
                 key="logo"
-                src={value} 
+                src={value}
                 alt="Logo preview"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -66,7 +72,7 @@ export function LogoUploader({
                 onError={() => onChange('')}
               />
             ) : (
-              <motion.div 
+              <motion.div
                 key="placeholder"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -74,16 +80,16 @@ export function LogoUploader({
                 className="flex flex-col items-center justify-center text-center text-gray-400 dark:text-gray-500"
               >
                 <ImageIcon className="h-10 w-10 mb-2" />
-                <span className="text-xs text-center px-2">Aucun logo</span>
+                <span className="text-xs text-center px-2">
+                  {t('common:no-logo-placeholder')}
+                </span>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
-
-        {/* Action Buttons */}
         <div className="w-full md:flex-1 space-y-4">
           <Button
-            type="button" // Add type="button"
+            type="button"
             onClick={handleMediaLibraryClick}
             variant="secondary"
             className="w-full flex items-center justify-center gap-2 
@@ -95,9 +101,9 @@ export function LogoUploader({
               group"
           >
             <Upload className="h-5 w-5 transition-transform group-hover:rotate-6" />
-            Choisir depuis la bibliothèque
+            {t('common:select-upload-image')}
           </Button>
-          
+
           <AnimatePresence>
             {value && (
               <motion.div
@@ -107,9 +113,9 @@ export function LogoUploader({
                 className="overflow-hidden"
               >
                 <Button
-                  type="button" // Add type="button"
+                  type="button"
                   variant="danger"
-                  onClick={(e) => {
+                  onClick={e => {
                     e.preventDefault();
                     e.stopPropagation();
                     onChange('');
@@ -123,7 +129,7 @@ export function LogoUploader({
                     group"
                 >
                   <X className="h-5 w-5 transition-transform group-hover:rotate-6" />
-                  Supprimer l'image
+                  {t('common:remove-image')}
                 </Button>
               </motion.div>
             )}
@@ -134,8 +140,6 @@ export function LogoUploader({
       <p className="text-sm text-gray-500 dark:text-gray-400 px-1">
         {description}
       </p>
-
-      {/* Media Library Modal */}
       {isMediaLibraryOpen && (
         <MediaLibraryModal
           onSelect={handleMediaSelect}

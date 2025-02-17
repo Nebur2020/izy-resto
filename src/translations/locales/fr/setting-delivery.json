@@ -1,0 +1,15 @@
+{
+  "errors-no-zones": "Au moins une zone de livraison est requise lorsque la livraison est activée",
+  "enable-delivery": "Activer la livraison",
+  "delivery-zones": "Zones de Livraison",
+  "add-zone": "Ajouter une zone",
+  "delete-zone": "Supprimer la zone",
+  "delete-last-zone-warning": "Impossible de supprimer la dernière zone de livraison lorsque la livraison est activée.",
+  "delete-zone-warning": "Êtes-vous sûr de vouloir supprimer la zone {{deleteConfirmation}} ? Cette action est irréversible.",
+  "add-new-zone": "Nouvelle zone de livraison",
+  "update-zone": "Modifier la zone",
+  "zone-name": "Nom de la zone",
+  "zone-name-placeholder": "Ex: Centre-ville",
+  "zone-description-placeholde": "Description de la zone (optionnel)",
+  "delivery-price": "Prix de livraison"
+}

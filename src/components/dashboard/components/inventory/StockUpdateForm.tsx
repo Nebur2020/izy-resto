@@ -5,8 +5,9 @@ import { Button } from '../../../ui/Button';
 import { InventoryItem } from '../../../../types/inventory';
 import { useSettings } from '../../../../hooks/useSettings';
 import { formatCurrency } from '../../../../utils/currency';
+import { useTranslation } from 'react-i18next';
 
-interface StockUpdateFormProps {
+interface IStockUpdateFormProps {
   items: InventoryItem[];
   onSubmit: (data: StockUpdate[]) => Promise<void>;
   onCancel: () => void;
@@ -19,12 +20,9 @@ export interface StockUpdate {
   reason: string;
 }
 
-export function StockUpdateForm({
-  items,
-  onSubmit,
-  onCancel,
-  isSubmitting,
-}: StockUpdateFormProps) {
+export function StockUpdateForm(props: IStockUpdateFormProps) {
+  const { items, onSubmit, onCancel, isSubmitting } = props;
+  const { t } = useTranslation();
   const { settings } = useSettings();
   const [searchTerm, setSearchTerm] = useState('');
   const {
@@ -61,13 +59,12 @@ export function StockUpdateForm({
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
-        {/* Header - Made more responsive */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 sm:p-6 border-b dark:border-gray-700 gap-4 sm:gap-0">
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between sm:justify-start gap-2">
               <h2 className="text-lg sm:text-xl font-semibold flex items-center gap-2 truncate">
                 <Package className="w-5 h-5 flex-shrink-0 text-blue-500" />
-                <span className="truncate">Mise à jour des stocks</span>
+                <span className="truncate">{t('inventory:update-stock')}</span>
               </h2>
               <button
                 onClick={onCancel}
@@ -78,7 +75,7 @@ export function StockUpdateForm({
               </button>
             </div>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 truncate">
-              Enregistrez les produits utilisés aujourd'hui
+              {t('inventory:save-today-used-product')}
             </p>
           </div>
           <button
@@ -89,8 +86,6 @@ export function StockUpdateForm({
             <X className="w-5 h-5" />
           </button>
         </div>
-
-        {/* Search Bar - Made consistent with responsive design */}
         <div className="p-4 sm:p-6 border-b dark:border-gray-700">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -98,20 +93,18 @@ export function StockUpdateForm({
               type="text"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              placeholder="Rechercher un produit..."
+              placeholder={t('common:search-product')}
               className="w-full pl-10 pr-4 py-2 rounded-lg border dark:border-gray-600 dark:bg-gray-700"
             />
           </div>
         </div>
-
-        {/* Form Content */}
         <form
           onSubmit={handleSubmit(handleFormSubmit)}
           className="flex flex-col flex-1 min-h-0"
         >
           <div className="flex-1 overflow-y-auto p-4 sm:p-6">
             <div className="space-y-4 sm:space-y-6">
-              {filteredItems.map((item, index) => {
+              {filteredItems.map(item => {
                 const itemIndex = items.findIndex(i => i.id === item.id);
                 if (itemIndex === -1) return null;
 
@@ -136,7 +129,7 @@ export function StockUpdateForm({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium mb-1">
-                          Quantité utilisée
+                          {t('inventory:used-qte')}
                         </label>
                         <input
                           type="number"
@@ -145,12 +138,11 @@ export function StockUpdateForm({
                             {
                               min: {
                                 value: 0,
-                                message: 'La quantité doit être positive',
+                                message: t('inventory:positive-qte-required'),
                               },
                               max: {
                                 value: item.quantity,
-                                message:
-                                  'Quantité supérieure au stock disponible',
+                                message: t('inventory:qte-greater-than-stock'),
                               },
                             }
                           )}
@@ -174,7 +166,7 @@ export function StockUpdateForm({
                             validate: value => {
                               const quantity = updates[itemIndex].quantity;
                               if (quantity > 0 && !value) {
-                                return 'La raison est requise';
+                                return t('inventory:reason-is-required');
                               }
                               return true;
                             },
@@ -197,13 +189,14 @@ export function StockUpdateForm({
               {filteredItems.length === 0 && (
                 <div className="text-center py-8">
                   <Package className="w-12 h-12 mx-auto text-gray-400 mb-3" />
-                  <p className="text-gray-500">Aucun produit trouvé</p>
+                  <p className="text-gray-500">
+                    {t('inventory:no-product-found')}
+                  </p>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Footer - Made more responsive */}
           <div className="border-t dark:border-gray-700 p-4 sm:p-6 bg-gray-50 dark:bg-gray-800/50">
             <div className="flex flex-col sm:flex-row justify-end gap-3">
               <Button
@@ -213,7 +206,7 @@ export function StockUpdateForm({
                 disabled={isSubmitting}
                 className="w-full sm:w-auto order-2 sm:order-1"
               >
-                Annuler
+                {t('common:cancel')}
               </Button>
               <Button
                 type="submit"
@@ -223,10 +216,12 @@ export function StockUpdateForm({
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    <span className="truncate">Mise à jour en cours...</span>
+                    <span className="truncate">
+                      {t('common:update-in-progress')}
+                    </span>
                   </>
                 ) : (
-                  'Mettre à jour les stocks'
+                  t('inventory:update-stock-quantity')
                 )}
               </Button>
             </div>
