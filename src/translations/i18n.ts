@@ -25,6 +25,9 @@ import frOrder from './locales/fr/order.json';
 import frTicket from './locales/fr/ticket.json';
 import enTicket from './locales/en/ticket.json';
 
+import enClient from './locales/en/client.json';
+import frClient from './locales/fr/client.json';
+
 import enQrCode from './locales/en/qr-code.json';
 import frQrCode from './locales/fr/qr-code.json';
 
@@ -72,6 +75,7 @@ i18n.use(initReactI18next).init({
       hero: enHero,
       order: enOrder,
       ticket: enTicket,
+      client: enClient,
       qrCode: enQrCode,
       setting: enSetting,
       settingAppearence: enSettingAppearence,
@@ -94,6 +98,7 @@ i18n.use(initReactI18next).init({
       hero: frHero,
       order: frOrder,
       ticket: frTicket,
+      client: frClient,
       qrCode: frQrCode,
       setting: frSetting,
       settingAppearence: frSettingAppearence,
