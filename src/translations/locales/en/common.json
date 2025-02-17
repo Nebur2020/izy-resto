@@ -150,5 +150,22 @@
   "login-failed": "Login failed",
   "cookie-banner-title": "We use cookies 🍪",
   "cookie-banner-description": "We use cookies to provide you with a better browsing experience. By continuing to browse, you accept our cookie policy.",
-  "cookie-banner-dismiss": "Later"
+  "cookie-banner-dismiss": "Later",
+  "weak-stock": "Weak stock: {{quantity}}",
+  "in-stock": "In stock",
+  "base-information": "Base information",
+  "variants": "Variants",
+  "inventory": "Inventory",
+  "category": "Category",
+  "category-is-required": "Category is required",
+  "select-category": "Select a category",
+  "price-must-be-positive": "Price must be positive",
+  "price-is-require": "Price is required",
+  "stock-quantity": "Stock quantity",
+  "stock-quantity-is-required": "Stock quantity is required",
+  "description-is-required": "Description is required",
+  "product-image-description": "Recommended format: high-resolution JPG or PNG (1920x1080px minimum)",
+  "product-image": "Product image",
+  "product": "Product",
+  "delete-product-message": "Are you sure you want to delete this product? This action is irreversible."
 }

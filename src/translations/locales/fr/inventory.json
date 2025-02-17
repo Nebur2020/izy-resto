@@ -41,5 +41,6 @@
   "price-required": "Le prix est requis",
   "price-must-be-positive": "Le prix doit être positif",
   "supplier": "Fournisseur",
-  "description": "Description"
+  "description": "Description",
+  "select-category-to-add-variants": "Sélectionnez une catégorie pour ajouter des variantes"
 }
