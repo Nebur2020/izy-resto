@@ -25,6 +25,9 @@ import frOrder from './locales/fr/order.json';
 import frTicket from './locales/fr/ticket.json';
 import enTicket from './locales/en/ticket.json';
 
+import frSettingBusiness from './locales/fr/setting-business.json';
+import enSettingBusiness from './locales/en/setting-business.json';
+
 import frTaxAndTips from './locales/fr/setting-tax-and-tips.json';
 import enTaxAndTips from './locales/en/setting-tax-and-tips.json';
 
@@ -60,6 +63,7 @@ i18n.use(initReactI18next).init({
       hero: enHero,
       order: enOrder,
       ticket: enTicket,
+      settingBusiness: enSettingBusiness,
       taxAndTips: enTaxAndTips,
       settingDelivery: enSettingDelivery,
       settingSeo: enSettingSeo,
@@ -78,6 +82,7 @@ i18n.use(initReactI18next).init({
       hero: frHero,
       order: frOrder,
       ticket: frTicket,
+      settingBusiness: frSettingBusiness,
       taxAndTips: frTaxAndTips,
       settingDelivery: frSettingDelivery,
       settingSeo: frSettingSeo,
