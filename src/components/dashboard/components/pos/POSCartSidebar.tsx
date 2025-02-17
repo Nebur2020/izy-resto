@@ -10,8 +10,9 @@ import toast from 'react-hot-toast';
 import { useServerCart } from '../../../../context/ServerCartContext';
 import { formatCurrency } from '../../../../utils/currency';
 import { useSettings } from '../../../../hooks';
+import { useTranslation } from 'react-i18next';
 
-interface POSCartSidebarProps {
+interface IPOSCartSidebarProps {
   onClose?: () => void;
   cart: CartItem[];
   tableNumber: string;
@@ -30,40 +31,42 @@ interface POSCartSidebarProps {
   isSubmitting: boolean;
 }
 
-export function POSCartSidebar({
-  onClose,
-  cart,
-  tableNumber,
-  setTableNumber,
-  customerInfo,
-  setCustomerInfo,
-  amountPaid = 0,
-  setAmountPaid,
-  onQuickAmount,
-  onCheckout,
-  isSubmitting,
-}: POSCartSidebarProps) {
+export function POSCartSidebar(props: IPOSCartSidebarProps) {
+  const {
+    onClose,
+    cart,
+    tableNumber,
+    setTableNumber,
+    customerInfo,
+    setCustomerInfo,
+    amountPaid,
+    setAmountPaid,
+    onQuickAmount,
+    onCheckout,
+    isSubmitting,
+  } = props;
   const [error] = useState('');
   const [showExtras, setShowExtras] = useState(false);
   const { settings } = useSettings();
+  const { t } = useTranslation('common');
 
   const { total } = useServerCart();
 
   const handleCheckout = async () => {
     try {
       if (amountPaid < 0 || (amountPaid !== 0 && amountPaid < total)) {
-        toast.error('Le montant reçu est inférieur au total de la commande');
+        toast.error(t('amount-condition'));
         return;
       }
 
       await onCheckout();
-      toast.success('Commande créée avec succès');
+      toast.success(t('order-successfully-created'));
     } catch (error) {
       console.error('Error creating order:', error);
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error('Échec de la création de la commande');
+        toast.error(t('order-creation-fail'));
       }
     }
   };
@@ -72,7 +75,7 @@ export function POSCartSidebar({
     <div className="h-full flex flex-col">
       {onClose && (
         <div className="flex justify-between items-center p-4 border-b dark:border-gray-700">
-          <h2 className="text-lg font-semibold">Panier</h2>
+          <h2 className="text-lg font-semibold">{t('cart')}</h2>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="w-5 h-5" />
           </Button>
@@ -82,7 +85,7 @@ export function POSCartSidebar({
       <div className="flex-1 overflow-y-auto">
         <div className="p-4 border-b dark:border-gray-700">
           <label className="block text-sm font-medium mb-1">
-            Numéro de Table (Optionnel)
+            {t('table-number')}
           </label>
           <input
             type="text"
@@ -109,7 +112,7 @@ export function POSCartSidebar({
       {cart.length > 0 && (
         <div className="dark:border-gray-700 p-4 space-y-4 bg-white dark:bg-gray-800">
           <div className="flex justify-between items-center text-lg font-semibold border-t dark:border-gray-700 pt-4">
-            <span>Total</span>
+            <span>{t('total')}</span>
             <span className="text-blue-600 dark:text-blue-400">
               {formatCurrency(total, settings?.currency)}
             </span>
@@ -120,7 +123,7 @@ export function POSCartSidebar({
               onClick={() => setShowExtras(!showExtras)}
               className="w-full flex items-center justify-between text-sm text-gray-600 dark:text-gray-400"
             >
-              <span>Taxes et pourboires</span>
+              <span>{t('tax-and-tips')}</span>
               {showExtras ? (
                 <ChevronUp className="w-4 h-4" />
               ) : (
@@ -146,7 +149,7 @@ export function POSCartSidebar({
                      transition-colors duration-200 shadow-sm hover:shadow-md
                      disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? 'Traitement...' : 'Valider la commande'}
+            {isSubmitting ? t('processing') : t('validated-order')}
           </Button>
         </div>
       )}

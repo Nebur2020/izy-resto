@@ -20,6 +20,7 @@ export interface StockUpdate {
   reason: string;
 }
 
+
 export function StockUpdateForm(props: IStockUpdateFormProps) {
   const { items, onSubmit, onCancel, isSubmitting } = props;
   const { t } = useTranslation();

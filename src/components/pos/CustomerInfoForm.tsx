@@ -1,5 +1,4 @@
-import React from 'react';
-import { User } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface CustomerInfo {
   name?: string;
@@ -15,31 +14,29 @@ export function CustomerInfoForm({
   customerInfo,
   onChange,
 }: CustomerInfoFormProps) {
+  const { t } = useTranslation('common');
   return (
     <div className="space-y-4">
-      {/* <div className="flex items-center gap-2">
-        <User className="w-5 h-5 text-gray-500" />
-        <h3 className="font-medium">Informations Client (Optionnel)</h3>
-      </div> */}
-
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Nom</label>
+          <label className="block text-sm font-medium mb-1">{t('name')}</label>
           <input
             type="text"
             value={customerInfo.name || ''}
             onChange={e => onChange({ ...customerInfo, name: e.target.value })}
-            placeholder="Nom du client"
+            placeholder={t('client-name')}
             className="w-full rounded-lg border dark:border-gray-700 p-2"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Téléphone</label>
+          <label className="block text-sm font-medium mb-1">
+            {t('phone-number')}
+          </label>
           <input
             type="tel"
             value={customerInfo.phone || ''}
             onChange={e => onChange({ ...customerInfo, phone: e.target.value })}
-            placeholder="Numéro de téléphone"
+            placeholder={t('client-phone-number')}
             className="w-full rounded-lg border dark:border-gray-700 p-2"
           />
         </div>

@@ -91,7 +91,9 @@ export function OrderConfirmationModal(props: IOrderConfirmationModalProps) {
         <div className="text-center mb-8">
           <h3 className="text-xl font-semibold mb-2">{t('order-confimed')}</h3>
           <p className="text-gray-600 dark:text-gray-400">
-            La commande #{order.id.slice(0, 8)} a été enregistrée avec succès.
+            {t('common:order-save-successfully', {
+              orderId: order.id.slice(0, 8),
+            })}
           </p>
         </div>
 
@@ -102,7 +104,7 @@ export function OrderConfirmationModal(props: IOrderConfirmationModalProps) {
             className="w-full flex items-center justify-center gap-2"
           >
             <Printer className="w-4 h-4 mr-1" />
-            {isPrinting ? 'Impression...' : 'Imprimer le ticket'}
+            {isPrinting ? t('printing') : t('print-bill')}
           </Button>
 
           <Button
@@ -112,11 +114,11 @@ export function OrderConfirmationModal(props: IOrderConfirmationModalProps) {
             className="w-full flex items-center justify-center gap-2"
           >
             <Download className="w-4 h-4 mr-1" />
-            {isDownloading ? 'Téléchargement...' : 'Télécharger le ticket'}
+            {isDownloading ? t('common:download') : t('common:download-bill')}
           </Button>
 
           <Button variant="ghost" onClick={onClose} className="w-full">
-            Fermer
+            {t('common:close')}
           </Button>
         </div>
       </motion.div>
