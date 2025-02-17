@@ -25,12 +25,15 @@ export function DateFilter({
   const { t, i18n } = useTranslation('common');
   const lng = i18n.language as Language;
 
-  const formattedStartedDate = format(startDate, 'dd MMM yyyy', {
-    locale: lng === 'en' ? en : fr,
-  });
-  const formattedEndDate = format(endDate, 'dd MMM yyyy', {
-    locale: lng === 'en' ? en : fr,
-  });
+  const localesMap: Record<Language, Locale> = {
+    en: en,
+    fr: fr,
+  };
+
+  const locale = localesMap[lng] || fr;
+
+  const formattedStartedDate = format(startDate, 'dd MMM yyyy', { locale });
+  const formattedEndDate = format(endDate, 'dd MMM yyyy', { locale });
 
   const presets = [
     { label: t('today'), days: 0 },

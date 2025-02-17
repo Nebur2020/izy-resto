@@ -86,5 +86,12 @@
   "average-rate": "Average rate",
   "total-note": "Total reveiws",
   "notification-rate": "Total notifications",
-  "note-dispatching": "Note dispatching"
+  "note-dispatching": "Note dispatching",
+  "mon": "Mon",
+  "tue": "Tue",
+  "wed": "Wed",
+  "thu": "Thu",
+  "fri": "Fri",
+  "sat": "Sat",
+  "sun": "Sun"
 }

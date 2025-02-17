@@ -90,5 +90,12 @@
   "average-rate": "Note moyenne",
   "total-note": "Total avis",
   "notification-rate": "Total avis",
-  "note-dispatching": "Distribution des notes"
+  "note-dispatching": "Distribution des notes",
+  "mon": "Lun",
+  "tue": "Mar",
+  "wed": "Mer",
+  "thu": "Jeu",
+  "fri": "Ven",
+  "sat": "Sam",
+  "sun": "Dim"
 }
