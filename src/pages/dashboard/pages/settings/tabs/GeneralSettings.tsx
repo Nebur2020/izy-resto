@@ -29,6 +29,8 @@ export function GeneralSettings() {
   const currency = watch('currency');
   const currencyObject = allCurrencies.find(cur => cur.value === currency);
 
+  const { t } = useTranslation('common');
+
   return (
     <div className="space-y-8">
       <section className="space-y-6">
@@ -68,16 +70,14 @@ export function GeneralSettings() {
               {...register('description', {
                 required: t('setting:restaurant-description-required'),
                 maxLength: {
-                  value: 150,
-                  message: t('setting:restaurant-description-max-length', {
-                    maxLength: 150,
+                  value: 250,
+                  message: t('description-max-limit', {
+                    maxLimit: 250,
                   }),
                 },
                 minLength: {
                   value: 10,
-                  message: t('setting:restaurant-description-min-length', {
-                    minLength: 10,
-                  }),
+                  message: t('description-min-limit', { minLimit: 10 }),
                 },
               })}
               rows={3}
