@@ -1,0 +1,18 @@
+{
+  "contact-information": "Contact & Emplacement",
+  "business-hours": "Fermeture exceptionnelle",
+  "enable-holiday-closure": "Activer la fermeture exceptionnelle",
+  "start-date": "Date de début",
+  "end-date": "Date de fin",
+  "reason": "Raison (optionnel)",
+  "reason-placeholder": "Ex: Fermeture annuelle",
+  "time-zone": "Fuseau horaire",
+  "time-zone-required": "Le fuseau horaire est requis",
+  "select-time-zone": "Sélectionner un fuseau horaire",
+  "time-zone-description": "Ce fuseau horaire sera utilisé pour tous les horaires d'ouverture",
+  "opening-hours": "Horaires d'Ouverture",
+  "closed": "Fermé",
+  "to": "à",
+  "service-options": "Options de Service",
+  "payment-on-dine-in": "Activer le paiement sur place"
+}

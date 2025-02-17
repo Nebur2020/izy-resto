@@ -18,19 +18,10 @@ import {
 
 import toast from 'react-hot-toast';
 
-const tabs = [
-  { id: 'general', label: 'Général' },
-  { id: 'appearance', label: 'Apparence' },
-  { id: 'business', label: 'Entreprise' },
-  { id: 'tax', label: 'Taxes & Pourboires' },
-  { id: 'delivery', label: 'Livraison' },
-  { id: 'seo', label: 'SEO' },
-  { id: 'legal', label: 'Légal' },
-  { id: 'integrations', label: 'Intégrations' },
-  { id: 'data', label: 'Données' },
-];
+import { useTranslation } from 'react-i18next';
 
 export function Settings() {
+  const { t } = useTranslation();
   const { settings, updateSettings, isLoading } = useSettings();
   const [activeTab, setActiveTab] = React.useState('general');
   const methods = useForm<RestaurantSettings>({
@@ -43,6 +34,18 @@ export function Settings() {
     reset,
   } = methods;
 
+  const tabs = [
+    { id: 'general', label: t('setting:general') },
+    { id: 'appearance', label: t('setting:appearance') },
+    { id: 'business', label: t('setting:business') },
+    { id: 'tax', label: t('setting:tax') },
+    { id: 'delivery', label: t('setting:delivery') },
+    { id: 'seo', label: t('setting:seo') },
+    { id: 'legal', label: t('setting:legal') },
+    { id: 'integrations', label: t('setting:integrations') },
+    { id: 'data', label: t('setting:data') },
+  ];
+
   React.useEffect(() => {
     if (settings) {
       reset(settings);
@@ -52,11 +55,11 @@ export function Settings() {
   const onSubmit = async (data: RestaurantSettings) => {
     try {
       await updateSettings(data);
-      toast.success('Paramètres mis à jour avec succès');
+      toast.success(t('setting:settings-saved'));
       reset(data);
     } catch (error) {
       console.error('Error saving settings:', error);
-      toast.error('Impossible de sauvegarder les paramètres');
+      toast.error(t('setting:settings-error'));
     }
   };
 
@@ -120,9 +123,7 @@ export function Settings() {
                   }
                 `}
               >
-                {isSubmitting
-                  ? 'Enregistrement...'
-                  : 'Enregistrer les modifications'}
+                {isSubmitting ? t('common:saving') : t('setting:save-settings')}
               </button>
             </div>
           )}
