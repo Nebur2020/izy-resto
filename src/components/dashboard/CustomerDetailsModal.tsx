@@ -9,7 +9,7 @@ import {
   ShoppingBag,
   TrendingUp,
 } from 'lucide-react';
-import { Order } from '../../types';
+import { Language, Order } from '../../types';
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '../../hooks/useSettings';
 import { formatCurrency } from '../../utils/currency';
@@ -31,8 +31,9 @@ export function CustomerDetailsModal({
   orders,
   onClose,
 }: CustomerDetailsModalProps) {
-  const { t } = useTranslation(['dashboard', 'common']);
+  const { t, i18n } = useTranslation(['dashboard', 'common']);
   const { settings } = useSettings();
+  const lng = i18n.language as Language;
 
   const stats = React.useMemo(() => {
     if (!orders.length) return null;
@@ -139,7 +140,7 @@ export function CustomerDetailsModal({
                       #{order.id.slice(0, 8)}
                     </p>
                     <p className="text-xs text-gray-600 dark:text-gray-400">
-                      {formatFirestoreTimestamp(order.createdAt)}
+                      {formatFirestoreTimestamp(order.createdAt, lng)}
                     </p>
                   </div>
                   <div className="text-right">
@@ -164,7 +165,7 @@ export function CustomerDetailsModal({
                 </span>
               </div>
               <p className="text-sm font-medium">
-                {formatFirestoreTimestamp(stats.firstOrder.createdAt)}
+                {formatFirestoreTimestamp(stats.firstOrder.createdAt, lng)}
               </p>
             </div>
 
@@ -176,7 +177,7 @@ export function CustomerDetailsModal({
                 </span>
               </div>
               <p className="text-sm font-medium">
-                {formatFirestoreTimestamp(stats.lastOrder.createdAt)}
+                {formatFirestoreTimestamp(stats.lastOrder.createdAt, lng)}
               </p>
             </div>
           </div>

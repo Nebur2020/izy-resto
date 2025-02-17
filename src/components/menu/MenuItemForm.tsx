@@ -1,32 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Plus, X } from 'lucide-react';
-import { useForm, FormProvider, UseFormReturn } from 'react-hook-form';
+import { FormProvider, useForm, UseFormReturn } from 'react-hook-form';
+import { Button } from '../../components/ui/Button';
 import {
   MenuItem,
   MenuItemWithVariants,
   RestaurantSettings,
 } from '../../types';
-import { LogoUploader } from '../settings/LogoUploader';
 import { useCategories } from '../../hooks/useCategories';
 import { useVariants } from '../../hooks/useVariants';
 import { useSettings } from '../../hooks/useSettings';
+import { LogoUploader } from '../../components/settings/LogoUploader';
 import { useInventory } from '../../hooks/useInventory';
+import { Tabs } from '../../components/ui/Tabs';
 import { motion } from 'framer-motion';
 import { VariantManager } from './variants/VariantManager';
-import { Button } from '../ui';
-import { Tabs } from '../ui/Tabs';
-
-const tabs = [
-  { id: 'product', label: 'Produit' },
-  { id: 'variants', label: 'Combinaisons de variantes' },
-  { id: 'inventory', label: "Connexions à l'inventaire" },
-];
-
-interface MenuItemFormProps {
-  item?: MenuItem | null;
-  onSave: (data: MenuItemWithVariants) => void;
-  onCancel: () => void;
-}
 
 interface MenuItemFormProps {
   item?: MenuItem | null;
@@ -95,21 +83,17 @@ interface VariantsTabProps {
       }>
     >
   >;
+  onVariantChange: () => void;
 }
 
-interface ProductSelectProps {
-  index: number;
-  register: UseFormReturn<FormInputs>['register'];
-  watch: UseFormReturn<FormInputs>['watch'];
-  setValue: UseFormReturn<FormInputs>['setValue'];
-  inventory: Array<{
-    id: string;
-    name: string;
-  }>;
-}
+const tabs = [
+  { id: 'product', label: 'Informations de base' },
+  { id: 'variants', label: 'Variantes' },
+  { id: 'inventory', label: 'Inventaire' },
+];
 
-// Updating the ProductTab to include complete price and stock fields
-const ProductTab: React.FC<ProductTabProps> = ({
+// Basic Info Tab Component
+const BasicInfoTab = ({
   register,
   errors,
   watch,
@@ -118,16 +102,15 @@ const ProductTab: React.FC<ProductTabProps> = ({
   categories,
   selectedCategory,
   handleCategoryChange,
-}) => (
+}: ProductTabProps) => (
   <div className="space-y-6">
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
         <label className="block text-sm font-medium mb-1">Nom</label>
         <input
           type="text"
           {...register('name', { required: 'Le nom est requis' })}
-          className="w-full rounded-lg border p-2.5 dark:bg-gray-700"
-          placeholder="Nom du produit"
+          className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
         />
         {errors.name && (
           <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
@@ -138,9 +121,9 @@ const ProductTab: React.FC<ProductTabProps> = ({
         <label className="block text-sm font-medium mb-1">Catégorie</label>
         <select
           {...register('categoryId', { required: 'La catégorie est requise' })}
+          onChange={handleCategoryChange} // Use handleCategoryChange directly
           value={selectedCategory}
-          onChange={handleCategoryChange}
-          className="w-full rounded-lg border p-2.5 dark:bg-gray-700"
+          className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
         >
           <option value="">Sélectionner une catégorie</option>
           {categories.map(category => (
@@ -158,21 +141,15 @@ const ProductTab: React.FC<ProductTabProps> = ({
 
       <div>
         <label className="block text-sm font-medium mb-1">Prix</label>
-        <div className="relative">
-          <input
-            type="number"
-            step={settings?.currency === 'XOF' ? '1' : '0.01'}
-            {...register('price', {
-              required: 'Le prix est requis',
-              min: { value: 0, message: 'Le prix doit être positif' },
-            })}
-            className="w-full rounded-lg border p-2.5 dark:bg-gray-700 pr-12"
-            placeholder="0.00"
-          />
-          <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-500 dark:text-gray-400">
-            {settings?.currency}
-          </div>
-        </div>
+        <input
+          type="number"
+          step={settings?.currency === 'XOF' ? '1' : '0.01'}
+          {...register('price', {
+            required: 'Le prix est requis',
+            min: { value: 0, message: 'Le prix doit être positif' },
+          })}
+          className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
+        />
         {errors.price && (
           <p className="mt-1 text-sm text-red-500">{errors.price.message}</p>
         )}
@@ -186,8 +163,7 @@ const ProductTab: React.FC<ProductTabProps> = ({
             required: 'Le stock est requis',
             min: { value: 0, message: 'Le stock doit être positif' },
           })}
-          className="w-full rounded-lg border p-2.5 dark:bg-gray-700"
-          placeholder="0"
+          className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
         />
         {errors.stockQuantity && (
           <p className="mt-1 text-sm text-red-500">
@@ -203,8 +179,7 @@ const ProductTab: React.FC<ProductTabProps> = ({
             required: 'La description est requise',
           })}
           rows={3}
-          className="w-full rounded-lg border p-2.5 dark:bg-gray-700"
-          placeholder="Description du produit"
+          className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
         />
         {errors.description && (
           <p className="mt-1 text-sm text-red-500">
@@ -225,119 +200,106 @@ const ProductTab: React.FC<ProductTabProps> = ({
   </div>
 );
 
-// Completing the InventoryConnectionsTab with the full ratio input field
-const InventoryConnectionsTab: React.FC<InventoryConnectionsTabProps> = ({
-  register,
-  watch,
-  setValue,
-  inventory,
-}) => {
-  const ProductSelect = ({ index }: { index: number }) => (
-    <div
-      key={index}
-      className="grid grid-cols-[1fr,1fr,auto] gap-4 items-start"
-    >
-      <div className="flex flex-col">
-        <label className="block text-sm font-medium mb-2">
-          Produit d'inventaire
-        </label>
-        <select
-          {...register(`inventoryConnections.${index}.itemId`)}
-          className="w-full rounded-lg border p-2.5 dark:bg-gray-700"
-        >
-          <option value="">Sélectionner un produit</option>
-          {inventory.map(item => (
-            <option key={item.id} value={item.id}>
-              {item.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="flex flex-col">
-        <div className="mb-2">
-          <label className="block text-sm font-medium">
-            Ratio (1:{watch(`inventoryConnections.${index}.ratio`) || '0'})
-          </label>
-        </div>
-        <input
-          type="number"
-          step="0.1"
-          min="0.1"
-          {...register(`inventoryConnections.${index}.ratio`, {
-            required: 'Le ratio est requis',
-            min: { value: 0.1, message: 'Le ratio doit être supérieur à 0' },
-          })}
-          className="w-full rounded-lg border p-2.5 dark:bg-gray-700"
-          placeholder="Ex: 3 pour 1:3"
-        />
-        <span className="text-xs mt-1 text-gray-500 dark:text-gray-400">
-          Le ratio est une règle de proportion simple entre le produit
-          d'inventaire et le produit du menu
-        </span>
-      </div>
-
-      <Button
-        type="button"
-        variant="ghost"
-        onClick={() => {
-          const connections = watch('inventoryConnections');
-          setValue(
-            'inventoryConnections',
-            connections.filter((_: any, i: number) => i !== index),
-            { shouldDirty: true }
-          );
-        }}
-        className="self-center mb-0.5"
-      >
-        <X className="w-4 h-4" />
-      </Button>
-    </div>
-  );
-
-  return (
-    <div className="space-y-4">
-      {watch('inventoryConnections')?.map((_, index) => (
-        <ProductSelect key={index} index={index} />
-      ))}
-
-      <Button
-        type="button"
-        variant="secondary"
-        onClick={() => {
-          const connections = watch('inventoryConnections') || [];
-          setValue(
-            'inventoryConnections',
-            [...connections, { itemId: '', ratio: 1 }],
-            { shouldDirty: true }
-          );
-        }}
-      >
-        <Plus className="w-4 h-4 mr-2" />
-        Ajouter une connexion
-      </Button>
-    </div>
-  );
-};
-
+// Variants Tab Component
 const VariantsTab: React.FC<VariantsTabProps> = ({
   selectedCategory,
   variants,
   variantPrices,
   setVariantPrices,
-}) => (
+  onVariantChange,
+}: any) => (
   <div>
     {selectedCategory && variants.length > 0 ? (
       <VariantManager
         variants={variants}
         value={variantPrices}
-        onChange={setVariantPrices}
+        onChange={newPrices => {
+          setVariantPrices(newPrices);
+          onVariantChange();
+        }}
       />
     ) : (
       <div className="text-center py-8 text-gray-500">
         Sélectionnez une catégorie pour gérer les variantes
       </div>
     )}
+  </div>
+);
+// Inventory Tab Component
+const InventoryTab = ({ register, watch, setValue, inventory }) => (
+  <div className="space-y-4">
+    {watch('inventoryConnections')?.map((connection: any, index: number) => (
+      <div key={index} className="flex items-center gap-4">
+        <div className="flex-1">
+          <label className="block text-sm font-medium mb-1">
+            Produit d'inventaire
+          </label>
+          <select
+            {...register(`inventoryConnections.${index}.itemId`)}
+            className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
+          >
+            <option value="">Sélectionner un produit</option>
+            {inventory.map(item => (
+              <option key={item.id} value={item.id}>
+                {item.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex-1">
+          <label className="block text-sm font-medium mb-1">
+            Ratio (1:{watch(`inventoryConnections.${index}.ratio`) || '0'})
+          </label>
+          <span className="text-sm">
+            Le ratio est une règle de proportion simple entre le produit
+            d'inventaire et le produit du menu
+          </span>
+          <input
+            type="number"
+            step="0.01"
+            min="0.01"
+            {...register(`inventoryConnections.${index}.ratio`)}
+            className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
+            placeholder="Ex: 3 pour 1:3"
+          />
+        </div>
+
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={() => {
+            const connections = watch('inventoryConnections');
+            const value = connections.filter((_, i) => i !== index);
+            setValue('inventoryConnections', [...value], {
+              shouldDirty: true,
+            });
+          }}
+          className="mt-6"
+        >
+          <X className="w-4 h-4" />
+        </Button>
+      </div>
+    ))}
+
+    <Button
+      type="button"
+      variant="secondary"
+      onClick={() => {
+        const connections = watch('inventoryConnections') || [];
+        setValue(
+          'inventoryConnections',
+          [...connections, { itemId: '', ratio: 1 }],
+          {
+            shouldDirty: true,
+            shouldTouch: true,
+          }
+        );
+      }}
+    >
+      <Plus className="w-4 h-4 mr-2" />
+      Ajouter une connexion
+    </Button>
   </div>
 );
 
@@ -354,7 +316,12 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
     (item as MenuItemWithVariants)?.variantPrices || []
   );
 
-  const methods = useForm({
+  console.log(item);
+
+  // Track if variant prices have changed
+  const [isVariantPricesDirty, setIsVariantPricesDirty] = useState(false);
+
+  const methods = useForm<FormInputs>({
     defaultValues: {
       name: item?.name || '',
       description: item?.description || '',
@@ -374,12 +341,122 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
     formState: { errors, isDirty },
   } = methods;
 
+  // console.log(watch('inventoryConnections'));
+
+  // Track the initial variant prices for comparison
+  const [initialVariantPrices] = useState(
+    JSON.stringify((item as MenuItemWithVariants)?.variantPrices || [])
+  );
+
+  // Check if variant prices have changed whenever they're updated
+  useEffect(() => {
+    const currentVariantPrices = JSON.stringify(variantPrices);
+    setIsVariantPricesDirty(currentVariantPrices !== initialVariantPrices);
+  }, [variantPrices, initialVariantPrices]);
+
+  // Helper function to get price modifier for a specific variant value
+  const getVariantPriceModifier = (
+    variantName: string,
+    value: string
+  ): number => {
+    const variant = variants.find(v => v.name === variantName);
+    if (!variant) return 0;
+
+    const variantValue = variant.values.find(v => v === value);
+    const priceModifier =
+      variant.prices?.[variant.values.indexOf(variantValue)] || 0;
+    return priceModifier;
+  };
+
+  // Calculate total price modifier for a combination
+  const calculatePriceModifiers = (combination: string[]): number => {
+    return combination.reduce((total, variantStr) => {
+      const [variantName, value] = variantStr.split(': ');
+      return total + getVariantPriceModifier(variantName, value);
+    }, 0);
+  };
+
+  const getVariantCombinations = () => {
+    if (!variants.length) return [];
+
+    const combinations: string[][] = [[]];
+    variants.forEach(variant => {
+      const newCombinations: string[][] = [];
+      variant.values.forEach(value => {
+        combinations.forEach(combo => {
+          newCombinations.push([...combo, `${variant.name}: ${value}`]);
+        });
+      });
+      combinations.length = 0;
+      combinations.push(...newCombinations);
+    });
+    return combinations;
+  };
+
+  const handleFormSubmit = (formData: any) => {
+    const allCombinations = getVariantCombinations();
+    const basePrice = Number(formData.price);
+
+    // Create defaultVariantPrices for combinations not in variantPrices
+    const defaultVariantPrices = allCombinations
+      .filter(
+        combination =>
+          !variantPrices.some(
+            vp =>
+              JSON.stringify(vp.variantCombination) ===
+              JSON.stringify(combination)
+          )
+      )
+      .map(combination => {
+        // Calculate total price modifiers for this combination
+        const priceModifier = calculatePriceModifiers(combination);
+
+        return {
+          variantCombination: combination,
+          price: basePrice + priceModifier, // Add the modifier to base price
+          image: formData.image, // Use the main product image as default
+        };
+      });
+
+    console.log(defaultVariantPrices);
+
+    const menuItem: MenuItemWithVariants = {
+      ...formData,
+      price: Number(formData.price),
+      stockQuantity: Number(formData.stockQuantity),
+      variantPrices: variantPrices.map(vp => ({
+        ...vp,
+        price: Number(vp.price),
+      })),
+      defaultVariantPrices,
+      inventoryConnections: formData.inventoryConnections
+        .filter((conn: any) => conn.itemId && conn.ratio)
+        .map((conn: any) => ({
+          ...conn,
+          ratio: Number(conn.ratio),
+        })),
+    };
+    onSave(menuItem);
+  };
+
+  const handleVariantChange = () => {
+    setIsVariantPricesDirty(true);
+  };
+
+  // // Also update the UI to show the calculated price with modifiers
+  // const getDefaultPriceForCombination = (combination: string[]): number => {
+  //   const basePrice = watch('price');
+  //   const priceModifier = calculatePriceModifiers(combination);
+  //   return basePrice + priceModifier;
+  // };
+
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     setSelectedCategory(value);
     setValue('categoryId', value, { shouldDirty: true });
     if (value !== item?.categoryId) {
       setVariantPrices([]);
+      setIsVariantPricesDirty(true);
     }
   };
 
@@ -387,7 +464,7 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
     switch (activeTab) {
       case 'product':
         return (
-          <ProductTab
+          <BasicInfoTab
             register={register}
             errors={errors}
             watch={watch}
@@ -395,12 +472,12 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
             settings={settings!}
             categories={categories}
             selectedCategory={selectedCategory}
-            handleCategoryChange={handleCategoryChange}
+            handleCategoryChange={handleCategoryChange} // Pass handleCategoryChange instead of setSelectedCategory
           />
         );
       case 'inventory':
         return (
-          <InventoryConnectionsTab
+          <InventoryTab
             register={register}
             watch={watch}
             setValue={setValue}
@@ -414,6 +491,7 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
             variants={variants}
             variantPrices={variantPrices}
             setVariantPrices={setVariantPrices}
+            onVariantChange={handleVariantChange}
           />
         );
       default:
@@ -442,12 +520,11 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
 
         <FormProvider {...methods}>
           <form
-            onSubmit={handleSubmit(onSave)}
+            onSubmit={handleSubmit(handleFormSubmit)}
             className="flex flex-col flex-1 overflow-hidden"
           >
             <div className="flex-1 flex flex-col overflow-hidden p-2">
               <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
-
               <div className="flex-1 overflow-y-auto p-4 md:p-6">
                 {renderTabContent()}
               </div>
@@ -460,15 +537,10 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
                 </Button>
                 <Button
                   type="submit"
-                  disabled={!isDirty}
                   className={`
                     px-6 py-2 rounded-lg font-medium text-white
                     transition-all duration-200
-                    ${
-                      isDirty
-                        ? 'bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl'
-                        : 'bg-gray-400 cursor-not-allowed'
-                    }
+                    bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl
                   `}
                 >
                   {item ? 'Mettre à jour' : 'Ajouter'}
