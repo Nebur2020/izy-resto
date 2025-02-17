@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMenu } from '../../hooks/useMenu';
 import { MenuItem } from './MenuItem';
@@ -13,7 +13,19 @@ export function MenuSection() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const { items, isLoading } = useMenu();
+  const { items: menuItems, isLoading } = useMenu();
+
+  const items = useMemo(() => {
+    return menuItems.map(item => ({
+      ...item,
+      variantPrices: [
+        ...(item.variantPrices || []),
+        ...(item?.defaultVariantPrices || []),
+      ],
+    }));
+  }, [menuItems]);
+
+  console.log('items', items);
 
   const filteredItems = items.filter(item => {
     const matchesCategory =

@@ -24,7 +24,6 @@ export function BasicInfoSection({
         <Building2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
         <h2 className="text-xl font-semibold">Informations du Restaurant</h2>
       </div>
-
       <div className="space-y-6">
         <div>
           <label className="block text-sm font-medium mb-1">
@@ -36,16 +35,16 @@ export function BasicInfoSection({
             className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
           />
         </div>
-
         <div>
           <label className="block text-sm font-medium mb-1">Description</label>
           <textarea
-            {...register('description', { required: true })}
+            {...register('description', {
+              required: true,
+            })}
             rows={3}
             className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
           />
         </div>
-
         <div>
           <LogoUploader
             value={watch('logo')}
@@ -74,7 +73,6 @@ export function BasicInfoSection({
               </option>
             ))}
           </select>
-
           {currencyObject?.infos && (
             <div
               className="flex mt-4 items-center p-4 mb-4 text-sm text-yellow-800 border border-yellow-300 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300 dark:border-yellow-800"
