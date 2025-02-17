@@ -11,24 +11,26 @@ interface OrderCardDetailsProps {
 
 export function OrderCardDetails({ order }: OrderCardDetailsProps) {
   const { settings } = useSettings();
-  const { t } = useTranslation(['order', 'common']);
+  const { t } = useTranslation();
 
   return (
     <>
       <div>
-        <h4 className="font-medium mb-2">Détails client</h4>
+        <h4 className="font-medium mb-2">
+          {t('common:client-details')}
+        </h4>
         <div className="text-sm opacity-75 space-y-1">
           <p>{order.customerName}</p>
           <p>{order.customerPhone}</p>
           {order.customerEmail && <p>{order.customerEmail}</p>}
           {order.diningOption === 'delivery' && (
             <p className="font-medium">
-              {t('delivery-address')} : {order.customerAddress}
+              {t('order:delivery-address')} : {order.customerAddress}
             </p>
           )}
           {order.delivery && (
             <p className="font-medium">
-              {t('delivery-to')} {order.delivery.name}
+              {t('order:delivery-to')} {order.delivery.name}
             </p>
           )}
         </div>
@@ -37,7 +39,7 @@ export function OrderCardDetails({ order }: OrderCardDetailsProps) {
         <div className="border-t border-current/10 pt-4">
           <h4 className="font-medium mb-2 flex items-center gap-2">
             <CreditCard className="w-4 h-4" />
-            {t('payment-method')}
+            {t('common:payment-method')}
           </h4>
           <div className="text-sm opacity-75">
             <p>{order.paymentMethod.name}</p>
@@ -45,7 +47,7 @@ export function OrderCardDetails({ order }: OrderCardDetailsProps) {
         </div>
       )}
       <div className="border-t border-current/10 pt-4">
-        <h4 className="font-medium mb-2">{t('product-order')}</h4>
+        <h4 className="font-medium mb-2">{t('order:product-order')}</h4>
         <div className="space-y-2">
           {order.items.map(item => (
             <div key={item.id} className="flex justify-between text-sm">
@@ -113,7 +115,7 @@ export function OrderCardDetails({ order }: OrderCardDetailsProps) {
       {order.preference && (
         <div className="border-t border-current/10 pt-4">
           <h4 className="font-medium mb-2 flex items-center gap-2">
-            <AlertTriangle /> {t('customer-indication')}
+            <AlertTriangle /> {t('order:customer-indication')}
           </h4>
           <p className="text-sm">{order.preference}</p>
         </div>

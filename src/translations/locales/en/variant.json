@@ -26,5 +26,6 @@
   "ratio-description": "The ratio is a simple proportion rule between the inventory product and the menu product",
   "select-inventory-product": "Select a product",
   "product": "Inventory Product",
-  "add-item": "Add Item"
+  "add-item": "Add Item",
+  "variant-and-value": "Variant and Values"
 }

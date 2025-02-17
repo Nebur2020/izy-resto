@@ -172,5 +172,11 @@
   "product-image-description": "Format recommandé: JPG ou PNG en haute résolution (1920x1080px minimum)",
   "product-image": "Image du produit",
   "product": "Produit",
-  "delete-product-message": "Voulez-vous vraiment supprimer ce produit ?"
+  "delete-product-message": "Voulez-vous vraiment supprimer ce produit ?",
+  "payment-method": "Mode de paiement",
+  "add-article": "Ajouter un article",
+  "search-product": "Rechercher un produit...",
+  "low-stock": "Produits en stock faible",
+  "no-history": "Aucun historique",
+  "no-history-description": "Les mises à jour de stock apparaîtront ici"
 }

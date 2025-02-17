@@ -46,21 +46,21 @@ export function DashboardSidebar({
     { id: 'dashboard', icon: LayoutDashboard, label: t('dashboard') },
     { id: 'orders', icon: ShoppingBag, label: t('orders') },
     { id: 'pos', icon: Store, label: t('pos') },
-    { id: 'traffic', icon: BarChart, label: 'Analyses' },
+    { id: 'traffic', icon: BarChart, label: t('traffic') },
 
     { id: 'menu', icon: UtensilsCrossed, label: t('menu') },
     { id: 'categories', icon: List, label: t('categories') },
-    { id: 'variants', icon: Layers, label: 'Variantes' },
+    { id: 'variants', icon: Layers, label: t('variants') },
 
-    { id: 'inventory', icon: Package, label: 'Inventaire' },
-    { id: 'payments', icon: CreditCard, label: 'Paiements' },
-    { id: 'accounting', icon: Calculator, label: 'Comptabilité' },
+    { id: 'inventory', icon: Package, label: t('inventory') },
+    { id: 'payments', icon: CreditCard, label: t('payments') },
+    { id: 'accounting', icon: Calculator, label: t('accounting') },
 
     { id: 'customers', icon: Users, label: t('costumer-title') },
-    { id: 'qr-code', icon: QrCode, label: 'QR Code' },
+    { id: 'qr-code', icon: QrCode, label: t('qr-code') },
 
-    { id: 'staff', icon: Users2, label: 'Personnel' },
-    { id: 'media', icon: Image, label: 'Bibliothèque' },
+    { id: 'staff', icon: Users2, label: t('staff') },
+    { id: 'media', icon: Image, label: t('media') },
     { id: 'settings', icon: Settings, label: t('settings') },
   ];
 

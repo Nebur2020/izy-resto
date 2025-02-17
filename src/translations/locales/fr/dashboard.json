@@ -34,5 +34,13 @@
   "order-status": "État des commandes",
   "best-customer": "Meilleurs clients",
   "best-experience": "Pour une meilleure expérience et accéder à toutes les fonctionnalités, veuillez utiliser un écran plus large.",
-  "limit-view-on-mobile": "Vue limitée sur mobile"
+  "limit-view-on-mobile": "Vue limitée sur mobile",
+  "traffic": "Analyses",
+  "variants": "Variantes",
+  "inventory": "Inventaire",
+  "payments": "Paiements",
+  "accounting": "Comptabilité",
+  "qr-code": "QR Code",
+  "staff": "Personnel",
+  "media": "Bibliothèque"
 }

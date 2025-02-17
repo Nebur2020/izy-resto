@@ -1,15 +1,16 @@
 import { motion } from 'framer-motion';
 import { AlertTriangle, AlertCircle } from 'lucide-react';
 import { InventoryItem } from '../../../../types/inventory';
+import { useTranslation } from 'react-i18next';
 
 interface InventoryAlertsProps {
   items: InventoryItem[];
 }
 
 export function InventoryAlerts({ items }: InventoryAlertsProps) {
+  const { t } = useTranslation();
   const lowStockItems = items.filter(item => {
     return Number(item.quantity) <= Number(item.minQuantity);
-    // return stockDifference >= 0;
   });
 
   const expiringItems = items.filter(item => {
@@ -42,7 +43,7 @@ export function InventoryAlerts({ items }: InventoryAlertsProps) {
           <div className="flex items-center gap-3">
             <AlertTriangle className="h-5 w-5 text-amber-500" />
             <h3 className="font-medium text-amber-800 dark:text-amber-400">
-              Produits en stock faible
+              {t('common:low-stock')}
             </h3>
           </div>
           <div className="mt-2 space-y-1">

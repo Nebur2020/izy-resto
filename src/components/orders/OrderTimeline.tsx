@@ -65,7 +65,7 @@ export function OrderTimeline(props: IOrderTimelineProps) {
                 )}
                 {isActive && index > 0 && (
                   <span className="text-xs text-gray-500 mt-1">
-                    {formatFirestoreTimestamp(updatedAt, lang)}
+                    {formatFirestoreTimestamp(updatedAt, lang)} sjzhdb
                   </span>
                 )}
               </div>

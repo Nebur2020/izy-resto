@@ -201,7 +201,7 @@ export function InventoryManagement() {
               <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500 dark:text-gray-400" />
               <input
                 type="text"
-                placeholder={t('search-product')}
+                placeholder={t('common:search-product')}
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
                 className="w-full rounded-lg border border-gray-300 px-12 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:focus:border-blue-400 dark:focus:ring-blue-400"
