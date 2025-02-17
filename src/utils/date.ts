@@ -35,7 +35,7 @@ export function formatFirestoreTimestamp(
 export function formatDate(
   date: any,
   withHours: boolean = false,
-  lang: SupportedLocales = 'fr'
+  lang = 'fr'
 ): string {
   if (!date)
     return lang === 'fr' ? 'Date non disponible' : 'Date not available';
