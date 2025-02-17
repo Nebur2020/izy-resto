@@ -1,0 +1,21 @@
+{
+  "seo-settings-title": "SEO Settings",
+  "seo-title": "Site Title",
+  "seo-title-placeholder": "Restaurant Name - Tagline",
+  "seo-title-description": "Appears in the browser tab and search results",
+  "seo-description-placeholder": "A brief description of your restaurant...",
+  "seo-description-description": "Appears in search results (150-160 characters recommended)",
+  "seo-keywords": "Keywords",
+  "seo-keywords-description": "Relevant keywords for your restaurant",
+  "seo-images-title": "Visual Resources",
+  "seo-og-image": "Social Sharing Image",
+  "seo-og-image-description": "Image displayed when sharing on social media (1200x630px recommended)",
+  "seo-social-title": "Social Integration",
+  "seo-twitter-handle-description": "Used for Twitter Cards",
+  "seo-facebook-page": "Google Site Verification",
+  "seo-facebook-page-placeholder": "Google Verification Code",
+  "seo-facebook-page-description": "Verification code for Google Search Console",
+  "seo-keywords-placeholder": "Add a keyword...",
+  "favicon-description": "Recommended format: ICO, PNG (32x32px or 16x16px). The file must be square.",
+  "add-restaurent-logo": "Add a logo for your restaurant."
+}
