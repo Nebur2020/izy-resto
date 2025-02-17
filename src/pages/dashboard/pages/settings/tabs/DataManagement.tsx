@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   AlertTriangle,
@@ -13,8 +13,10 @@ import { Button } from '../../../../../components/ui/Button';
 import { ConfirmDialog } from '../../../../../components/ui/ConfirmDialog';
 import { cloudinaryService } from '../../../../../services/cloudinary/cloudinary.service';
 import { db } from '../../../../../lib/firebase/config';
-import { collection, getDocs, writeBatch, query } from 'firebase/firestore';
+import { collection, getDocs, writeBatch } from 'firebase/firestore';
 import toast from 'react-hot-toast';
+
+import { useTranslation } from 'react-i18next';
 
 interface CollectionData {
   name: string;
@@ -22,6 +24,7 @@ interface CollectionData {
 }
 
 export function DataManagement() {
+  const { t } = useTranslation();
   const [collections, setCollections] = useState<CollectionData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
@@ -41,17 +44,17 @@ export function DataManagement() {
     try {
       setIsLoading(true);
       const collectionsToCheck = [
-        'categories',
-        'menu_items',
-        'orders',
-        'inventory',
-        'stock_history',
-        'media',
-        'variants',
-        'transactions',
-        'payment_methods',
-        'staff',
-        'settings',
+        t('settingData:categories'),
+        t('settingData:menu-items'),
+        t('settingData:orders'),
+        t('settingData:inventory'),
+        t('settingData:stock-history'),
+        t('settingData:media'),
+        t('settingData:variants'),
+        t('settingData:transactions'),
+        t('settingData:payment-methods'),
+        t('settingData:staff'),
+        t('settingData:settings'),
       ];
 
       const collectionsData = await Promise.all(
@@ -67,7 +70,7 @@ export function DataManagement() {
       setCollections(collectionsData);
     } catch (error) {
       console.error('Error loading collections:', error);
-      toast.error('Erreur lors du chargement des collections');
+      toast.error(t('settingData:error-loading-collections'));
     } finally {
       setIsLoading(false);
     }
@@ -80,12 +83,10 @@ export function DataManagement() {
     try {
       setIsDeleting(collectionName);
 
-      // Special handling for media collection
       if (collectionName === 'media') {
         const snapshot = await getDocs(collection(db, 'media'));
         const mediaFiles = snapshot.docs.map(doc => doc.data());
 
-        // Delete files from Cloudinary
         for (const file of mediaFiles) {
           try {
             const publicId = file.url.split('/').pop()?.split('.')[0];
@@ -98,7 +99,6 @@ export function DataManagement() {
         }
       }
 
-      // Delete all documents in the collection
       const snapshot = await getDocs(collection(db, collectionName));
       const batch = writeBatch(db);
       snapshot.docs.forEach(doc => {
@@ -106,12 +106,11 @@ export function DataManagement() {
       });
       await batch.commit();
 
-      // Refresh collections data
       await loadCollections();
-      toast.success(`Collection ${collectionName} supprimée avec succès`);
+      toast.success(t('settingData:collection-deleted', { collectionName }));
     } catch (error) {
       console.error('Error deleting collection:', error);
-      toast.error('Erreur lors de la suppression');
+      toast.error(t('settingData:error-deleting-collection'));
     } finally {
       setIsDeleting(null);
       setDeleteConfirmation({ isOpen: false });
@@ -121,14 +120,11 @@ export function DataManagement() {
   const handleResetWebsite = async () => {
     try {
       setIsResetting(true);
-
-      // Delete all collections
       for (const { name } of collections) {
-        if (name === 'settings') continue; // Skip settings collection
+        if (name === 'settings') continue;
 
         if (name === 'payment_methods') continue;
 
-        // Special handling for media collection
         if (name === 'media') {
           const snapshot = await getDocs(collection(db, 'media'));
           const mediaFiles = snapshot.docs.map(doc => doc.data());
@@ -145,7 +141,6 @@ export function DataManagement() {
           }
         }
 
-        // Delete collection documents
         const snapshot = await getDocs(collection(db, name));
         const batch = writeBatch(db);
         snapshot.docs.forEach(doc => {
@@ -164,10 +159,10 @@ export function DataManagement() {
       }
 
       await loadCollections();
-      toast.success('Site réinitialisé avec succès');
+      toast.success(t('settingData:website-reset'));
     } catch (error) {
       console.error('Error resetting website:', error);
-      toast.error('Erreur lors de la réinitialisation');
+      toast.error(t('settingData:error-resetting-website'));
     } finally {
       setIsResetting(false);
       setResetConfirmation(false);
@@ -184,13 +179,14 @@ export function DataManagement() {
 
   return (
     <div className="space-y-8">
-      {/* Collections Section */}
       <section className="space-y-6">
         <div className="flex items-center gap-3">
           <Database className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-          <h2 className="text-xl font-semibold">Collections Firebase</h2>
+          <h2 className="text-xl font-semibold">
+            {t('settingData:manage-data')}
+          </h2>
           <span className="flex gap-2 text-red-800 dark:text-red-400">
-            <AlertTriangleIcon /> A utiliser avec précaution
+            <AlertTriangleIcon /> {t('settingData:danger-zone')}
           </span>
         </div>
 
@@ -241,22 +237,20 @@ export function DataManagement() {
             ))}
         </div>
       </section>
-
-      {/* Reset Website Section */}
       <section className="space-y-6">
         <div className="flex items-center gap-3">
           <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
-          <h2 className="text-xl font-semibold">Zone Dangereuse</h2>
+          <h2 className="text-xl font-semibold">
+            {t('settingData:reset-website')}
+          </h2>
         </div>
 
         <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6">
           <h3 className="text-lg font-medium text-red-900 dark:text-red-100 mb-4">
-            Réinitialiser le Site
+            {t('settingData:reset-website-warning')}
           </h3>
           <p className="text-red-700 dark:text-red-300 mb-6">
-            Cette action supprimera définitivement toutes les données du site, y
-            compris les catégories, les produits, les commandes et les médias.
-            Cette action est irréversible.
+            {t('settingData:reset-website-warning-desc')}
           </p>
           <Button
             variant="danger"
@@ -267,30 +261,27 @@ export function DataManagement() {
             {isResetting ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Réinitialisation...
+                {t('settingData:resetting-website')}
               </>
             ) : (
               <>
                 <RefreshCw className="w-4 h-4 mr-2" />
-                Réinitialiser le Site
+                {t('settingData:reset-website')}
               </>
             )}
           </Button>
         </div>
       </section>
-
-      {/* Confirmation Modals */}
       <ConfirmDialog
         isOpen={deleteConfirmation.isOpen}
-        title={`Supprimer la collection ${deleteConfirmation.collection}`}
-        message={`Êtes-vous sûr de vouloir supprimer la collection "${
-          deleteConfirmation.collection
-        }" ? 
-                Cette action supprimera ${
-                  deleteConfirmation.itemCount
-                } document${deleteConfirmation.itemCount !== 1 ? 's' : ''} 
-                et est irréversible.`}
-        confirmLabel="Supprimer"
+        title={t('settingData:delete-collection', {
+          collection: deleteConfirmation.collection,
+        })}
+        message={t('settingData:delete-collection-desc', {
+          deleteConfirmationCollection: deleteConfirmation.collection,
+          deleteConfirmationItemCount: deleteConfirmation.itemCount,
+        })}
+        confirmLabel={t('common:delete')}
         onConfirm={handleDeleteCollection}
         onCancel={() => setDeleteConfirmation({ isOpen: false })}
         isLoading={isDeleting === deleteConfirmation.collection}
@@ -298,10 +289,9 @@ export function DataManagement() {
 
       <ConfirmDialog
         isOpen={resetConfirmation}
-        title="Réinitialiser le site"
-        message="Êtes-vous sûr de vouloir réinitialiser le site ? Cette action supprimera toutes les données 
-                et est irréversible. Les paramètres du site seront conservés."
-        confirmLabel="Réinitialiser"
+        title={t('settingData:reset-website-sub-title')}
+        message={t('settingData:reset-website-desc')}
+        confirmLabel={t('settingData:reset-website')}
         onConfirm={handleResetWebsite}
         onCancel={() => setResetConfirmation(false)}
         isLoading={isResetting}

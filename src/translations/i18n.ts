@@ -28,6 +28,9 @@ import enTicket from './locales/en/ticket.json';
 import frSettingIntegration from './locales/fr/setting-integration.json';
 import enSettingIntegration from './locales/en/setting-integration.json';
 
+import frSettingData from './locales/fr/setting-data.json';
+import enSettingData from './locales/en/setting-data.json';
+
 import enPersonal from './locales/en/personal.json';
 import frPersonal from './locales/fr/personal.json';
 
@@ -46,6 +49,7 @@ i18n.use(initReactI18next).init({
       order: enOrder,
       ticket: enTicket,
       settingIntegration: enSettingIntegration,
+      settingData: enSettingData,
       personal: enPersonal,
       media: enMedia,
     },
@@ -59,6 +63,7 @@ i18n.use(initReactI18next).init({
       order: frOrder,
       ticket: frTicket,
       settingIntegration: frSettingIntegration,
+      settingData: frSettingData,
       personal: frPersonal,
       media: frMedia,
     },
