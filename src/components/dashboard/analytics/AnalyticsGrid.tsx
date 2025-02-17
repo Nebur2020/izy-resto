@@ -5,6 +5,7 @@ import {
   formatCurrency,
   formatNumberByLanguage,
 } from '../../../utils/currency';
+import { useTranslation } from 'react-i18next';
 
 interface AnalyticsGridProps {
   totalRevenue: number;
@@ -13,46 +14,38 @@ interface AnalyticsGridProps {
   dailyOrderRate: number;
 }
 
-export function AnalyticsGrid({
-  totalRevenue,
-  totalOrders,
-  uniqueCustomers,
-  dailyOrderRate,
-}: AnalyticsGridProps) {
+export function AnalyticsGrid(props: AnalyticsGridProps) {
+  const { totalRevenue, totalOrders, uniqueCustomers, dailyOrderRate } = props;
   const { settings } = useSettings();
+
+  const { t } = useTranslation('dashboard');
 
   const stats = [
     {
-      title: 'Revenu Total (HT) (Sans Livraison)',
+      title: t('total-income-without-tax'),
       value: formatCurrency(Number(totalRevenue), settings?.currency),
       icon: DollarSign,
       color: 'green',
     },
     {
-      title: 'Commandes',
+      title: t('orders'),
       value: totalOrders.toString(),
       icon: TrendingUp,
       color: 'blue',
     },
     {
-      title: 'Clients Uniques',
+      title: t('unique-customers'),
       value: uniqueCustomers.toString(),
       icon: Users,
       color: 'purple',
     },
     {
-      title: 'Commandes/Jour',
+      title: t('day-order'),
       value: formatNumberByLanguage(Number(dailyOrderRate.toFixed(1)), 'fr-FR'),
       icon: Calendar,
       color: 'orange',
     },
   ];
-
-  const getFontSize = (text: string) => {
-    if (text.length <= 5) return 'text-2xl';
-    if (text.length <= 8) return 'text-xl';
-    return 'text-lg';
-  };
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useMenu } from '../../../hooks/useMenu';
 import { GridMenuItem } from './GridMenuItem';
@@ -12,7 +12,17 @@ export function GridMenuSection() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const { items, isLoading } = useMenu();
+  const { items: menuItems } = useMenu();
+
+  const items = useMemo(() => {
+    return menuItems.map(item => ({
+      ...item,
+      variantPrices: [
+        ...(item.variantPrices || []),
+        ...(item?.defaultVariantPrices || []),
+      ],
+    }));
+  }, [menuItems]);
 
   // console.log(activeCategory);
 
