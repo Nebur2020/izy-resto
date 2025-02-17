@@ -87,5 +87,9 @@
   "item-ordered": "Item ordered",
   "client-details": "Client details",
   "description-max-limit": "Description cannot exceed {{maxLimit}} characters",
-  "description-min-limit": "Description must contain at least {{minLimit}} characters"
+  "description-min-limit": "Description must contain at least {{minLimit}} characters",
+  "filed-is-required": "This field is required",
+  "no-logo": "No logo",
+  "choose-from-bibliotheque": "Choose from library",
+  "delete-image": "Delete image"
 }
