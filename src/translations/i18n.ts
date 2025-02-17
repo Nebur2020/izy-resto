@@ -25,6 +25,9 @@ import frOrder from './locales/fr/order.json';
 import frTicket from './locales/fr/ticket.json';
 import enTicket from './locales/en/ticket.json';
 
+import frAnalyse from './locales/fr/analyse.json';
+import enAnalyse from './locales/en/analyse.json';
+
 import enCategory from './locales/en/category.json';
 import frCategory from './locales/fr/category.json';
 
@@ -90,6 +93,7 @@ i18n.use(initReactI18next).init({
       hero: enHero,
       order: enOrder,
       ticket: enTicket,
+      analyse: enAnalyse,
       category: enCategory,
       variant: enVariant,
       inventory: enInventory,
@@ -118,6 +122,7 @@ i18n.use(initReactI18next).init({
       hero: frHero,
       order: frOrder,
       ticket: frTicket,
+      analyse: frAnalyse,
       category: frCategory,
       variant: frVariant,
       inventory: frInventory,

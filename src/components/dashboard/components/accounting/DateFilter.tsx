@@ -4,6 +4,7 @@ import { Button } from '../../../ui/Button';
 import { DatePicker } from '../../../ui/DatePicker';
 import { format } from 'date-fns';
 import { fr, enUS as en } from 'date-fns/locale';
+import { Language } from '../../../../types';
 import { useIsMobile } from '../../../../hooks/useIsMobile';
 import { useTranslation } from 'react-i18next';
 import { Language } from '../../../../types';
@@ -20,7 +21,18 @@ export function DateFilter(props: IDateFilterProps) {
   const [isStartPickerOpen, setIsStartPickerOpen] = useState(false);
   const [isEndPickerOpen, setIsEndPickerOpen] = useState(false);
   const isMobile = useIsMobile();
-  const { t, i18n } = useTranslation('dashboard');
+  const { t, i18n } = useTranslation(['common', 'dashboard']);
+  const lng = i18n.language as Language;
+
+  const localesMap: Record<Language, Locale> = {
+    en: en,
+    fr: fr,
+  };
+
+  const locale = localesMap[lng] || fr;
+
+  const formattedStartedDate = format(startDate, 'dd MMM yyyy', { locale });
+  const formattedEndDate = format(endDate, 'dd MMM yyyy', { locale });
 
   const lng = i18n.language as Language;
 
@@ -73,10 +85,9 @@ export function DateFilter(props: IDateFilterProps) {
               className="w-full sm:w-[140px] justify-start text-xs sm:text-sm"
             >
               <CalendarIcon className="mr-2 h-3 w-3 sm:h-4 sm:w-4 text-gray-500" />
-              {format(startDate, 'dd MMM yyyy', {
-                locale: i18n.language === 'en' ? en : fr,
-              })}
+              {formattedStartedDate}
             </Button>
+
             {isStartPickerOpen && (
               <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center">
                 <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl p-4 max-w-fit mx-auto">
@@ -119,9 +130,7 @@ export function DateFilter(props: IDateFilterProps) {
               className="w-full sm:w-[140px] justify-start text-xs sm:text-sm"
             >
               <CalendarIcon className="mr-2 h-3 w-3 sm:h-4 sm:w-4 text-gray-500" />
-              {format(startDate, 'dd MMM yyyy', {
-                locale: i18n.language === 'en' ? en : fr,
-              })}
+              {formattedEndDate}
             </Button>
             {isEndPickerOpen && (
               <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center">
