@@ -13,5 +13,6 @@
   "variant-price-and-value": "Values and Prices",
   "variant-value-required": "All values are required",
   "delete-variant": "Delete Variant",
-  "confirm-delete-variant": "Are you sure you want to delete this variant? This action is irreversible."
+  "confirm-delete-variant": "Are you sure you want to delete this variant? This action is irreversible.",
+  "variant-and-value": "Variant and Values"
 }

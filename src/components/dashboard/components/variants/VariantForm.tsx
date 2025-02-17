@@ -18,7 +18,7 @@ interface Variant {
   isRequired: boolean;
   values: string[];
   prices: number[];
-  inventory: InventoryConnection[][]; // Array of inventory connections for each value
+  inventory: InventoryConnection[][];
 }
 
 interface RuntimeVariant {
@@ -44,19 +44,16 @@ export function VariantForm(props: IVariantFormProps) {
   const { variant, categories, onSave, onCancel } = props;
   const { items: inventory } = useInventory();
 
-  // Transform old inventory format to new format
   const transformInventory = (
     variant: Variant | null | undefined
   ): RuntimeVariant | null => {
     if (!variant) return null;
 
     try {
-      // Parse the stringified inventory or create a default structure
       const parsedInventory = variant.inventory
         ? JSON.parse(variant.inventory as any)
         : variant.values.map(() => [{ itemId: '', ratio: 1 }]);
 
-      // Ensure each value has an inventory array
       const initializedInventory = parsedInventory.map(
         (connections: InventoryConnection[] | InventoryConnection) =>
           Array.isArray(connections) ? connections : [connections]
@@ -67,7 +64,6 @@ export function VariantForm(props: IVariantFormProps) {
         inventory: initializedInventory,
       };
     } catch (error) {
-      // If parsing fails, return default structure
       console.error('Error parsing inventory:', error);
       return {
         ...variant,
@@ -150,7 +146,6 @@ export function VariantForm(props: IVariantFormProps) {
   };
 
   const onSubmitWrapper = (data: RuntimeVariant) => {
-    // Convert the runtime variant with inventory array to Firestore variant with stringified inventory
     const firestoreVariant: Omit<Variant, 'id'> = {
       ...data,
       inventory: JSON.stringify(data.inventory) as any,
@@ -303,7 +298,6 @@ export function VariantForm(props: IVariantFormProps) {
                       )}
                     </div>
 
-                    {/* Multiple Inventory Connections */}
                     <div className="space-y-2 pl-4 border-l-2 border-gray-200 dark:border-gray-700">
                       {(inventoryConnections?.[valueIndex] || []).map(
                         (_, connectionIndex) => (
@@ -364,7 +358,7 @@ export function VariantForm(props: IVariantFormProps) {
                         className="mt-2 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20"
                       >
                         <Plus className="w-4 h-4 mr-1" />
-                        Ajouter un article
+                        {t('common:add-article')}
                       </Button>
                     </div>
                   </div>

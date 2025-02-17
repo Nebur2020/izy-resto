@@ -9,8 +9,9 @@ import { stockHistoryService } from '../../../../services/inventory/stockHistory
 import toast from 'react-hot-toast';
 import { Button } from '../../../ui';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-interface StockHistoryProps {
+interface IStockHistoryProps {
   updates?: StockHistoryType[];
   isLoading: boolean;
   currentPage: number;
@@ -19,14 +20,9 @@ interface StockHistoryProps {
   dateRange?: { startDate?: Date; endDate?: Date };
 }
 
-export function StockHistory({
-  updates = [],
-  isLoading,
-  currentPage,
-  totalPages,
-  onPageChange,
-  dateRange,
-}: StockHistoryProps) {
+export function StockHistory(props: IStockHistoryProps) {
+  const { t } = useTranslation();
+  const { updates, isLoading, currentPage, totalPages, onPageChange, dateRange } = props;
   const { settings } = useSettings();
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -50,10 +46,10 @@ export function StockHistory({
       <div className="bg-white dark:bg-gray-800 rounded-xl p-8 text-center">
         <Package className="w-12 h-12 mx-auto text-gray-400 mb-4" />
         <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-          Aucun historique
+          {t('common:no-history')}
         </h3>
         <p className="text-gray-500 dark:text-gray-400">
-          Les mises à jour de stock apparaîtront ici
+          {t('common:no-history-description')}
         </p>
       </div>
     );
