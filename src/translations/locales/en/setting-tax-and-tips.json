@@ -1,0 +1,14 @@
+{
+  "enable-taxes": "Enable tax management",
+  "tax-name": "Tax name",
+  "tax-rate": "Rate (%)",
+  "enable-tax": "Enable this tax",
+  "tips": "Tips",
+  "enable-tips": "Enable tips",
+  "default-tips": "Suggested percentages (separated by commas)",
+  "default-tips-description": "These percentages will be offered as tip options",
+  "tips-label": "Tip label",
+  "tips-placeholder": "Ex: Tip",
+  "add-tax": "Add a tax",
+  "apply-to-all-categories": "All products"
+}
