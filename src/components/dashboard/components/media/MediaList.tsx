@@ -1,9 +1,14 @@
-import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trash2, ExternalLink, Check } from 'lucide-react';
 import { MediaFile } from '../../../../types/media';
 import { Button } from '../../../ui/Button';
-import { formatFileSize, formatDate } from '../../../../utils/format';
+import {
+  formatFileSize,
+  formatDate,
+  localeDateMatch,
+} from '../../../../utils/format';
+import i18n from '../../../../translations/i18n';
+import { Language } from '../../../../types';
 
 interface MediaListProps {
   files: MediaFile[];
@@ -20,13 +25,16 @@ export function MediaList({
   onDelete,
   onSelect,
   selectedFiles,
-  onToggleSelect
+  onToggleSelect,
 }: MediaListProps) {
   if (isLoading) {
     return (
       <div className="space-y-3">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="h-20 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800" />
+          <div
+            key={i}
+            className="h-20 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+          />
         ))}
       </div>
     );
@@ -38,8 +46,12 @@ export function MediaList({
         <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
           <ExternalLink className="w-8 h-8 text-gray-400" />
         </div>
-        <p className="text-lg font-medium text-gray-900 dark:text-white">Aucun fichier</p>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Commencez par ajouter des fichiers</p>
+        <p className="text-lg font-medium text-gray-900 dark:text-white">
+          Aucun fichier
+        </p>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          Commencez par ajouter des fichiers
+        </p>
       </div>
     );
   }
@@ -47,7 +59,7 @@ export function MediaList({
   return (
     <div className="space-y-3">
       <AnimatePresence mode="popLayout">
-        {files.map((file) => (
+        {files.map(file => (
           <motion.div
             key={file.id}
             layout
@@ -61,20 +73,27 @@ export function MediaList({
               transition-all duration-200
               hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-600
               cursor-pointer
-              ${selectedFiles.has(file.id) ? 'ring-2 ring-blue-500 dark:ring-blue-400' : ''}
+              ${
+                selectedFiles.has(file.id)
+                  ? 'ring-2 ring-blue-500 dark:ring-blue-400'
+                  : ''
+              }
             `}
           >
             <div className="flex items-center p-4">
               {/* Selection Checkbox */}
-              <div className={`
+              <div
+                className={`
                 w-6 h-6 rounded-full border-2 mr-4
                 transition-colors duration-200 
-                ${selectedFiles.has(file.id)
-                  ? 'border-blue-500 bg-blue-500 dark:border-blue-400 dark:bg-blue-400'
-                  : 'border-gray-300 dark:border-gray-600'
+                ${
+                  selectedFiles.has(file.id)
+                    ? 'border-blue-500 bg-blue-500 dark:border-blue-400 dark:bg-blue-400'
+                    : 'border-gray-300 dark:border-gray-600'
                 }
                 flex items-center justify-center
-              `}>
+              `}
+              >
                 {selectedFiles.has(file.id) && (
                   <Check className="w-4 h-4 text-white" />
                 )}
@@ -95,9 +114,16 @@ export function MediaList({
                   {file.name}
                 </p>
                 <div className="mt-1 flex items-center gap-3">
-                  <span className="text-sm text-gray-500 dark:text-gray-400">{formatFileSize(file.size)}</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    {formatFileSize(file.size)}
+                  </span>
                   <span className="text-gray-300 dark:text-gray-600">•</span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">{formatDate(file.createdAt)}</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    {formatDate(
+                      file.createdAt,
+                      localeDateMatch[i18n.language as Language]
+                    )}
+                  </span>
                 </div>
               </div>
 
@@ -107,7 +133,7 @@ export function MediaList({
                   <Button
                     variant="secondary"
                     size="sm"
-                    onClick={(e) => {
+                    onClick={e => {
                       e.stopPropagation();
                       onSelect(file.url);
                     }}
@@ -119,7 +145,7 @@ export function MediaList({
                   <Button
                     variant="secondary"
                     size="sm"
-                    onClick={(e) => {
+                    onClick={e => {
                       e.stopPropagation();
                       window.open(file.url, '_blank');
                     }}
@@ -131,7 +157,7 @@ export function MediaList({
                 <Button
                   variant="danger"
                   size="sm"
-                  onClick={(e) => {
+                  onClick={e => {
                     e.stopPropagation();
                     onDelete(file.id);
                   }}

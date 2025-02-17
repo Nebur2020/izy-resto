@@ -28,6 +28,12 @@ import enTicket from './locales/en/ticket.json';
 import frSettingData from './locales/fr/setting-data.json';
 import enSettingData from './locales/en/setting-data.json';
 
+import enPersonal from './locales/en/personal.json';
+import frPersonal from './locales/fr/personal.json';
+
+import frMedia from './locales/fr/media.json';
+import enMedia from './locales/en/media.json';
+
 i18n.use(initReactI18next).init({
   resources: {
     en: {
@@ -40,6 +46,8 @@ i18n.use(initReactI18next).init({
       order: enOrder,
       ticket: enTicket,
       settingData: enSettingData,
+      personal: enPersonal,
+      media: enMedia,
     },
     fr: {
       cart: frCart,
@@ -51,6 +59,8 @@ i18n.use(initReactI18next).init({
       order: frOrder,
       ticket: frTicket,
       settingData: frSettingData,
+      personal: frPersonal,
+      media: frMedia,
     },
   },
   fallbackLng: 'fr',
