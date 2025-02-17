@@ -9,6 +9,7 @@ import { formatDate } from '../../../utils';
 import { formatCurrency } from '../../../utils/currency';
 import { Pagination } from '../../../components/ui/Pagination';
 import { Order } from '../../../types';
+import { useTranslation } from 'react-i18next';
 
 const ITEMS_PER_PAGE = 8;
 
@@ -17,14 +18,12 @@ const exportTipsToCSV = (
   settings: any,
   dateRange: { from: Date; to: Date }
 ) => {
-  // Calculate totals
   const totalTips = orders.reduce(
     (sum, order) => sum + (order.tip?.amount || 0),
     0
   );
   const averageTip = totalTips / orders.length;
 
-  // Create headers
   const headers = [
     'Date',
     'Référence',
@@ -40,10 +39,9 @@ const exportTipsToCSV = (
     `Période,${formatDate(dateRange.from)} - ${formatDate(dateRange.to)}`,
     `Total des pourboires,${formatCurrency(totalTips, settings?.currency)}`,
     `Moyenne des pourboires,${formatCurrency(averageTip, settings?.currency)}`,
-    '', // Empty line between summary and data
+    '',
   ].join('\n');
 
-  // Create data rows
   const rows = orders
     .map(order => {
       return [
@@ -79,6 +77,7 @@ const exportTipsToCSV = (
 };
 
 export const AccountingTipsManagement = () => {
+  const { t } = useTranslation();
   const { settings, isLoading: settingsLoading } = useSettings();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
@@ -93,7 +92,6 @@ export const AccountingTipsManagement = () => {
       return b.createdAt - a.createdAt;
     });
 
-  // Calculate pagination
   const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedOrders = filteredOrders.slice(
@@ -116,7 +114,6 @@ export const AccountingTipsManagement = () => {
       exportTipsToCSV(filteredOrders, settings, dateRange);
     } catch (error) {
       console.error('Error exporting tips:', error);
-      // Handle error (show toast, etc.)
     } finally {
       setIsDownloading(false);
     }
@@ -148,7 +145,7 @@ export const AccountingTipsManagement = () => {
             </div>
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Total Taxes
+                {t('comptability:total-taxes')}
               </p>
               <p className="text-2xl font-semibold">
                 {formatCurrency(
@@ -166,7 +163,7 @@ export const AccountingTipsManagement = () => {
         <DateFilter
           startDate={dateRange.from}
           endDate={dateRange.to}
-          onDateChange={handleDateChange} //   onDateChange={handleDateChange}
+          onDateChange={handleDateChange}
         />
         <div className="flex gap-2">
           <Button
@@ -177,8 +174,8 @@ export const AccountingTipsManagement = () => {
             <Download className="w-4 h-4 mr-2" />
 
             {isDownloading
-              ? 'Téléchargement en cours...'
-              : 'Télécharger les pourboires'}
+              ? t('common:downloading')
+              : t('comptability:download-tip')}
           </Button>
         </div>
       </div>
@@ -189,13 +186,13 @@ export const AccountingTipsManagement = () => {
             <thead>
               <tr className="border-b dark:border-gray-700 text-left">
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Date
+                  {t('comptability:date')}
                 </th>
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Référence
+                  {t('comptability:references')}
                 </th>
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Pourboire
+                  {t('comptability:tip')}
                 </th>
               </tr>
             </thead>
@@ -232,7 +229,7 @@ export const AccountingTipsManagement = () => {
         {!loading && paginatedOrders.length < 1 && (
           <div className="text-center py-8">
             <Package className="w-12 h-12 mx-auto text-gray-400 mb-3" />
-            <p className="text-gray-500">Pas de pourboires trouvés</p>
+            <p className="text-gray-500">{t('comptability:no-tips-found')}</p>
           </div>
         )}
 

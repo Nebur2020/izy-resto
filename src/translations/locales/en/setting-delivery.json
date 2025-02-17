@@ -1,0 +1,15 @@
+{
+  "errors-no-zones": "At least one delivery zone is required when delivery is enabled",
+  "enable-delivery": "Enable delivery",
+  "delivery-zones": "Delivery Zones",
+  "add-zone": "Add a zone",
+  "delete-zone": "Delete zone",
+  "delete-last-zone-warning": "Cannot delete the last delivery zone when delivery is enabled.",
+  "delete-zone-warning": "Are you sure you want to delete zone {{deleteConfirmation}}? This action is irreversible.",
+  "add-new-zone": "New delivery zone",
+  "update-zone": "Update zone",
+  "zone-name": "Zone name",
+  "zone-name-placeholder": "Ex: Downtown",
+  "zone-description-placeholde": "Zone description (optional)",
+  "delivery-price": "Delivery price"
+}

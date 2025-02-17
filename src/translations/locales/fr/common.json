@@ -88,6 +88,9 @@
   "update-in-progress": "Mise à jour en cours...",
   "saving": "Enregistrement...",
   "deleting": "Suppression...",
+  "select-upload-image": "Choisir depuis la bibliothèque",
+  "remove-image": "Supprimer l'image",
+  "no-logo-placeholder": "Aucun logo",
   "Actif": "Actif",
   "Inactif": "Inactif",
   "Admin": "Admin",
@@ -99,5 +102,9 @@
   "item-ordered": "Articles commandés",
   "client-details": "Détails Client",
   "description-max-limit": "La description ne peut pas dépasser {{maxLimit}} caractères",
-  "description-min-limit": "La description doit contenir au moins {{minLimit}} caractères"
+  "description-min-limit": "La description doit contenir au moins {{minLimit}} caractères",
+  "filed-is-required": "Ce champ est requis",
+  "no-logo": "Aucun logo",
+  "choose-from-bibliotheque": "Choisir depuis la bibliothèque",
+  "delete-image": "Supprimer l'image"
 }

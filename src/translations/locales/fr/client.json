@@ -1,0 +1,8 @@
+{
+  "customer": "Client",
+  "total-customers": "Clients au total",
+  "search-client": "Rechercher un client...",
+  "view-details": "Voir détails",
+  "sort-by-expenses": "Trier par depenses",
+  "sort-by-orders": "trier par commandes"
+}
