@@ -1,4 +1,3 @@
-import React from 'react';
 import { Globe, Search, Share2 } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import { RestaurantSettings } from '../../../../../types/settings';
@@ -6,73 +5,76 @@ import { FaviconUploader } from '../../../../../components/settings/seo/FaviconU
 import { KeywordsInput } from '../../../../../components/settings/seo/KeywordsInput';
 import { LogoUploader } from '../../../../../components/settings/LogoUploader';
 import { useSEOUpdater } from '../../../../../hooks/useSEOUpdater';
+import { useTranslation } from 'react-i18next';
 
 export function SEOSettings() {
+  const { t } = useTranslation();
   const { register, watch, setValue } = useFormContext<RestaurantSettings>();
   
-  // Handle real-time SEO updates
   useSEOUpdater(watch('seo.title'), watch('seo.favicon'));
 
   return (
     <div className="space-y-8">
-      {/* Basic SEO Settings */}
       <section className="space-y-6">
         <div className="flex items-center gap-3">
           <Search className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-          <h2 className="text-xl font-semibold">Paramètres SEO</h2>
+          <h2 className="text-xl font-semibold">
+            {t('settingSeo:seo-settings-title')}
+          </h2>
         </div>
 
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">
-              Titre du site
+              {t('settingSeo:seo-title')}
             </label>
             <input
               type="text"
               {...register('seo.title')}
               className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
-              placeholder="Restaurant Name - Tagline"
+              placeholder={t('settingSeo:seo-title-placeholder')}
             />
             <p className="mt-1 text-sm text-gray-500">
-              Apparaît dans l'onglet du navigateur et les résultats de recherche
+              {t('settingSeo:seo-title-description')}
             </p>
           </div>
 
           <div>
             <label className="block text-sm font-medium mb-1">
-              Description
+              {t('common:description')}
             </label>
             <textarea
               {...register('seo.description')}
               rows={3}
               className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
-              placeholder="Une brève description de votre restaurant..."
+              placeholder={t('settingSeo:seo-description-placeholder')}
             />
             <p className="mt-1 text-sm text-gray-500">
-              Apparaît dans les résultats de recherche (150-160 caractères recommandés)
+              {t('settingSeo:seo-description-description')}
             </p>
           </div>
 
           <div>
             <label className="block text-sm font-medium mb-1">
-              Mots-clés
+              {t('settingSeo:seo-keywords')}
             </label>
             <KeywordsInput
               value={watch('seo.keywords') || []}
               onChange={(keywords) => setValue('seo.keywords', keywords, { shouldDirty: true })}
             />
             <p className="mt-1 text-sm text-gray-500">
-              Mots-clés pertinents pour votre restaurant
+             {t('settingSeo:seo-keywords-description')}
             </p>
           </div>
         </div>
       </section>
 
-      {/* Visual Assets */}
       <section className="space-y-6">
         <div className="flex items-center gap-3">
           <Globe className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-          <h2 className="text-xl font-semibold">Ressources visuelles</h2>
+          <h2 className="text-xl font-semibold">
+            {t('settingSeo:seo-images-title')}
+          </h2>
         </div>
 
         <div className="space-y-6">
@@ -85,24 +87,25 @@ export function SEOSettings() {
             <LogoUploader
               value={watch('seo.ogImage')}
               onChange={(url) => setValue('seo.ogImage', url, { shouldDirty: true })}
-              label="Image de partage social"
-              description="Image affichée lors du partage sur les réseaux sociaux (1200x630px recommandé)"
+              label={t('settingSeo:seo-og-image')}
+              description={t('settingSeo:seo-og-image-description')}
             />
           </div>
         </div>
       </section>
 
-      {/* Social Media Integration */}
       <section className="space-y-6">
         <div className="flex items-center gap-3">
           <Share2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-          <h2 className="text-xl font-semibold">Intégration sociale</h2>
+          <h2 className="text-xl font-semibold">
+            {t('settingSeo:seo-social-title')}
+          </h2>
         </div>
 
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">
-              Twitter Handle
+              {t('settingSeo:seo-twitter-handle')}
             </label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">@</span>
@@ -114,22 +117,22 @@ export function SEOSettings() {
               />
             </div>
             <p className="mt-1 text-sm text-gray-500">
-              Utilisé pour les Twitter Cards
+              {t('settingSeo:seo-twitter-handle-description')}
             </p>
           </div>
 
           <div>
             <label className="block text-sm font-medium mb-1">
-              Google Site Verification
+              {t('settingSeo:seo-facebook-page')}
             </label>
             <input
               type="text"
               {...register('seo.googleSiteVerification')}
               className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
-              placeholder="Code de vérification Google"
+              placeholder={t('settingSeo:seo-facebook-page-placeholder')}
             />
             <p className="mt-1 text-sm text-gray-500">
-              Code de vérification pour Google Search Console
+              {t('settingSeo:seo-facebook-page-description')}
             </p>
           </div>
         </div>
