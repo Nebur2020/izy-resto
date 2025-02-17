@@ -28,6 +28,27 @@ import enTicket from './locales/en/ticket.json';
 import frSettingAppearence from './locales/fr/setting-appearence.json';
 import enSettingAppearence from './locales/en/setting-appearence.json';
 
+import frSettingBusiness from './locales/fr/setting-business.json';
+import enSettingBusiness from './locales/en/setting-business.json';
+
+import frTaxAndTips from './locales/fr/setting-tax-and-tips.json';
+import enTaxAndTips from './locales/en/setting-tax-and-tips.json';
+
+import frSettingDelivery from './locales/fr/setting-delivery.json';
+import enSettingDelivery from './locales/en/setting-delivery.json';
+
+import frSettingSeo from './locales/fr/setting-seo.json';
+import enSettingSeo from './locales/en/setting-seo.json';
+
+import frSettingLegal from './locales/fr/setting-legal.json';
+import enSettingLegal from './locales/en/setting-legal.json';
+
+import frSettingIntegration from './locales/fr/setting-integration.json';
+import enSettingIntegration from './locales/en/setting-integration.json';
+
+import frSettingData from './locales/fr/setting-data.json';
+import enSettingData from './locales/en/setting-data.json';
+
 import enPersonal from './locales/en/personal.json';
 import frPersonal from './locales/fr/personal.json';
 
@@ -46,6 +67,13 @@ i18n.use(initReactI18next).init({
       order: enOrder,
       ticket: enTicket,
       settingAppearence: enSettingAppearence,
+      settingBusiness: enSettingBusiness,
+      taxAndTips: enTaxAndTips,
+      settingDelivery: enSettingDelivery,
+      settingSeo: enSettingSeo,
+      settingLegal: enSettingLegal,
+      settingIntegration: enSettingIntegration,
+      settingData: enSettingData,
       personal: enPersonal,
       media: enMedia,
     },
@@ -59,6 +87,13 @@ i18n.use(initReactI18next).init({
       order: frOrder,
       ticket: frTicket,
       settingAppearence: frSettingAppearence,
+      settingBusiness: frSettingBusiness,
+      taxAndTips: frTaxAndTips,
+      settingDelivery: frSettingDelivery,
+      settingSeo: frSettingSeo,
+      settingLegal: frSettingLegal,
+      settingIntegration: frSettingIntegration,
+      settingData: frSettingData,
       personal: frPersonal,
       media: frMedia,
     },

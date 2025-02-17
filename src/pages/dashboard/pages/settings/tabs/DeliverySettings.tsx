@@ -9,8 +9,10 @@ import { Button } from '../../../../../components/ui/Button';
 import { ConfirmDialog } from '../../../../../components/ui/ConfirmDialog';
 import { DeliveryZoneForm } from '../../../components/delivery/DeliveryZoneForm';
 import { DeliveryZoneList } from '../../../components/delivery/DeliveryZoneList';
+import { useTranslation } from 'react-i18next';
 
 export function DeliverySettings() {
+  const { t } = useTranslation();
   const {
     watch,
     setValue,
@@ -32,19 +34,17 @@ export function DeliverySettings() {
   const zones = watch('delivery.zones') || [];
   const currency = watch('currency');
 
-  // Register delivery.zones with validation
   React.useEffect(() => {
     register('delivery.zones', {
       validate: value => {
         if (deliveryEnabled && (!value || value.length === 0)) {
-          return 'Au moins une zone de livraison est requise lorsque la livraison est activée';
+          return t('settingDelivery:errors-no-zones');
         }
         return true;
       },
     });
   }, [register, deliveryEnabled]);
 
-  // Revalidate when delivery status changes
   const handleDeliveryToggle = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -82,11 +82,12 @@ export function DeliverySettings() {
 
   return (
     <div className="space-y-8">
-      {/* Enable/Disable Delivery */}
       <section className="space-y-4">
         <div className="flex items-center gap-3">
           <Truck className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-          <h2 className="text-xl font-semibold">Livraison</h2>
+          <h2 className="text-xl font-semibold">
+            {t('common:delivery')}
+          </h2>
         </div>
 
         <div className="flex items-center gap-2">
@@ -97,22 +98,22 @@ export function DeliverySettings() {
             })}
             className="rounded border-gray-300 dark:border-gray-600"
           />
-          <label className="text-sm font-medium">Activer la livraison</label>
+          <label className="text-sm font-medium">
+            {t('settingDelivery:enable-delivery')}
+          </label>
         </div>
       </section>
-
-      {/* Delivery Zones */}
       {deliveryEnabled && (
         <section className="space-y-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-medium">Zones de Livraison</h3>
+            <h3 className="text-lg font-medium">
+              {t('settingDelivery:delivery-zones')}
+            </h3>
             <Button type="button" onClick={() => setIsFormOpen(true)}>
               <Plus className="w-4 h-4 mr-2" />
-              Ajouter une zone
+              {t('settingDelivery:add-zone')}
             </Button>
           </div>
-
-          {/* Error message when no zones */}
           {errors.delivery?.zones && (
             <div className="flex items-center gap-2 p-4 text-sm text-red-600 bg-red-50 dark:bg-red-900/20 dark:text-red-400 rounded-lg">
               <AlertCircle className="w-4 h-4 flex-shrink-0" />
@@ -129,7 +130,6 @@ export function DeliverySettings() {
               setIsFormOpen(true);
             }}
             onDelete={zone => {
-              // Prevent deletion of last zone if delivery is enabled
               if (deliveryEnabled && zones.length === 1) {
                 return;
               }
@@ -141,8 +141,6 @@ export function DeliverySettings() {
           />
         </section>
       )}
-
-      {/* Forms and Modals */}
       {isFormOpen && (
         <DeliveryZoneForm
           zone={editingZone}
@@ -157,13 +155,15 @@ export function DeliverySettings() {
 
       <ConfirmDialog
         isOpen={deleteConfirmation.isOpen}
-        title="Supprimer la zone"
+        title={t('settingDelivery:delete-zone')}
         message={
           deliveryEnabled && zones.length === 1
-            ? 'Impossible de supprimer la dernière zone de livraison lorsque la livraison est activée.'
-            : `Êtes-vous sûr de vouloir supprimer la zone "${deleteConfirmation.zone?.name}" ? Cette action est irréversible.`
+            ? t('settingDelivery:delete-last-zone-warning')
+            : t('settingDelivery:delete-zone-warning', {
+              deleteConfirmation: deleteConfirmation.zone?.name,
+            })
         }
-        confirmLabel="Supprimer"
+        confirmLabel={t('common:delete')}
         onConfirm={handleDelete}
         onCancel={() => setDeleteConfirmation({ isOpen: false, zone: null })}
       />
