@@ -87,5 +87,17 @@
   "no-product-in-stock-description": "Il n'y a actuellement aucun produit dans votre inventaire. Commencez par en ajouter un.",
   "update-in-progress": "Mise à jour en cours...",
   "saving": "Enregistrement...",
-  "deleting": "Suppression..."
+  "deleting": "Suppression...",
+  "Actif": "Actif",
+  "Inactif": "Inactif",
+  "Admin": "Admin",
+  "Staff": "Staff",
+  "percent-of-sales": " % des ventes",
+  "sales": "vendus",
+  "preparing": "En cours de préparation",
+  "ready": "Prêt",
+  "item-ordered": "Articles commandés",
+  "client-details": "Détails Client",
+  "description-max-limit": "La description ne peut pas dépasser {{maxLimit}} caractères",
+  "description-min-limit": "La description doit contenir au moins {{minLimit}} caractères"
 }

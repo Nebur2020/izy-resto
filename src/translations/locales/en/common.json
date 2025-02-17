@@ -83,5 +83,17 @@
   "no-product-in-stock-description": "There is no product in stock for the moment. Please add some products to your inventory.",
   "update-in-progress": "Update in progress...",
   "saving": "Saving...",
-  "deleting": "Deleting..."
+  "deleting": "Deleting...",
+  "Actif": "Active",
+  "Inactif": "Inactive",
+  "Admin": "Admin",
+  "Staff": "Staff",
+  "percent-of-sales": " % of sales",
+  "sales": "sold",
+  "preparing": "Preparing",
+  "ready": "Ready",
+  "item-ordered": "Item ordered",
+  "client-details": "Client details",
+  "description-max-limit": "Description cannot exceed {{maxLimit}} characters",
+  "description-min-limit": "Description must contain at least {{minLimit}} characters"
 }
