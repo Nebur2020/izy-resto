@@ -11,7 +11,8 @@ interface InventoryFormProps {
   onCancel: () => void;
 }
 
-export function InventoryForm({ item, onSave, onCancel }: InventoryFormProps) {
+export function InventoryForm(props: InventoryFormProps) {
+  const { item, onSave, onCancel } = props;
   const { settings } = useSettings();
   const {
     register,
@@ -46,7 +47,6 @@ export function InventoryForm({ item, onSave, onCancel }: InventoryFormProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       <div className="flex flex-col w-full max-w-2xl max-h-[90vh] bg-white dark:bg-gray-800 rounded-xl shadow-xl">
-        {/* Fixed Header */}
         <div className="flex justify-between items-center p-6 border-b dark:border-gray-700">
           <h2 className="text-xl font-semibold">
             {item ? 'Modifier le produit' : 'Nouveau produit'}
@@ -58,8 +58,6 @@ export function InventoryForm({ item, onSave, onCancel }: InventoryFormProps) {
             <X className="w-5 h-5" />
           </button>
         </div>
-
-        {/* Scrollable Form Body */}
         <div className="flex-1 overflow-y-auto">
           <form onSubmit={handleSubmit(onSave)} className="p-6 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -89,7 +89,7 @@
   "search-items": "Search for a product...",
   "cart-details": "Cart Details",
   "order-save-successfully": "The {{orderId}} command has been successfully registered.",
-  "download-bill": "Download the bill"
+  "download-bill": "Download the bill",
   "Actif": "Active",
   "Inactif": "Inactive",
   "Admin": "Admin",
