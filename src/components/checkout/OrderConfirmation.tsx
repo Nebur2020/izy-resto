@@ -241,7 +241,7 @@ export function OrderConfirmation(props: IOrderConfirmationProps) {
           </div>
         </div>
         <div className="space-y-3">
-          <h3 className="font-medium">{t('item-ordered')}</h3>
+          <h3 className="font-medium">{t('common:item-ordered')}</h3>
           {cart.map((item: CartItem) => (
             <div key={item.id} className="flex justify-between items-center">
               <div>

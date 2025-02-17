@@ -25,6 +25,14 @@
   "settings": "Paramètres",
   "tota-income": "Revenu total",
   "total-orders": "Commandes totales",
-  "uniqueCustomers": "Clients uniques",
-  "this-day": "Ce jour"
+  "unique-customers": "Clients uniques",
+  "pales-by-product": "Ventes par Produit",
+  "products-sold": "Produits vendus",
+  "no-product-sales": "Aucune vente enregistrée pour le moment",
+  "total-income-without-tax": "Revenu Total (HT) (Sans Livraison)",
+  "day-order": "Commandes/Jour",
+  "order-status": "État des commandes",
+  "best-customer": "Meilleurs clients",
+  "best-experience": "Pour une meilleure expérience et accéder à toutes les fonctionnalités, veuillez utiliser un écran plus large.",
+  "limit-view-on-mobile": "Vue limitée sur mobile"
 }

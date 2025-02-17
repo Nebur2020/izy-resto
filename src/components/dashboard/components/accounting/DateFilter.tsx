@@ -4,9 +4,9 @@ import { Button } from '../../../ui/Button';
 import { DatePicker } from '../../../ui/DatePicker';
 import { format } from 'date-fns';
 import { fr, enUS as en } from 'date-fns/locale';
+import { Language } from '../../../../types';
 import { useIsMobile } from '../../../../hooks/useIsMobile';
 import { useTranslation } from 'react-i18next';
-import { Language } from '../../../../types';
 
 interface DateFilterProps {
   startDate: Date;
@@ -22,7 +22,7 @@ export function DateFilter({
   const [isStartPickerOpen, setIsStartPickerOpen] = useState(false);
   const [isEndPickerOpen, setIsEndPickerOpen] = useState(false);
   const isMobile = useIsMobile();
-  const { t, i18n } = useTranslation('common');
+  const { t, i18n } = useTranslation(['common', 'dashboard']);
   const lng = i18n.language as Language;
 
   const localesMap: Record<Language, Locale> = {
@@ -112,7 +112,7 @@ export function DateFilter({
           </div>
 
           <span className="text-gray-500 dark:text-gray-400">
-            {lng === 'en' ? 'to' : 'à'}
+            {i18n.language === 'en' ? 'to' : 'à'}
           </span>
 
           <div className="relative flex-1 sm:flex-initial">
@@ -128,7 +128,6 @@ export function DateFilter({
               <CalendarIcon className="mr-2 h-3 w-3 sm:h-4 sm:w-4 text-gray-500" />
               {formattedEndDate}
             </Button>
-
             {isEndPickerOpen && (
               <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center">
                 <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl p-4 max-w-fit mx-auto">

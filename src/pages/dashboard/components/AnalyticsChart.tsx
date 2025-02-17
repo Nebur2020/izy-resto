@@ -1,11 +1,12 @@
-import React from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 interface AnalyticsChartProps {
   data: Record<string, number>;
 }
 
 export function AnalyticsChart({ data }: AnalyticsChartProps) {
+  const { t } = useTranslation('common');
   const total = Object.values(data).reduce((sum, value) => sum + value, 0);
   const colors = {
     pending: 'bg-yellow-500',
@@ -16,11 +17,11 @@ export function AnalyticsChart({ data }: AnalyticsChartProps) {
   };
 
   const wording: Record<string, string> = {
-    pending: 'En attente',
-    preparing: 'En cours de préparation',
-    ready: 'Prêt',
-    delivered: 'Livré',
-    cancelled: 'annulé',
+    pending: t('pending'),
+    preparing: t('preparing'),
+    ready: t('ready'),
+    delivered: t('delivered'),
+    cancelled: t('cancelled'),
   };
 
   return (
