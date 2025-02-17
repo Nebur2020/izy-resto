@@ -285,6 +285,13 @@ export const allCurrencies: AllCurrency[] = [
     display: 'CFP',
     acceptedPaymentMethods: [],
   },
+  {
+    label: 'Franc burundais (BIF)',
+    value: 'BIF',
+    infos: '',
+    display: 'BIF',
+    acceptedPaymentMethods: [],
+  },
 ];
 
 export const getCurrencyObject = (currency: string) => {

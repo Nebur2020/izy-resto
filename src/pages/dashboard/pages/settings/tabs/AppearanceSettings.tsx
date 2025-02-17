@@ -20,6 +20,7 @@ import { useAppVersion } from '../../../../../hooks/useAppVersion';
 import { useDeployment } from '../../../../../hooks/useDeployment';
 import packageJson from '../../../../../../package.json';
 import { useTranslation } from 'react-i18next';
+import { Version } from '../../../../../services/version/version.service';
 
 const COOLDOWN_DURATION = 6 * 60;
 const DEPLOY_STORAGE_KEY = 'deploymentCooldown';
@@ -68,10 +69,11 @@ export function AppearanceSettings() {
   const { register, watch, setValue } = useFormContext<RestaurantSettings>();
   const { theme, toggleTheme } = useTheme();
 
-  const { version, loading, errorLoading } = useAppVersion();
+  const { version, loading, errorLoading, versions } = useAppVersion();
   const { redeploy, isDeploying, error } = useDeployment();
 
   const [cooldownTime, setCooldownTime] = useState(0);
+  const [selectedVersion, setSelectedVersion] = useState<Version | null>(null);
 
   useEffect(() => {
     const storedCooldown = getStoredCooldown();
@@ -85,7 +87,15 @@ export function AppearanceSettings() {
       }
     }
   }, []);
+  
+  useEffect(() => {
+    if (versions.length > 0) {
+      const vers = versions.find(v => v.value === packageJson.version);
+      setSelectedVersion(vers || null);
+    }
+  }, [versions]);
 
+  // Update cooldown timer
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
@@ -137,6 +147,15 @@ export function AppearanceSettings() {
     try {
       if (!version?.value || packageJson.version === version?.value) return;
       await redeploy(version?.value);
+      if (
+        !selectedVersion?.value ||
+        packageJson.version === selectedVersion?.value
+      ) {
+        return;
+      }
+
+      await redeploy(selectedVersion.value);
+      // Only set cooldown if deployment was successful
       setStoredCooldown(packageJson.version);
       setCooldownTime(COOLDOWN_DURATION);
     } catch (e) {
@@ -286,12 +305,26 @@ export function AppearanceSettings() {
               {t('settingAppearence:version')}{' '}
               {packageJson.version || t('common:loading')}
             </p>
+            <select
+              value={`${selectedVersion?.value}`}
+              className={`rounded-lg border p-2 dark:bg-gray-700`}
+              onChange={vers => {
+                const value = versions.find(v => v.value === vers.target.value);
+                setSelectedVersion(value || null);
+              }}
+            >
+              <option value="">Selectionner une version</option>
+              {versions.map(vers => (
+                <option key={vers.id} value={vers.value}>
+                  v{vers.value}
+                </option>
+              ))}
+            </select>
             {version?.value && (
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 {t('settingAppearence:new-version')} {version?.value}
               </p>
             )}
-
             {cooldownTime > 0 && (
               <p className="text-sm text-amber-600 dark:text-amber-400">
                 {t('settingAppearence:deployment-inprogress')}{' '}
@@ -299,7 +332,6 @@ export function AppearanceSettings() {
               </p>
             )}
           </div>
-
           {error && (
             <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
               <p className="text-sm text-red-600 dark:text-red-400">
@@ -315,7 +347,8 @@ export function AppearanceSettings() {
               loading ||
               !!errorLoading ||
               cooldownTime > 0 ||
-              packageJson.version === version?.value
+              packageJson.version === selectedVersion?.value ||
+              !selectedVersion
             }
             className="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors
                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
