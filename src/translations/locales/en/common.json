@@ -90,4 +90,16 @@
   "cart-details": "Cart Details",
   "order-save-successfully": "The {{orderId}} command has been successfully registered.",
   "download-bill": "Download the bill"
+  "Actif": "Active",
+  "Inactif": "Inactive",
+  "Admin": "Admin",
+  "Staff": "Staff",
+  "percent-of-sales": " % of sales",
+  "sales": "sold",
+  "preparing": "Preparing",
+  "ready": "Ready",
+  "item-ordered": "Item ordered",
+  "client-details": "Client details",
+  "description-max-limit": "Description cannot exceed {{maxLimit}} characters",
+  "description-min-limit": "Description must contain at least {{minLimit}} characters"
 }

@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMenu } from '../../../hooks/useMenu';
-import { CartItem, Order } from '../../../types';
+import { Order } from '../../../types';
 import { orderService } from '../../../services/orders/order.service';
 import { useSettings } from '../../../hooks/useSettings';
 import { MenuFilters } from '../../../components/menu/MenuFilters';
@@ -13,7 +13,7 @@ import { useServerCart } from '../../../context/ServerCartContext';
 import { useStaffCheck } from '../../../hooks/useStaffCheck';
 
 export function POS() {
-  const { items } = useMenu();
+  const { items: menuItems } = useMenu();
   const { settings } = useSettings();
   const { staffData } = useStaffCheck();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -40,6 +40,16 @@ export function POS() {
     tip,
     subtotal,
   } = useServerCart();
+
+  const items = useMemo(() => {
+    return menuItems.map(item => ({
+      ...item,
+      variantPrices: [
+        ...(item.variantPrices || []),
+        ...(item?.defaultVariantPrices || []),
+      ],
+    }));
+  }, [menuItems]);
 
   const filteredItems = items.filter(item => {
     const matchesSearch = item.name
@@ -90,6 +100,7 @@ export function POS() {
         change: amountPaid - total,
         tip,
         servedBy: staffData?.name || 'Le gérant',
+        delivery: null,
       };
 
       const orderId = await orderService.createOrder({
