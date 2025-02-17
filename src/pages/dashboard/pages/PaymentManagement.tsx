@@ -56,7 +56,7 @@ export function PaymentManagement() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold">{t('payment:payment-method')}</h1>
+          <h1 className="text-2xl font-bold">{t('common:payment-method')}</h1>
           <p className="text-gray-500 dark:text-gray-400">
             {t('payment:payment-method-managment')}
           </p>

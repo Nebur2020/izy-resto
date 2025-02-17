@@ -350,7 +350,7 @@ export function OrderConfirmation(props: IOrderConfirmationProps) {
         <div className="space-y-4">
           <h3 className="font-medium flex items-center gap-2">
             <CreditCard className="w-5 h-5" />
-            {t('payment-method')}
+            {t('common:payment-method')}
           </h3>
           <div className="space-y-3">
             {paymentMethods
