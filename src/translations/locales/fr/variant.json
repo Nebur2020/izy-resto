@@ -1,0 +1,17 @@
+{
+  "variant-title": "Gestion des Variantes",
+  "variant-description": "Gérez les variantes de vos produits (tailles, options, etc.)",
+  "add-variant": "Ajouter une Variante",
+  "search-placeholder": "Rechercher une variante...",
+  "new-variant": "Nouvelle Variant",
+  "update-variant": "Modifier la Variante",
+  "update-variant-option": "Modifier les options de cette variante",
+  "add-new-variant": "Ajouter une nouvelle variante au menu",
+  "variant-name": "Nom de la Variante",
+  "variant-required": "Obligatoire",
+  "variant-category-applicable": "Catégories Applicables",
+  "variant-price-and-value": "Valeurs et Prix",
+  "variant-value-required": "Toutes les valeurs sont requises",
+  "delete-variant": "Supprimer la variante",
+  "confirm-delete-variant": "Êtes-vous sûr de vouloir supprimer cette variante ? Cette action est irréversible."
+}
