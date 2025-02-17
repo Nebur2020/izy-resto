@@ -1,14 +1,16 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { CustomerList } from '../../../components/dashboard/customers/CustomerList';
 import { CustomerFilters } from '../../../components/dashboard/customers/CustomerFilters';
 import { useOrdersRealtime } from '../../../hooks/useOrdersRealtime';
 import { useCustomers } from '../../../hooks/useCustomers';
 import { CustomerDetailsModal } from '../../../components/dashboard/CustomerDetailsModal';
 import { Pagination } from '../../../components/ui/Pagination';
+import { useTranslation } from 'react-i18next';
 
 const ITEMS_PER_PAGE = 10;
 
 export function CustomerManagement() {
+  const { t } = useTranslation();
   const { orders } = useOrdersRealtime();
   const customers = useCustomers(orders);
 
@@ -38,7 +40,6 @@ export function CustomerManagement() {
       });
   }, [customers, searchTerm, sortOrder, sortBy]);
 
-  // Calculate pagination
   const totalPages = Math.ceil(filteredCustomers.length / ITEMS_PER_PAGE);
   const paginatedCustomers = filteredCustomers.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
@@ -67,9 +68,11 @@ export function CustomerManagement() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold mb-2">Clients</h1>
+        <h1 className="text-2xl font-bold mb-2">
+          {t('client:customer')}
+        </h1>
         <p className="text-gray-600 dark:text-gray-400">
-          {customers.length} client{customers.length > 1 ? 's' : ''} au total
+          {customers.length} {t('client:total-customers')}
         </p>
       </div>
 
