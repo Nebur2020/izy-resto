@@ -1,0 +1,12 @@
+{
+  "bluetooth-title": "Bluetooth Devices",
+  "search-device": "Add Device",
+  "disconnected": "Disconnected",
+  "connected": "Connected",
+  "connect": "Connect",
+  "disconnect": "Disconnect",
+  "no-device-found": "No Bluetooth device connected",
+  "make-sure-device": "Click Add Device to start",
+  "api-title": "API & Webhooks",
+  "api-description": "API and Webhooks integrations will be available soon. You will be able to connect your restaurant to third-party services to enhance your experience."
+}
