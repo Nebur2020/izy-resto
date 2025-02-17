@@ -167,7 +167,7 @@
   "product-image-description": "Recommended format: high-resolution JPG or PNG (1920x1080px minimum)",
   "product-image": "Product image",
   "product": "Product",
-  "delete-product-message": "Are you sure you want to delete this product? This action is irreversible."
+  "delete-product-message": "Are you sure you want to delete this product? This action is irreversible.",
   "payment-method": "Payment mode",
   "add-article": "Add an article",
   "search-product": "Search for a product...",
