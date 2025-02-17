@@ -3,6 +3,7 @@ import { ArrowUpRight, ArrowDownRight, DollarSign } from 'lucide-react';
 import { AccountingStats } from '../../../../types/accounting';
 import { useSettings } from '../../../../hooks/useSettings';
 import { formatCurrency } from '../../../../utils/currency';
+import { useTranslation } from 'react-i18next';
 
 interface AccountingOverviewProps {
   stats: AccountingStats | null;
@@ -13,6 +14,7 @@ export function AccountingOverview({
   stats,
   isLoading,
 }: AccountingOverviewProps) {
+  const { t } = useTranslation();
   const { settings } = useSettings();
 
   if (isLoading) {
@@ -30,21 +32,21 @@ export function AccountingOverview({
 
   const overviewStats = [
     {
-      label: 'Débit',
+      label: t('comptability:flow'),
       amount: stats?.totalDebit || 0,
       icon: ArrowUpRight,
       color: 'text-blue-600 dark:text-blue-400',
       bgColor: 'bg-blue-50 dark:bg-blue-900/20',
     },
     {
-      label: 'Crédit',
+      label: t('comptability:credit'),
       amount: stats?.totalCredit || 0,
       icon: ArrowDownRight,
       color: 'text-purple-600 dark:text-purple-400',
       bgColor: 'bg-purple-50 dark:bg-purple-900/20',
     },
     {
-      label: 'Montant Net',
+      label: t('comptability:net-amount'),
       amount: stats?.netAmount || 0,
       icon: DollarSign,
       color: 'text-green-600 dark:text-green-400',

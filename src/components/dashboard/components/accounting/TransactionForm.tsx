@@ -4,24 +4,22 @@ import { X } from 'lucide-react';
 import { Button } from '../../../ui/Button';
 import { Transaction } from '../../../../types/accounting';
 import { useSettings } from '../../../../hooks/useSettings';
+import { useTranslation } from 'react-i18next';
 
-interface TransactionFormProps {
+interface ITransactionFormProps {
   transaction?: Transaction;
   onSave: (data: Omit<Transaction, 'id'>) => Promise<void>;
   onCancel: () => void;
 }
 
-export function TransactionForm({
-  transaction,
-  onSave,
-  onCancel,
-}: TransactionFormProps) {
+export function TransactionForm(props: ITransactionFormProps) {
+  const { t } = useTranslation();
+  const { transaction, onSave, onCancel } = props;
   const { settings } = useSettings();
   const [isLoading, setIsLoading] = useState(false);
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm({
     defaultValues: transaction || {
@@ -35,7 +33,6 @@ export function TransactionForm({
   });
 
   const handleFormSubmit = async (data: any) => {
-    // Ensure debit and credit are numbers
     try {
       setIsLoading(true);
       const formattedData = {
@@ -56,7 +53,9 @@ export function TransactionForm({
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl">
         <div className="flex justify-between items-center p-6 border-b dark:border-gray-700">
           <h2 className="text-xl font-semibold">
-            {transaction ? 'Modifier la Transaction' : 'Nouvelle Transaction'}
+            {transaction
+              ? t('comptability:update-transaction')
+              : t('comptability:add-transaction')}
           </h2>
           <button onClick={onCancel}>
             <X className="w-5 h-5" />
@@ -69,10 +68,14 @@ export function TransactionForm({
         >
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Date</label>
+              <label className="block text-sm font-medium mb-1">
+                {t('comptability:date')}
+              </label>
               <input
                 type="date"
-                {...register('date', { required: 'La date est requise' })}
+                {...register('date', {
+                  required: t('comptability:date-is-required'),
+                })}
                 className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
               />
               {errors.date && (
@@ -83,29 +86,35 @@ export function TransactionForm({
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Source</label>
+              <label className="block text-sm font-medium mb-1">
+                {t('comptability:source')}
+              </label>
               <input
                 type="text"
-                {...register('source', { required: 'La source est requise' })}
+                {...register('source', {
+                  required: t('comptability:source-is-required'),
+                })}
                 className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
               />
             </div>
 
             <div className="col-span-2">
               <label className="block text-sm font-medium mb-1">
-                Description
+                {t('comptability:description')}
               </label>
               <input
                 type="text"
                 {...register('description', {
-                  required: 'La description est requise',
+                  required: t('comptability:description-is-required'),
                 })}
                 className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Débit</label>
+              <label className="block text-sm font-medium mb-1">
+                {t('comptability:flow')}
+              </label>
               <input
                 type="number"
                 step={settings?.currency === 'XOF' ? '1' : '0.01'}
@@ -115,7 +124,9 @@ export function TransactionForm({
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Crédit</label>
+              <label className="block text-sm font-medium mb-1">
+                {t('comptability:credit')}
+              </label>
               <input
                 type="number"
                 step={settings?.currency === 'XOF' ? '1' : '0.01'}
@@ -126,7 +137,7 @@ export function TransactionForm({
 
             <div className="col-span-2">
               <label className="block text-sm font-medium mb-1">
-                Référence
+                {t('comptability:references')}
               </label>
               <input
                 type="text"
@@ -138,10 +149,10 @@ export function TransactionForm({
 
           <div className="flex justify-end gap-4 mt-6">
             <Button type="button" variant="secondary" onClick={onCancel}>
-              Annuler
+              {t('common:cancel')}
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {transaction ? 'Mettre à jour' : 'Ajouter'}
+              {transaction ? t('common:update') : t('common:add')}
             </Button>
           </div>
         </form>
