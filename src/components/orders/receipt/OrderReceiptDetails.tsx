@@ -61,7 +61,7 @@ export function OrderReceiptDetails({ order }: OrderReceiptDetailsProps) {
       <div className="bg-gray-100 dark:bg-gray-800 rounded-lg shadow-inner mb-8">
         <div className="px-4 sm:px-6 py-4">
           <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
-            {t('item-ordered')}
+            {t('common:item-ordered')}
           </h2>
           <div className="divide-y divide-gray-200 dark:divide-gray-700">
             {order.items.map(item => (

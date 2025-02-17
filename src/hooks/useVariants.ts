@@ -19,7 +19,7 @@ export function useVariants(categoryId?: string) {
     try {
       setIsLoading(true);
       const data = await variantService.getAll();
-      setVariants(data);
+      setVariants(data as any);
     } catch (error) {
       console.error('Erreur chargement variants:', error);
       toast.error('Failed to load variants');
