@@ -8,6 +8,7 @@ import { CategoryForm } from '../components/CategoryForm';
 import { ConfirmationModal } from '../../../components/ui/ConfirmationModal';
 import toast from 'react-hot-toast';
 import EmptySection from '../../../components/dashboard/shared/EmptySection';
+import { useTranslation } from 'react-i18next';
 
 export function CategoryManagement() {
   const { categories, isLoading, addCategory, updateCategory, deleteCategory } =
@@ -22,22 +23,23 @@ export function CategoryManagement() {
     categoryName?: string;
   }>({ isOpen: false });
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const { t } = useTranslation();
 
   const handleSave = async (data: Omit<Category, 'id'>) => {
     try {
       setIsCreating(true);
       if (editingCategory) {
         await updateCategory(editingCategory.id, data);
-        toast.success('Catégorie mise à jour avec succès');
+        toast.success(t('category:category-updated'));
       } else {
         await addCategory(data);
-        toast.success('Catégorie créée avec succès');
+        toast.success(t('category:category-created'));
       }
       setIsFormOpen(false);
       setEditingCategory(null);
     } catch (error) {
       console.error('Error saving category:', error);
-      toast.error('Une erreur est survenue');
+      toast.error(t('category:category-error'));
     } finally {
       setIsCreating(false);
     }
@@ -60,10 +62,10 @@ export function CategoryManagement() {
     if (!deleteConfirmation.categoryId) return;
     try {
       await deleteCategory(deleteConfirmation.categoryId);
-      toast.success('Catégorie supprimée avec succès');
+      toast.success(t('category:category-deleted'));
     } catch (error) {
       console.error('Error deleting category:', error);
-      toast.error('Une erreur est survenue');
+      toast.error(t('category:category-error'));
     } finally {
       setDeleteConfirmation({ isOpen: false });
     }
@@ -82,32 +84,28 @@ export function CategoryManagement() {
 
   return (
     <div className="space-y-6 p-6">
-      {/* Header Section */}
       <div className="flex flex-col space-y-4 md:space-y-0 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900 dark:text-white flex items-center gap-3">
             <LayoutGrid className="w-6 h-6 text-blue-500" />
-            Catégories
+            {t('category:category-title')}
           </h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Gérez les catégories de votre menu
+            {t('category:category-description')}
           </p>
         </div>
-
         <Button onClick={() => setIsFormOpen(true)} type="button">
           <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
-          <span className="relative">Nouvelle catégorie</span>
+          <span className="relative">{t('category:new-category')}</span>
         </Button>
       </div>
-
-      {/* Filters Section */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
             <input
               type="text"
-              placeholder="Rechercher une catégorie..."
+              placeholder={t('category:search-placeholder')}
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-500/20 transition-shadow"
@@ -122,19 +120,19 @@ export function CategoryManagement() {
             className="min-w-[140px]"
           >
             <ArrowUpDown className="w-4 h-4 mr-2" />
-            {sortOrder === 'asc' ? 'Croissant' : 'Décroissant'}
+            {sortOrder === 'asc'
+              ? t('common:ascending')
+              : t('common:descending')}
           </Button>
         </div>
       </div>
-
-      {/* Categories List */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
             <div className="flex flex-col items-center gap-2">
               <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
               <span className="text-sm text-gray-500 dark:text-gray-400">
-                Chargement des catégories...
+                {t('common:category-loading')}
               </span>
             </div>
           </div>
@@ -146,8 +144,8 @@ export function CategoryManagement() {
                   title="Aucune catégorie trouvée"
                   description={
                     searchTerm
-                      ? "Essayez d'autres termes de recherche"
-                      : 'Commencez par créer une catégorie'
+                      ? t('category:no-category-found')
+                      : t('category:no-category-description')
                   }
                 />
               ) : (
@@ -184,14 +182,14 @@ export function CategoryManagement() {
                           onClick={() => handleEdit(category)}
                           className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                         >
-                          Modifier
+                          {t('common:edit')}
                         </Button>
                         <Button
                           variant="ghost"
                           onClick={() => handleDelete(category)}
                           className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                         >
-                          Supprimer
+                          {t('common:delete')}
                         </Button>
                       </div>
                     </div>
@@ -202,8 +200,6 @@ export function CategoryManagement() {
           </div>
         )}
       </div>
-
-      {/* Modals */}
       {isFormOpen && (
         <CategoryForm
           isLoading={isCreating}
@@ -220,8 +216,10 @@ export function CategoryManagement() {
         isOpen={deleteConfirmation.isOpen}
         onClose={() => setDeleteConfirmation({ isOpen: false })}
         onConfirm={confirmDelete}
-        title="Supprimer la catégorie ?"
-        message={`Êtes-vous sûr de vouloir supprimer la catégorie "${deleteConfirmation.categoryName}" ?`}
+        title={t('category:delete-category')}
+        message={t('category:delete-category-message', {
+          categoryName: deleteConfirmation.categoryName
+        })}
       />
     </div>
   );

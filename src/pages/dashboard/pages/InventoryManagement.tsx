@@ -18,13 +18,9 @@ import {
 import { DateFilter } from '../../../components/dashboard/components/accounting/DateFilter';
 import { useTranslation } from 'react-i18next';
 
-const tabs = [
-  { id: 'inventory', label: 'Inventaire' },
-  { id: 'history', label: 'Historique' },
-];
-
 export function InventoryManagement() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -51,9 +47,13 @@ export function InventoryManagement() {
     endDate: new Date(),
   });
 
+  const tabs = [
+    { id: 'inventory', label: t('inventory:inventory') },
+    { id: 'history', label: t('inventory:historic') },
+  ];
+
   const { items, isLoading, addItem, updateItem, deleteItem } = useInventory();
 
-  // Load stock history when tab changes or page changes
   useEffect(() => {
     if (activeTab === 'history') {
       loadStockHistory();
@@ -111,17 +111,14 @@ export function InventoryManagement() {
 
   const handleStockUpdate = async (updates: StockUpdate[]) => {
     try {
-      // Process each update
       for (const update of updates) {
         const item = items.find(i => i.id === update.itemId);
         if (!item) continue;
 
-        // Update item stock
         await updateItem(update.itemId, {
           quantity: item.quantity - update.quantity,
         });
 
-        // Record in history
         await stockHistoryService.addUpdate({
           itemId: update.itemId,
           itemName: item.name,
@@ -135,7 +132,6 @@ export function InventoryManagement() {
 
       setIsUpdateFormOpen(false);
 
-      // Refresh history if we're on that tab
       if (activeTab === 'history') {
         loadStockHistory();
       }
@@ -146,7 +142,7 @@ export function InventoryManagement() {
 
   const handleDateChange = (start: Date, end: Date) => {
     setDateRange({ startDate: start, endDate: end });
-    setCurrentPage(1); // Reset to first page when date range changes
+    setCurrentPage(1);
   };
 
   const filteredItems = items.filter(item => {
@@ -160,19 +156,18 @@ export function InventoryManagement() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Gestion des Stocks
+            {t('inventory:stock-managemnt')}
           </h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Gérez votre inventaire et suivez vos stocks
+            {t('inventory:stock-description')}
           </p>
         </div>
         <div className="flex gap-3">
           <Button onClick={() => setIsUpdateFormOpen(true)}>
-            Mise à jour des stocks
+            {t('inventory:update-stock')}
           </Button>
           <Button
             onClick={() => {
@@ -181,18 +176,13 @@ export function InventoryManagement() {
             }}
           >
             <Plus className="w-4 h-4 mr-2" />
-            Ajouter un Produit
+            {t('inventory:add-product')}
           </Button>
         </div>
       </div>
-
-      {/* Alerts Section */}
       <InventoryAlerts items={items} />
-
-      {/* Tabs */}
       <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
 
-      {/* Date Range Filter - Always visible */}
       {activeTab !== 'inventory' && (
         <div className="flex items-center gap-4">
           <Calendar className="w-5 h-5 text-gray-500" />
@@ -224,17 +214,18 @@ export function InventoryManagement() {
                 onChange={e => setSelectedCategory(e.target.value)}
                 className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-700 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:focus:border-blue-400 dark:focus:ring-blue-400"
               >
-                <option value="all">Toutes les catégories</option>
-                <option value="ingredients">Ingrédients</option>
-                <option value="boissons">Boissons</option>
-                <option value="fournitures">Fournitures</option>
-                <option value="emballages">Emballages</option>
-                <option value="nettoyage">Produits d'entretien</option>
+                <option value="all">{t('inventory:all-category')}</option>
+                <option value="ingredients">{t('common:ingredients')}</option>
+                <option value="boissons">{t('common:beverages')}</option>
+                <option value="fournitures">{t('common:supplies')}</option>
+                <option value="emballages">{t('common:packaging')}</option>
+                <option value="nettoyage">
+                  {t('common:maintenant-product')}
+                </option>
               </select>
             </div>
           </div>
 
-          {/* Inventory List */}
           <InventoryList
             items={filteredItems}
             isLoading={isLoading}
@@ -286,9 +277,12 @@ export function InventoryManagement() {
 
       <ConfirmDialog
         isOpen={deleteConfirmation.isOpen}
-        title="Supprimer le produit"
-        message={`Êtes-vous sûr de vouloir supprimer "${deleteConfirmation.itemName}" ? Cette action est irréversible.`}
-        confirmLabel="Supprimer"
+        title={t('common:delete-product')}
+        message={t('inventory:confirm-delete-product', {
+          deleteConfirmationProduct: deleteConfirmation.itemName,
+        })}
+        
+        confirmLabel={t('common:delete')}
         onConfirm={handleDelete}
         onCancel={() => setDeleteConfirmation({ isOpen: false })}
         isLoading={isDeleting}

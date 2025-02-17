@@ -4,15 +4,17 @@ import { Button } from '../../../ui/Button';
 import { InventoryItem } from '../../../../types/inventory';
 import { useSettings } from '../../../../hooks/useSettings';
 import { getCurrencyObject } from '../../../../constants/defaultSettings';
+import { useTranslation } from 'react-i18next';
 
-interface InventoryFormProps {
+interface IInventoryFormProps {
   item?: InventoryItem | null;
   onSave: (data: Omit<InventoryItem, 'id'>) => void;
   onCancel: () => void;
 }
 
-export function InventoryForm(props: InventoryFormProps) {
+export function InventoryForm(props: IInventoryFormProps) {
   const { item, onSave, onCancel } = props;
+  const { t } = useTranslation();
   const { settings } = useSettings();
   const {
     register,
@@ -49,7 +51,7 @@ export function InventoryForm(props: InventoryFormProps) {
       <div className="flex flex-col w-full max-w-2xl max-h-[90vh] bg-white dark:bg-gray-800 rounded-xl shadow-xl">
         <div className="flex justify-between items-center p-6 border-b dark:border-gray-700">
           <h2 className="text-xl font-semibold">
-            {item ? 'Modifier le produit' : 'Nouveau produit'}
+            {item ? t('inventory:update-product') : t('inventory:new-product')}
           </h2>
           <button
             onClick={onCancel}
@@ -62,10 +64,12 @@ export function InventoryForm(props: InventoryFormProps) {
           <form onSubmit={handleSubmit(onSave)} className="p-6 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium mb-1">Nom</label>
+                <label className="block text-sm font-medium mb-1">
+                  {t('common:name')}
+                </label>
                 <input
                   type="text"
-                  {...register('name', { required: 'Le nom est requis' })}
+                  {...register('name', { required: t('common:name-required') })}
                   className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
                 />
                 {errors.name && (
@@ -77,31 +81,33 @@ export function InventoryForm(props: InventoryFormProps) {
 
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Catégorie
+                  {t('inventory:category')}
                 </label>
                 <select
                   {...register('category')}
                   className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
                 >
-                  <option value="ingredients">Ingrédients</option>
-                  <option value="boissons">Boissons</option>
-                  <option value="fournitures">Fournitures</option>
-                  <option value="emballages">Emballages</option>
-                  <option value="nettoyage">Produits d'entretien</option>
+                  <option value="ingredients">{t('common:ingredients')}</option>
+                  <option value="boissons">{t('common:beverages')}</option>
+                  <option value="fournitures">{t('common:supplies')}</option>
+                  <option value="emballages">{t('common:packaging')}</option>
+                  <option value="nettoyage">
+                    {t('common:maintenant-product')}
+                  </option>
                 </select>
               </div>
 
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Quantité
+                  {t('inventory:qte')}
                 </label>
                 <input
                   type="number"
                   {...register('quantity', {
-                    required: 'La quantité est requise',
+                    required: t('inventory:qte-required'),
                     min: {
                       value: 0,
-                      message: 'La quantité doit être positive',
+                      message: t('inventory:positive-qte-required'),
                     },
                   })}
                   className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
@@ -114,34 +120,36 @@ export function InventoryForm(props: InventoryFormProps) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1">Unité</label>
+                <label className="block text-sm font-medium mb-1">
+                  {t('inventory:unit')}
+                </label>
                 <select
                   {...register('unit')}
                   className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
                 >
-                  <option value="unités">Unités</option>
-                  <option value="kg">Kilogrammes</option>
-                  <option value="g">Grammes</option>
-                  <option value="l">Litres</option>
-                  <option value="ml">Millilitres</option>
-                  <option value="cartons">Cartons</option>
-                  <option value="packs">Packs</option>
-                  <option value="lb">Lb</option>
-                  <option value="oz">Oz</option>
+                  <option value="unités">{t('inventory:units')}</option>
+                  <option value="kg">{t('inventory:kg')}</option>
+                  <option value="g">{t('inventory:gramme')}</option>
+                  <option value="l">{t('inventory:litres')}</option>
+                  <option value="ml">{t('inventory:millilitres')}</option>
+                  <option value="cartons">{t('inventory:cartons')}</option>
+                  <option value="packs">{t('inventory:packs')}</option>
+                  <option value="lb">{t('inventory:lb')}</option>
+                  <option value="oz">{t('inventory:oz')}</option>
                 </select>
               </div>
 
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Quantité minimale
+                  {t('inventory:qte-minmale')}
                 </label>
                 <input
                   type="number"
                   {...register('minQuantity', {
-                    required: 'La quantité minimale est requise',
+                    required: t('inventory:qty-min-required'),
                     min: {
                       value: 0,
-                      message: 'La quantité minimale doit être positive',
+                      message: t('inventory:qty-min-positive'),
                     },
                   })}
                   className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
@@ -155,7 +163,7 @@ export function InventoryForm(props: InventoryFormProps) {
 
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Prix unitaire
+                  {t('inventory:unit-price')}
                   {settings?.currency
                     ? ` (${getCurrencyObject(settings?.currency)?.display})`
                     : ''}
@@ -164,8 +172,11 @@ export function InventoryForm(props: InventoryFormProps) {
                   type="number"
                   step={settings?.currency === 'XOF' ? '1' : '0.01'}
                   {...register('price', {
-                    required: 'Le prix est requis',
-                    min: { value: 0, message: 'Le prix doit être positif' },
+                    required: t('inventory:price-required'),
+                    min: {
+                      value: 0,
+                      message: t('inventory:price-must-be-positive'),
+                    },
                   })}
                   className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
                 />
@@ -178,7 +189,7 @@ export function InventoryForm(props: InventoryFormProps) {
 
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Fournisseur
+                  {t('inventory:supplier')}
                 </label>
                 <input
                   type="text"
@@ -189,7 +200,7 @@ export function InventoryForm(props: InventoryFormProps) {
 
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Date d'expiration
+                  {t('inventory:expiry-date')}
                 </label>
                 <input
                   lang="fr"
@@ -202,7 +213,7 @@ export function InventoryForm(props: InventoryFormProps) {
 
             <div>
               <label className="block text-sm font-medium mb-1">
-                Description
+                {t('common:description')}
               </label>
               <textarea
                 {...register('description')}
@@ -212,19 +223,17 @@ export function InventoryForm(props: InventoryFormProps) {
             </div>
           </form>
         </div>
-
-        {/* Fixed Footer */}
         <div className="p-6 border-t dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
           <div className="flex justify-end gap-4">
             <Button type="button" variant="secondary" onClick={onCancel}>
-              Annuler
+              {t('common:cancel')}
             </Button>
             <Button onClick={handleSubmit(onSave)} disabled={isSubmitting}>
               {isSubmitting
-                ? 'Enregistrement...'
+                ? t('common:saving')
                 : item
-                ? 'Mettre à jour'
-                : 'Ajouter'}
+                ? t('common:update')
+                : t('common:add')}
             </Button>
           </div>
         </div>

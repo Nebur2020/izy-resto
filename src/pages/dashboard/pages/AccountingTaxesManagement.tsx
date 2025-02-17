@@ -8,7 +8,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { formatDate } from '../../../utils';
 import { formatCurrency } from '../../../utils/currency';
 import { Pagination } from '../../../components/ui/Pagination';
-import { Order } from '../../../types';
+import { Language, Order } from '../../../types';
+import { useTranslation } from 'react-i18next';
 
 const ITEMS_PER_PAGE = 8;
 
@@ -122,17 +123,18 @@ export async function generateTaxReportCSV(
 }
 
 export const AccountingTaxesManagement = () => {
+  const { t, i18n } = useTranslation();
   const { settings, isLoading: settingsLoading } = useSettings();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const lng = i18n.language as Language;
 
   const { getDateOrders } = useOrders();
   const [currentPage, setCurrentPage] = useState(1);
 
   const filteredOrders = orders.filter(order => order?.taxes?.length > 0);
 
-  // Calculate pagination
   const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedOrders = filteredOrders.slice(
@@ -190,7 +192,7 @@ export const AccountingTaxesManagement = () => {
             </div>
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Total Taxes
+                {t('comptability:total-taxes')}
               </p>
               <p className="text-2xl font-semibold">
                 {formatCurrency(
@@ -208,7 +210,7 @@ export const AccountingTaxesManagement = () => {
         <DateFilter
           startDate={dateRange.from}
           endDate={dateRange.to}
-          onDateChange={handleDateChange} //   onDateChange={handleDateChange}
+          onDateChange={handleDateChange}
         />
         <div className="flex gap-2">
           <Button
@@ -218,8 +220,8 @@ export const AccountingTaxesManagement = () => {
           >
             <Download className="w-4 h-4 mr-2" />
             {isDownloading
-              ? 'Téléchargement en cours...'
-              : 'Télécharger les taxes'}
+              ? t('common:downloading')
+              : t('comptability:download-taxes')}
           </Button>
         </div>
       </div>
@@ -230,22 +232,22 @@ export const AccountingTaxesManagement = () => {
             <thead>
               <tr className="border-b dark:border-gray-700 text-left">
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Date
+                  {t('comptability:date')}
                 </th>
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Référence
+                  {t('comptability:references')}
                 </th>
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Taxes
+                  {t('comptability:taxes')}
                 </th>
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Total Taxes
+                  {t('comptability:tax-total')}
                 </th>
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Montant (HT)
+                  {t('comptability:amount')} (HT)
                 </th>
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Montant (TTC)
+                  {t('comptability:amount')} (TTC)
                 </th>
               </tr>
             </thead>
@@ -264,7 +266,7 @@ export const AccountingTaxesManagement = () => {
                     className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                   >
                     <td className="px-6 py-4 text-sm whitespace-nowrap">
-                      {formatDate(order.createdAt)}
+                      {formatDate(order.createdAt, false, lng)}
                     </td>
                     <td className="px-6 py-4 text-sm whitespace-nowrap">
                       #{order.id}
@@ -300,7 +302,7 @@ export const AccountingTaxesManagement = () => {
         {!loading && paginatedOrders.length < 1 && (
           <div className="text-center py-8">
             <Package className="w-12 h-12 mx-auto text-gray-400 mb-3" />
-            <p className="text-gray-500">Pas de taxes trouvées</p>
+            <p className="text-gray-500">{t('comptability:no-tax-found')}</p>
           </div>
         )}
 

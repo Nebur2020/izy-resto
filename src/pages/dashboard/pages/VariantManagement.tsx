@@ -6,8 +6,10 @@ import { Button } from '../../../components/ui/Button';
 import { VariantList } from '../../../components/dashboard/components/variants/VariantList';
 import { VariantForm } from '../../../components/dashboard/components/variants/VariantForm';
 import { ConfirmationModal } from '../../../components/ui/ConfirmationModal';
+import { useTranslation } from 'react-i18next';
 
 export function VariantManagement() {
+  const { t } = useTranslation();
   const { variants, isLoading, addVariant, updateVariant, deleteVariant } =
     useVariants();
   const { categories } = useCategories();
@@ -19,7 +21,6 @@ export function VariantManagement() {
   });
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Filter variants based on search term
   const filteredVariants = variants.filter(
     variant =>
       variant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -53,14 +54,14 @@ export function VariantManagement() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold">Gestion des Variantes</h1>
+          <h1 className="text-2xl font-bold">{t('variant:variant-title')}</h1>
           <p className="text-gray-500 dark:text-gray-400">
-            Gérez les variantes de vos produits (tailles, options, etc.)
+            {t('variant:variant-description')}
           </p>
         </div>
         <Button onClick={() => setIsFormOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
-          Ajouter une Variante
+          {t('variant:add-variant')}
         </Button>
       </div>
 
@@ -72,7 +73,7 @@ export function VariantManagement() {
             type="text"
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
-            placeholder="Rechercher une variante..."
+            placeholder={t('variant:search-placeholder')}
             className="w-full pl-10 pr-4 py-2 rounded-lg border dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
           />
         </div>
@@ -104,8 +105,8 @@ export function VariantManagement() {
           setDeleteConfirmation({ isOpen: false, variantId: null })
         }
         onConfirm={handleDelete}
-        title="Supprimer la variante"
-        message="Êtes-vous sûr de vouloir supprimer cette variante ? Cette action est irréversible."
+        title={t('variant:delete-variant')}
+        message={t('variant:confirm-delete-variant')}
       />
     </div>
   );
