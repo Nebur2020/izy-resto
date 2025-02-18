@@ -5,34 +5,37 @@ interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  onPrev?: () => void;
+  onNext?: () => void;
+  hasPrevPage?: boolean;
+  hasNextPage?: boolean;
 }
 
 export function Pagination({
   currentPage,
   totalPages,
   onPageChange,
+  onPrev = () => {},
+  onNext = () => {},
+  hasPrevPage = true,
+  hasNextPage = true,
 }: PaginationProps) {
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
-
-  const visiblePages = pages.filter(page => {
-    if (totalPages <= 5) return true;
-    if (page === 1 || page === totalPages) return true;
-    return Math.abs(page - currentPage) <= 1;
-  });
-
   return (
     <div className="flex items-center justify-center space-x-2">
       <Button
         variant="secondary"
         size="sm"
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
+        onClick={() => {
+          onPageChange(currentPage - 1);
+          onPrev();
+        }}
+        disabled={!hasPrevPage}
         type="button"
       >
         <ChevronLeft className="w-4 h-4" />
       </Button>
 
-      {visiblePages.map((page, index) => {
+      {/* {visiblePages.map((page, index) => {
         if (index > 0 && page - visiblePages[index - 1] > 1) {
           return (
             <span key={`ellipsis-${page}`} className="px-2 text-gray-500">
@@ -44,7 +47,9 @@ export function Pagination({
         return (
           <button
             key={page}
-            onClick={() => onPageChange(page)}
+            onClick={() => {
+              onPageChange(page);
+            }}
             type="button"
             className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
               currentPage === page
@@ -55,13 +60,16 @@ export function Pagination({
             {page}
           </button>
         );
-      })}
+      })} */}
 
       <Button
         variant="secondary"
         size="sm"
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
+        onClick={() => {
+          onPageChange(currentPage + 1);
+          onNext();
+        }}
+        disabled={!hasNextPage}
         type="button"
       >
         <ChevronRight className="w-4 h-4" />

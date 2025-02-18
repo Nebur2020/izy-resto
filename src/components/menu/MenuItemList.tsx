@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { MenuItem } from '../../types';
 import { MenuItemCard } from './MenuItemCard';
@@ -10,23 +9,36 @@ interface MenuItemListProps {
   onEdit: (item: MenuItem) => void;
   onDelete: (id: string) => void;
   currency?: Currency;
+  hasNextPage?: boolean;
+  hasPrevPage?: boolean;
+  currentPage?: number;
+  nextPage?: VoidFunction;
+  prevPage?: VoidFunction;
 }
 
-const ITEMS_PER_PAGE = 9;
-
-export function MenuItemList({ items, onEdit, onDelete, currency }: MenuItemListProps) {
-  const [currentPage, setCurrentPage] = useState(1);
+export function MenuItemList({
+  onEdit,
+  onDelete,
+  currency,
+  items,
+  hasNextPage = true,
+  hasPrevPage = true,
+  currentPage = 1,
+  nextPage = () => {},
+  prevPage = () => {},
+}: MenuItemListProps) {
+  // const [currentPage, setCurrentPage] = useState(1);
 
   // Calculate pagination
-  const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedItems = items.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  // const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
+  // const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  // const paginatedItems = items.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <AnimatePresence mode="popLayout">
-          {paginatedItems.map((item) => (
+          {items.map(item => (
             <MenuItemCard
               key={item.id}
               item={item}
@@ -38,12 +50,16 @@ export function MenuItemList({ items, onEdit, onDelete, currency }: MenuItemList
         </AnimatePresence>
       </div>
 
-      {totalPages > 1 && (
+      {items.length > 1 && (
         <div className="flex justify-center mt-6">
           <Pagination
             currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
+            totalPages={0}
+            onPageChange={() => {}}
+            onNext={nextPage}
+            onPrev={prevPage}
+            hasNextPage={hasNextPage}
+            hasPrevPage={hasPrevPage}
           />
         </div>
       )}

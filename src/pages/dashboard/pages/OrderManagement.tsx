@@ -11,7 +11,10 @@ export function OrderManagement() {
   const { t } = useTranslation();
   const { orders, updateOrderStatus } = useOrders();
   const [statusFilter, setStatusFilter] = useState<OrderStatus | 'all'>('all');
-  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
+  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({
+    from: new Date(new Date().setHours(0, 0, 0, 0)),
+    to: new Date(),
+  });
   const [cancelConfirmation, setCancelConfirmation] = useState<{
     isOpen: boolean;
     orderId?: string;

@@ -8,8 +8,7 @@ import { formatCurrency } from '../../../../utils/currency';
 import { ProductDetailsModal } from '../../../menu/ProductDetailsModal';
 import { Pagination } from '../../../ui/Pagination';
 import { useTranslation } from 'react-i18next';
-
-const ITEMS_PER_PAGE = 8;
+import { useMenu } from '../../../../hooks';
 
 interface POSMenuGridProps {
   items: MenuItem[];
@@ -21,15 +20,15 @@ interface POSMenuGridProps {
 
 export function POSMenuGrid(props: POSMenuGridProps) {
   const { t } = useTranslation('common');
-  const { items, onAddToCart, searchTerm, onSearchChange, onToggleCart } =
-    props;
+  const { onAddToCart, searchTerm, onSearchChange, onToggleCart } = props;
+  const { items, nextPage, prevPage, hasNextPage, hasPrevPage } = useMenu();
   const { settings } = useSettings();
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedItems = items.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  // const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
+  // const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  // const paginatedItems = items.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -56,7 +55,7 @@ export function POSMenuGrid(props: POSMenuGridProps) {
       <div className="flex-1 overflow-y-auto p-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           <AnimatePresence mode="popLayout">
-            {paginatedItems.map(item => (
+            {items.map(item => (
               <motion.div
                 key={item.id}
                 layout
@@ -89,12 +88,16 @@ export function POSMenuGrid(props: POSMenuGridProps) {
       </div>
 
       {/* Pagination */}
-      {totalPages > 1 && (
+      {items.length > 1 && (
         <div className="p-4 border-t dark:border-gray-700">
           <Pagination
             currentPage={currentPage}
-            totalPages={totalPages}
+            totalPages={0}
             onPageChange={setCurrentPage}
+            onNext={nextPage}
+            onPrev={prevPage}
+            hasNextPage={hasNextPage}
+            hasPrevPage={hasPrevPage}
           />
         </div>
       )}

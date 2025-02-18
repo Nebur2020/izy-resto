@@ -15,6 +15,8 @@ export interface MenuItem {
   stockQuantity: number;
   variants?: VariantOption[];
   inventoryConnections?: InventoryConnection[]; // Add inventory connections
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface MenuFilters {

@@ -62,3 +62,5 @@ export function getQuickAmounts(currency?: Currency): number[] {
       return [10, 20, 50, 100];
   }
 }
+
+export type { Currency };

@@ -14,7 +14,7 @@ export function OrderFilters(props: IOrderFiltersProps) {
   const { currentFilter, onFilterChange, dateRange, onDateRangeChange } = props;
   const { t } = useTranslation('order');
   const filters: Array<{ value: OrderStatus | 'all'; label: string }> = [
-    { value: 'all', label: t('common:all-orders') },
+    // { value: 'all', label: t('common:all-orders') },
     { value: 'pending', label: t('common:pending') },
     { value: 'preparing', label: t('common:in-cooking') },
     { value: 'delivered', label: t('common:delivered') },
