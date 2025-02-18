@@ -10,6 +10,7 @@ import { formatDate } from '../../../../utils/date';
 import { useSettings } from '../../../../hooks/useSettings';
 import { Pagination } from '../../../ui/Pagination';
 import { useTranslation } from 'react-i18next';
+import { Language } from '../../../../types';
 
 interface IInventoryListProps {
   items: InventoryItem[];
@@ -24,9 +25,9 @@ export function InventoryList(props: IInventoryListProps) {
   const { items, isLoading, onEdit, onDelete } = props;
   const { settings } = useSettings();
   const [currentPage, setCurrentPage] = useState(1);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language as Language;
 
-  // Calculate pagination
   const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedItems = items.slice(startIndex, startIndex + ITEMS_PER_PAGE);
@@ -110,7 +111,7 @@ export function InventoryList(props: IInventoryListProps) {
                   </td>
                   <td className="px-4 py-3">
                     <span className="rounded-full bg-gray-100 px-3 py-1 text-sm dark:bg-gray-800">
-                      {item.category}
+                      {t(`common:category-names.${item.category}`)}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right">
@@ -130,7 +131,7 @@ export function InventoryList(props: IInventoryListProps) {
                     {formatCurrency(numericPrice, settings?.currency)}
                   </td>
                   <td className="px-4 py-3">
-                    {item.expiryDate ? formatDate(item.expiryDate) : '-'}
+                    {item.expiryDate ? formatDate(item.expiryDate, false, lang) : '-'}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex justify-end gap-2">

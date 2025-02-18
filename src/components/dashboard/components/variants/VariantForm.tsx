@@ -315,7 +315,9 @@ export function VariantForm(props: IVariantFormProps) {
                               )}
                               className="flex-1 px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-shadow"
                             >
-                              <option value="">Sélectionner un article</option>
+                              <option value="">
+                                {t('common:select-items')}
+                              </option>
                               {inventory.map(item => (
                                 <option key={item.id} value={item.id}>
                                   {item.name} ({item.quantity} {item.unit})

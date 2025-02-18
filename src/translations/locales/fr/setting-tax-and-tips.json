@@ -10,5 +10,6 @@
   "tips-label": "Libellé du pourboire",
   "tips-placeholder": "Ex: Pourboire",
   "add-tax": "Ajouter une taxe",
-  "apply-to-all-categories": "Tous les produits"
+  "apply-to-all-categories": "Tous les produits",
+  "apply-to": "S'applique à"
 }

@@ -24,5 +24,6 @@
   "up-to-date": "Votre site est à jour",
   "re-deploy": "Mettre à jour le site",
   "light-mode": "Mode Clair",
-  "light-mode-description": "Interface lumineuse avec un contraste optimal"
+  "light-mode-description": "Interface lumineuse avec un contraste optimal",
+  "select-version": "Selectionner une version"
 }

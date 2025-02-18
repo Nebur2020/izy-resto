@@ -20,7 +20,6 @@ export interface StockUpdate {
   reason: string;
 }
 
-
 export function StockUpdateForm(props: IStockUpdateFormProps) {
   const { items, onSubmit, onCancel, isSubmitting } = props;
   const { t } = useTranslation();
@@ -118,11 +117,18 @@ export function StockUpdateForm(props: IStockUpdateFormProps) {
                       <div className="min-w-0">
                         <h3 className="font-medium truncate">{item.name}</h3>
                         <p className="text-sm text-gray-500 dark:text-gray-400">
-                          Stock actuel: {item.quantity} {item.unit}
+                          {t('common:current-stock', {
+                            quantity: item.quantity,
+                            unit: item.unit,
+                          })}
                         </p>
                         <p className="text-sm text-gray-500 dark:text-gray-400">
-                          Prix unitaire:{' '}
-                          {formatCurrency(item.price, settings?.currency)}
+                          {t('common:unit-price', {
+                            unitPrice: formatCurrency(
+                              item.price,
+                              settings?.currency
+                            ),
+                          })}
                         </p>
                       </div>
                     </div>
@@ -159,7 +165,7 @@ export function StockUpdateForm(props: IStockUpdateFormProps) {
 
                       <div>
                         <label className="block text-sm font-medium mb-1">
-                          Raison
+                          {t('common:reason')}
                         </label>
                         <input
                           type="text"

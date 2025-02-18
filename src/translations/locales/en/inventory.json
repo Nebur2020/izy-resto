@@ -27,8 +27,8 @@
   "units": "Units",
   "kg": "Kilograms",
   "gramme": "Grams",
-  "litres": "Litres",
-  "millilitres": "Millilitres",
+  "litres": "liters",
+  "millilitres": "Milliliters",
   "cartons": "Cartons",
   "pack": "Packs",
   "lb": "Lb",
@@ -41,5 +41,7 @@
   "supplier": "Supplier",
   "description": "Description",
   "confirm-delete-product": "Are you sure you want to delete {{deleteConfirmationProduct}}? This action is irreversible.",
-  "select-category-to-add-variants": "Select a category to add variants"
+  "select-category-to-add-variants": "Select a category to add variants",
+  "stock-history": "Stock History",
+  "qte-minmale": "Minimal Quantity"
 }

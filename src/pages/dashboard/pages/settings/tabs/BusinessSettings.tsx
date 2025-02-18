@@ -49,13 +49,13 @@ export function BusinessSettings() {
   ];
 
   const dayNames = {
-    monday: 'Lundi',
-    tuesday: 'Mardi',
-    wednesday: 'Mercredi',
-    thursday: 'Jeudi',
-    friday: 'Vendredi',
-    saturday: 'Samedi',
-    sunday: 'Dimanche',
+    monday: t('common:days.monday'),
+    tuesday: t('common:days.tuesday'),
+    wednesday: t('common:days.wednesday'),
+    thursday: t('common:days.thursday'),
+    friday: t('common:days.friday'),
+    saturday: t('common:days.saturday'),
+    sunday: t('common:days.sunday'),
   };
 
   return (
@@ -159,20 +159,18 @@ export function BusinessSettings() {
       </section>
 
       <section>
-        {/* Timezone Selection */}
         <div className="mb-6">
           <label className="block text-sm font-medium mb-1">
-            {t("settingBusiness:time-zone")} <span className="text-red-500">*</span>
+            {t('settingBusiness:time-zone')}{' '}
+            <span className="text-red-500">*</span>
           </label>
           <select
             {...register('openingHours.timezone', {
-              required: t("settingBusiness:time-zone-required"),
+              required: t('settingBusiness:time-zone-required'),
             })}
             className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
           >
-            <option value="">
-              {t("settingBusiness:select-time-zone")}
-            </option>
+            <option value="">{t('settingBusiness:select-time-zone')}</option>
             {timezones.map(tz => (
               <option key={tz.value} value={tz.value}>
                 {tz.label}
@@ -180,7 +178,7 @@ export function BusinessSettings() {
             ))}
           </select>
           <p className="mt-1 text-sm text-gray-500">
-            {t("settingBusiness:time-zone-description")}
+            {t('settingBusiness:time-zone-description')}
           </p>
         </div>
       </section>
@@ -198,7 +196,11 @@ export function BusinessSettings() {
               {...register('hasOpeningHours')}
               className="rounded border-gray-300 dark:border-gray-600"
             />
-            <span>{hasOpeningHours ? 'Actif' : 'Inactif'}</span>
+            <span>
+              {hasOpeningHours
+                ? `(${t('common:Actif')})`
+                : `(${t('common:Inactif')})`}
+            </span>
           </label>
         </div>
 
@@ -214,9 +216,7 @@ export function BusinessSettings() {
                       {...register(`openingHours.${day}.closed`)}
                       className="rounded border-gray-300 dark:border-gray-600"
                     />
-                    <span>
-                      {t('settingBusiness:closed')}{' '}
-                    </span>
+                    <span>{t('settingBusiness:closed')} </span>
                   </label>
                   {!watch(`openingHours.${day}.closed`) && (
                     <>
@@ -225,9 +225,7 @@ export function BusinessSettings() {
                         {...register(`openingHours.${day}.open`)}
                         className="rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
                       />
-                      <span>
-                        {t('settingBusiness:to')}{' '}
-                      </span>
+                      <span>{t('settingBusiness:to')} </span>
                       <input
                         type="time"
                         {...register(`openingHours.${day}.close`)}
@@ -255,7 +253,12 @@ export function BusinessSettings() {
                 {...register('canDeliver')}
                 className="rounded border-gray-300 dark:border-gray-600"
               />
-              <span>{t("common:delivery")} {canDeliver ? '(Actif)' : '(Inactif)'}</span>
+              <span>
+                {t('common:delivery')}{' '}
+                {canDeliver
+                  ? `(${t('common:Actif')})`
+                  : `(${t('common:Inactif')})`}
+              </span>
             </label>
           </div>
 
@@ -267,7 +270,12 @@ export function BusinessSettings() {
                 {...register('canDineIn')}
                 className="rounded border-gray-300 dark:border-gray-600"
               />
-              <span>{t("common:on-site")} {canDineIn ? '(Actif)' : '(Inactif)'}</span>
+              <span>
+                {t('common:on-site')}{' '}
+                {canDineIn
+                  ? `(${t('common:Actif')})`
+                  : `(${t('common:Inactif')})`}
+              </span>
             </label>
           </div>
 
@@ -279,9 +287,7 @@ export function BusinessSettings() {
                   {...register('paymentOnDineInActivated')}
                   className="rounded border-gray-300 dark:border-gray-600"
                 />
-                <span>
-                  {t('settingBusiness:payment-on-dine-in')}{' '}
-                </span>
+                <span>{t('settingBusiness:payment-on-dine-in')} </span>
               </label>
             </div>
           )}
