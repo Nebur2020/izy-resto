@@ -6,14 +6,12 @@ interface OrderCardActionsProps {
 }
 
 export function OrderCardActions({ order, onStatusChange }: OrderCardActionsProps) {
-  // Define the flow of status changes
   const statusFlow: { [key: string]: string | null } = {
     pending: 'preparing',
     preparing: 'delivered',
     delivered: null
   };
 
-  // Status translations for display
   const statusTranslations: { [key: string]: string } = {
     pending: 'En attente',
     preparing: 'En préparation',
@@ -29,14 +27,12 @@ export function OrderCardActions({ order, onStatusChange }: OrderCardActionsProp
     return statusFlow[order.status];
   };
 
-  // Don't show any actions if order is delivered
   if (order.status === 'delivered') {
     return null;
   }
 
   return (
     <div className="mt-6">
-      {/* Next Status Button */}
       {getNextStatus() && (
         <button
           onClick={() => onStatusChange(order.id, getNextStatusKey()!)}

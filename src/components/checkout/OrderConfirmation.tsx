@@ -37,6 +37,7 @@ interface IOrderConfirmationProps {
     address?: string;
     tableNumber?: string;
     diningOption: 'delivery' | 'dine-in';
+    selectedCode?: string;
   };
   onConfirm: () => void | Promise<void>;
   onBack: () => void;
@@ -49,7 +50,6 @@ interface IOrderConfirmationProps {
 export function OrderConfirmation(props: IOrderConfirmationProps) {
   const { t } = useTranslation('order');
 
-  // console.log(t('days.monday'));
   const {
     customerData,
     onConfirm,
@@ -222,6 +222,7 @@ export function OrderConfirmation(props: IOrderConfirmationProps) {
             {customerData.phone && (
               <p className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
                 <Phone className="w-4 h-4" />
+                {customerData.selectedCode}
                 {customerData.phone}
               </p>
             )}
