@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import PhoneInput, { CountryData } from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { CountryCode, isValidPhoneNumber } from 'libphonenumber-js';
+import './check-form.css';
 
 interface CheckoutFormData {
   name?: string;
@@ -90,18 +91,6 @@ export function CheckoutForm(props: ICheckoutFormProps) {
 
   const validatePhone = (value: string) => {
     if (diningOption === 'dine-in' && !value) return true;
-
-    console.group('Phone number validation');
-    console.info('value: ', value);
-    console.info(
-      'selectedCode.countryCode: ',
-      selectedCode.countryCode.toLocaleUpperCase()
-    );
-    console.log(
-      'isValidPhoneNumber: ',
-      isValidPhoneNumber(value, selectedCode.countryCode as CountryCode)
-    );
-    console.groupEnd();
 
     return isValidPhoneNumber(
       value,
@@ -290,10 +279,10 @@ export function CheckoutForm(props: ICheckoutFormProps) {
                     });
                   }
                 }}
-                containerClass="w-[120px] flex items-center border-r border-gray-300 dark:border-gray-600"
-                inputClass="!w-full !border-none bg-transparent pl-2 text-sm text-gray-700 dark:text-gray-300"
-                buttonClass="!bg-transparent !border-none p-0 flex items-center"
-                dropdownClass="absolute top-full z-50 bg-white dark:bg-gray-800 shadow-lg border border-gray-300 dark:border-gray-600"
+                containerClass="w-[120px] flex items-center border-r border-gray-300 !dark:border-gray-600"
+                inputClass="!w-full !border-none bg-transparent pl-2 text-sm text-gray-700 !dark:text-gray-300 dark:bg-gray-800"
+                buttonClass="!bg-transparent !dark:bg-transparent !border-none p-0 flex items-center"
+                dropdownClass="absolute top-full z-50 bg-white dark:bg-gray-800 shadow-lg border border-gray-300 !dark:border-gray-600"
                 enableSearch
               />
               <input
