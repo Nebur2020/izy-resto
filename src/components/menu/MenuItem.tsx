@@ -78,8 +78,7 @@ export const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
               </div>
             )}
 
-            {/* Low Stock Warning - Only on Desktop */}
-            {!isOutOfStock && item.stockQuantity <= 5 && (
+\            {!isOutOfStock && item.stockQuantity <= 5 && (
               <Badge
                 variant="warning"
                 className="absolute left-2 top-2 hidden shadow-lg md:flex md:left-4 md:top-4"

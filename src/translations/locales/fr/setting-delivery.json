@@ -10,6 +10,6 @@
   "update-zone": "Modifier la zone",
   "zone-name": "Nom de la zone",
   "zone-name-placeholder": "Ex: Centre-ville",
-  "zone-description-placeholde": "Description de la zone (optionnel)",
+  "zone-description-placeholder": "Description de la zone (optionnel)",
   "delivery-price": "Prix de livraison"
 }

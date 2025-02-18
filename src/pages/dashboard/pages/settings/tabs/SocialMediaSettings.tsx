@@ -74,8 +74,8 @@ export function SocialMediaSettings() {
         </div>
         <Button type="button" onClick={handleAddProfile}>
           <Plus className="w-4 h-4 mr-2" />
-            {t('setting:add-profile')}
-          </Button>
+          {t('setting:add-profile')}
+        </Button>
       </div>
 
       <div className="space-y-4">
@@ -117,7 +117,7 @@ export function SocialMediaSettings() {
                     }
                     placeholder={
                       profile.platform === 'whatsapp'
-                        ? 'Numéro de téléphone'
+                        ? t('common:phone-number')
                         : `https://${profile.platform}.com/...`
                     }
                     className="w-full pl-10 rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"

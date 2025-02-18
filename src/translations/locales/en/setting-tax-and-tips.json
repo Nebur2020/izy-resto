@@ -10,5 +10,6 @@
   "tips-label": "Tip label",
   "tips-placeholder": "Ex: Tip",
   "add-tax": "Add a tax",
-  "apply-to-all-categories": "All products"
+  "apply-to-all-categories": "All products",
+  "apply-to": "Apply to"
 }

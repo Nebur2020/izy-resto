@@ -178,5 +178,21 @@
   "search-product": "Rechercher un produit...",
   "low-stock": "Produits en stock faible",
   "no-history": "Aucun historique",
-  "no-history-description": "Les mises à jour de stock apparaîtront ici"
+  "no-history-description": "Les mises à jour de stock apparaîtront ici",
+  "select-items": "Sélectionner un article",
+  "category-names": {
+    "boissons": "Boissons",
+    "supplies": "Fournitures",
+    "packaging": "Emballage",
+    "maintenant-product": "Produits d'entretien",
+    "ingredients": "Ingrédients"
+  },
+  "current-stock": "Stock actuel: {{quantity}} {{unit}}",
+  "unit-price": "Prix unitaire: {{unitPrice}}",
+  "reason": "Raison",
+  "export": "Exporter en PDF",
+  "downloading-in-progress": "Téléchargement en cours...",
+  "export-success": "Historique exporté avec succès",
+  "export-error": "Erreur lors de l'export",
+  "payment-method-default": "Par défaut"
 }

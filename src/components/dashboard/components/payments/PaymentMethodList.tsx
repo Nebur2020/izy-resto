@@ -2,20 +2,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Edit2, Trash2, QrCode } from 'lucide-react';
 import { PaymentMethod } from '../../../../types/payment';
 import { Button } from '../../../ui/Button';
+import { useTranslation } from 'react-i18next';
 
-interface PaymentMethodListProps {
+interface IPaymentMethodListProps {
   methods: PaymentMethod[];
   isLoading: boolean;
   onEdit: (method: PaymentMethod) => void;
   onDelete: (id: string) => void;
 }
 
-export function PaymentMethodList({
-  methods,
-  isLoading,
-  onEdit,
-  onDelete,
-}: PaymentMethodListProps) {
+export function PaymentMethodList(props: IPaymentMethodListProps) {
+  const { t } = useTranslation();
+  const { methods, isLoading, onEdit, onDelete } = props;
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -56,10 +54,10 @@ export function PaymentMethodList({
 
               <div>
                 <h3 className="font-medium text-lg">
-                  {method.name}
+                  {t(`order:payment-method-names.${method.name}`)}
                   {method.isDefault && (
                     <span className="ml-2 text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
-                      Par défaut
+                      {t('common:payment-method-default')}
                     </span>
                   )}
                 </h3>

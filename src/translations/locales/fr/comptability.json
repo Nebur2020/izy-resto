@@ -36,5 +36,6 @@
   "no-tips-found": "Pas de pourboires trouvés",
   "total-delivery": "Total Livraisons",
   "download-delivery": "Télécharger les livraisons",
-  "no-delivery-found": "Pas de livraisons trouvées"
+  "no-delivery-found": "Pas de livraisons trouvées",
+  "tax-total": "Total Taxes"
 }

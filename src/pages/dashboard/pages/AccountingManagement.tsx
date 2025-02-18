@@ -34,7 +34,7 @@ export function AccountingManagement() {
 
   const tabs = [
     { id: 'transactions', label: t('comptability:transaction') },
-    { id: 'tax', label: t('comptability:taxe') },
+    { id: 'tax', label: t('comptability:tax') },
     { id: 'tips', label: t('comptability:tip') },
     { id: 'delivery', label: t('comptability:delivery') },
   ];

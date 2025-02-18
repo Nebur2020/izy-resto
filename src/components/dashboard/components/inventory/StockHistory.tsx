@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import { Button } from '../../../ui';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Language } from '../../../../types';
 
 interface IStockHistoryProps {
   updates?: StockHistoryType[];
@@ -21,10 +22,18 @@ interface IStockHistoryProps {
 }
 
 export function StockHistory(props: IStockHistoryProps) {
-  const { t } = useTranslation();
-  const { updates, isLoading, currentPage, totalPages, onPageChange, dateRange } = props;
+  const { t, i18n } = useTranslation();
+  const {
+    updates,
+    isLoading,
+    currentPage,
+    totalPages,
+    onPageChange,
+    dateRange,
+  } = props;
   const { settings } = useSettings();
   const [isDownloading, setIsDownloading] = useState(false);
+  const lng = i18n.language as Language;
 
   if (isLoading) {
     return (
@@ -62,10 +71,10 @@ export function StockHistory(props: IStockHistoryProps) {
         dateRange?.startDate,
         dateRange?.endDate
       );
-      toast.success('Historique exporté avec succès');
+      toast.success(t('common:export-success'));
     } catch (error) {
       console.error('Error exporting history:', error);
-      toast.error("Erreur lors de l'export");
+      toast.error(t('common:export-error'));
     } finally {
       setIsDownloading(false);
     }
@@ -73,12 +82,15 @@ export function StockHistory(props: IStockHistoryProps) {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
-      {/* Header with Export Button */}
       <div className="p-4 border-b dark:border-gray-700 flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Historique des Stocks</h3>
+        <h3 className="text-lg font-semibold">
+          {t('inventory:stock-history')}
+        </h3>
         <Button onClick={handleExport} disabled={isDownloading}>
           <Download className="w-4 h-4 mr-2" />
-          {isDownloading ? 'Téléchargement en cours...' : 'Exporter en PDF'}
+          {isDownloading
+            ? t('common:downloading-in-progress')
+            : t('common:export')}
         </Button>
       </div>
 
@@ -109,11 +121,12 @@ export function StockHistory(props: IStockHistoryProps) {
                       <div className="flex items-center gap-3 mt-2 text-sm text-gray-500 dark:text-gray-400">
                         <span className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
-                          {formatDate(update.date)}
+                          {formatDate(update.date, false, lng)}
                         </span>
                         <span>•</span>
                         <span className="text-red-500 dark:text-red-400 font-medium">
-                          -{Number(update.quantity).toFixed(2)} unités
+                          -{Number(update.quantity).toFixed(2)}{' '}
+                          {t('inventory:units')}
                         </span>
                         <span>•</span>
                         <span className="font-medium">

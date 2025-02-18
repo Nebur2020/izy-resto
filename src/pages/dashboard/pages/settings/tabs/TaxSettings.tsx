@@ -25,7 +25,9 @@ export function TaxSettings() {
 
     return (
       <div className="md:col-span-2">
-        <label className="block text-sm font-medium mb-1">S'applique à</label>
+        <label className="block text-sm font-medium mb-1">
+          {t('taxAndTips:apply-to')}
+        </label>
         <select
           value={currentValue}
           onChange={e =>

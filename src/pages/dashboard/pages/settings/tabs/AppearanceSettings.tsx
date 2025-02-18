@@ -95,7 +95,6 @@ export function AppearanceSettings() {
     }
   }, [versions]);
 
-  // Update cooldown timer
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
@@ -155,7 +154,6 @@ export function AppearanceSettings() {
       }
 
       await redeploy(selectedVersion.value);
-      // Only set cooldown if deployment was successful
       setStoredCooldown(packageJson.version);
       setCooldownTime(COOLDOWN_DURATION);
     } catch (e) {
@@ -313,7 +311,9 @@ export function AppearanceSettings() {
                 setSelectedVersion(value || null);
               }}
             >
-              <option value="">Selectionner une version</option>
+              <option value="">
+                {t('settingAppearence:select-version')}
+              </option>
               {versions.map(vers => (
                 <option key={vers.id} value={vers.value}>
                   v{vers.value}

@@ -23,5 +23,6 @@
   "up-to-date": "Your site is up to date",
   "re-deploy": "Re-deploy",
   "light-mode": "Light Mode",
-  "light-mode-description": "Light interface with optimal contrast"
+  "light-mode-description": "Light interface with optimal contrast",
+  "select-version": "Select a version"
 }
