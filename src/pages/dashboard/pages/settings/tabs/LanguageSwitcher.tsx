@@ -13,14 +13,16 @@ export default function LanguageSwitcher({
 }: LanguageSwitcherProps) {
   const { t, i18n } = useTranslation();
 
-  const [selectedLanguage, setSelectedLanguage] = useState<Language>(value);
+  const [selectedLanguage, setSelectedLanguage] = useState<Language>(
+    (i18n.language as Language) || value
+  );
 
   useEffect(() => {
     i18n.changeLanguage(selectedLanguage);
   }, [selectedLanguage, i18n]);
 
   const handleChangeLanguage = (event: ChangeEvent<HTMLSelectElement>) => {
-    const newLang = event.target.value;
+    const newLang = event.target.value as Language;
     setSelectedLanguage(newLang);
     i18n.changeLanguage(newLang);
     onLanguageChanged && onLanguageChanged(newLang);
@@ -30,7 +32,7 @@ export default function LanguageSwitcher({
     <div>
       <label className="block text-sm font-medium mb-1">{t('language')}</label>
       <select
-        select-name="language"
+        name="language"
         value={selectedLanguage}
         onChange={handleChangeLanguage}
         className="w-full rounded-lg border p-2 dark:bg-gray-700 dark:border-gray-600"

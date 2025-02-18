@@ -38,7 +38,7 @@
   "legal": "Légal",
   "integrations": "Intégrations",
   "data": "Données",
-  "setting:settings-saved": "Paramètres mis à jour avec succès",
+  "settings-saved": "Paramètres mis à jour avec succès",
   "settings-error": "Impossible de sauvegarder les paramètres",
   "save-settings": "Enregistrer les modifications"
 }
