@@ -43,5 +43,6 @@
   "confirm-delete-product": "Are you sure you want to delete {{deleteConfirmationProduct}}? This action is irreversible.",
   "select-category-to-add-variants": "Select a category to add variants",
   "stock-history": "Stock History",
-  "qte-minmale": "Minimal Quantity"
+  "qte-minmale": "Minimal Quantity",
+  "quantity": "Quantity"
 }

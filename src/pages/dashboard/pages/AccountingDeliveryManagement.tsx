@@ -16,7 +16,9 @@ const ITEMS_PER_PAGE = 8;
 const exportTipsToCSV = (
   orders: Order[],
   settings: any,
-  dateRange: { from: Date; to: Date }
+  dateRange: { from: Date; to: Date },
+  t: (key: string) => string,
+  lng: Language
 ) => {
   const totalDelivery = orders.reduce(
     (sum, order) => sum + Number(order.delivery?.price || 0),
@@ -25,22 +27,28 @@ const exportTipsToCSV = (
   const averageTip = totalDelivery / orders.length;
 
   const headers = [
-    'Date',
-    'Référence',
-    'Montant Commande',
-    'Client',
-    'Mode de paiement',
+    t('common:date'),
+    t('common:references'),
+    t('comptability:order-amount'),
+    t('comptability:customer-name'),
+    t('common:payment-method'),
   ].join(',');
 
-  // Create summary rows
   const summary = [
-    `Période,${formatDate(dateRange.from)} - ${formatDate(dateRange.to)}`,
-    `Total des livraisons,${formatCurrency(totalDelivery, settings?.currency)}`,
-    `Moyenne des livraisons,${formatCurrency(averageTip, settings?.currency)}`,
-    '', // Empty line between summary and data
+    `${t('common:period')},${formatDate(dateRange.from)} - ${formatDate(
+      dateRange.to
+    )}`,
+    `${t('comptability:total-delivery')},${formatCurrency(
+      totalDelivery,
+      settings?.currency
+    )}`,
+    `${t('comptability:delivery-average')},${formatCurrency(
+      averageTip,
+      settings?.currency
+    )}`,
+    '',
   ].join('\n');
 
-  // Create data rows
   const rows = orders
     .map(order => {
       return [
@@ -53,10 +61,8 @@ const exportTipsToCSV = (
     })
     .join('\n');
 
-  // Combine all parts
   const csv = `${summary}\n${headers}\n${rows}`;
 
-  // Create and download file
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   const url = URL.createObjectURL(blob);
@@ -64,7 +70,11 @@ const exportTipsToCSV = (
   link.setAttribute('href', url);
   link.setAttribute(
     'download',
-    `pourboires-${formatDate(dateRange.from)}-${formatDate(dateRange.to)}.csv`
+    `${t('common:delivery-report')}-${formatDate(
+      dateRange.from,
+      false,
+      lng
+    )}-${formatDate(dateRange.to, false, lng)}.csv`
   );
   link.style.visibility = 'hidden';
 
@@ -112,7 +122,7 @@ export const AccountingDeliveryManagement = () => {
   const handleExport = async () => {
     try {
       setIsDownloading(true);
-      exportTipsToCSV(filteredOrders, settings, dateRange);
+      exportTipsToCSV(filteredOrders, settings, dateRange, t, lng);
     } catch (error) {
       console.error('Error exporting tips:', error);
     } finally {

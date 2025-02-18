@@ -15,6 +15,8 @@ const ITEMS_PER_PAGE = 8;
 
 export async function generateTaxReportCSV(
   receivedOrders: Order[],
+  t: (key: string) => string,
+  lng: Language,
   settings?: any,
   dateRange?: { from: Date; to: Date }
 ): Promise<void> {
@@ -22,7 +24,6 @@ export async function generateTaxReportCSV(
     const orders = receivedOrders.sort((a, b) => {
       return a.createdAt - b.createdAt;
     });
-    // Calculate tax totals
     const taxTotals = new Map<string, { amount: number; rate: number }>();
     let totalHT = 0;
     let totalTTC = 0;
@@ -41,31 +42,36 @@ export async function generateTaxReportCSV(
       });
     });
 
-    // Create CSV content
     let csvContent = '';
 
-    // Add header info
     csvContent += `${settings?.name || 'Restaurant'}\n`;
-    csvContent += `Rapport des taxes\n`;
-    csvContent += `Période: ${formatDate(dateRange?.from)} - ${formatDate(
-      dateRange?.to
-    )}\n\n`;
+    csvContent += t('comptability:tax-report') + '\n';
+    csvContent += `${t('common:period')} ${formatDate(
+      dateRange?.from
+    )} - ${formatDate(dateRange?.to)}\n\n`;
 
-    // Add summary section
-    csvContent += 'Résumé\n';
-    csvContent += `Total HT,${formatCurrency(totalHT, settings?.currency)}\n`;
-    csvContent += `Total Taxes,${formatCurrency(
+    csvContent += t('comptability:summary') + '\n';
+    csvContent += `${t('comptability:total-ht')},${formatCurrency(
+      totalHT,
+      settings?.currency
+    )}\n`;
+    csvContent += `${t('comptability:total-tax')},${formatCurrency(
       totalTTC - totalHT,
       settings?.currency
     )}\n`;
-    csvContent += `Total TTC,${formatCurrency(
+    csvContent += `${t('comptability:total-ttc')},${formatCurrency(
       totalTTC,
       settings?.currency
     )}\n\n`;
 
-    // Add tax summary
-    csvContent += 'Résumé par type de taxe\n';
-    csvContent += 'Type de taxe,Taux,Montant total\n';
+    csvContent += t('comptability:tax-details') + '\n';
+    csvContent +=
+      t('comptability:tax-name') +
+      ',' +
+      t('comptability:tax-rate') +
+      ',' +
+      t('comptability:tax-amount') +
+      '\n';
     Array.from(taxTotals.entries()).forEach(([name, data]) => {
       csvContent += `${name},${(data.rate * 100).toFixed(2)}%,${formatCurrency(
         data.amount,
@@ -74,10 +80,12 @@ export async function generateTaxReportCSV(
     });
     csvContent += '\n';
 
-    // Add detailed transactions
-    csvContent += 'Détail des transactions\n';
-    csvContent +=
-      'Date,Référence,Montant HT,Détails des taxes,Total Taxes,Total TTC\n';
+    csvContent += t('comptability:orders-details') + '\n';
+    csvContent += `${t('common:date')},${t('common:references')},${t(
+      'comptability:total-ht'
+    )},${t('comptability:tax-details')},${t('comptability:total-tax')},${t(
+      'comptability:total-ttc'
+    )}\n`;
 
     orders.forEach(order => {
       const taxDetails = order.taxes
@@ -101,7 +109,6 @@ export async function generateTaxReportCSV(
         ].join(',') + '\n';
     });
 
-    // Create and download file
     const blob = new Blob(['\ufeff' + csvContent], {
       type: 'text/csv;charset=utf-8;',
     });
@@ -111,7 +118,11 @@ export async function generateTaxReportCSV(
     link.setAttribute('href', url);
     link.setAttribute(
       'download',
-      `taxes-${formatDate(dateRange?.from)}-${formatDate(dateRange?.to)}.csv`
+      `taxes-${formatDate(dateRange?.from, false, lng)}-${formatDate(
+        dateRange?.to,
+        false,
+        lng
+      )}.csv`
     );
     document.body.appendChild(link);
     link.click();
@@ -167,7 +178,7 @@ export const AccountingTaxesManagement = () => {
   const handleDownload = async () => {
     try {
       setIsDownloading(true);
-      await generateTaxReportCSV(filteredOrders, settings, dateRange);
+      await generateTaxReportCSV(filteredOrders, t, lng, settings, dateRange);
       setIsDownloading(false);
     } catch (error) {
       console.log(error);

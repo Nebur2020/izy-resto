@@ -194,5 +194,28 @@
   "downloading-in-progress": "Téléchargement en cours...",
   "export-success": "Historique exporté avec succès",
   "export-error": "Erreur lors de l'export",
-  "payment-method-default": "Par défaut"
+  "payment-method-default": "Par défaut",
+  "bill-successfully-downloaded": "Ticket téléchargé",
+  "invoice-in-printing": "Ticket envoyé à l'impression",
+  "staff-names": {
+    "admin": "Admin",
+    "staff": "Staff",
+    "Le gérant": "Le gérant"
+  },
+  "financial-statement": "États Financiers",
+  "period": "Période:",
+  "date": "Date",
+  "source": "Source",
+  "reference": "Référence",
+  "debit": "Débit",
+  "credit": "Crédit",
+  "balance": "Solde",
+  "total-debit": "Total Débit",
+  "total-credit": "Total Crédit",
+  "net-amount": "Solde Net",
+  "address-not-found": "Adresse non disponible",
+  "genereted-date": "Document généré le {{date}}",
+  "all-right-reserved": "Tous droits réservés ©",
+  "search-placeholder": "Rechercher",
+  "personalised": "Personnalisé"
 }

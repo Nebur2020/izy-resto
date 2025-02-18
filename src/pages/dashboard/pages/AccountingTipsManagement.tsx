@@ -8,7 +8,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { formatDate } from '../../../utils';
 import { formatCurrency } from '../../../utils/currency';
 import { Pagination } from '../../../components/ui/Pagination';
-import { Order } from '../../../types';
+import { Language, Order } from '../../../types';
 import { useTranslation } from 'react-i18next';
 
 const ITEMS_PER_PAGE = 8;
@@ -16,7 +16,9 @@ const ITEMS_PER_PAGE = 8;
 const exportTipsToCSV = (
   orders: Order[],
   settings: any,
-  dateRange: { from: Date; to: Date }
+  dateRange: { from: Date; to: Date },
+  t: (key: string) => string,
+  lng: Language
 ) => {
   const totalTips = orders.reduce(
     (sum, order) => sum + (order.tip?.amount || 0),
@@ -25,20 +27,27 @@ const exportTipsToCSV = (
   const averageTip = totalTips / orders.length;
 
   const headers = [
-    'Date',
-    'Référence',
-    'Montant Commande',
-    'Pourboire',
-    'Pourcentage',
-    'Client',
-    'Mode de paiement',
+    t('common:date'),
+    t('common:references'),
+    t('comptability:order-amount'),
+    t('common:tip'),
+    t('comptability:tip-percentage'),
+    t('comptability:customer-name'),
+    t('common:payment-method'),
   ].join(',');
 
-  // Create summary rows
   const summary = [
-    `Période,${formatDate(dateRange.from)} - ${formatDate(dateRange.to)}`,
-    `Total des pourboires,${formatCurrency(totalTips, settings?.currency)}`,
-    `Moyenne des pourboires,${formatCurrency(averageTip, settings?.currency)}`,
+    `${t('common:period')},${formatDate(dateRange.from)} - ${formatDate(
+      dateRange.to
+    )}`,
+    `${t('comptability:total-tips')},${formatCurrency(
+      totalTips,
+      settings?.currency
+    )}`,
+    `${t('comptability:tips-average')},${formatCurrency(
+      averageTip,
+      settings?.currency
+    )}`,
     '',
   ].join('\n');
 
@@ -49,17 +58,17 @@ const exportTipsToCSV = (
         order.id,
         formatCurrency(order.total, settings?.currency),
         formatCurrency(order.tip?.amount || 0, settings?.currency),
-        order.tip?.percentage ? `${order.tip.percentage}%` : 'Personnalisé',
+        order.tip?.percentage
+          ? `${order.tip.percentage}%`
+          : t('common:personalised'),
         order.customerName,
         order.paymentMethod?.name || '-',
       ].join(',');
     })
     .join('\n');
 
-  // Combine all parts
   const csv = `${summary}\n${headers}\n${rows}`;
 
-  // Create and download file
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   const url = URL.createObjectURL(blob);
@@ -67,7 +76,11 @@ const exportTipsToCSV = (
   link.setAttribute('href', url);
   link.setAttribute(
     'download',
-    `pourboires-${formatDate(dateRange.from)}-${formatDate(dateRange.to)}.csv`
+    `${t('common:tip')}-${formatDate(dateRange.from, false, lng)}-${formatDate(
+      dateRange.to,
+      false,
+      lng
+    )}.csv`
   );
   link.style.visibility = 'hidden';
 
@@ -77,7 +90,8 @@ const exportTipsToCSV = (
 };
 
 export const AccountingTipsManagement = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lng = i18n.language as Language;
   const { settings, isLoading: settingsLoading } = useSettings();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
@@ -111,7 +125,7 @@ export const AccountingTipsManagement = () => {
   const handleExport = async () => {
     try {
       setIsDownloading(true);
-      exportTipsToCSV(filteredOrders, settings, dateRange);
+      exportTipsToCSV(filteredOrders, settings, dateRange, t, lng);
     } catch (error) {
       console.error('Error exporting tips:', error);
     } finally {
