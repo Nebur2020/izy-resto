@@ -36,7 +36,7 @@
   "legal": "Legal",
   "integrations": "Integrations",
   "data": "Data",
-  "setting:settings-saved": "Settings successfully updated",
+  "settings-saved": "Settings successfully updated",
   "settings-error": "Unable to save settings",
   "save-settings": "Save changes"
 }
