@@ -1,10 +1,11 @@
-import { Currency, Order, RestaurantSettings } from '../types';
+import { Currency, Language, Order, RestaurantSettings } from '../types';
 import { formatCurrency } from './currency';
 import { formatDate } from './date';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import QRCode from 'qrcode';
 import { formatTaxRate } from './tax';
+import { useTranslation } from 'react-i18next';
 
 type Translations = {
   restaurantName: string;
@@ -62,6 +63,8 @@ export const getPdfTranslationValues = (t: (key: string) => string) => {
 export async function generateReceiptPDF(
   order: Order,
   translations: Translations,
+  t: (key: string) => string,
+  lng: Language,
   settings?: Settings
 ): Promise<jsPDF> {
   try {
@@ -130,7 +133,11 @@ export async function generateReceiptPDF(
         <div style="border-bottom: 1px dashed rgb(0, 0, 0); margin: 8px 0;"></div>
 
         <div style="margin-bottom: 8px; ${baseStyles}">
-          <div style="${baseStyles}">${formatDate(order.createdAt)}</div>
+          <div style="${baseStyles}">${formatDate(
+      order.createdAt,
+      false,
+      lng
+    )}</div>
           <div style="${baseStyles}">${
       translations.transactionLabel
     } #${order.id.slice(0, 6)}</div>
@@ -305,13 +312,19 @@ export async function generateReceiptPDF(
           <img src="${qrCodeUrl}" width="120" style="margin: 0 auto; display: block;" />
           ${
             order.servedBy
-              ? `<div style="${baseStyles}">${translations.servedByLabel} ${order.servedBy}</div>`
+              ? `<div style="${baseStyles}">${translations.servedByLabel} ${t(
+                  `common:staff-names.${order.servedBy}`
+                )}</div>`
               : ''
           }
         </div>
 
         <div style="text-align: center; margin: 12px 0; ${baseStyles}">
-          <div style="${baseStyles}">${formatDate(order.createdAt, true)}</div>
+          <div style="${baseStyles}">${formatDate(
+      order.createdAt,
+      true,
+      lng
+    )}</div>
         </div>
         <div style="border-bottom: 1px dashed rgb(0, 0, 0); margin: 8px 0;"></div>
       </div>

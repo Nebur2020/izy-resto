@@ -85,6 +85,7 @@ export function AccountingManagement() {
       toast.error(t('comptability:transaction-deleting-error'));
     }
   };
+  
   const handleExport = async () => {
     if (!statementRef.current || !settings) return;
 

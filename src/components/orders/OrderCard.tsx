@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Order } from '../../types';
+import { Language, Order } from '../../types';
 import { OrderCardHeader } from './card/OrderCardHeader';
 import { OrderCardDetails } from './card/OrderCardDetails';
 import { OrderTimeline } from './OrderTimeline';
@@ -24,7 +24,8 @@ interface OrderCardProps {
 export const OrderCard = React.forwardRef<HTMLDivElement, OrderCardProps>(
   ({ order, onStatusChange, onCancel }, ref) => {
     const { settings } = useSettings();
-    const { t } = useTranslation('order');
+    const { t, i18n } = useTranslation('order');
+    const lng = i18n.language as Language;
 
     const canCancel = ['pending', 'preparing'].includes(order.status);
     const [isPrinting, setIsPrinting] = useState(false);
@@ -55,6 +56,8 @@ export const OrderCard = React.forwardRef<HTMLDivElement, OrderCardProps>(
               `payment-method-names.${order.paymentMethod?.name}`
             ),
           },
+          t,
+          lng,
           pdfSettings
         );
         pdf.autoPrint();

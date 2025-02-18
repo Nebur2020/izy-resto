@@ -191,5 +191,29 @@
   "export-error": "Export error",
   "payment-method-default": "Default Payment method",
   "downloading": "Downloading...",
-  "tax-total": "Total Taxes"
+  "download": "Download",
+  "tax-total": "Total Taxes",
+  "bill-successfully-downloaded": "Bill successfully downloaded",
+  "invoice-in-printing": "Invoice sent to printing",
+  "staff-names": {
+    "admin": "Admin",
+    "staff": "Staff",
+    "Le gérant": "Manager"
+  },
+  "financial-statement": "Financial Statements",
+  "period": "Period:",
+  "date": "Date",
+  "source": "Source",
+  "reference": "Reference",
+  "debit": "Debit",
+  "credit": "Credit",
+  "balance": "Balance",
+  "total-debit": "Total Debit",
+  "total-credit": "Total Credit",
+  "net-amount": "Net Amount",
+  "address-not-found": "Address not found",
+  "genereted-date": "Document generated on {{date}}",
+  "all-right-reserved": "All rights reserved © ",
+  "search-placeholder": "Search",
+  "personalised": "Personalised"
 }

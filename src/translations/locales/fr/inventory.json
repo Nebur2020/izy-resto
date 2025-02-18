@@ -44,5 +44,6 @@
   "description": "Description",
   "select-category-to-add-variants": "Sélectionnez une catégorie pour ajouter des variantes",
   "stock-history": "Historique des Stocks",
-  "qte-minmale": "Quantité minimale"
+  "qte-minmale": "Quantité minimale",
+  "quantity": "Quantité"
 }

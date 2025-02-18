@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Printer, Download, CheckCircle } from 'lucide-react';
 import { Button } from '../ui/Button';
-import { Order } from '../../types';
+import { Language, Order } from '../../types';
 import {
   generateReceiptPDF,
   getPdfSettings,
@@ -19,7 +19,8 @@ interface IOrderConfirmationModalProps {
 
 export function OrderConfirmationModal(props: IOrderConfirmationModalProps) {
   const { order, onClose } = props;
-  const { t } = useTranslation('order');
+  const { t, i18n } = useTranslation('order');
+  const lng = i18n.language as Language;
   const { settings } = useSettings();
   const [isDownloading, setIsDownloading] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
@@ -37,13 +38,15 @@ export function OrderConfirmationModal(props: IOrderConfirmationModalProps) {
             `payment-method-names.${order.paymentMethod?.name}`
           ),
         },
+        t,
+        lng,
         pdfSettings
       );
       pdf.save(`commande-${order.id.slice(0, 8)}.pdf`);
-      toast.success('Ticket téléchargé');
+      toast.success(t('common:bill-successfully-downloaded'));
     } catch (error) {
       console.error('Error downloading receipt:', error);
-      toast.error('Erreur lors du téléchargement');
+      toast.error(t('common:download-error'));
     } finally {
       setIsDownloading(false);
     }
@@ -62,14 +65,16 @@ export function OrderConfirmationModal(props: IOrderConfirmationModalProps) {
             `payment-method-names.${order.paymentMethod?.name}`
           ),
         },
+        t,
+        lng,
         pdfSettings
       );
       pdf.autoPrint();
       window.open(pdf.output('bloburl'));
-      toast.success("Ticket envoyé à l'impression");
+      toast.success(t('common:invoice-in-printing'));
     } catch (error) {
       console.error('Error printing receipt:', error);
-      toast.error("Erreur lors de l'impression");
+      toast.error(t('common:printing-error'));
     } finally {
       setIsPrinting(false);
     }
@@ -114,7 +119,7 @@ export function OrderConfirmationModal(props: IOrderConfirmationModalProps) {
             className="w-full flex items-center justify-center gap-2"
           >
             <Download className="w-4 h-4 mr-1" />
-            {isDownloading ? t('common:download') : t('common:download-bill')}
+            {isDownloading ? t('common:downloading') : t('common:download-bill')}
           </Button>
 
           <Button variant="ghost" onClick={onClose} className="w-full">
