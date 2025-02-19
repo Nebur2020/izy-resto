@@ -92,5 +92,7 @@
     "Test payments": "Paiements de test",
     "Orange Money": "Orange Money",
     "Amadou Money": "Amadou Money"
-  }
+  },
+  "search-orders": "Rechercher des commandes",
+  "new-order-notification": "Nouvelle commande"
 }

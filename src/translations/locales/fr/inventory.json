@@ -45,5 +45,12 @@
   "select-category-to-add-variants": "Sélectionnez une catégorie pour ajouter des variantes",
   "stock-history": "Historique des Stocks",
   "qte-minmale": "Quantité minimale",
-  "quantity": "Quantité"
+  "quantity": "Quantité",
+  "failed-to-load-items": "Erreur lors du chargement de l'inventaire",
+  "item-added-successfully": "Produit ajouté avec succès",
+  "failed-to-add-item": "Erreur lors de l'ajout du produit",
+  "item-updated-successfully": "Produit mis à jour avec succès",
+  "failed-to-update-item": "Erreur lors de la mise à jour du produit",
+  "item-deleted-successfully": "Produit supprimé avec succès",
+  "failed-to-delete-item": "Erreur lors de la suppression du produit"
 }

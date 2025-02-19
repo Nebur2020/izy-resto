@@ -10,5 +10,7 @@
   "deleting-files-confirmation": "Are you sure you want to delete {{count}} files? This action is irreversible.",
   "media-files": "Files",
   "element": "Element",
-  "selected": "selected"
+  "selected": "selected",
+  "files-deleted": "Files successfully deleted",
+  "file-deleted": "File successfully deleted"
 }

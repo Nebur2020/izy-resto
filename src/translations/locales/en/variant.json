@@ -27,5 +27,12 @@
   "select-inventory-product": "Select a product",
   "product": "Inventory Product",
   "add-item": "Add Item",
-  "variant-and-value": "Variant and Values"
+  "variant-and-value": "Variant and Values",
+  "failed-to-load-variants": "Failed to load variants",
+  "variant-added-successfully": "Variant added successfully",
+  "failed-to-add-variant": "Failed to add variant",
+  "variant-updated-successfully": "Variant updated successfully",
+  "failed-to-update-variant": "Failed to update variant",
+  "variant-deleted-successfully": "Variant deleted successfully",
+  "failed-to-delete-variant": "Failed to delete variant"
 }

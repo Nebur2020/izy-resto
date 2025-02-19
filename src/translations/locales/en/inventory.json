@@ -44,5 +44,12 @@
   "select-category-to-add-variants": "Select a category to add variants",
   "stock-history": "Stock History",
   "qte-minmale": "Minimal Quantity",
-  "quantity": "Quantity"
+  "quantity": "Quantity",
+  "failed-to-load-items": "Failed to load items",
+  "item-added-successfully": "Item added successfully",
+  "failed-to-add-item": "Failed to add item",
+  "item-updated-successfully": "Item updated successfully",
+  "failed-to-update-item": "Failed to update item",
+  "item-deleted-successfully": "Item deleted successfully",
+  "failed-to-delete-item": "Failed to delete item"
 }

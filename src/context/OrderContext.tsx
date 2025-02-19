@@ -18,18 +18,10 @@ import {
   Timestamp,
   QueryDocumentSnapshot,
   DocumentData,
-  orderBy,
-  limit,
-  onSnapshot,
 } from 'firebase/firestore';
 import { db } from '../lib/firebase/config';
 import { Bell } from 'lucide-react';
-
-interface PaginatedOrders {
-  items: Order[];
-  lastDoc: QueryDocumentSnapshot<DocumentData> | null;
-  hasMore: boolean;
-}
+import { useTranslation } from 'react-i18next';
 
 interface OrderContextType {
   orders: Order[];
@@ -55,6 +47,7 @@ interface OrderContextType {
 const OrderContext = createContext<OrderContextType | undefined>(undefined);
 
 export function OrderProvider({ children }: { children: React.ReactNode }) {
+  const { t } = useTranslation();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -62,29 +55,22 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
   const [lastDoc, setLastDoc] =
     useState<QueryDocumentSnapshot<DocumentData> | null>(null);
   const [hasMore, setHasMore] = useState(false);
-  const [pageSize] = useState(10); // Default page size for orders
+  const [pageSize] = useState(10);
 
-  // Keep track of newest order timestamp for real-time filtering
   const newestOrderTimestampRef = useRef<number | null>(null);
 
-  // Set up initial load and pagination
   useEffect(() => {
     loadInitialOrders();
 
-    // Set up real-time listener for only new orders
     const unsubscribe = orderService.subscribeToRecentOrders(
       newOrder => {
-        // Show notification for new order
         showNewOrderNotification(1);
 
-        // Update orders state with new order at the beginning
         setOrders(currentOrders => {
-          // Avoid duplicates
           if (currentOrders.some(o => o.id === newOrder.id)) {
             return currentOrders;
           }
 
-          // Add new order at the beginning, maintain page size
           return [newOrder, ...currentOrders.slice(0, -1)];
         });
       },
@@ -96,7 +82,6 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
     return () => unsubscribe();
   }, []);
 
-  // Helper to get consistently formatted timestamp
   const getOrderTimestamp = (order: Order): number => {
     if (!order.createdAt) return 0;
 
@@ -111,12 +96,11 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
     return Math.floor(new Date(order.createdAt).getTime() / 1000);
   };
 
-  // Show notification for new orders
   const showNewOrderNotification = (count: number) => {
     const message =
       count === 1
-        ? 'Nouvelle commande reçue !'
-        : `${count} nouvelles commandes reçues !`;
+        ? t('common:notification-new-order')
+        : `${count} ${t('common:qty-new-orders-notification')}`;
 
     toast.success(
       <div className="flex items-center gap-2">
@@ -126,13 +110,11 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
       { duration: 5000 }
     );
 
-    // Play notification sound if not in focus
     if (document.visibilityState !== 'visible') {
       playNotificationSound();
     }
   };
 
-  // Play notification sound
   const playNotificationSound = () => {
     try {
       const audio = new Audio('/notification.mp3');
@@ -154,7 +136,6 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
       setHasMore(result.hasMore);
       setError(null);
 
-      // Store timestamp of newest order for real-time filtering
       if (result.items.length > 0) {
         const newest = result.items[0];
         newestOrderTimestampRef.current = getOrderTimestamp(newest);
@@ -162,13 +143,12 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
     } catch (error: any) {
       console.error('Error loading initial orders:', error);
       setError(error);
-      toast.error('Erreur de chargement des commandes');
+      toast.error(t('common:error-loading-orders'));
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Force refresh orders
   const refreshOrders = async () => {
     try {
       setIsLoading(true);
@@ -187,13 +167,12 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
       setIsLoadingMore(true);
       const result = await orderService.getOrdersPaginated(pageSize, lastDoc);
 
-      // Append new orders
       setOrders(prev => [...prev, ...result.items]);
       setLastDoc(result.lastDoc);
       setHasMore(result.hasMore);
     } catch (error: any) {
       console.error('Error loading more orders:', error);
-      toast.error('Échec du chargement des commandes supplémentaires');
+      toast.error(t('common:error-loading-more-orders'));
     } finally {
       setIsLoadingMore(false);
     }
@@ -207,7 +186,7 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
       return await orderService.searchOrders(searchTerm);
     } catch (error: any) {
       console.error('Error searching orders:', error);
-      toast.error('Échec de la recherche des commandes');
+      toast.error(t('common:error-searching-orders'));
       return [];
     }
   };
@@ -240,12 +219,11 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
     try {
       await orderService.updateOrderStatus(orderId, status);
 
-      // Update local state for better responsiveness
       setOrders(prev =>
         prev.map(order => (order.id === orderId ? { ...order, status } : order))
       );
 
-      toast.success('Statut mis à jour');
+      toast.success(t('common:order-status-updated'));
     } catch (error) {
       console.error('Error updating order status:', error);
       throw error;
@@ -254,18 +232,16 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
 
   const getOrderById = async (orderId: string): Promise<Order | undefined> => {
     try {
-      // First check if the order is already in our state
       const cachedOrder = orders.find(order => order.id === orderId);
       if (cachedOrder) {
         return cachedOrder;
       }
 
-      // If not found in state, fetch directly from database
       const orderRef = doc(db, 'orders', orderId);
       const orderSnapshot = await getDoc(orderRef);
 
       if (!orderSnapshot.exists()) {
-        toast.error('Commande introuvable');
+        toast.error(t('common:error-order-not-found'));
         return undefined;
       }
 
@@ -277,7 +253,7 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
       return orderData;
     } catch (error) {
       console.error(`Error fetching order ${orderId}:`, error);
-      toast.error('Erreur lors de la récupération de la commande');
+      toast.error(t('common:error-fetching-order'));
       return undefined;
     }
   };
@@ -287,7 +263,6 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
     return orders.filter(order => order.status === status);
   };
 
-  // Memoized filtered lists
   const deliveredOrders = orders.filter(order => order.status === 'delivered');
   const pendingOrders = orders.filter(order => order.status === 'pending');
   const preparingOrders = orders.filter(order => order.status === 'preparing');

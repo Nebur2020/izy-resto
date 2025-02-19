@@ -14,8 +14,10 @@ import { menuService } from '../../../services/menu/menu.service';
 import { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
 import { RefreshCw } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
+import { useTranslation } from 'react-i18next';
 
 export function POS() {
+  const { t } = useTranslation();
   const { settings } = useSettings();
   const { staffData } = useStaffCheck();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -31,14 +33,13 @@ export function POS() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [completedOrder, setCompletedOrder] = useState<Order | null>(null);
 
-  // State for menu items
   const [menuItems, setMenuItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [lastDoc, setLastDoc] =
     useState<QueryDocumentSnapshot<DocumentData> | null>(null);
   const [hasMore, setHasMore] = useState(false);
-  const [pageSize] = useState(12); // Items per load
+  const [pageSize] = useState(12);
 
   const {
     total,
@@ -52,7 +53,6 @@ export function POS() {
     subtotal,
   } = useServerCart();
 
-  // Load initial menu items based on selected category
   useEffect(() => {
     loadInitialItems();
   }, [selectedCategory]);
@@ -63,30 +63,24 @@ export function POS() {
       setLastDoc(null);
 
       if (selectedCategory !== 'all') {
-        // For specific category, use direct category filtering
         try {
           const categoryItems = await menuService.getMenuItemsByCategory(
             selectedCategory
           );
 
-          // Show first pageSize items and set hasMore if there are more
           setMenuItems(categoryItems.slice(0, pageSize));
           setHasMore(categoryItems.length > pageSize);
 
-          // Store all category items for pagination
           if (categoryItems.length > pageSize) {
-            // We'll use this as a "fake lastDoc" - it's just a number representing
-            // how many items we've already loaded
             setLastDoc({ id: pageSize.toString() } as any);
           } else {
             setLastDoc(null);
           }
         } catch (error) {
           console.error('Error loading category items:', error);
-          toast.error('Erreur lors du chargement de la catégorie');
+          toast.error(t('common:error-loading-category-items'));
         }
       } else {
-        // For "all" category, use standard pagination
         try {
           const result = await menuService.getMenuItemsPaginated(
             pageSize,
@@ -97,12 +91,10 @@ export function POS() {
           setHasMore(result.hasMore);
         } catch (error) {
           console.error('Error loading paginated items:', error);
-          // Fallback to getAll if pagination fails
           const allItems = await menuService.getAll();
           setMenuItems(allItems.slice(0, pageSize));
           setHasMore(allItems.length > pageSize);
 
-          // Store all items for pagination
           if (allItems.length > pageSize) {
             setLastDoc({ id: pageSize.toString() } as any);
           } else {
@@ -112,7 +104,7 @@ export function POS() {
       }
     } catch (error) {
       console.error('Error loading menu items:', error);
-      toast.error('Erreur lors du chargement du menu');
+      toast.error(t('common:error-loading-menu-items'));
     } finally {
       setIsLoading(false);
     }
@@ -125,7 +117,6 @@ export function POS() {
       setIsLoadingMore(true);
 
       if (selectedCategory !== 'all') {
-        // For category-specific loads, get all items and slice
         const allCategoryItems = await menuService.getMenuItemsByCategory(
           selectedCategory
         );
@@ -138,16 +129,13 @@ export function POS() {
         setMenuItems(prevItems => [...prevItems, ...moreItems]);
         setHasMore(currentLength + pageSize < allCategoryItems.length);
 
-        // Update our "fake lastDoc"
         if (currentLength + pageSize < allCategoryItems.length) {
           setLastDoc({ id: (currentLength + pageSize).toString() } as any);
         } else {
           setLastDoc(null);
         }
       } else {
-        // For "all" category with real pagination
         if (typeof lastDoc?.id === 'string' && !isNaN(parseInt(lastDoc.id))) {
-          // We're using our fake pagination
           const allItems = await menuService.getAll();
           const currentIndex = parseInt(lastDoc.id);
           const moreItems = allItems.slice(
@@ -164,7 +152,6 @@ export function POS() {
             setLastDoc(null);
           }
         } else {
-          // We're using real Firestore pagination
           const result = await menuService.getMenuItemsPaginated(
             pageSize,
             lastDoc
@@ -176,7 +163,7 @@ export function POS() {
       }
     } catch (error) {
       console.error('Error loading more menu items:', error);
-      toast.error("Erreur lors du chargement de plus d'articles");
+      toast.error(t('common:error-loading-more-menu-items'));
     } finally {
       setIsLoadingMore(false);
     }
@@ -255,7 +242,7 @@ export function POS() {
       }
     } catch (error) {
       console.error('Error creating order:', error);
-      toast.error('Erreur lors de la création de la commande');
+      toast.error(t('common:error-creating-order'));
     } finally {
       setIsSubmitting(false);
     }
@@ -263,11 +250,8 @@ export function POS() {
 
   return (
     <>
-      {/* Main container */}
       <div className="h-[calc(100vh-6rem)] flex flex-col lg:flex-row gap-6">
-        {/* Left side - menu area */}
         <div className="flex-1 flex flex-col">
-          {/* Category filters at top */}
           <div>
             <MenuFilters
               activeCategory={selectedCategory}
@@ -275,7 +259,6 @@ export function POS() {
             />
           </div>
 
-          {/* Menu grid - without internal scrolling */}
           <div>
             <POSMenuGrid
               items={filteredItems}
@@ -286,7 +269,6 @@ export function POS() {
               isLoading={isLoading}
             />
 
-            {/* Load More Button */}
             {!isLoading && hasMore && !searchTerm && (
               <div className="flex justify-center mt-6 mb-6">
                 <Button
@@ -300,18 +282,16 @@ export function POS() {
                   ) : (
                     <RefreshCw className="w-5 h-5 mr-2" />
                   )}
-                  {isLoadingMore ? 'Chargement...' : 'Charger plus'}
+                  {isLoadingMore ? t('common:loading') : t('common:load-more')}
                 </Button>
               </div>
             )}
           </div>
         </div>
 
-        {/* Mobile Cart (Drawer) */}
         <AnimatePresence>
           {isSidebarOpen && (
             <>
-              {/* Overlay background */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 0.5 }}
@@ -320,7 +300,6 @@ export function POS() {
                 onClick={() => setIsSidebarOpen(false)}
               />
 
-              {/* Cart sidebar/drawer */}
               <motion.div
                 initial={{ x: '100%' }}
                 animate={{ x: 0 }}
@@ -347,7 +326,6 @@ export function POS() {
           )}
         </AnimatePresence>
 
-        {/* Desktop Cart */}
         <div className="hidden lg:block w-96 bg-white dark:bg-gray-800 rounded-lg p-6 flex flex-col">
           <POSCartSidebar
             cart={cart}
@@ -366,7 +344,6 @@ export function POS() {
         </div>
       </div>
 
-      {/* Order Confirmation Modal */}
       {completedOrder && (
         <OrderConfirmationModal
           order={completedOrder}

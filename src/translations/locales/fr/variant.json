@@ -27,5 +27,12 @@
   "select-inventory-product": "Sélectionner un produit",
   "product": "Produit d'inventaire",
   "add-item": "Ajouter un Item",
-  "variant-and-value": "Variante et Valeurs"
+  "variant-and-value": "Variante et Valeurs",
+  "failed-to-load-variants": "Échec du chargement des variantes",
+  "variant-added-successfully": "Variante ajoutée avec succès",
+  "failed-to-add-variant": "Impossible d'ajouter une variante",
+  "variant-updated-successfully": "Variante mise à jour avec succès",
+  "failed-to-update-variant": "Échec de la mise à jour de la variante",
+  "variant-deleted-successfully": "Variante supprimée avec succès",
+  "failed-to-delete-variant": "Impossible de supprimer la variante"
 }
