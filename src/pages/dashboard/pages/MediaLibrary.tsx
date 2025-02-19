@@ -56,8 +56,8 @@ export function MediaLibrary() {
       setSelectedFiles(new Set());
       toast.success(
         deleteConfirmation.isBulk
-          ? 'Fichiers supprimés avec succès'
-          : 'Fichier supprimé avec succès'
+          ? t('media:files-deleted')
+          : t('media:file-deleted')
       );
     } catch (error) {
       console.error('Delete error:', error);

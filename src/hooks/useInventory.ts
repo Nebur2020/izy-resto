@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { InventoryItem } from '../types/inventory';
 import { inventoryService } from '../services/inventory/inventory.service';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 export function useInventory(dateRange?: { startDate: Date; endDate: Date }) {
+  const { t } = useTranslation();
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -18,7 +20,7 @@ export function useInventory(dateRange?: { startDate: Date; endDate: Date }) {
       setItems(fetchedItems);
     } catch (error) {
       console.error('Error loading inventory items:', error);
-      toast.error("Erreur lors du chargement de l'inventaire");
+      toast.error(t('inventory:failed-to-load-items'));
     } finally {
       setIsLoading(false);
     }
@@ -28,11 +30,11 @@ export function useInventory(dateRange?: { startDate: Date; endDate: Date }) {
     try {
       const id = await inventoryService.create(item);
       setItems(prev => [...prev, { ...item, id }]);
-      toast.success('Produit ajouté avec succès');
+      toast.success(t('inventory:item-added-successfully'));
       return id;
     } catch (error) {
       console.error('Error adding inventory item:', error);
-      toast.error("Erreur lors de l'ajout du produit");
+      toast.error(t('inventory:failed-to-add-item'));
       throw error;
     }
   };
@@ -43,10 +45,10 @@ export function useInventory(dateRange?: { startDate: Date; endDate: Date }) {
       setItems(prev =>
         prev.map(item => (item.id === id ? { ...item, ...data } : item))
       );
-      toast.success('Produit mis à jour avec succès');
+      toast.success(t('inventory:item-updated-successfully'));
     } catch (error) {
       console.error('Error updating inventory item:', error);
-      toast.error('Erreur lors de la mise à jour du produit');
+      toast.error(t('inventory:failed-to-update-item'));
       throw error;
     }
   };
@@ -55,10 +57,10 @@ export function useInventory(dateRange?: { startDate: Date; endDate: Date }) {
     try {
       await inventoryService.delete(id);
       setItems(prev => prev.filter(item => item.id !== id));
-      toast.success('Produit supprimé avec succès');
+      toast.success(t('inventory:item-deleted-successfully'));
     } catch (error) {
       console.error('Error deleting inventory item:', error);
-      toast.error('Erreur lors de la suppression du produit');
+      toast.error(t('inventory:failed-to-delete-item'));
       throw error;
     }
   };

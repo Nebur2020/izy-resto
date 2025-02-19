@@ -33,8 +33,8 @@ export function BulkActions(props: IBulkActionsProps) {
       className="flex items-center gap-3"
     >
       <span className="text-sm text-gray-500 dark:text-gray-400">
-        {selectedCount} {t('element')}
-        {selectedCount > 1 ? 's' : ''} sélectionné{' '}
+        {selectedCount} {t('commont:element')}
+        {selectedCount > 1 ? 's' : ''} {t('common:selected')}
         {selectedCount > 1 ? 's' : ''}
       </span>
 

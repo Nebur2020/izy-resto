@@ -21,5 +21,12 @@
   "past-merchand-wavepayment-link": "Coller votre lien de paiement wave marchand",
   "api-key-is-required": "API key obligatoire",
   "site-id": "SITE ID",
-  "api-key": "API KEY"
+  "api-key": "API KEY",
+  "failed-to-load-methods": "Failed to load payment methods",
+  "method-added-successfully": "Mode de paiement ajouté avec succès",
+  "failed-to-add-method": "Impossible d'ajouter un mode de paiement",
+  "method-updated-successfully": "Mode de paiement mis à jour avec succès",
+  "failed-to-update-method": "Failed to update payment method",
+  "method-deleted-successfully": "Le mode de paiement a été supprimé avec succès",
+  "failed-to-delete-method": "Failed to delete payment method"
 }

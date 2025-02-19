@@ -21,5 +21,12 @@
   "past-merchand-wavepayment-link": "Paste your merchant wave payment link",
   "api-key-is-required": "API key is required",
   "site-id": "SITE ID",
-  "api-key": "API KEY"
+  "api-key": "API KEY",
+  "failed-to-load-methods": "Failed to load payment methods",
+  "method-added-successfully": "Payment method added successfully",
+  "failed-to-add-method": "Failed to add payment method",
+  "method-updated-successfully": "Payment method updated successfully",
+  "failed-to-update-method": "Failed to update payment method",
+  "method-deleted-successfully": "Payment method deleted successfully",
+  "failed-to-delete-method": "Failed to delete payment method"
 }

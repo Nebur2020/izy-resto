@@ -52,15 +52,14 @@ export function InventoryAlerts({ items }: InventoryAlertsProps) {
                 key={item.id}
                 className="text-sm text-amber-700 dark:text-amber-300"
               >
-                {item.name}: {item.quantity} {item.unit} (Min:{' '}
-                {item.minQuantity})
+                {item.name}: {item.quantity}{' '}
+                {t(`common:units-name.${item.unit}`)} (Min: {item.minQuantity})
               </p>
             ))}
           </div>
         </motion.div>
       )}
 
-      {/* Rest of the component remains the same */}
       {expiredItems.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: -20 }}

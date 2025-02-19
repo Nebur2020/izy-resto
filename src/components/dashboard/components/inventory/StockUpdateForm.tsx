@@ -119,8 +119,8 @@ export function StockUpdateForm(props: IStockUpdateFormProps) {
                         <p className="text-sm text-gray-500 dark:text-gray-400">
                           {t('common:current-stock', {
                             quantity: item.quantity,
-                            unit: item.unit,
-                          })}
+                          })}{' '}
+                          {t(`common:units-name.${item.unit}`)}
                         </p>
                         <p className="text-sm text-gray-500 dark:text-gray-400">
                           {t('common:unit-price', {

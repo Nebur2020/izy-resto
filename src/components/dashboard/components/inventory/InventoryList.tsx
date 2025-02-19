@@ -124,14 +124,16 @@ export function InventoryList(props: IInventoryListProps) {
                         Number(Number(item.quantity).toFixed(2)),
                         'fr-FR'
                       )}{' '}
-                      {item.unit}
+                      {t(`common:units-name.${item.unit}`)}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right">
                     {formatCurrency(numericPrice, settings?.currency)}
                   </td>
                   <td className="px-4 py-3">
-                    {item.expiryDate ? formatDate(item.expiryDate, false, lang) : '-'}
+                    {item.expiryDate
+                      ? formatDate(item.expiryDate, false, lang)
+                      : '-'}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex justify-end gap-2">

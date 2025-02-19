@@ -10,6 +10,7 @@ import { TransactionForm } from './TransactionForm';
 import { ConfirmationModal } from '../../../ui/ConfirmationModal';
 import { Pagination } from '../../../ui/Pagination';
 import { useTranslation } from 'react-i18next';
+import { Language } from '../../../../types';
 
 const ITEMS_PER_PAGE = 8;
 
@@ -31,7 +32,8 @@ export function TransactionList({
   onUpdate,
   onDelete,
 }: TransactionListProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lng = i18n.language as Language;
   const { settings } = useSettings();
   const totalPages = Math.ceil(transactions.length / ITEMS_PER_PAGE);
 
@@ -104,7 +106,7 @@ export function TransactionList({
                     className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                   >
                     <td className="px-6 py-4 text-sm whitespace-nowrap">
-                      {formatDate(transaction.date)}
+                      {formatDate(transaction.date, false, lng)}
                     </td>
                     <td className="px-6 py-4 text-sm">
                       {sourceText[transaction.source] || transaction.source}
