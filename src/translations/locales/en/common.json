@@ -215,5 +215,8 @@
   "genereted-date": "Document generated on {{date}}",
   "all-right-reserved": "All rights reserved © ",
   "search-placeholder": "Search",
-  "personalised": "Personalised"
+  "personalised": "Personalised",
+  "load-more": "Load more",
+  "search-results": "{{count}} result(s) found",
+  "no-search-results": "No variants match your search criteria"
 }

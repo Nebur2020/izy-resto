@@ -16,5 +16,6 @@
   "category-deleted": "Catégorie supprimée avec succès",
   "category-loading": "Chargement des catégories...",
   "no-category-found": "Essayez d'autres termes de recherche",
-  "no-category-description": "Commencez par créer une catégorie"
+  "no-category-description": "Commencez par créer une catégorie",
+  "no-category-found-title": "Aucune catégorie trouvée"
 }

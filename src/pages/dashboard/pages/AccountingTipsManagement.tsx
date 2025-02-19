@@ -37,9 +37,10 @@ const exportTipsToCSV = (
   ].join(',');
 
   const summary = [
-    `${t('common:period')},${formatDate(dateRange.from)} - ${formatDate(
-      dateRange.to
-    )}`,
+    `${t('common:period')},${formatDate(
+      dateRange.from,
+      settings.language || 'fr'
+    )} - ${formatDate(dateRange.to)}`,
     `${t('comptability:total-tips')},${formatCurrency(
       totalTips,
       settings?.currency
@@ -54,7 +55,7 @@ const exportTipsToCSV = (
   const rows = orders
     .map(order => {
       return [
-        formatDate(order.createdAt),
+        formatDate(order.createdAt, settings.language || 'fr'),
         order.id,
         formatCurrency(order.total, settings?.currency),
         formatCurrency(order.tip?.amount || 0, settings?.currency),
@@ -225,7 +226,11 @@ export const AccountingTipsManagement = () => {
                     className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                   >
                     <td className="px-6 py-4 text-sm whitespace-nowrap">
-                      {formatDate(order.createdAt)}
+                      {formatDate(
+                        order.createdAt,
+                        false,
+                        settings?.language || 'fr'
+                      )}
                     </td>
                     <td className="px-6 py-4 text-sm whitespace-nowrap">
                       #{order.id}

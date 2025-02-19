@@ -1,5 +1,13 @@
-import { useState } from 'react';
-import { Plus, Search, ArrowUpDown, Loader2, LayoutGrid } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import {
+  Plus,
+  Search,
+  ArrowUpDown,
+  Loader2,
+  LayoutGrid,
+  RefreshCw,
+  X,
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../../../components/ui/Button';
 import { useCategories } from '../../../hooks/useCategories';
@@ -11,12 +19,25 @@ import EmptySection from '../../../components/dashboard/shared/EmptySection';
 import { useTranslation } from 'react-i18next';
 
 export function CategoryManagement() {
-  const { categories, isLoading, addCategory, updateCategory, deleteCategory } =
-    useCategories();
+  const {
+    categories,
+    isLoading,
+    hasMore,
+    loadMoreCategories,
+    searchCategories,
+    addCategory,
+    updateCategory,
+    deleteCategory,
+    refreshCategories,
+  } = useCategories();
+
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState<Category[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
     isOpen: boolean;
     categoryId?: string;
@@ -24,6 +45,42 @@ export function CategoryManagement() {
   }>({ isOpen: false });
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const { t } = useTranslation();
+
+  // Handle search with debounce
+  useEffect(() => {
+    const delaySearch = setTimeout(() => {
+      if (searchTerm.trim() !== '') {
+        performSearch(searchTerm);
+      } else {
+        setIsSearching(false);
+        setSearchResults([]);
+      }
+    }, 500); // Debounce search for 500ms
+
+    return () => clearTimeout(delaySearch);
+  }, [searchTerm]);
+
+  const performSearch = async (term: string) => {
+    if (term.trim().length < 2) return;
+
+    setSearchLoading(true);
+    setIsSearching(true);
+
+    try {
+      const results = await searchCategories(term);
+      setSearchResults(results);
+    } catch (error) {
+      console.error('Error searching categories:', error);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  const clearSearch = () => {
+    setSearchTerm('');
+    setIsSearching(false);
+    setSearchResults([]);
+  };
 
   const handleSave = async (data: Omit<Category, 'id'>) => {
     try {
@@ -37,6 +94,11 @@ export function CategoryManagement() {
       }
       setIsFormOpen(false);
       setEditingCategory(null);
+
+      // If user was searching, refresh search results
+      if (isSearching && searchTerm.trim() !== '') {
+        performSearch(searchTerm);
+      }
     } catch (error) {
       console.error('Error saving category:', error);
       toast.error(t('category:category-error'));
@@ -63,6 +125,11 @@ export function CategoryManagement() {
     try {
       await deleteCategory(deleteConfirmation.categoryId);
       toast.success(t('category:category-deleted'));
+
+      // If user was searching, refresh search results
+      if (isSearching && searchTerm.trim() !== '') {
+        performSearch(searchTerm);
+      }
     } catch (error) {
       console.error('Error deleting category:', error);
       toast.error(t('category:category-error'));
@@ -71,16 +138,17 @@ export function CategoryManagement() {
     }
   };
 
-  const filteredCategories = categories
-    .filter(
-      category =>
-        category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        category.description?.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .sort((a, b) => {
-      const orderMultiplier = sortOrder === 'asc' ? 1 : -1;
-      return (a.order - b.order) * orderMultiplier;
-    });
+  // Determine which categories to display and apply sorting
+  const displayedCategories = isSearching ? searchResults : categories;
+
+  const sortedCategories = [...displayedCategories].sort((a, b) => {
+    const orderMultiplier = sortOrder === 'asc' ? 1 : -1;
+    return (a.order - b.order) * orderMultiplier;
+  });
+
+  const showLoadMore = !isSearching && hasMore && !isLoading;
+  const currentLoading = isSearching ? searchLoading : isLoading;
+  const isEmptyState = !currentLoading && sortedCategories.length === 0;
 
   return (
     <div className="space-y-6 p-6">
@@ -108,9 +176,17 @@ export function CategoryManagement() {
               placeholder={t('category:search-placeholder')}
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-500/20 transition-shadow"
+              className="w-full pl-10 pr-10 py-2 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-500/20 transition-shadow"
             />
             <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+            {searchTerm && (
+              <button
+                onClick={clearSearch}
+                className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            )}
           </div>
           <Button
             variant="secondary"
@@ -125,9 +201,23 @@ export function CategoryManagement() {
               : t('common:descending')}
           </Button>
         </div>
+        {isSearching && (
+          <div className="mt-2 text-sm text-blue-600 dark:text-blue-400">
+            {searchLoading ? (
+              <span className="flex items-center">
+                <RefreshCw className="w-3 h-3 mr-2 animate-spin" />
+                {t('category:searching')}
+              </span>
+            ) : (
+              <span>
+                {t('common:search-results', { count: searchResults.length })}
+              </span>
+            )}
+          </div>
+        )}
       </div>
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-        {isLoading ? (
+        {currentLoading && sortedCategories.length === 0 ? (
           <div className="flex justify-center items-center h-64">
             <div className="flex flex-col items-center gap-2">
               <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
@@ -139,17 +229,17 @@ export function CategoryManagement() {
         ) : (
           <div className="divide-y divide-gray-200 dark:divide-gray-700">
             <AnimatePresence mode="popLayout">
-              {filteredCategories.length === 0 ? (
+              {isEmptyState ? (
                 <EmptySection
-                  title="Aucune catégorie trouvée"
+                  title={t('category:no-category-found-title')}
                   description={
-                    searchTerm
+                    isSearching
                       ? t('category:no-category-found')
                       : t('category:no-category-description')
                   }
                 />
               ) : (
-                filteredCategories.map((category, index) => (
+                sortedCategories.map(category => (
                   <motion.div
                     key={category.id}
                     layout
@@ -200,6 +290,26 @@ export function CategoryManagement() {
           </div>
         )}
       </div>
+
+      {/* Load More Button */}
+      {showLoadMore && (
+        <div className="flex justify-center mt-6">
+          <Button onClick={loadMoreCategories} className="px-4 py-2">
+            <RefreshCw className="w-4 h-4 mr-2" />
+            {t('common:load-more')}
+          </Button>
+        </div>
+      )}
+
+      {/* Loading Indicator for Load More */}
+      {!isSearching && isLoading && categories.length > 0 && (
+        <div className="flex justify-center mt-6">
+          <div className="animate-spin">
+            <RefreshCw className="w-6 h-6 text-blue-500" />
+          </div>
+        </div>
+      )}
+
       {isFormOpen && (
         <CategoryForm
           isLoading={isCreating}
@@ -218,7 +328,7 @@ export function CategoryManagement() {
         onConfirm={confirmDelete}
         title={t('category:delete-category')}
         message={t('category:delete-category-message', {
-          categoryName: deleteConfirmation.categoryName
+          categoryName: deleteConfirmation.categoryName,
         })}
       />
     </div>

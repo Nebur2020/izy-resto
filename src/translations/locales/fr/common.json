@@ -217,5 +217,8 @@
   "genereted-date": "Document généré le {{date}}",
   "all-right-reserved": "Tous droits réservés ©",
   "search-placeholder": "Rechercher",
-  "personalised": "Personnalisé"
+  "personalised": "Personnalisé",
+  "load-more": "Charger plus",
+  "search-results": "{{count}} résultat(s) trouvé(s)",
+  "no-search-results": "Aucune variante ne correspond à vos critères de recherche"
 }

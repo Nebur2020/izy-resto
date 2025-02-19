@@ -25,11 +25,6 @@ export function POSMenuGrid(props: POSMenuGridProps) {
     props;
   const { settings } = useSettings();
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedItems = items.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -56,7 +51,7 @@ export function POSMenuGrid(props: POSMenuGridProps) {
       <div className="flex-1 overflow-y-auto p-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           <AnimatePresence mode="popLayout">
-            {paginatedItems.map(item => (
+            {items.map(item => (
               <motion.div
                 key={item.id}
                 layout
@@ -87,17 +82,6 @@ export function POSMenuGrid(props: POSMenuGridProps) {
           </AnimatePresence>
         </div>
       </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="p-4 border-t dark:border-gray-700">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
-        </div>
-      )}
 
       {/* Product Details Modal */}
       {selectedItem && (

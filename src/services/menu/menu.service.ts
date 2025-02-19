@@ -8,29 +8,204 @@ import {
   getDocs,
   doc,
   runTransaction,
+  limit,
+  startAfter,
+  orderBy,
+  QueryDocumentSnapshot,
+  DocumentData,
 } from 'firebase/firestore';
 import { db } from '../../lib/firebase/config';
 import { MenuServiceError } from './errors';
+
+interface PaginatedResult<T> {
+  items: T[];
+  lastDoc: QueryDocumentSnapshot<DocumentData> | null;
+  hasMore: boolean;
+}
 
 class MenuService extends FirestoreService<MenuItem> {
   constructor() {
     super('menu_items');
   }
 
-  async getMenuItems(filters?: MenuFilters): Promise<MenuItemWithVariants[]> {
+  // Add these methods to your MenuService class
+
+  // Simple method to get items by category
+  async getMenuItemsByCategory(
+    category: string
+  ): Promise<MenuItemWithVariants[]> {
     try {
-      let q = collection(db, this.collectionName);
-      const constraints = [];
+      const collectionRef = collection(db, this.collectionName);
+      let q;
 
-      if (filters?.category && filters?.category !== 'all') {
-        constraints.push(where('categoryId', '==', filters.category));
-      }
-
-      if (constraints.length > 0) {
-        q = query(q, ...constraints) as any;
+      if (category === 'all') {
+        q = query(collectionRef);
+      } else {
+        q = query(collectionRef, where('categoryId', '==', category));
       }
 
       const snapshot = await getDocs(q);
+
+      return snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          variantPrices: (data.variantPrices || []).filter(
+            vp =>
+              Array.isArray(vp?.variantCombination) &&
+              vp.variantCombination.length > 0
+          ),
+        } as MenuItemWithVariants;
+      });
+    } catch (error) {
+      console.error('Error fetching menu items by category:', error);
+      throw new MenuServiceError(
+        'Failed to fetch menu items by category',
+        'menu/fetch-category-error',
+        error
+      );
+    }
+  }
+
+  // Method to get all menu items
+  async getAll(): Promise<MenuItemWithVariants[]> {
+    try {
+      const collectionRef = collection(db, this.collectionName);
+      const snapshot = await getDocs(collectionRef);
+
+      return snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          variantPrices: (data.variantPrices || []).filter(
+            vp =>
+              Array.isArray(vp?.variantCombination) &&
+              vp.variantCombination.length > 0
+          ),
+        } as MenuItemWithVariants;
+      });
+    } catch (error) {
+      console.error('Error fetching all menu items:', error);
+      throw new MenuServiceError(
+        'Failed to fetch all menu items',
+        'menu/fetch-all-error',
+        error
+      );
+    }
+  }
+  // Helper method to get all menu items
+
+  async getMenuItemsPaginated(
+    pageSize: number = 10,
+    lastDoc: QueryDocumentSnapshot<DocumentData> | null = null,
+    filters?: MenuFilters
+  ): Promise<PaginatedResult<MenuItemWithVariants>> {
+    try {
+      // Create the base collection reference
+      const collectionRef = collection(db, this.collectionName);
+
+      // Build constraints array
+      const constraints = [];
+
+      // Only add category filter if it's provided and not 'all'
+      if (filters?.category && filters.category !== 'all') {
+        constraints.push(where('categoryId', '==', filters.category));
+      }
+
+      // Add ordering constraint
+      constraints.push(orderBy('createdAt', 'desc'));
+
+      // Add pagination limit - fetch one extra to determine if there are more
+      constraints.push(limit(pageSize + 1));
+
+      // Construct the initial query with constraints
+      let baseQuery = query(collectionRef, ...constraints);
+
+      // If we have a last document reference, add the startAfter constraint
+      if (lastDoc) {
+        baseQuery = query(baseQuery, startAfter(lastDoc));
+      }
+
+      // Execute the query
+      const snapshot = await getDocs(baseQuery);
+
+      // Process query results
+      const items: MenuItemWithVariants[] = [];
+      let newLastDoc: QueryDocumentSnapshot<DocumentData> | null = null;
+
+      // Determine if there are more results
+      const hasMore = snapshot.docs.length > pageSize;
+
+      // Process only up to pageSize documents
+      const docsToProcess = hasMore
+        ? snapshot.docs.slice(0, pageSize)
+        : snapshot.docs;
+
+      // Process each document
+      for (const doc of docsToProcess) {
+        // Check that the document exists
+        if (doc.exists()) {
+          const itemData = doc.data() as Omit<MenuItemWithVariants, 'id'>;
+
+          // Create the menu item with proper processing
+          const item = {
+            id: doc.id,
+            ...itemData,
+            // Ensure variantPrices is properly filtered
+            variantPrices: (itemData.variantPrices || []).filter(
+              vp =>
+                Array.isArray(vp?.variantCombination) &&
+                vp.variantCombination.length > 0
+            ),
+          };
+
+          items.push(item);
+          newLastDoc = doc;
+        }
+      }
+
+      return {
+        items,
+        lastDoc: newLastDoc,
+        hasMore,
+      };
+    } catch (error) {
+      // Enhanced error logging
+      console.error('Error fetching paginated menu items:', error);
+
+      // Add more detailed error info when available
+      if (error instanceof Error) {
+        console.error(`Error details: ${error.name} - ${error.message}`);
+        console.error('Stack:', error.stack);
+      }
+
+      throw new MenuServiceError(
+        'Failed to fetch menu items',
+        'menu/fetch-paginated-error',
+        error
+      );
+    }
+  }
+
+  async getMenuItems(filters?: MenuFilters): Promise<MenuItemWithVariants[]> {
+    try {
+      // Create collection reference
+      const collectionRef = collection(db, this.collectionName);
+      let baseQuery = query(collectionRef);
+
+      // Add category filter if specified
+      if (filters?.category && filters?.category !== 'all') {
+        baseQuery = query(
+          baseQuery,
+          where('categoryId', '==', filters.category)
+        );
+      }
+
+      const snapshot = await getDocs(baseQuery);
+
+      // Map documents to menu items
       const data = snapshot.docs
         .map(doc => ({
           id: doc.id,
@@ -39,15 +214,18 @@ class MenuService extends FirestoreService<MenuItem> {
         .map(item => {
           return {
             ...item,
-            variantPrices:
-              item?.variantPrices?.filter(
-                vp => vp?.variantCombination?.length > 0
-              ) || [],
+            // Filter variant prices
+            variantPrices: (item?.variantPrices || []).filter(
+              vp =>
+                Array.isArray(vp?.variantCombination) &&
+                vp.variantCombination.length > 0
+            ),
           };
         });
+
       return data;
     } catch (error) {
-      console.log(error);
+      console.error('Error fetching menu items:', error);
       throw new MenuServiceError(
         'Failed to fetch menu items',
         'menu/fetch-error',

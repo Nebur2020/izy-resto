@@ -76,7 +76,7 @@ class StockUpdateService {
               );
             }
 
-            const variants = await variantService.getVariantsByCategory(
+            const variants = await variantService.getAllVariantsByCategory(
               docSnap.data().categoryId
             );
 
