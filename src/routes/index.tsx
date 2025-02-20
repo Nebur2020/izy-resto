@@ -10,8 +10,6 @@ import PaymentSuccess from '../pages/paytech/SuccessPage';
 import { TermsOfService } from '../pages/TermsOfService';
 import { Home } from '../pages/home';
 import PendingTransaction from '../pages/payments/pending';
-import { useSettings } from '../hooks';
-import i18n from '../translations/i18n';
 
 const Dashboard = React.lazy(() =>
   import('../pages/dashboard/Dashboard')
