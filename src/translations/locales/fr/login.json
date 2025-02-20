@@ -1,0 +1,16 @@
+{
+  "fields-required": "Veuillez remplir tous les champs",
+  "invalid-email": "Adresse email invalide",
+  "password-length": "Le mot de passe doit contenir au moins {{length}} caractères",
+  "unknown-error": "Merci de vérifier vos identifiants",
+  "user-disabled": "Ce compte a été désactivé",
+  "user-not-found": "Aucun compte trouvé avec cet email",
+  "wrong-password": "Mot de passe incorrect",
+  "too-many-requests": "Trop de tentatives. Veuillez réessayer plus tard.",
+  "network-request-failed": "Erreur de connexion. Vérifiez votre connexion internet.",
+  "back-to-restaurants": "Retour au Restaurant",
+  "personal-account": "Accès réservé au personnel",
+  "login": "Se connecter",
+  "email": "Email",
+  "password": "Mot de passe"
+}

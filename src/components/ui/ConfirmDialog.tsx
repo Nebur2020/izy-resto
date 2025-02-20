@@ -59,7 +59,7 @@ export function ConfirmDialog(props: IConfirmDialogProps) {
           <Button variant="secondary" onClick={onCancel} disabled={isLoading}>
             {cancelLabel}
           </Button>
-          <Button variant="danger" onClick={onConfirm} disabled={isLoading}>
+          <Button variant="danger" onClick={onConfirm} disabled={isLoading} className='!text-white'>
             {isLoading ? t('common:deleting') : confirmLabel}
           </Button>
         </div>

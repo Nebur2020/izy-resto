@@ -360,7 +360,7 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
           <Button
             onClick={handleAddToCart}
             disabled={isOutOfStock}
-            className={`${addProductToCartBgColor} w-full rounded-full py-2 sm:py-3 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 ease-in-out disabled:bg-gray-300 disabled:cursor-not-allowed dark:bg-blue-500 dark:hover:bg-blue-600 dark:disabled:bg-gray-700`}
+            className={`${addProductToCartBgColor} !text-gray-900 w-full rounded-full py-2 sm:py-3 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 ease-in-out disabled:bg-gray-300 disabled:cursor-not-allowed dark:bg-blue-500 dark:hover:bg-blue-600 dark:disabled:bg-gray-700`}
           >
             <ShoppingBag className="h-5 w-5 mr-1" />
             {isOutOfStock ? t('out-of-stock') : t('add-to-cart')}

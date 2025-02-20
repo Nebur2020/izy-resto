@@ -194,7 +194,7 @@ export function QRCodeManagement() {
                 disabled={!url || isGenerating}
                 className={`
                   relative inline-flex items-center justify-center px-6 py-3 
-                  text-sm font-medium text-white
+                  text-sm font-medium !text-white
                   bg-gradient-to-r from-blue-500 to-indigo-600 
                   hover:from-blue-600 hover:to-indigo-700 
                   rounded-xl shadow-lg hover:shadow-xl 
@@ -210,7 +210,7 @@ export function QRCodeManagement() {
                     isGenerating ? 'animate-spin' : ''
                   }`}
                 />
-                <span>
+                <span className='!text-white'>
                   {isGenerating
                     ? t('qrCode:generating')
                     : t('qrCode:generator')}

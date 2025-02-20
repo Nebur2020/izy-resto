@@ -256,7 +256,7 @@ export function DataManagement() {
             variant="danger"
             onClick={() => setResetConfirmation(true)}
             disabled={isResetting}
-            className="w-full sm:w-auto"
+            className="w-full sm:w-auto text-white"
           >
             {isResetting ? (
               <>

@@ -149,7 +149,7 @@ export function OrderReceipt() {
               <Button
                 variant="danger"
                 onClick={handleCancelOrder}
-                className="w-full mt-4"
+                className="w-full mt-4 !text-white"
               >
                 {t('cancel-order')}
               </Button>

@@ -218,7 +218,7 @@ export function StockUpdateForm(props: IStockUpdateFormProps) {
               <Button
                 type="submit"
                 disabled={isSubmitting || !updates.some(u => u.quantity > 0)}
-                className="w-full sm:w-auto min-w-0 sm:min-w-[200px] relative order-1 sm:order-2"
+                className="!text-black w-full sm:w-auto min-w-0 sm:min-w-[200px] relative order-1 sm:order-2"
               >
                 {isSubmitting ? (
                   <>

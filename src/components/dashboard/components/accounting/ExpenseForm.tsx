@@ -126,7 +126,7 @@ export function ExpenseForm({ expense, onSave, onCancel }: ExpenseFormProps) {
             <Button type="button" variant="secondary" onClick={onCancel}>
               Annuler
             </Button>
-            <Button type="submit">
+            <Button type="submit" className='text-gray-900'>
               {expense ? 'Mettre à jour' : 'Ajouter'}
             </Button>
           </div>

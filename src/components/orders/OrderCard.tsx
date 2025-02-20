@@ -111,7 +111,7 @@ export const OrderCard = React.forwardRef<HTMLDivElement, OrderCardProps>(
               <Button
                 variant="danger"
                 onClick={() => onCancel(order.id)}
-                className="flex-1"
+                className="flex-1 !text-white"
               >
                 {t('cancel-order')}
               </Button>

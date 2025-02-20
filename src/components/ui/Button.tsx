@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
@@ -17,6 +18,7 @@ export function Button({
   spanClassName = '',
   ...props
 }: ButtonProps) {
+  const { t } = useTranslation();
   const baseStyles = `
     relative inline-flex items-center justify-center
     font-medium transition-all duration-200
@@ -29,7 +31,7 @@ export function Button({
     primary: `
    bg-gradient-to-r from-blue-100 to-blue-200
    hover:from-blue-300 hover:to-blue-200
-   text-white !text-white 
+   text-gray-900
    shadow-sm
    focus:ring-blue-500/50
    dark:from-blue-500 dark:to-blue-400
@@ -42,22 +44,22 @@ export function Button({
    hover:bg-gray-50 dark:hover:bg-gray-700
    hover:border-gray-300 dark:hover:border-gray-600
    focus:ring-gray-500/50
-   shadow-sm text-white !text-white 
+   shadow-sm text-gray-900
  `,
     danger: `
    bg-gradient-to-r from-red-600 to-red-500
    hover:from-red-700 hover:to-red-600
-   text-white !text-white
+   text-gray-900
    shadow-sm
    focus:ring-red-500/50
    dark:from-red-500 dark:to-red-400 
-   dark:hover:from-red-600 dark:hover:to-red-500 text-white !text-white 
+   dark:hover:from-red-600 dark:hover:to-red-500 text-gray-900
  `,
     ghost: `
    text-gray-600 hover:text-gray-900
    dark:text-gray-400 dark:hover:text-gray-100
    hover:bg-gray-100 dark:hover:bg-gray-800
-   focus:ring-gray-500/50 text-white !text-white 
+   focus:ring-gray-500/50 text-gray-900
  `,
   };
 
@@ -80,9 +82,9 @@ export function Button({
       {...props}
     >
       {hoverOverlay}
-      <span className={`relative flex items-center ${spanClassName}`}>
+      <section className={`relative flex items-center ${spanClassName}`}>
         {content}
-      </span>
+      </section>
     </button>
   );
 }

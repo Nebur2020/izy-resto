@@ -516,7 +516,8 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
                 <Button
                   type="submit"
                   className={`
-                    px-6 py-2 rounded-lg font-medium text-white
+                    text-gray-900
+                    px-6 py-2 rounded-lg font-medium
                     transition-all duration-200
                     bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl
                   `}

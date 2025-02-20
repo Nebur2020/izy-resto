@@ -121,7 +121,7 @@ export function LogoUploader(props: ILogoUploaderProps) {
                   }}
                   className="w-full flex items-center justify-center gap-2 
                     bg-red-50 dark:bg-red-900/30 
-                    text-red-600 dark:text-red-400 
+                    text-white dark:text-red-400 
                     hover:bg-red-100 dark:hover:bg-red-900/50 
                     border border-red-100 dark:border-red-900/40
                     transition-all duration-300 

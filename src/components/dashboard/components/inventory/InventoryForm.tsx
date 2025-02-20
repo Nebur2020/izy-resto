@@ -228,7 +228,7 @@ export function InventoryForm(props: IInventoryFormProps) {
             <Button type="button" variant="secondary" onClick={onCancel}>
               {t('common:cancel')}
             </Button>
-            <Button onClick={handleSubmit(onSave)} disabled={isSubmitting}>
+            <Button onClick={handleSubmit(onSave)} disabled={isSubmitting} className='text-gray-900'>
               {isSubmitting
                 ? t('common:saving')
                 : item

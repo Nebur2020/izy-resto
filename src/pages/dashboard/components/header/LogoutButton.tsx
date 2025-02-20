@@ -12,7 +12,7 @@ export function LogoutButton({ onLogout }: LogoutButtonProps) {
   return (
     <Button variant="secondary" size="sm" onClick={onLogout}>
       <LogOut className="w-4 h-4 mr-2" />
-      {t('logout')}
+      {t('common:logout')}
     </Button>
   );
 }

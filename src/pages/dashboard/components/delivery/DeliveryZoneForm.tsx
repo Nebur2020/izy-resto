@@ -100,7 +100,7 @@ export function DeliveryZoneForm(props: IDeliveryZoneFormProps) {
             <Button type="button" variant="secondary" onClick={onCancel}>
               {t('common:cancel')}
             </Button>
-            <Button type="button" onClick={handleSubmit(onSubmit)}>
+            <Button type="button" onClick={handleSubmit(onSubmit)} className='!text-gray-900'>
               {zone ? t("common:update") : t('common:add')}
             </Button>
           </div>
