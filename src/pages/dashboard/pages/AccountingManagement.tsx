@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Tabs } from '../../../components/ui/Tabs';
 import { AccountingOverview } from '../../../components/dashboard/components/accounting/AccountingOverview';
 import { TransactionList } from '../../../components/dashboard/components/accounting/TransactionList';
@@ -30,6 +30,7 @@ export function AccountingManagement() {
   });
   const [isDownloading, setIsDownloading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [exportData, setExportData] = useState<any[]>([]);
   const statementRef = useRef<HTMLDivElement>(null);
 
   const tabs = [
@@ -39,14 +40,26 @@ export function AccountingManagement() {
     { id: 'delivery', label: t('comptability:delivery') },
   ];
 
-  const { transactions, stats, isLoading, refreshData } =
-    useAccounting(dateRange);
+  const {
+    transactions,
+    stats,
+    isLoading,
+    isLoadingMore,
+    refreshData,
+    loadMore,
+    hasMore,
+    displayedCount,
+    totalCount,
+    fetchAllTransactions,
+  } = useAccounting(dateRange);
 
-  console.log(
-    transactions.sort((a, b) => {
-      return (b.createdAt as any) - (a.createdAt as any);
-    })
-  );
+  const sortedTransactions = [...transactions].sort((a, b) => {
+    const dateA =
+      a.createdAt instanceof Date ? a.createdAt : new Date(a.createdAt);
+    const dateB =
+      b.createdAt instanceof Date ? b.createdAt : new Date(b.createdAt);
+    return dateB.getTime() - dateA.getTime();
+  });
 
   const handleDateChange = (start: Date, end: Date) => {
     setDateRange({ startDate: start, endDate: end });
@@ -85,19 +98,20 @@ export function AccountingManagement() {
       toast.error(t('comptability:transaction-deleting-error'));
     }
   };
-  
+
   const handleExport = async () => {
-    if (!statementRef.current || !settings) return;
+    if (!settings) return;
 
     try {
       setIsDownloading(true);
-      const fetchedTransactions = await accountingService.getTransactions(
-        dateRange
-      );
+
+      // Fetch all transactions for export
+      const allTransactions = await fetchAllTransactions();
+      setExportData(allTransactions);
 
       const statement = (
         <FinancialStatement
-          transactions={fetchedTransactions}
+          transactions={allTransactions}
           period={dateRange}
           settings={settings as any}
         />
@@ -171,15 +185,15 @@ export function AccountingManagement() {
             </div>
 
             <TransactionList
-              transactions={transactions.sort((a, b) => {
-                return (
-                  new Date(b.createdAt).getTime() -
-                  new Date(a.createdAt).getTime()
-                );
-              })}
+              transactions={sortedTransactions}
               isLoading={isLoading}
+              isLoadingMore={isLoadingMore}
               onUpdate={handleUpdateTransaction}
               onDelete={handleDeleteTransaction}
+              hasMore={hasMore}
+              onLoadMore={loadMore}
+              displayedCount={displayedCount}
+              totalCount={totalCount}
             />
           </>
         );
@@ -199,11 +213,11 @@ export function AccountingManagement() {
         />
       )}
 
-      {settings && (
+      {settings && exportData.length > 0 && (
         <div className="hidden">
           <div ref={statementRef}>
             <FinancialStatement
-              transactions={transactions}
+              transactions={exportData}
               period={dateRange}
               settings={settings as any}
             />

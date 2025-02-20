@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Edit2, Trash2 } from 'lucide-react';
+import { Edit2, Trash2, ChevronDown, Loader2 } from 'lucide-react';
 import { Transaction } from '../../../../types/accounting';
 import { useSettings } from '../../../../hooks/useSettings';
 import { formatCurrency } from '../../../../utils/currency';
@@ -8,17 +8,19 @@ import { formatDate } from '../../../../utils/date';
 import { Button } from '../../../ui/Button';
 import { TransactionForm } from './TransactionForm';
 import { ConfirmationModal } from '../../../ui/ConfirmationModal';
-import { Pagination } from '../../../ui/Pagination';
 import { useTranslation } from 'react-i18next';
 import { Language } from '../../../../types';
-
-const ITEMS_PER_PAGE = 8;
 
 interface TransactionListProps {
   transactions: Transaction[];
   isLoading: boolean;
+  isLoadingMore?: boolean;
   onUpdate: (id: string, data: Partial<Transaction>) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
+  hasMore?: boolean;
+  onLoadMore?: () => void;
+  displayedCount?: number;
+  totalCount?: number;
 }
 
 export const sourceText: Record<string, string> = {
@@ -29,15 +31,18 @@ export const sourceText: Record<string, string> = {
 export function TransactionList({
   transactions,
   isLoading,
+  isLoadingMore = false,
   onUpdate,
   onDelete,
+  hasMore = false,
+  onLoadMore,
+  displayedCount = 0,
+  totalCount = 0,
 }: TransactionListProps) {
   const { t, i18n } = useTranslation();
   const lng = i18n.language as Language;
   const { settings } = useSettings();
-  const totalPages = Math.ceil(transactions.length / ITEMS_PER_PAGE);
 
-  const [currentPage, setCurrentPage] = useState(1);
   const [editingTransaction, setEditingTransaction] =
     useState<Transaction | null>(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
@@ -45,12 +50,7 @@ export function TransactionList({
     transactionId?: string;
   }>({ isOpen: false });
 
-  const paginatedTransactions = transactions.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
-
-  if (isLoading) {
+  if (isLoading && transactions.length === 0) {
     return (
       <div className="space-y-4">
         {[...Array(5)].map((_, i) => (
@@ -92,16 +92,16 @@ export function TransactionList({
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              <AnimatePresence mode="wait">
-                {paginatedTransactions.map((transaction, index) => (
+              <AnimatePresence mode="wait" initial={false}>
+                {transactions.map((transaction, index) => (
                   <motion.tr
                     key={transaction.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
+                    exit={{ opacity: 0 }}
                     transition={{
                       duration: 0.2,
-                      delay: index * 0.05,
+                      delay: Math.min(index * 0.05, 0.3),
                     }}
                     className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                   >
@@ -167,7 +167,7 @@ export function TransactionList({
                 ))}
               </AnimatePresence>
 
-              {paginatedTransactions.length === 0 && (
+              {transactions.length === 0 && !isLoading && (
                 <tr>
                   <td
                     colSpan={8}
@@ -181,16 +181,32 @@ export function TransactionList({
           </table>
         </div>
 
-        {totalPages > 1 && (
+        {(hasMore || isLoadingMore) && (
           <div className="px-6 py-4 border-t dark:border-gray-700">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
+            <Button
+              variant="outline"
+              onClick={onLoadMore}
+              disabled={isLoading || isLoadingMore}
+              className="w-full flex items-center justify-center gap-2"
+            >
+              {isLoadingMore ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <ChevronDown className="w-4 h-4" />
+              )}
+              <span>
+                {isLoadingMore ? t('common:loading') : t('common:load-more')}
+                {displayedCount > 0 && totalCount > 0 && (
+                  <span className="ml-1 text-gray-500">
+                    ({displayedCount}/{totalCount})
+                  </span>
+                )}
+              </span>
+            </Button>
           </div>
         )}
       </div>
+
       {editingTransaction && (
         <TransactionForm
           transaction={editingTransaction}

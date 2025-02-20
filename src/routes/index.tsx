@@ -23,14 +23,6 @@ const Dashboard = React.lazy(() =>
 );
 
 export function AppRoutes() {
-  const { settings } = useSettings();
-
-  useEffect(() => {
-    if (settings?.language) {
-      i18n.changeLanguage(settings.language);
-    }
-  }, [settings?.language]);
-
   return (
     <Routes>
       <Route path="/" element={<Home />} />

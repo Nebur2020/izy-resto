@@ -33,8 +33,9 @@ export function OrderManagement() {
   const [isSearching, setIsSearching] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
 
-  // Track the previous order count to detect new orders
-  const prevOrderCountRef = useRef(0);
+  // Track seen order IDs to detect new orders
+  const seenOrderIdsRef = useRef<Set<string>>(new Set());
+  const isFirstLoadRef = useRef(true);
 
   // Audio element reference
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -45,7 +46,6 @@ export function OrderManagement() {
     audioRef.current.volume = 0.7;
 
     // iOS requires user interaction before playing audio
-    // Let's try to "unlock" audio on first user interaction
     const unlockAudio = () => {
       if (audioRef.current) {
         // Play and immediately pause to unlock
@@ -68,42 +68,48 @@ export function OrderManagement() {
     };
   }, []);
 
-  // Auto-refresh orders every minute when tab is visible
+  // Detect new orders using order IDs
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      if (
-        document.visibilityState === 'visible' &&
-        !isLoading &&
-        !isSearching
-      ) {
-        refreshOrders();
-      }
-    }, 60000);
+    // Skip detection during initial load or when searching
+    if (isLoading || isSearching || orders.length === 0) return;
 
-    return () => clearInterval(intervalId);
-  }, [refreshOrders, isLoading, isSearching]);
-
-  // Detect new orders
-  useEffect(() => {
-    // Only run this check after initial loading is complete
-    if (!isLoading && orders.length > 0) {
-      const pendingCount = orders.filter(o => o.status === 'pending').length;
-
-      // If we previously had orders and there are more pending orders now
-      if (
-        prevOrderCountRef.current > 0 &&
-        pendingCount > prevOrderCountRef.current
-      ) {
-        // Play notification sound if we're not in focus
-        if (document.visibilityState !== 'visible') {
-          playNotificationSound();
-        }
-      }
-
-      // Update the counter
-      prevOrderCountRef.current = pendingCount;
+    // On first successful load, just record all current orders without notification
+    if (isFirstLoadRef.current) {
+      orders.forEach(order => {
+        seenOrderIdsRef.current.add(order.id);
+      });
+      isFirstLoadRef.current = false;
+      return;
     }
-  }, [orders, isLoading, t]);
+
+    // Find new orders that we haven't seen before
+    const newOrders = orders.filter(
+      order => !seenOrderIdsRef.current.has(order.id)
+    );
+
+    // If there are any new orders
+    if (newOrders.length > 0) {
+      // Only play sound for new pending orders
+      const newPendingOrders = newOrders.filter(
+        order => order.status === 'pending'
+      );
+
+      if (
+        newPendingOrders.length > 0 &&
+        window.location.href.includes('/dashboard')
+      ) {
+        playNotificationSound();
+
+        // Optional: You could show a visual notification here as well
+        // showVisualNotification(newPendingOrders.length);
+      }
+
+      // Update seen orders reference with all new orders
+      newOrders.forEach(order => {
+        seenOrderIdsRef.current.add(order.id);
+      });
+    }
+  }, [orders, isLoading, isSearching]);
 
   // Play notification sound
   const playNotificationSound = () => {
@@ -282,6 +288,13 @@ export function OrderManagement() {
     }
   };
 
+  // For debugging in development mode
+  const testNotification = () => {
+    if (process.env.NODE_ENV === 'development') {
+      playNotificationSound();
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex gap-2 items-center">
@@ -316,7 +329,7 @@ export function OrderManagement() {
                 </span>
               ) : (
                 <span>
-                  {t('order:search-results', { count: searchResults.length })}
+                  {t('common:search-results', { count: searchResults.length })}
                 </span>
               )}
             </div>
@@ -326,9 +339,9 @@ export function OrderManagement() {
           <button
             onClick={() => {
               refreshOrders();
-              // Test sound (for debugging)
+              // Test sound only in development mode
               if (process.env.NODE_ENV === 'development') {
-                setTimeout(playNotificationSound, 500);
+                testNotification();
               }
             }}
             className="flex items-center gap-2 p-2 text-blue-600 hover:bg-blue-50 rounded-full"
@@ -339,8 +352,6 @@ export function OrderManagement() {
         </div>
       </div>
 
-      {/* <div className="flex items-center justify-between">
-      </div> */}
       <OrderStats stats={stats} />
 
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6">

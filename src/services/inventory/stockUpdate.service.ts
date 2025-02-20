@@ -242,6 +242,7 @@ class StockUpdateService {
 
         // Validate and update inventory
         for (const [itemId, update] of inventoryUpdates) {
+          console.log(itemId, update);
           if (update.currentStock < update.deduction) {
             toast.error('Quantité insuffisante...');
             throw new StockUpdateError(

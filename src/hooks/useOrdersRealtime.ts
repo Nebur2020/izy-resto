@@ -9,24 +9,41 @@ export function useOrdersRealtime() {
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
+    let isMounted = true; // Track component mount state
     setIsLoading(true);
 
     const unsubscribe = orderService.subscribeToOrders(
       updatedOrders => {
-        // Update orders without animation
-        const formattedOrders = updatedOrders.map(o => ({
-          ...o,
-          total: Number(o.total),
-          subtotal: o.subtotal ? Number(o.subtotal) : o.total,
-          taxTotal: o.taxTotal ? Number(o.taxTotal) : 0,
-          amountPaid: o.amountPaid ? Number(o.amountPaid) : 0,
-          change: o.change ? Number(o.change) : 0,
-        }));
-        setOrders(formattedOrders);
-        setIsLoading(false);
-        setError(null);
+        if (!isMounted) return; // Prevent state updates if unmounted
+
+        try {
+          // Safely format orders with error handling
+          const formattedOrders = updatedOrders.map(o => ({
+            ...o,
+            total: Number(o.total || 0),
+            subtotal: o.subtotal ? Number(o.subtotal) : Number(o.total || 0),
+            taxTotal: o.taxTotal ? Number(o.taxTotal) : 0,
+            amountPaid: o.amountPaid ? Number(o.amountPaid) : 0,
+            change: o.change ? Number(o.change) : 0,
+            // Ensure createdAt is always a valid object with seconds
+            createdAt: o.createdAt || { seconds: Date.now() / 1000 },
+          }));
+
+          setOrders(formattedOrders);
+          setIsLoading(false);
+          setError(null);
+        } catch (err) {
+          console.error('Error formatting orders:', err);
+          setError(
+            err instanceof Error
+              ? err
+              : new Error('Unknown error formatting orders')
+          );
+          setIsLoading(false);
+        }
       },
       error => {
+        if (!isMounted) return;
         console.error('Error in orders subscription:', error);
         setError(error);
         setIsLoading(false);
@@ -36,7 +53,14 @@ export function useOrdersRealtime() {
 
     // Cleanup subscription on unmount
     return () => {
-      unsubscribe();
+      isMounted = false;
+      if (typeof unsubscribe === 'function') {
+        try {
+          unsubscribe();
+        } catch (err) {
+          console.error('Error unsubscribing from orders:', err);
+        }
+      }
     };
   }, []);
 

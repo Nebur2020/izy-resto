@@ -9,7 +9,7 @@ import { PaginatedCustomerList } from '../../../components/dashboard/PaginatedCu
 import { PaginatedRecentOrders } from '../../../components/dashboard/PaginatedRecentOrders';
 import { RevenueDetails } from '../../../components/dashboard/RevenueDetails';
 import { useOrdersRealtime } from '../../../hooks/useOrdersRealtime';
-import { Laptop } from 'lucide-react';
+import { Laptop, Loader } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { PaymentMethodStats } from '../../../components/dashboard/components/analytics/PaymentMethodStats';
 
@@ -19,15 +19,28 @@ export function Overview() {
     startDate: new Date(new Date().setHours(0, 0, 0, 0)),
     endDate: new Date(),
   });
-
-  const { orders } = useOrdersRealtime();
-
+  const { orders, isLoading, error } = useOrdersRealtime();
   const { t } = useTranslation('dashboard');
 
+  // Safe check for orders before filtering
   const filteredOrders = useMemo(() => {
+    if (!orders || orders.length === 0) return [];
+
     return orders.filter(order => {
-      const orderDate = new Date(order.createdAt.seconds * 1000);
-      return orderDate >= dateRange.startDate && orderDate <= dateRange.endDate;
+      // Safely handle missing or malformed createdAt
+      if (!order.createdAt || !order.createdAt.seconds) {
+        return false;
+      }
+
+      try {
+        const orderDate = new Date(order.createdAt.seconds * 1000);
+        return (
+          orderDate >= dateRange.startDate && orderDate <= dateRange.endDate
+        );
+      } catch (err) {
+        console.error('Error parsing order date:', err, order);
+        return false;
+      }
     });
   }, [orders, dateRange]);
 
@@ -53,11 +66,52 @@ export function Overview() {
       ),
       totalOrders: deliveredOrders.length,
       uniqueCustomers: new Set(
-        deliveredOrders.map(order => order.customerEmail || order.customerPhone)
+        deliveredOrders
+          .filter(order => order.customerEmail || order.customerPhone)
+          .map(order => order.customerEmail || order.customerPhone)
       ).size,
       dailyOrderRate: Math.round(dailyOrderRate * 10) / 10,
     };
-  }, [filteredOrders, deliveredOrders, dateRange]);
+  }, [deliveredOrders, dateRange]);
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <Loader className="w-10 h-10 mx-auto text-blue-500 animate-spin mb-4" />
+          <p className="text-gray-600 dark:text-gray-400">
+            {t('loading-orders')}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center bg-red-50 dark:bg-red-900/20 p-6 rounded-xl max-w-md">
+          <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-red-100 dark:bg-red-800/30 flex items-center justify-center">
+            <span className="text-2xl">⚠️</span>
+          </div>
+          <h2 className="text-xl font-semibold mb-2 text-red-700 dark:text-red-400">
+            {t('error-loading-orders')}
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            {error.message || t('unknown-error')}
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            {t('try-again')}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (isMobile) {
     return (
@@ -72,7 +126,7 @@ export function Overview() {
           </p>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
-          <h3 className="text-lg font-semibold mb-4">Commandes Récentes</h3>
+          <h3 className="text-lg font-semibold mb-4">{t('recent-orders')}</h3>
           <PaginatedRecentOrders orders={deliveredOrders} itemsPerPage={5} />
         </div>
         <AnalyticsGrid {...analytics} />
@@ -97,59 +151,83 @@ export function Overview() {
         />
       </div>
 
-      <AnalyticsGrid {...analytics} />
+      {filteredOrders.length === 0 ? (
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm text-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+            <span className="text-2xl">📊</span>
+          </div>
+          <h3 className="text-lg font-semibold mb-2">{t('no-orders-found')}</h3>
+          <p className="text-gray-600 dark:text-gray-400">
+            {t('try-different-date-range')}
+          </p>
+        </div>
+      ) : (
+        <>
+          <AnalyticsGrid {...analytics} />
 
-      <ProductSalesStats orders={deliveredOrders} />
+          <ProductSalesStats orders={deliveredOrders} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
-        >
-          <h3 className="text-lg font-semibold mb-4">{t('income')}</h3>
-          <RevenueDetails orders={deliveredOrders} dateRange={dateRange} />
-        </motion.div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
+            >
+              <h3 className="text-lg font-semibold mb-4">{t('income')}</h3>
+              <RevenueDetails orders={deliveredOrders} dateRange={dateRange} />
+            </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
-        >
-          <h3 className="text-lg font-semibold mb-4">{t('order-status')}</h3>
-          <AnalyticsChart
-            data={deliveredOrders.reduce((acc, order) => {
-              acc[order.status] = (acc[order.status] || 0) + 1;
-              return acc;
-            }, {} as Record<string, number>)}
-          />
-        </motion.div>
-      </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
+            >
+              <h3 className="text-lg font-semibold mb-4">
+                {t('order-status')}
+              </h3>
+              <AnalyticsChart
+                data={deliveredOrders.reduce((acc, order) => {
+                  const status = order.status || 'unknown';
+                  acc[status] = (acc[status] || 0) + 1;
+                  return acc;
+                }, {} as Record<string, number>)}
+              />
+            </motion.div>
+          </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm lg:col-span-1"
-        >
-          <h3 className="text-lg font-semibold mb-4">{t('recent-orders')}</h3>
-          <PaginatedRecentOrders orders={deliveredOrders} itemsPerPage={5} />
-        </motion.div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm lg:col-span-1"
+            >
+              <h3 className="text-lg font-semibold mb-4">
+                {t('recent-orders')}
+              </h3>
+              <PaginatedRecentOrders
+                orders={deliveredOrders}
+                itemsPerPage={5}
+              />
+            </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm lg:col-span-1"
-        >
-          <h3 className="text-lg font-semibold mb-4">{t('best-customer')}</h3>
-          <PaginatedCustomerList
-            orders={deliveredOrders.filter(order => !!order.customerPhone)}
-            itemsPerPage={5}
-          />
-        </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm lg:col-span-1"
+            >
+              <h3 className="text-lg font-semibold mb-4">
+                {t('best-customer')}
+              </h3>
+              <PaginatedCustomerList
+                orders={deliveredOrders.filter(order => !!order.customerPhone)}
+                itemsPerPage={5}
+              />
+            </motion.div>
 
-        <PaymentMethodStats orders={deliveredOrders} />
-      </div>
+            <PaymentMethodStats orders={deliveredOrders} />
+          </div>
+        </>
+      )}
     </div>
   );
 }

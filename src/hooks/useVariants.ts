@@ -50,7 +50,7 @@ export function useVariants(categoryId?: string) {
       setHasMore(result.hasMore);
     } catch (error) {
       console.error('Erreur chargement variants:', error);
-      toast.error(t("variant:failed-to-load-variants"));
+      toast.error(t('variant:failed-to-load-variants'));
     } finally {
       setIsLoading(false);
     }
@@ -92,7 +92,7 @@ export function useVariants(categoryId?: string) {
       setHasMore(result.hasMore);
     } catch (error) {
       console.error('Erreur chargement variants:', error);
-      toast.error(t("variant:failed-to-load-variants"));
+      toast.error(t('variant:failed-to-load-variants'));
     } finally {
       setIsLoading(false);
     }
@@ -106,11 +106,11 @@ export function useVariants(categoryId?: string) {
     try {
       const id = await variantService.create(variant);
       setVariants(prev => [{ ...variant, id } as Variant, ...prev]);
-      toast.success(t("variant:variant-added-successfully"));
+      toast.success(t('variant:variant-added-successfully'));
       return id;
     } catch (error) {
       console.error('Erreur ajout variant:', error);
-      toast.error(t("variant:failed-to-add-variant"));
+      toast.error(t('variant:failed-to-add-variant'));
       throw error;
     }
   };
@@ -119,10 +119,10 @@ export function useVariants(categoryId?: string) {
     try {
       await variantService.update(id, data);
       setVariants(prev => prev.map(v => (v.id === id ? { ...v, ...data } : v)));
-      toast.success(t("variant:variant-updated-successfully"));
+      toast.success(t('variant:variant-updated-successfully'));
     } catch (error) {
       console.error('Echec mise à jour variant:', error);
-      toast.error(t("variant:failed-to-update-variant"));
+      toast.error(t('variant:failed-to-update-variant'));
       throw error;
     }
   };
@@ -131,10 +131,10 @@ export function useVariants(categoryId?: string) {
     try {
       await variantService.delete(id);
       setVariants(prev => prev.filter(v => v.id !== id));
-      toast.success(t("variant:variant-deleted-successfully"));
+      toast.success(t('variant:variant-deleted-successfully'));
     } catch (error) {
       console.error('Echec suppression variant:', error);
-      toast.error(t("variant:failed-to-delete-variant"));
+      toast.error(t('variant:failed-to-delete-variant'));
       throw error;
     }
   };

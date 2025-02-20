@@ -1,10 +1,8 @@
-import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Edit2, Trash2, Tag, ChevronRight } from 'lucide-react';
 import { Variant } from '../../../../types/variant';
 import { Category } from '../../../../types';
 import { Button } from '../../../ui/Button';
-import { Pagination } from '../../../ui/Pagination';
 
 interface VariantListProps {
   variants: Variant[];
@@ -14,19 +12,18 @@ interface VariantListProps {
   onDelete: (id: string) => void;
 }
 
-const ITEMS_PER_PAGE = 6;
-
-export function VariantList({ variants, categories, isLoading, onEdit, onDelete }: VariantListProps) {
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(variants.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedVariants = variants.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-
+export function VariantList({
+  variants,
+  categories,
+  isLoading,
+  onEdit,
+  onDelete,
+}: VariantListProps) {
   const getCategoryBadges = (categoryIds: string[]) => {
     return categoryIds.map(id => {
       const category = categories.find(c => c.id === id);
       if (!category) return null;
-      
+
       return (
         <span
           key={id}
@@ -55,7 +52,7 @@ export function VariantList({ variants, categories, isLoading, onEdit, onDelete 
     <div className="space-y-6">
       <div className="space-y-3">
         <AnimatePresence mode="popLayout">
-          {paginatedVariants.map((variant, index) => (
+          {variants.map((variant, index) => (
             <motion.div
               key={variant.id}
               layout
@@ -81,7 +78,7 @@ export function VariantList({ variants, categories, isLoading, onEdit, onDelete 
                       </div>
                     </div>
                   </div>
-                                    <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2">
                     <Button
                       onClick={() => onEdit(variant)}
                       className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
@@ -96,7 +93,7 @@ export function VariantList({ variants, categories, isLoading, onEdit, onDelete 
                     </Button>
                   </div>
                 </div>
-                                <div className="flex flex-wrap gap-1.5">
+                <div className="flex flex-wrap gap-1.5">
                   {variant.values.map((value, index) => (
                     <span
                       key={index}
@@ -111,16 +108,6 @@ export function VariantList({ variants, categories, isLoading, onEdit, onDelete 
           ))}
         </AnimatePresence>
       </div>
-
-      {totalPages > 1 && (
-        <div className="flex justify-center mt-6">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
-        </div>
-      )}
     </div>
   );
 }
