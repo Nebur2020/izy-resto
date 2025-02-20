@@ -111,8 +111,6 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
         };
       });
 
-    console.log(defaultVariantPrices);
-
     const menuItem: MenuItemWithVariants = {
       ...formData,
       price: Number(formData.price),

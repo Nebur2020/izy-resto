@@ -186,7 +186,6 @@ export function MenuManagement() {
   };
 
   const handleCategoryChange = (category: string) => {
-    console.log('Category changed to:', category);
     setSelectedCategory(category);
 
     // Reset pagination state

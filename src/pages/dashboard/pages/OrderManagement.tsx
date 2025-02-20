@@ -37,37 +37,6 @@ export function OrderManagement() {
   const seenOrderIdsRef = useRef<Set<string>>(new Set());
   const isFirstLoadRef = useRef(true);
 
-  // Audio element reference
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  // Initialize audio element once
-  useEffect(() => {
-    audioRef.current = new Audio('/notification.mp3');
-    audioRef.current.volume = 0.7;
-
-    // iOS requires user interaction before playing audio
-    const unlockAudio = () => {
-      if (audioRef.current) {
-        // Play and immediately pause to unlock
-        audioRef.current.play().catch(() => {});
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-      }
-
-      // Remove event listeners after first interaction
-      document.removeEventListener('click', unlockAudio);
-      document.removeEventListener('touchstart', unlockAudio);
-    };
-
-    document.addEventListener('click', unlockAudio);
-    document.addEventListener('touchstart', unlockAudio);
-
-    return () => {
-      document.removeEventListener('click', unlockAudio);
-      document.removeEventListener('touchstart', unlockAudio);
-    };
-  }, []);
-
   // Detect new orders using order IDs
   useEffect(() => {
     // Skip detection during initial load or when searching
@@ -94,59 +63,12 @@ export function OrderManagement() {
         order => order.status === 'pending'
       );
 
-      if (
-        newPendingOrders.length > 0 &&
-        window.location.href.includes('/dashboard')
-      ) {
-        playNotificationSound();
-
-        // Optional: You could show a visual notification here as well
-        // showVisualNotification(newPendingOrders.length);
-      }
-
       // Update seen orders reference with all new orders
       newOrders.forEach(order => {
         seenOrderIdsRef.current.add(order.id);
       });
     }
   }, [orders, isLoading, isSearching]);
-
-  // Play notification sound
-  const playNotificationSound = () => {
-    if (!audioRef.current) return;
-
-    try {
-      // Reset to beginning before playing (in case it was already played)
-      audioRef.current.currentTime = 0;
-
-      // Create a promise that uses the built-in audio element
-      const playPromise = audioRef.current.play();
-
-      // Modern browsers return a promise from audio.play()
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
-          // Auto-play was prevented (common on mobile)
-          console.warn('Audio playback was prevented:', error);
-
-          // For iOS, we can try playing on the next user interaction
-          const playOnInteraction = () => {
-            if (audioRef.current) {
-              audioRef.current.play().catch(() => {});
-            }
-            window.removeEventListener('touchend', playOnInteraction);
-            window.removeEventListener('click', playOnInteraction);
-          };
-
-          window.addEventListener('touchend', playOnInteraction, {
-            once: true,
-          });
-          window.addEventListener('click', playOnInteraction, { once: true });
-        });
-      }
-    } catch (error) {
-      console.error('Error playing notification sound:', error);
-    }
-  };
 
   // Handle search with debounce
   useEffect(() => {

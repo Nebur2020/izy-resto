@@ -7,7 +7,6 @@ import { useCart } from '../../context/CartContext';
 import { useSettings } from '../../hooks/useSettings';
 import { formatCurrency } from '../../utils/currency';
 import { useVariants } from '../../hooks/useVariants';
-import VariantCombinationError from './VariantCombinationError';
 import UnselectedRequiredVariantType from './UnselectedRequiredVariantType';
 import { useTranslation } from 'react-i18next';
 import { variantService } from '../../services';
@@ -105,14 +104,17 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
     },
     [variants]
   );
-
   const areAllRequiredVariantsSelected = useCallback(() => {
-    if (!variantTypes) return true;
-
-    return Object.keys(variantTypes).every(
-      type => !isVariantRequired(type) || selectedVariantTypes[type]
-    );
-  }, [variantTypes, selectedVariantTypes, isVariantRequired]);
+    // Check each required variant from categoryVariants
+    return categoryVariants
+      .filter(variant => variant.isRequired)
+      .every(variant => {
+        // Check if any value for this variant type is selected
+        return selectedVariants.some(selected =>
+          selected.startsWith(`${variant.name}: `)
+        );
+      });
+  }, [categoryVariants, selectedVariants]);
 
   const getCartItem = useCallback(() => {
     const variantId = getVariantId();
