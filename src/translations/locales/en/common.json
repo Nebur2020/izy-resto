@@ -272,5 +272,6 @@
   "amount-label": "Amount",
   "thank-you-label": "Thank you for your order !",
   "value-name": "Value",
-  "price-adjustment": "Price adjustment"
+  "price-adjustment": "Price adjustment",
+  "all-taxes-included": "All taxes included (ATI)"
 }

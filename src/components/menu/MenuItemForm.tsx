@@ -3,6 +3,7 @@ import { Plus, X } from 'lucide-react';
 import { FormProvider, useForm, UseFormReturn } from 'react-hook-form';
 import { Button } from '../../components/ui/Button';
 import {
+  InventoryConnection,
   MenuItem,
   MenuItemWithVariants,
   RestaurantSettings,
@@ -113,6 +114,106 @@ const MemoizedVariantsTab = memo(
     );
   }
 );
+
+export const InventoryTab: React.FC<any> = ({
+  register,
+  watch,
+  setValue,
+  inventory,
+}) => {
+  const { t } = useTranslation();
+  const [connections, setConnections] = useState<InventoryConnection[]>(
+    watch('inventoryConnections') || []
+  );
+
+  // Watch for changes to inventoryConnections
+  React.useEffect(() => {
+    const subscription = watch((value, { name }) => {
+      if (name?.startsWith('inventoryConnections')) {
+        setConnections(value.inventoryConnections || []);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
+
+  const handleRemoveConnection = useCallback(
+    (index: number) => {
+      const currentConnections = [...connections];
+      currentConnections.splice(index, 1);
+      setValue('inventoryConnections', currentConnections, {
+        shouldDirty: true,
+      });
+    },
+    [connections, setValue]
+  );
+
+  const handleAddConnection = useCallback(() => {
+    const newConnection = { itemId: '', ratio: 1 };
+    setValue('inventoryConnections', [...connections, newConnection], {
+      shouldDirty: true,
+      shouldTouch: true,
+    });
+  }, [connections, setValue]);
+
+  return (
+    <div className="space-y-4">
+      {connections.map((connection: InventoryConnection, index: number) => (
+        <div key={`connection-${index}`} className="flex items-center gap-4">
+          <div className="flex-1">
+            <label className="block text-sm font-medium mb-1">
+              {t('variant:product')}
+            </label>
+            <select
+              {...register(`inventoryConnections.${index}.itemId`)}
+              className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
+            >
+              <option value="">{t('variant:select-inventory-product')}</option>
+              {inventory.map(item => (
+                <option key={item.id} value={item.id}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex-1">
+            <label className="block text-sm font-medium mb-1">
+              Ratio (1:{watch(`inventoryConnections.${index}.ratio`) || '0'})
+            </label>
+            <span className="text-sm">{t('variant:ratio-description')}</span>
+            <input
+              type="number"
+              step="0.01"
+              min="0.01"
+              {...register(`inventoryConnections.${index}.ratio`)}
+              className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
+              placeholder="Ex: 3 pour 1:3"
+            />
+          </div>
+
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => handleRemoveConnection(index)}
+            className="mt-6"
+          >
+            <X className="w-4 h-4" />
+          </Button>
+        </div>
+      ))}
+
+      <Button
+        type="button"
+        variant="secondary"
+        onClick={handleAddConnection}
+        className="mt-4"
+      >
+        <Plus className="w-4 h-4 mr-2" />
+        {t('variant:add-inventory-connection')}
+      </Button>
+    </div>
+  );
+};
 
 // Memoize the BasicInfoTab component
 const BasicInfoTab = memo(
@@ -242,99 +343,6 @@ const BasicInfoTab = memo(
   }
 );
 
-// Memoize the InventoryTab component
-const MemoizedInventoryTab = memo(
-  ({ register, watch, setValue, inventory }) => {
-    const { t } = useTranslation();
-
-    // Memoize the handler to remove inventory connection
-    const handleRemoveConnection = useCallback(
-      index => {
-        const connections = watch('inventoryConnections');
-        const value = connections.filter((_, i) => i !== index);
-        setValue('inventoryConnections', [...value], {
-          shouldDirty: true,
-        });
-      },
-      [watch, setValue]
-    );
-
-    // Memoize the handler to add inventory connection
-    const handleAddConnection = useCallback(() => {
-      const connections = watch('inventoryConnections') || [];
-      setValue(
-        'inventoryConnections',
-        [...connections, { itemId: '', ratio: 1 }],
-        {
-          shouldDirty: true,
-          shouldTouch: true,
-        }
-      );
-    }, [watch, setValue]);
-
-    return (
-      <div className="space-y-4">
-        {watch('inventoryConnections')?.map(
-          (connection: any, index: number) => (
-            <div key={index} className="flex items-center gap-4">
-              <div className="flex-1">
-                <label className="block text-sm font-medium mb-1">
-                  {t('variant:product')}
-                </label>
-                <select
-                  {...register(`inventoryConnections.${index}.itemId`)}
-                  className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
-                >
-                  <option value="">
-                    {t('variant:select-inventory-product')}
-                  </option>
-                  {inventory.map(item => (
-                    <option key={item.id} value={item.id}>
-                      {item.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="flex-1">
-                <label className="block text-sm font-medium mb-1">
-                  Ratio (1:{watch(`inventoryConnections.${index}.ratio`) || '0'}
-                  )
-                </label>
-                <span className="text-sm">
-                  {t('variant:ratio-description')}
-                </span>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0.01"
-                  {...register(`inventoryConnections.${index}.ratio`)}
-                  className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
-                  placeholder="Ex: 3 pour 1:3"
-                />
-              </div>
-
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => handleRemoveConnection(index)}
-                className="mt-6"
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            </div>
-          )
-        )}
-
-        <Button type="button" variant="secondary" onClick={handleAddConnection}>
-          <Plus className="w-4 h-4 mr-2" />
-          {t('variant:add-inventory-connection')}
-        </Button>
-      </div>
-    );
-  }
-);
-
 export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('product');
@@ -361,6 +369,7 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
       stockQuantity: item?.stockQuantity || 0,
       inventoryConnections: item?.inventoryConnections || [],
     },
+    mode: 'onChange', // This will validate on change
   });
 
   const {
@@ -489,7 +498,7 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
         );
       case 'inventory':
         return (
-          <MemoizedInventoryTab
+          <InventoryTab
             register={register}
             watch={watch}
             setValue={setValue}

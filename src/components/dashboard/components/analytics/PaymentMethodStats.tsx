@@ -56,7 +56,8 @@ export const PaymentMethodStats = ({ orders }: { orders: Order[] }) => {
     >
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold">
-          {t('settingData:payment-methods') || 'Payment Methods'}
+          {t('settingData:payment-methods') || 'Payment Methods'} <br />{' '}
+          <span className="text-sm">{t('common:all-taxes-included')}</span>
         </h3>
         <div className="flex items-center space-x-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full">
           <DollarSign className="w-4 h-4" />

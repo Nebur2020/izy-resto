@@ -112,9 +112,13 @@ export function PaymentMethodForm({
   const isEditing = useMemo(() => !!method?.name, [method?.name]);
 
   useEffect(() => {
-    if (methodType !== 'Autres' && PAYMENT_TYPES[methodType]) {
-      setValue('name', methodType);
-    } else if (methodType === 'Autres' && !isEditing) {
+    // Only set the payment method name if we're in edit mode
+    if (isEditing) {
+      if (PAYMENT_TYPES[methodType]) {
+        setValue('name', methodType);
+      }
+    } else {
+      // When creating new, always keep name empty
       setValue('name', '');
     }
   }, [methodType, setValue, isEditing]);
