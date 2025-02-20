@@ -13,7 +13,7 @@ import { StockUpdateError } from './errors';
 import { formatCurrency } from '../../utils/currency';
 import { formatDate } from '../../utils';
 import jsPDF from 'jspdf';
-import { Language } from '../../types';
+import { Currency, Language } from '../../types';
 
 interface StockUpdate {
   id: string;
@@ -123,7 +123,8 @@ class StockHistoryService {
     t: (key: string) => string,
     lng: Language,
     startDate?: Date,
-    endDate?: Date
+    endDate?: Date,
+    currency?: Currency
   ): Promise<void> {
     try {
       const { updates } = await this.getHistory({
@@ -197,7 +198,7 @@ class StockHistoryService {
         pdf.text(update.reason, xPos, yPos);
         xPos += colWidths[3];
 
-        pdf.text(formatCurrency(update.cost), xPos, yPos);
+        pdf.text(formatCurrency(update.cost, currency), xPos, yPos);
 
         yPos += 7;
       });

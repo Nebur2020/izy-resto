@@ -376,7 +376,7 @@ export function VariantForm(props: IVariantFormProps) {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       <div>
                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
-                          {t('variant:value-name')}
+                          {t('common:value-name')}
                         </label>
                         <input
                           {...register(`values.${activeValueTab}`, {
@@ -393,7 +393,7 @@ export function VariantForm(props: IVariantFormProps) {
                       </div>
                       <div>
                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
-                          {t('variant:price-adjustment')}
+                          {t('common:price-adjustment')}
                         </label>
                         <div className="relative">
                           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">

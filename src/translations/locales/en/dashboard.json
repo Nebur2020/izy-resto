@@ -42,5 +42,6 @@
   "accounting": "Accounting",
   "qr-code": "QR Code",
   "staff": "Staff",
-  "media": "Media"
+  "media": "Media",
+  "no-payment-data": "No payment data"
 }

@@ -30,7 +30,7 @@ export async function generateTaxReportCSV(
 
     orders.forEach(order => {
       totalHT += order.subtotal;
-      totalTTC += order.total;
+      totalTTC += totalHT + order.taxTotal;
 
       order.taxes.forEach(tax => {
         const existing = taxTotals.get(tax.name);
@@ -301,7 +301,10 @@ export const AccountingTaxesManagement = () => {
                     </td>
 
                     <td className="px-6 py-4 text-sm whitespace-nowrap">
-                      {formatCurrency(order.total, settings?.currency)}
+                      {formatCurrency(
+                        order.subtotal + order.taxTotal,
+                        settings?.currency
+                      )}
                     </td>
                   </motion.tr>
                 ))}

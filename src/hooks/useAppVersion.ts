@@ -13,13 +13,7 @@ export const useAppVersion = () => {
       setErrorLoading('');
       const versionSettings = await getSettings('version');
 
-      if (!Array.isArray(versionSettings) && !!versionSettings) {
-        setVersion(versionSettings);
-        setVersions([versionSettings]);
-        return;
-      }
-
-      const lastestVersion = versionSettings.find(
+      const lastestVersion = (versionSettings || []).find(
         versionSettings => versionSettings.isLatest
       );
 

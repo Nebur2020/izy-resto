@@ -71,7 +71,8 @@ export function StockHistory(props: IStockHistoryProps) {
         t,
         lng,
         dateRange?.startDate,
-        dateRange?.endDate
+        dateRange?.endDate,
+        settings?.currency
       );
       toast.success(t('common:export-success'));
     } catch (error) {

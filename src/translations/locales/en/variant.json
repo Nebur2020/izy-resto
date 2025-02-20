@@ -34,5 +34,7 @@
   "variant-updated-successfully": "Variant updated successfully",
   "failed-to-update-variant": "Failed to update variant",
   "variant-deleted-successfully": "Variant deleted successfully",
-  "failed-to-delete-variant": "Failed to delete variant"
+  "failed-to-delete-variant": "Failed to delete variant",
+  "inventory-connections": "Inventory connections",
+  "no-inventory-connections": "No inventory connections"
 }

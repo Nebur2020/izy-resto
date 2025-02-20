@@ -42,5 +42,6 @@
   "accounting": "Comptabilité",
   "qr-code": "QR Code",
   "staff": "Personnel",
-  "media": "Bibliothèque"
+  "media": "Bibliothèque",
+  "no-payment-data": "Aucune donnée de paiement"
 }

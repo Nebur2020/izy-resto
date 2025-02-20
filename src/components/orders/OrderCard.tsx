@@ -47,13 +47,12 @@ export const OrderCard = React.forwardRef<HTMLDivElement, OrderCardProps>(
         setIsPrinting(true);
         const translations = getPdfTranslationValues(t);
         const pdfSettings = getPdfSettings(settings);
-
         const pdf = await generateReceiptPDF(
           order,
           {
             ...translations,
             paymentMethodName: t(
-              `payment-method-names.${order.paymentMethod?.name}`
+              `order:payment-method-names.${order.paymentMethod?.name}`
             ),
           },
           t,

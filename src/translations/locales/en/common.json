@@ -265,5 +265,12 @@
   "total-cost": "Total cost",
   "history-filename": "stock-history",
   "no-history-found": "No history found",
-  "selected": "selected"
+  "selected": "selected",
+  "customer-label": "Customer",
+  "qty-label": "Quantity",
+  "item-label": "Item",
+  "amount-label": "Amount",
+  "thank-you-label": "Thank you for your order !",
+  "value-name": "Value",
+  "price-adjustment": "Price adjustment"
 }

@@ -6,8 +6,7 @@ import { Order, OrderStatus } from '../../../types';
 import { useOrders } from '../../../context/OrderContext';
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
 import { useTranslation } from 'react-i18next';
-import { Search, RefreshCw, X, Bell } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { Search, RefreshCw, X } from 'lucide-react';
 
 export function OrderManagement() {
   const { t } = useTranslation();
@@ -95,15 +94,6 @@ export function OrderManagement() {
         prevOrderCountRef.current > 0 &&
         pendingCount > prevOrderCountRef.current
       ) {
-        // Show a notification
-        toast.success(
-          <div className="flex items-center gap-2">
-            <Bell className="w-4 h-4" />
-            <span>{t('order:new-order-notification')}</span>
-          </div>,
-          { duration: 5000 }
-        );
-
         // Play notification sound if we're not in focus
         if (document.visibilityState !== 'visible') {
           playNotificationSound();

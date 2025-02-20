@@ -34,5 +34,7 @@
   "variant-updated-successfully": "Variante mise à jour avec succès",
   "failed-to-update-variant": "Échec de la mise à jour de la variante",
   "variant-deleted-successfully": "Variante supprimée avec succès",
-  "failed-to-delete-variant": "Impossible de supprimer la variante"
+  "failed-to-delete-variant": "Impossible de supprimer la variante",
+  "inventory-connections": "Connexion à l'inventaire",
+  "no-inventory-connections": "Pas de connexion à l'inventaire"
 }

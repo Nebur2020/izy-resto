@@ -11,6 +11,7 @@ import { RevenueDetails } from '../../../components/dashboard/RevenueDetails';
 import { useOrdersRealtime } from '../../../hooks/useOrdersRealtime';
 import { Laptop } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { PaymentMethodStats } from '../../../components/dashboard/components/analytics/PaymentMethodStats';
 
 export function Overview() {
   const isMobile = useIsMobile();
@@ -76,6 +77,7 @@ export function Overview() {
         </div>
         <AnalyticsGrid {...analytics} />
         <ProductSalesStats orders={deliveredOrders} />
+        <PaymentMethodStats orders={deliveredOrders} />
       </div>
     );
   }
@@ -124,11 +126,11 @@ export function Overview() {
         </motion.div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
+          className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm lg:col-span-1"
         >
           <h3 className="text-lg font-semibold mb-4">{t('recent-orders')}</h3>
           <PaginatedRecentOrders orders={deliveredOrders} itemsPerPage={5} />
@@ -137,7 +139,7 @@ export function Overview() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
+          className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm lg:col-span-1"
         >
           <h3 className="text-lg font-semibold mb-4">{t('best-customer')}</h3>
           <PaginatedCustomerList
@@ -145,6 +147,8 @@ export function Overview() {
             itemsPerPage={5}
           />
         </motion.div>
+
+        <PaymentMethodStats orders={deliveredOrders} />
       </div>
     </div>
   );
