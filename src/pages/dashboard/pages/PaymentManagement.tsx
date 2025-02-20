@@ -6,8 +6,10 @@ import { PaymentMethodList } from '../../../components/dashboard/components/paym
 import { ConfirmationModal } from '../../../components/ui/ConfirmationModal';
 import { usePayments } from '../../../hooks/usePayments';
 import { PaymentMethod } from '../../../types/payment';
+import { useTranslation } from 'react-i18next';
 
 export function PaymentManagement() {
+  const { t } = useTranslation();
   const {
     paymentMethods,
     isLoading,
@@ -54,14 +56,14 @@ export function PaymentManagement() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold">Méthodes de Paiement</h1>
+          <h1 className="text-2xl font-bold">{t('common:payment-method')}</h1>
           <p className="text-gray-500 dark:text-gray-400">
-            Gérez les méthodes de paiement disponibles
+            {t('payment:payment-method-managment')}
           </p>
         </div>
         <Button onClick={() => setIsFormOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
-          Ajouter une méthode
+          {t('payment:add-payment-method')}
         </Button>
       </div>
 
@@ -95,8 +97,8 @@ export function PaymentManagement() {
         isOpen={deleteConfirmation.isOpen}
         onClose={() => setDeleteConfirmation({ isOpen: false })}
         onConfirm={handleDelete}
-        title="Supprimer la méthode de paiement"
-        message="Êtes-vous sûr de vouloir supprimer cette méthode de paiement ?"
+        title={t('payment:delete-payment-method')}
+        message={t('payment:delete-payment-method-confirmation')}
       />
     </div>
   );

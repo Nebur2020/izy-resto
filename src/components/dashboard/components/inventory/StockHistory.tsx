@@ -9,8 +9,10 @@ import { stockHistoryService } from '../../../../services/inventory/stockHistory
 import toast from 'react-hot-toast';
 import { Button } from '../../../ui';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Language } from '../../../../types';
 
-interface StockHistoryProps {
+interface IStockHistoryProps {
   updates?: StockHistoryType[];
   isLoading: boolean;
   currentPage: number;
@@ -19,16 +21,19 @@ interface StockHistoryProps {
   dateRange?: { startDate?: Date; endDate?: Date };
 }
 
-export function StockHistory({
-  updates = [],
-  isLoading,
-  currentPage,
-  totalPages,
-  onPageChange,
-  dateRange,
-}: StockHistoryProps) {
+export function StockHistory(props: IStockHistoryProps) {
+  const { t, i18n } = useTranslation();
+  const {
+    updates,
+    isLoading,
+    currentPage,
+    totalPages,
+    onPageChange,
+    dateRange,
+  } = props;
   const { settings } = useSettings();
   const [isDownloading, setIsDownloading] = useState(false);
+  const lng = i18n.language as Language;
 
   if (isLoading) {
     return (
@@ -50,10 +55,10 @@ export function StockHistory({
       <div className="bg-white dark:bg-gray-800 rounded-xl p-8 text-center">
         <Package className="w-12 h-12 mx-auto text-gray-400 mb-4" />
         <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-          Aucun historique
+          {t('common:no-history')}
         </h3>
         <p className="text-gray-500 dark:text-gray-400">
-          Les mises à jour de stock apparaîtront ici
+          {t('common:no-history-description')}
         </p>
       </div>
     );
@@ -63,13 +68,16 @@ export function StockHistory({
     try {
       setIsDownloading(true);
       await stockHistoryService.generateHistoryPDF(
+        t,
+        lng,
         dateRange?.startDate,
-        dateRange?.endDate
+        dateRange?.endDate,
+        settings?.currency
       );
-      toast.success('Historique exporté avec succès');
+      toast.success(t('common:export-success'));
     } catch (error) {
       console.error('Error exporting history:', error);
-      toast.error("Erreur lors de l'export");
+      toast.error(t('common:export-error'));
     } finally {
       setIsDownloading(false);
     }
@@ -77,12 +85,15 @@ export function StockHistory({
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
-      {/* Header with Export Button */}
       <div className="p-4 border-b dark:border-gray-700 flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Historique des Stocks</h3>
+        <h3 className="text-lg font-semibold">
+          {t('inventory:stock-history')}
+        </h3>
         <Button onClick={handleExport} disabled={isDownloading}>
           <Download className="w-4 h-4 mr-2" />
-          {isDownloading ? 'Téléchargement en cours...' : 'Exporter en PDF'}
+          {isDownloading
+            ? t('common:downloading-in-progress')
+            : t('common:export')}
         </Button>
       </div>
 
@@ -113,11 +124,12 @@ export function StockHistory({
                       <div className="flex items-center gap-3 mt-2 text-sm text-gray-500 dark:text-gray-400">
                         <span className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
-                          {formatDate(update.date)}
+                          {formatDate(update.date, false, lng)}
                         </span>
                         <span>•</span>
                         <span className="text-red-500 dark:text-red-400 font-medium">
-                          -{Number(update.quantity).toFixed(2)} unités
+                          -{Number(update.quantity).toFixed(2)}{' '}
+                          {t('inventory:units')}
                         </span>
                         <span>•</span>
                         <span className="font-medium">
@@ -133,7 +145,7 @@ export function StockHistory({
             <div className="flex flex-col items-center justify-center py-12">
               <Package className="w-12 h-12 text-gray-400 mb-4" />
               <p className="text-gray-500 dark:text-gray-400">
-                Aucun historique disponible
+                {t('inventory:no-history-found')}
               </p>
             </div>
           )}

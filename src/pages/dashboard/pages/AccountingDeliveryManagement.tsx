@@ -8,40 +8,47 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { formatDate } from '../../../utils';
 import { formatCurrency } from '../../../utils/currency';
 import { Pagination } from '../../../components/ui/Pagination';
-import { Order } from '../../../types';
+import { Language, Order } from '../../../types';
+import { useTranslation } from 'react-i18next';
 
 const ITEMS_PER_PAGE = 8;
 
 const exportTipsToCSV = (
   orders: Order[],
   settings: any,
-  dateRange: { from: Date; to: Date }
+  dateRange: { from: Date; to: Date },
+  t: (key: string) => string,
+  lng: Language
 ) => {
-  // Calculate totals
   const totalDelivery = orders.reduce(
     (sum, order) => sum + Number(order.delivery?.price || 0),
     0
   );
   const averageTip = totalDelivery / orders.length;
 
-  // Create headers
   const headers = [
-    'Date',
-    'Référence',
-    'Montant Commande',
-    'Client',
-    'Mode de paiement',
+    t('common:date'),
+    t('common:references'),
+    t('comptability:order-amount'),
+    t('comptability:customer-name'),
+    t('common:payment-method'),
   ].join(',');
 
-  // Create summary rows
   const summary = [
-    `Période,${formatDate(dateRange.from)} - ${formatDate(dateRange.to)}`,
-    `Total des livraisons,${formatCurrency(totalDelivery, settings?.currency)}`,
-    `Moyenne des livraisons,${formatCurrency(averageTip, settings?.currency)}`,
-    '', // Empty line between summary and data
+    `${t('common:period')},${formatDate(dateRange.from)} - ${formatDate(
+      dateRange.to
+    )}`,
+    `${t('comptability:total-delivery')},${formatCurrency(
+      totalDelivery,
+      settings?.currency
+    )}`,
+    `${t('comptability:delivery-average')},${formatCurrency(
+      averageTip,
+      settings?.currency
+    )}`,
+    '',
   ].join('\n');
 
-  // Create data rows
   const rows = orders
     .map(order => {
       return [
@@ -54,10 +61,8 @@ const exportTipsToCSV = (
     })
     .join('\n');
 
-  // Combine all parts
   const csv = `${summary}\n${headers}\n${rows}`;
 
-  // Create and download file
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   const url = URL.createObjectURL(blob);
@@ -65,7 +70,11 @@ const exportTipsToCSV = (
   link.setAttribute('href', url);
   link.setAttribute(
     'download',
-    `pourboires-${formatDate(dateRange.from)}-${formatDate(dateRange.to)}.csv`
+    `${t('common:delivery-report')}-${formatDate(
+      dateRange.from,
+      false,
+      lng
+    )}-${formatDate(dateRange.to, false, lng)}.csv`
   );
   link.style.visibility = 'hidden';
 
@@ -75,10 +84,13 @@ const exportTipsToCSV = (
 };
 
 export const AccountingDeliveryManagement = () => {
+  const { t, i18n } = useTranslation();
   const { settings, isLoading: settingsLoading } = useSettings();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+
+  const lng = i18n.language as Language;
 
   const { getDateOrders } = useOrders();
   const [currentPage, setCurrentPage] = useState(1);
@@ -91,7 +103,6 @@ export const AccountingDeliveryManagement = () => {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
-  // Calculate pagination
   const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedOrders = filteredOrders.slice(
@@ -111,10 +122,9 @@ export const AccountingDeliveryManagement = () => {
   const handleExport = async () => {
     try {
       setIsDownloading(true);
-      exportTipsToCSV(filteredOrders, settings, dateRange);
+      exportTipsToCSV(filteredOrders, settings, dateRange, t, lng);
     } catch (error) {
       console.error('Error exporting tips:', error);
-      // Handle error (show toast, etc.)
     } finally {
       setIsDownloading(false);
     }
@@ -146,7 +156,7 @@ export const AccountingDeliveryManagement = () => {
             </div>
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Total Livraisons
+                {t('comptability:total-delivery')}
               </p>
               <p className="text-2xl font-semibold">
                 {formatCurrency(
@@ -164,7 +174,7 @@ export const AccountingDeliveryManagement = () => {
         <DateFilter
           startDate={dateRange.from}
           endDate={dateRange.to}
-          onDateChange={handleDateChange} //   onDateChange={handleDateChange}
+          onDateChange={handleDateChange}
         />
         <div className="flex gap-2">
           <Button
@@ -175,8 +185,8 @@ export const AccountingDeliveryManagement = () => {
             <Download className="w-4 h-4 mr-2" />
 
             {isDownloading
-              ? 'Téléchargement en cours...'
-              : 'Télécharger les livraisons'}
+              ? t('common:downloading')
+              : t('comptability:download-delivery')}
           </Button>
         </div>
       </div>
@@ -187,13 +197,13 @@ export const AccountingDeliveryManagement = () => {
             <thead>
               <tr className="border-b dark:border-gray-700 text-left">
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Date
+                  {t('comptability:date')}
                 </th>
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Référence
+                  {t('comptability:references')}
                 </th>
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Livraison
+                  {t('order:delivery')}
                 </th>
               </tr>
             </thead>
@@ -212,7 +222,7 @@ export const AccountingDeliveryManagement = () => {
                     className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                   >
                     <td className="px-6 py-4 text-sm whitespace-nowrap">
-                      {formatDate(order.createdAt)}
+                      {formatDate(order.createdAt, false, lng)}
                     </td>
                     <td className="px-6 py-4 text-sm whitespace-nowrap">
                       #{order.id}
@@ -233,7 +243,9 @@ export const AccountingDeliveryManagement = () => {
         {!loading && paginatedOrders.length < 1 && (
           <div className="text-center py-8">
             <Package className="w-12 h-12 mx-auto text-gray-400 mb-3" />
-            <p className="text-gray-500">Pas de livraisons trouvées</p>
+            <p className="text-gray-500">
+              {t('comptability:no-delivery-found')}
+            </p>
           </div>
         )}
 

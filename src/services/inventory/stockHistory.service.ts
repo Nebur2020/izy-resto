@@ -13,6 +13,7 @@ import { StockUpdateError } from './errors';
 import { formatCurrency } from '../../utils/currency';
 import { formatDate } from '../../utils';
 import jsPDF from 'jspdf';
+import { Currency, Language } from '../../types';
 
 interface StockUpdate {
   id: string;
@@ -55,7 +56,6 @@ class StockHistoryService {
         lastDoc,
       } = options;
 
-      // Build query constraints
       const constraints: any[] = [orderBy('date', 'desc')];
 
       if (startDate) {
@@ -70,18 +70,15 @@ class StockHistoryService {
         constraints.push(where('itemId', '==', itemId));
       }
 
-      // Get total count first
       const countQuery = query(collection(db, this.collection), ...constraints);
       const countSnapshot = await getDocs(countQuery);
       const totalCount = countSnapshot.size;
 
-      // Add pagination constraints
       constraints.push(limit(pageSize));
       if (lastDoc) {
         constraints.push(startAfter(lastDoc));
       }
 
-      // Get paginated data
       const q = query(collection(db, this.collection), ...constraints);
       const snapshot = await getDocs(q);
 
@@ -122,39 +119,52 @@ class StockHistoryService {
     }
   }
 
-  async generateHistoryPDF(startDate?: Date, endDate?: Date): Promise<void> {
+  async generateHistoryPDF(
+    t: (key: string) => string,
+    lng: Language,
+    startDate?: Date,
+    endDate?: Date,
+    currency?: Currency
+  ): Promise<void> {
     try {
-      // Fetch all history for the date range
       const { updates } = await this.getHistory({
         startDate,
         endDate,
-        pageSize: 1000, // Get more records for the report
+        pageSize: 1000,
       });
 
-      // Create PDF document
       const pdf = new jsPDF();
       const pageWidth = pdf.internal.pageSize.getWidth();
       let yPos = 20;
 
-      // Add title
       pdf.setFontSize(16);
-      pdf.text('Historique des Stocks', pageWidth / 2, yPos, {
+      pdf.text(t('common:stock-history'), pageWidth / 2, yPos, {
         align: 'center',
       });
       yPos += 10;
 
-      // Add date range
       pdf.setFontSize(12);
       const dateRange = `${
-        startDate ? formatDate(startDate.toISOString()) : 'Début'
-      } - ${endDate ? formatDate(endDate.toISOString()) : "Aujourd'hui"}`;
-      pdf.text(`Période: ${dateRange}`, pageWidth / 2, yPos, {
+        startDate
+          ? formatDate(startDate.toISOString(), false, lng)
+          : t('common:start')
+      } - ${
+        endDate
+          ? formatDate(endDate.toISOString(), false, lng)
+          : t('common:today')
+      }`;
+      pdf.text(`${t('common:period')} ${dateRange}`, pageWidth / 2, yPos, {
         align: 'center',
       });
       yPos += 20;
 
-      // Add table headers
-      const headers = ['Date', 'Produit', 'Quantité', 'Raison', 'Coût'];
+      const headers = [
+        t('common:date'),
+        t('common:product'),
+        t('common:quantity'),
+        t('common:reason'),
+        t('common:cost'),
+      ];
       const colWidths = [30, 50, 25, 50, 35];
       let xPos = 10;
 
@@ -168,17 +178,15 @@ class StockHistoryService {
       });
       yPos += 10;
 
-      // Add table rows
       pdf.setFontSize(9);
       updates.forEach(update => {
-        // Check if we need a new page
         if (yPos > pdf.internal.pageSize.getHeight() - 20) {
           pdf.addPage();
           yPos = 20;
         }
 
         xPos = 10;
-        pdf.text(formatDate(update.date), xPos, yPos);
+        pdf.text(formatDate(update.date, false, lng), xPos, yPos);
         xPos += colWidths[0];
 
         pdf.text(update.itemName, xPos, yPos);
@@ -190,12 +198,11 @@ class StockHistoryService {
         pdf.text(update.reason, xPos, yPos);
         xPos += colWidths[3];
 
-        pdf.text(formatCurrency(update.cost), xPos, yPos);
+        pdf.text(formatCurrency(update.cost, currency), xPos, yPos);
 
         yPos += 7;
       });
 
-      // Add summary
       yPos += 10;
       const totalCost = updates.reduce((sum, update) => sum + update.cost, 0);
       const totalQuantity = updates.reduce(
@@ -205,20 +212,21 @@ class StockHistoryService {
 
       pdf.setFontSize(11);
       pdf.text(
-        `Total des mouvements: ${Number(totalQuantity).toFixed(2)}`,
+        `${t('common:all-transaction')}: ${Number(totalQuantity).toFixed(2)}`,
         10,
         yPos
       );
       pdf.text(
-        `Coût total: ${formatCurrency(totalCost)}`,
+        `${t('common:total-cost')}: ${formatCurrency(totalCost)}`,
         pageWidth - 60,
         yPos
       );
 
-      // Save the PDF
-      const fileName = `historique-stocks-${
-        new Date().toISOString().split('T')[0]
-      }.pdf`;
+      const fileName = `${t('common:history-filename')}-${formatDate(
+        new Date().toISOString(),
+        false,
+        lng
+      )}.pdf`;
       pdf.save(fileName);
     } catch (error) {
       console.error('Error generating PDF:', error);

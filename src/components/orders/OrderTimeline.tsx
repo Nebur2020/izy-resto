@@ -19,7 +19,7 @@ export function OrderTimeline(props: IOrderTimelineProps) {
 
   const statusLabels: { [key in OrderStatus]: string } = {
     pending: t('common:pending'),
-    preparing: t('in-cooking'),
+    preparing: t('common:in-cooking'),
     delivered: t('common:delivery'),
     cancelled: t('common:canceled'),
   };
@@ -29,7 +29,7 @@ export function OrderTimeline(props: IOrderTimelineProps) {
     diningOption: Order['diningOption']
   ) => {
     if (status === 'delivered' && diningOption === 'dine-in') {
-      return t('at-table');
+      return t('common:at-table');
     }
     return statusLabels[status];
   };

@@ -1,15 +1,26 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { OrderList } from '../../../components/orders/OrderList';
 import { OrderStats } from '../../../components/orders/OrderStats';
 import { OrderFilters } from '../../../components/orders/OrderFilters';
-import { OrderStatus } from '../../../types';
+import { Order, OrderStatus } from '../../../types';
 import { useOrders } from '../../../context/OrderContext';
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
 import { useTranslation } from 'react-i18next';
+import { Search, RefreshCw, X } from 'lucide-react';
 
 export function OrderManagement() {
-  const { t } = useTranslation('common');
-  const { orders, updateOrderStatus } = useOrders();
+  const { t } = useTranslation();
+  const {
+    orders,
+    isLoading,
+    isLoadingMore,
+    hasMore,
+    loadMoreOrders,
+    updateOrderStatus,
+    searchOrders,
+    refreshOrders,
+  } = useOrders();
+
   const [statusFilter, setStatusFilter] = useState<OrderStatus | 'all'>('all');
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
   const [cancelConfirmation, setCancelConfirmation] = useState<{
@@ -18,66 +29,238 @@ export function OrderManagement() {
   }>({ isOpen: false });
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState<Order[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchTerm(value);
+  // Track the previous order count to detect new orders
+  const prevOrderCountRef = useRef(0);
+
+  // Audio element reference
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Initialize audio element once
+  useEffect(() => {
+    audioRef.current = new Audio('/notification.mp3');
+    audioRef.current.volume = 0.7;
+
+    // iOS requires user interaction before playing audio
+    // Let's try to "unlock" audio on first user interaction
+    const unlockAudio = () => {
+      if (audioRef.current) {
+        // Play and immediately pause to unlock
+        audioRef.current.play().catch(() => {});
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+
+      // Remove event listeners after first interaction
+      document.removeEventListener('click', unlockAudio);
+      document.removeEventListener('touchstart', unlockAudio);
+    };
+
+    document.addEventListener('click', unlockAudio);
+    document.addEventListener('touchstart', unlockAudio);
+
+    return () => {
+      document.removeEventListener('click', unlockAudio);
+      document.removeEventListener('touchstart', unlockAudio);
+    };
+  }, []);
+
+  // Auto-refresh orders every minute when tab is visible
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (
+        document.visibilityState === 'visible' &&
+        !isLoading &&
+        !isSearching
+      ) {
+        refreshOrders();
+      }
+    }, 60000);
+
+    return () => clearInterval(intervalId);
+  }, [refreshOrders, isLoading, isSearching]);
+
+  // Detect new orders
+  useEffect(() => {
+    // Only run this check after initial loading is complete
+    if (!isLoading && orders.length > 0) {
+      const pendingCount = orders.filter(o => o.status === 'pending').length;
+
+      // If we previously had orders and there are more pending orders now
+      if (
+        prevOrderCountRef.current > 0 &&
+        pendingCount > prevOrderCountRef.current
+      ) {
+        // Play notification sound if we're not in focus
+        if (document.visibilityState !== 'visible') {
+          playNotificationSound();
+        }
+      }
+
+      // Update the counter
+      prevOrderCountRef.current = pendingCount;
+    }
+  }, [orders, isLoading, t]);
+
+  // Play notification sound
+  const playNotificationSound = () => {
+    if (!audioRef.current) return;
+
+    try {
+      // Reset to beginning before playing (in case it was already played)
+      audioRef.current.currentTime = 0;
+
+      // Create a promise that uses the built-in audio element
+      const playPromise = audioRef.current.play();
+
+      // Modern browsers return a promise from audio.play()
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          // Auto-play was prevented (common on mobile)
+          console.warn('Audio playback was prevented:', error);
+
+          // For iOS, we can try playing on the next user interaction
+          const playOnInteraction = () => {
+            if (audioRef.current) {
+              audioRef.current.play().catch(() => {});
+            }
+            window.removeEventListener('touchend', playOnInteraction);
+            window.removeEventListener('click', playOnInteraction);
+          };
+
+          window.addEventListener('touchend', playOnInteraction, {
+            once: true,
+          });
+          window.addEventListener('click', playOnInteraction, { once: true });
+        });
+      }
+    } catch (error) {
+      console.error('Error playing notification sound:', error);
+    }
   };
 
-  const filteredOrders = useMemo(() => {
-    return orders
-      .filter(order => {
-        if (statusFilter !== 'all' && order.status !== statusFilter) {
-          return false;
-        }
+  // Handle search with debounce
+  useEffect(() => {
+    const delaySearch = setTimeout(() => {
+      if (searchTerm.trim() !== '') {
+        performSearch(searchTerm);
+      } else {
+        setIsSearching(false);
+        setSearchResults([]);
+      }
+    }, 500); // Debounce search for 500ms
 
-        if (dateRange.from || dateRange.to) {
-          const orderDate = new Date(order.createdAt.seconds * 1000);
-          if (dateRange.from && orderDate < dateRange.from) {
+    return () => clearTimeout(delaySearch);
+  }, [searchTerm]);
+
+  const performSearch = async (term: string) => {
+    if (term.trim().length < 2) return;
+
+    setSearchLoading(true);
+    setIsSearching(true);
+
+    try {
+      const results = await searchOrders(term);
+      setSearchResults(results);
+    } catch (error) {
+      console.error('Error searching orders:', error);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  const clearSearch = () => {
+    setSearchTerm('');
+    setIsSearching(false);
+    setSearchResults([]);
+  };
+
+  // Memoize the filtered orders to prevent unnecessary recalculations
+  const displayedOrders = useMemo(() => {
+    // Determine which data source to use
+    const ordersToFilter = isSearching ? searchResults : orders;
+
+    // Cache date objects for better performance
+    const fromDate = dateRange.from;
+    const toDate = dateRange.to;
+    let endDate: Date | undefined;
+
+    if (toDate) {
+      endDate = new Date(toDate);
+      endDate.setHours(23, 59, 59, 999);
+    }
+
+    return (
+      ordersToFilter
+        .filter(order => {
+          // Skip processing completely if no filters are applied
+          if (statusFilter === 'all' && !fromDate && !toDate) {
+            return true;
+          }
+
+          // Status filter
+          if (statusFilter !== 'all' && order.status !== statusFilter) {
             return false;
           }
-          if (dateRange.to && orderDate > dateRange.to) {
-            return false;
+
+          // Date filter - only process if date filters exist
+          if (fromDate || endDate) {
+            // Extract timestamp only once
+            const orderTimestamp =
+              order.createdAt?.seconds ||
+              (order.createdAt instanceof Date
+                ? order.createdAt.getTime() / 1000
+                : new Date(order.createdAt).getTime() / 1000);
+
+            const orderDate = new Date(orderTimestamp * 1000);
+
+            if (fromDate && orderDate < fromDate) {
+              return false;
+            }
+            if (endDate && orderDate > endDate) {
+              return false;
+            }
           }
-        }
 
-        if (searchTerm.length > 0) {
-          return (
-            order.id.includes(searchTerm) ||
-            order.customerName
-              ?.toLowerCase()
-              .includes(searchTerm.toLowerCase()) ||
-            order.customerEmail
-              ?.toLowerCase()
-              .includes(searchTerm.toLowerCase()) ||
-            order.customerPhone
-              ?.toLowerCase()
-              .includes(searchTerm.toLowerCase())
-          );
-        }
+          return true;
+        })
+        // Optimize sorting - use timestamp when available
+        .sort((a, b) => {
+          const getTimestamp = (order: Order) => {
+            if (order.createdAt?.seconds) return order.createdAt.seconds;
+            if (order.createdAt instanceof Date)
+              return order.createdAt.getTime() / 1000;
+            return new Date(order.createdAt).getTime() / 1000;
+          };
 
-        return true;
-      })
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
-  }, [orders, statusFilter, dateRange, searchTerm]);
+          return getTimestamp(b) - getTimestamp(a);
+        })
+    );
+  }, [orders, searchResults, isSearching, statusFilter, dateRange]);
 
-  // Calculate stats
+  // Memoize stats calculation
   const stats = useMemo(
     () => ({
-      total: filteredOrders.length,
-      pending: filteredOrders.filter(o => o.status === 'pending').length,
-      preparing: filteredOrders.filter(o => o.status === 'preparing').length,
-      delivered: filteredOrders.filter(o => o.status === 'delivered').length,
+      total: displayedOrders.length,
+      pending: displayedOrders.filter(o => o.status === 'pending').length,
+      preparing: displayedOrders.filter(o => o.status === 'preparing').length,
+      delivered: displayedOrders.filter(o => o.status === 'delivered').length,
+      cancelled: displayedOrders.filter(o => o.status === 'cancelled').length,
     }),
-    [filteredOrders]
+    [displayedOrders]
   );
 
   const handleStatusChange = async (orderId: string, status: OrderStatus) => {
     try {
       await updateOrderStatus(orderId, status);
+
+      // If searching, refresh search results
+      if (isSearching && searchTerm) {
+        performSearch(searchTerm);
+      }
     } catch (error) {
       console.error('Error updating order status:', error);
     }
@@ -89,6 +272,11 @@ export function OrderManagement() {
     try {
       await updateOrderStatus(cancelConfirmation.orderId, 'cancelled');
       setCancelConfirmation({ isOpen: false });
+
+      // If searching, refresh search results
+      if (isSearching && searchTerm) {
+        performSearch(searchTerm);
+      }
     } catch (error) {
       console.error('Error cancelling order:', error);
     }
@@ -96,18 +284,63 @@ export function OrderManagement() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={handleChange}
-          placeholder={t('menu:search-items')}
-          className="w-full pl-12 pr-10 py-3 rounded-full border border-gray-200 dark:border-gray-700 
-                   bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm
-                   focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400
-                   shadow-sm hover:shadow-md transition-shadow"
-        />
+      <div className="flex gap-2 items-center">
+        <div className="relative flex-1">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              placeholder={t('order:search-orders')}
+              className="w-full pl-12 pr-10 py-3 rounded-full border border-gray-200 dark:border-gray-700 
+                      bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm
+                      focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400
+                      shadow-sm hover:shadow-md transition-shadow"
+            />
+            {searchTerm && (
+              <button
+                onClick={clearSearch}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            )}
+          </div>
+          {isSearching && (
+            <div className="mt-2 text-sm text-blue-600 dark:text-blue-400">
+              {searchLoading ? (
+                <span className="flex items-center">
+                  <RefreshCw className="w-3 h-3 mr-2 animate-spin" />
+                  {t('order:searching')}
+                </span>
+              ) : (
+                <span>
+                  {t('order:search-results', { count: searchResults.length })}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+        <div>
+          <button
+            onClick={() => {
+              refreshOrders();
+              // Test sound (for debugging)
+              if (process.env.NODE_ENV === 'development') {
+                setTimeout(playNotificationSound, 500);
+              }
+            }}
+            className="flex items-center gap-2 p-2 text-blue-600 hover:bg-blue-50 rounded-full"
+            title={t('common:refresh')}
+          >
+            <RefreshCw className="w-5 h-5" />
+          </button>
+        </div>
       </div>
+
+      {/* <div className="flex items-center justify-between">
+      </div> */}
       <OrderStats stats={stats} />
 
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
@@ -120,7 +353,7 @@ export function OrderManagement() {
       </div>
 
       <OrderList
-        orders={filteredOrders}
+        orders={displayedOrders}
         onStatusChange={handleStatusChange}
         onCancel={orderId =>
           setCancelConfirmation({
@@ -128,14 +361,37 @@ export function OrderManagement() {
             orderId,
           })
         }
+        isLoading={(isLoading || searchLoading) && displayedOrders.length === 0}
       />
+
+      {/* Load More Button */}
+      {!isSearching && hasMore && !isLoading && !isLoadingMore && (
+        <div className="flex justify-center mt-6">
+          <button
+            onClick={loadMoreOrders}
+            className="flex items-center gap-2 px-6 py-2 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-800/30
+                      text-blue-600 dark:text-blue-400 rounded-lg transition-colors font-medium"
+          >
+            <RefreshCw className="w-4 h-4" />
+            {t('common:load-more')}
+          </button>
+        </div>
+      )}
+
+      {/* Loading Indicator for Load More */}
+      {!isSearching && isLoadingMore && (
+        <div className="flex justify-center mt-6">
+          <div className="animate-spin text-blue-500">
+            <RefreshCw className="w-6 h-6" />
+          </div>
+        </div>
+      )}
 
       <ConfirmDialog
         isOpen={cancelConfirmation.isOpen}
         title={t('order:cancel-order')}
-        message={t('common:cancel-confirmation')}
+        message={t('order:cancel-order-message')}
         confirmLabel={t('order:cancel-order')}
-        cancelLabel={t('common:cancel')}
         onConfirm={handleCancelOrder}
         onCancel={() => setCancelConfirmation({ isOpen: false })}
       />

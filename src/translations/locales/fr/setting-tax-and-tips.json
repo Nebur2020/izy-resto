@@ -1,0 +1,15 @@
+{
+  "enable-taxes": "Activer la gestion des taxes",
+  "tax-name": "Nom de la taxe",
+  "tax-rate": "Taux (%)",
+  "enable-tax": "Activer cette taxe",
+  "tips": "Pourboires",
+  "enable-tips": "Activer les pourboires",
+  "default-tips": "Pourcentages suggérés (séparés par des virgules)",
+  "default-tips-description": "Ces pourcentages seront proposés comme options de pourboire",
+  "tips-label": "Libellé du pourboire",
+  "tips-placeholder": "Ex: Pourboire",
+  "add-tax": "Ajouter une taxe",
+  "apply-to-all-categories": "Tous les produits",
+  "apply-to": "S'applique à"
+}

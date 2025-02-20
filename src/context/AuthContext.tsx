@@ -6,6 +6,7 @@ import { staffService } from '../services/staff/staff.service';
 import { StaffMember } from '../types/staff';
 import toast from 'react-hot-toast';
 import { anonymousAuthService } from '../services/auth/anonymousAuth.service';
+import { useTranslation } from 'react-i18next';
 
 interface AuthContextType {
   user: User | null;
@@ -19,6 +20,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const { t } = useTranslation();
   const [user, setUser] = useState<User | null>(null);
   const [staffData, setStaffData] = useState<StaffMember | null>(null);
   const [loading, setLoading] = useState(true);
@@ -67,15 +69,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await authService.login(email, password);
 
-      // Get redirect URL from session storage or default to dashboard
       const redirectUrl = sessionStorage.getItem('redirectUrl') || '/dashboard';
       sessionStorage.removeItem('redirectUrl');
 
       navigate(redirectUrl, { replace: true });
-      toast.success('Connexion réussie');
+      toast.success(t('common:login-success'));
     } catch (error: any) {
       console.error('Login error:', error);
-      toast.error(error.message || 'Échec de la connexion');
+      toast.error(error.message || t('common:login-failed'));
       throw error;
     }
   };

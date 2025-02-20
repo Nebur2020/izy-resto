@@ -1,11 +1,12 @@
 import { motion } from 'framer-motion';
 import { X, ShoppingBag, MapPin, Phone, Mail } from 'lucide-react';
-import { Order } from '../../../../types';
+import { Language, Order } from '../../../../types';
 import { useSettings } from '../../../../hooks/useSettings';
 import { formatCurrency } from '../../../../utils/currency';
 import { formatFirestoreTimestamp } from '../../../../utils/date';
 import { OrderTimeline } from '../../../orders/OrderTimeline';
 import { Button } from '../../../ui/Button';
+import { useTranslation } from 'react-i18next';
 
 interface RecentOrderModalProps {
   order: Order | null;
@@ -14,6 +15,8 @@ interface RecentOrderModalProps {
 
 export function RecentOrderModal({ order, onClose }: RecentOrderModalProps) {
   const { settings } = useSettings();
+  const { t, i18n } = useTranslation('order');
+  const lng = i18n.language as Language;
 
   if (!order) return null;
 
@@ -25,16 +28,15 @@ export function RecentOrderModal({ order, onClose }: RecentOrderModalProps) {
         exit={{ opacity: 0, scale: 0.95 }}
         className="relative w-full max-w-2xl max-h-[90vh] bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden"
       >
-        {/* Header */}
         <div className="sticky top-0 z-10 bg-white dark:bg-gray-800 border-b dark:border-gray-700 p-4">
           <div className="flex justify-between items-start">
             <div>
               <h2 className="text-xl font-semibold flex items-center gap-2">
                 <ShoppingBag className="w-5 h-5 text-blue-500" />
-                Commande #{order.id.slice(0, 8)}
+                {t('order')} #{order.id.slice(0, 8)}
               </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                {formatFirestoreTimestamp(order.createdAt)}
+                {formatFirestoreTimestamp(order.createdAt, lng)}
               </p>
             </div>
             <button
@@ -45,20 +47,15 @@ export function RecentOrderModal({ order, onClose }: RecentOrderModalProps) {
             </button>
           </div>
         </div>
-
-        {/* Scrollable Content */}
         <div className="overflow-y-auto p-4 space-y-6">
-          {/* Order Timeline */}
           <OrderTimeline
             order={order}
             status={order.status}
             createdAt={order.createdAt}
             updatedAt={order.updatedAt}
           />
-
-          {/* Customer Details */}
           <div className="bg-gray-50 dark:bg-gray-700/30 rounded-lg p-4 space-y-3">
-            <h3 className="font-medium">Détails Client</h3>
+            <h3 className="font-medium">{t('common:client-details')}</h3>
             <div className="space-y-2">
               <p className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                 <Phone className="w-4 h-4" />
@@ -78,10 +75,8 @@ export function RecentOrderModal({ order, onClose }: RecentOrderModalProps) {
               )}
             </div>
           </div>
-
-          {/* Order Items */}
           <div className="space-y-4">
-            <h3 className="font-medium">Articles Commandés</h3>
+            <h3 className="font-medium">{t('common:item-ordered')}</h3>
             <div className="divide-y dark:divide-gray-700">
               {order.items.map(item => (
                 <div
@@ -104,8 +99,6 @@ export function RecentOrderModal({ order, onClose }: RecentOrderModalProps) {
                 </div>
               ))}
             </div>
-
-            {/* Total */}
             <div className="border-t dark:border-gray-700 pt-4 flex justify-between items-center">
               <span className="font-medium">Total</span>
               <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
@@ -114,11 +107,9 @@ export function RecentOrderModal({ order, onClose }: RecentOrderModalProps) {
             </div>
           </div>
         </div>
-
-        {/* Footer */}
         <div className="sticky bottom-0 bg-white dark:bg-gray-800 border-t dark:border-gray-700 p-4">
           <Button onClick={onClose} className="w-full">
-            Fermer
+            {t('common:close')}
           </Button>
         </div>
       </motion.div>

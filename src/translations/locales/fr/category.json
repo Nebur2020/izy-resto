@@ -1,0 +1,21 @@
+{
+  "category-title": "Catégorie",
+  "category-description": "Gérez les catégories de votre menu",
+  "new-category": "Nouvelle catégorie",
+  "search-placeholder": "Rechercher une catégorie...",
+  "update-category": "Modifier la catégorie",
+  "add-new-category": "Ajouter une nouvelle catégorie au menu",
+  "update-category-details": "Modifier les détails de la catégorie",
+  "description-placeholder": "Description de la catégorie",
+  "display-order": "Ordre d'affichage",
+  "delete-category": "Supprimer la catégorie ?",
+  "delete-category-message": "Êtes-vous sûr de vouloir supprimer la catégorie {{categoryName}} ?",
+  "category-updated": "Catégorie mise à jour avec succès",
+  "category-created": "Catégorie créée avec succès",
+  "category-error": "Une erreur est survenue",
+  "category-deleted": "Catégorie supprimée avec succès",
+  "category-loading": "Chargement des catégories...",
+  "no-category-found": "Essayez d'autres termes de recherche",
+  "no-category-description": "Commencez par créer une catégorie",
+  "no-category-found-title": "Aucune catégorie trouvée"
+}

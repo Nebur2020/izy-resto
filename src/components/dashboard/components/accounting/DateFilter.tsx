@@ -3,28 +3,39 @@ import { Calendar as CalendarIcon } from 'lucide-react';
 import { Button } from '../../../ui/Button';
 import { DatePicker } from '../../../ui/DatePicker';
 import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { fr, enUS as en } from 'date-fns/locale';
+import { Language } from '../../../../types';
 import { useIsMobile } from '../../../../hooks/useIsMobile';
+import { useTranslation } from 'react-i18next';
 
-interface DateFilterProps {
+interface IDateFilterProps {
   startDate: Date;
   endDate: Date;
   onDateChange: (start: Date, end: Date) => void;
 }
 
-export function DateFilter({
-  startDate,
-  endDate,
-  onDateChange,
-}: DateFilterProps) {
+export function DateFilter(props: IDateFilterProps) {
+  const { startDate, endDate, onDateChange } = props;
+  const { t, i18n } = useTranslation();
   const [isStartPickerOpen, setIsStartPickerOpen] = useState(false);
   const [isEndPickerOpen, setIsEndPickerOpen] = useState(false);
   const isMobile = useIsMobile();
+  const lng = i18n.language as Language;
+
+  const localesMap: Record<Language, Locale> = {
+    en: en,
+    fr: fr,
+  };
+
+  const locale = localesMap[lng] || fr;
+
+  const formattedStartedDate = format(startDate, 'dd MMM yyyy', { locale });
+  const formattedEndDate = format(endDate, 'dd MMM yyyy', { locale });
 
   const presets = [
-    { label: "Aujourd'hui", days: 0 },
-    { label: isMobile ? '7j' : '7 derniers jours', days: 7 },
-    { label: isMobile ? '30j' : '30 derniers jours', days: 30 },
+    { label: t('common:today'), days: 0 },
+    { label: isMobile ? '7j' : t('common:last-week'), days: 7 },
+    { label: isMobile ? '30j' : t('common:last-month'), days: 30 },
   ];
 
   const handlePresetClick = (days: number) => {
@@ -41,7 +52,6 @@ export function DateFilter({
   return (
     <div className="w-full sm:w-auto relative">
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-        {/* Date Range Buttons */}
         <div className="flex items-center gap-2 order-2 sm:order-1">
           {presets.map(preset => (
             <Button
@@ -56,7 +66,6 @@ export function DateFilter({
           ))}
         </div>
 
-        {/* Date Pickers */}
         <div className="flex items-center gap-2 order-1 sm:order-2">
           <div className="relative flex-1 sm:flex-initial">
             <Button
@@ -69,10 +78,9 @@ export function DateFilter({
               className="w-full sm:w-[140px] justify-start text-xs sm:text-sm"
             >
               <CalendarIcon className="mr-2 h-3 w-3 sm:h-4 sm:w-4 text-gray-500" />
-              {format(startDate, 'dd MMM yyyy', { locale: fr })}
+              {formattedStartedDate}
             </Button>
 
-            {/* Start Date Picker Portal */}
             {isStartPickerOpen && (
               <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center">
                 <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl p-4 max-w-fit mx-auto">
@@ -100,7 +108,9 @@ export function DateFilter({
             )}
           </div>
 
-          <span className="text-gray-500 dark:text-gray-400">à</span>
+          <span className="text-gray-500 dark:text-gray-400">
+            {lng === 'fr' ? 'à' : 'to'}
+          </span>
 
           <div className="relative flex-1 sm:flex-initial">
             <Button
@@ -113,10 +123,8 @@ export function DateFilter({
               className="w-full sm:w-[140px] justify-start text-xs sm:text-sm"
             >
               <CalendarIcon className="mr-2 h-3 w-3 sm:h-4 sm:w-4 text-gray-500" />
-              {format(endDate, 'dd MMM yyyy', { locale: fr })}
+              {formattedEndDate}
             </Button>
-
-            {/* End Date Picker Portal */}
             {isEndPickerOpen && (
               <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center">
                 <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl p-4 max-w-fit mx-auto">

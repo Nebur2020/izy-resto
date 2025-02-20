@@ -60,7 +60,6 @@ export function useRestaurantStatus() {
     const now = new Date();
     const restaurantTime = getDateInRestaurantTimezone(now, timezone);
 
-    // Check holiday closure first, regardless of opening hours
     if (checkHolidayClosure(restaurantTime, timezone)) {
       setIsOpen(false);
       setIsHoliday(true);
@@ -70,14 +69,12 @@ export function useRestaurantStatus() {
 
     setIsHoliday(false);
 
-    // If no opening hours defined, keep open when not in holiday closure
     if (!settings?.openingHours?.timezone || !settings.hasOpeningHours) {
       setIsOpen(true);
       setShowModal(false);
       return;
     }
 
-    // Regular opening hours check
     const currentDay = restaurantTime
       .toLocaleDateString('en-US', {
         weekday: 'long',

@@ -4,6 +4,12 @@ import { runTransaction, doc, getDoc } from 'firebase/firestore';
 import { StockUpdateError } from './errors';
 import { stockHistoryService } from './stockHistory.service';
 import toast from 'react-hot-toast';
+import { variantService } from '../variants/variant.service';
+
+interface InventoryConnection {
+  itemId: string;
+  ratio: number;
+}
 
 class StockUpdateService {
   private getBaseItemId(itemId: string): string {
@@ -26,6 +32,30 @@ class StockUpdateService {
     }, {} as { [key: string]: number });
   }
 
+  private parseVariantInventory(
+    inventoryStr: string | undefined
+  ): InventoryConnection[][] {
+    if (!inventoryStr) return [];
+    try {
+      return JSON.parse(inventoryStr);
+    } catch (error) {
+      console.error('Error parsing variant inventory:', error);
+      return [];
+    }
+  }
+
+  private findSelectedVariantValues(
+    itemId: string,
+    variantValues: string[]
+  ): number[] {
+    return variantValues
+      .map((value, index) => {
+        const regex = new RegExp(`\\b${value}\\b`);
+        return regex.test(itemId) ? index : -1;
+      })
+      .filter(index => index !== -1);
+  }
+
   async updateStockOnDelivery(order: Order): Promise<void> {
     try {
       await runTransaction(db, async transaction => {
@@ -40,18 +70,51 @@ class StockUpdateService {
 
             if (!docSnap.exists()) {
               toast.error('Produit de menu introuvable...');
-
               throw new StockUpdateError(
                 `Menu item not found: ${baseId}`,
                 'stock/item-not-found'
               );
             }
 
+            const variants = await variantService.getAllVariantsByCategory(
+              docSnap.data().categoryId
+            );
+
+            // Process variants with their inventory connections
+            const processedVariants = variants
+              .filter(variant => variant.inventory) // Only variants with inventory
+              .map(variant => {
+                // Parse the stringified inventory
+                const parsedInventory = this.parseVariantInventory(
+                  variant.inventory as any
+                );
+
+                // Find selected variant values for this menu item in the order
+                const selectedIndexes = order.items
+                  .filter(item => item.id.startsWith(baseId))
+                  .map(item =>
+                    this.findSelectedVariantValues(item.id, variant.values)
+                  )
+                  .flat()
+                  .filter(index => {
+                    // Ensure the index has valid inventory connections
+                    return parsedInventory[index]?.some(conn => conn.itemId);
+                  });
+
+                return {
+                  ...variant,
+                  parsedInventory,
+                  selectedIndexes,
+                };
+              })
+              .filter(variant => variant.selectedIndexes.length > 0);
+
             return {
               id: docSnap.id,
               ref: docRef,
               data: docSnap.data(),
               exists: true,
+              variants: processedVariants,
             };
           })
         );
@@ -88,7 +151,57 @@ class StockUpdateService {
             );
           }
 
-          // Calculate inventory deductions based on connections
+          // Process variant inventory connections
+          for (const variant of menuDoc.variants) {
+            console.log('variant.selectedIndexes', variant.selectedIndexes);
+            for (const selectedIndex of variant.selectedIndexes) {
+              // Get all inventory connections for this variant value
+              const connections = variant.parsedInventory[selectedIndex] || [];
+              console.log('connections', connections);
+
+              for (const connection of connections) {
+                if (!connection.itemId || !connection.ratio) continue;
+
+                const currentUpdate = inventoryUpdates.get(connection.itemId);
+                const currentVariantCartItem = order.items.find(item => {
+                  const v = variant.values[selectedIndex];
+                  const regex = new RegExp(`\\b${v}\\b`);
+                  return regex.test(item.id);
+                });
+
+                const deduction =
+                  connection.ratio * (currentVariantCartItem?.quantity || 1);
+
+                if (currentUpdate) {
+                  currentUpdate.deduction += deduction;
+                } else {
+                  const inventoryRef = doc(db, 'inventory', connection.itemId);
+                  const inventorySnap = await getDoc(inventoryRef);
+
+                  if (!inventorySnap.exists()) {
+                    toast.error(
+                      "Produit Connexion d'inventaire introuvable..."
+                    );
+                    throw new StockUpdateError(
+                      `Inventory item not found: ${connection.itemId}`,
+                      'stock/inventory-not-found'
+                    );
+                  }
+
+                  const inventoryData = inventorySnap.data();
+                  inventoryUpdates.set(connection.itemId, {
+                    deduction: deduction,
+                    currentStock: inventoryData.quantity || 0,
+                    ref: inventoryRef,
+                    itemName: inventoryData.name,
+                    cost: inventoryData.price * deduction,
+                  });
+                }
+              }
+            }
+          }
+
+          // Process base menu item inventory connections
           for (const connection of connections) {
             if (!connection.itemId || !connection.ratio) continue;
 

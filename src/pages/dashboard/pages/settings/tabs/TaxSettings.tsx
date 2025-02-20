@@ -5,10 +5,10 @@ import { RestaurantSettings } from '../../../../../types/settings';
 import { Button } from '../../../../../components/ui/Button';
 import { useCategories } from '../../../../../hooks/useCategories';
 import { KeywordsInput } from '../../../../../components/settings/seo/KeywordsInput';
-
-// Category selection component
+import { useTranslation } from 'react-i18next';
 
 export function TaxSettings() {
+  const { t } = useTranslation();
   const { register, watch, control, setValue } =
     useFormContext<RestaurantSettings>();
   const { fields, append, remove, move } = useFieldArray({
@@ -21,22 +21,25 @@ export function TaxSettings() {
   const tipsEnabled = watch('tips.enabled');
 
   const CategorySelect = ({ index }: { index: number }) => {
-    // const { watch, setValue } = useFormContext();
     const currentValue = watch(`taxes.rates.${index}.appliesTo`);
 
     return (
       <div className="md:col-span-2">
-        <label className="block text-sm font-medium mb-1">S'applique à</label>
+        <label className="block text-sm font-medium mb-1">
+          {t('taxAndTips:apply-to')}
+        </label>
         <select
           value={currentValue}
           onChange={e =>
             setValue(`taxes.rates.${index}.appliesTo`, e.target.value, {
-              shouldDirty: true, // This ensures the form knows a change has occurred
+              shouldDirty: true,
             })
           }
           className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
         >
-          <option value="all">Tous les produits</option>
+          <option value="all">
+            {t('taxAndTips:apply-to-all-categories')}
+          </option>
           {categories?.map(category => (
             <option key={category.id} value={category.id}>
               {category.name}
@@ -65,13 +68,10 @@ export function TaxSettings() {
 
     const sourceIndex = result.source.index;
     const destinationIndex = result.destination.index;
-
-    // Update order values
     const updatedFields = [...fields];
     const [movedItem] = updatedFields.splice(sourceIndex, 1);
     updatedFields.splice(destinationIndex, 0, movedItem);
 
-    // Update order property for each item
     updatedFields.forEach((field, index) => {
       setValue(`taxes.rates.${index}.order`, index);
     });
@@ -81,7 +81,6 @@ export function TaxSettings() {
 
   return (
     <div className="space-y-8">
-      {/* Tax Settings */}
       <section className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -91,7 +90,7 @@ export function TaxSettings() {
           {taxEnabled && (
             <Button onClick={handleAddTax}>
               <Plus className="w-4 h-4 mr-2" />
-              Ajouter une taxe
+              {t('taxAndTips:add-tax')}
             </Button>
           )}
         </div>
@@ -104,23 +103,12 @@ export function TaxSettings() {
               className="rounded border-gray-300 dark:border-gray-600"
             />
             <label className="text-sm font-medium">
-              Activer la gestion des taxes
+              {t('taxAndTips:enable-taxes')}
             </label>
           </div>
 
           {taxEnabled && (
             <>
-              {/* <div className="flex items-center gap-2 mb-4">
-                <input
-                  type="checkbox"
-                  {...register('taxes.includedInPrice')}
-                  className="rounded border-gray-300 dark:border-gray-600"
-                />
-                <label className="text-sm font-medium">
-                  Les prix affichés incluent les taxes
-                </label>
-              </div> */}
-
               <DragDropContext onDragEnd={handleDragEnd}>
                 <Droppable droppableId="tax-rates">
                   {provided => (
@@ -158,7 +146,7 @@ export function TaxSettings() {
                                 <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
                                   <div>
                                     <label className="block text-sm font-medium mb-1">
-                                      Nom de la taxe
+                                      {t('taxAndTips:tax-name')}
                                     </label>
                                     <input
                                       type="text"
@@ -170,7 +158,7 @@ export function TaxSettings() {
 
                                   <div>
                                     <label className="block text-sm font-medium mb-1">
-                                      Taux (%)
+                                      {t('taxAndTips:tax-rate')}
                                     </label>
                                     <input
                                       type="number"
@@ -194,7 +182,7 @@ export function TaxSettings() {
                                         className="rounded border-gray-300 dark:border-gray-600"
                                       />
                                       <label className="text-sm font-medium">
-                                        Activer cette taxe
+                                        {t('taxAndTips:enable-tax')}
                                       </label>
                                     </div>
 
@@ -221,12 +209,12 @@ export function TaxSettings() {
           )}
         </div>
       </section>
-
-      {/* Tips Settings */}
       <section className="space-y-6">
         <div className="flex items-center gap-3">
           <Coins className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-          <h2 className="text-xl font-semibold">Pourboires</h2>
+          <h2 className="text-xl font-semibold">
+            {t('taxAndTips:tips')}
+          </h2>
         </div>
 
         <div className="space-y-4">
@@ -237,21 +225,15 @@ export function TaxSettings() {
               className="rounded border-gray-300 dark:border-gray-600"
             />
             <label className="text-sm font-medium">
-              Activer les pourboires
+              {t('taxAndTips:enable-tips')}
             </label>
           </div>
 
           {tipsEnabled && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                {/* <input
-                  type="text"
-                  {...register('tips.defaultPercentages')}
-                  placeholder="Ex: 5,10,15,20"
-                  className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
-                /> */}
                 <label className="block text-sm font-medium mb-1">
-                  Pourcentages suggérés (séparés par des virgules)
+                  {t('taxAndTips:default-tips')}
                 </label>
                 <KeywordsInput
                   type="number"
@@ -263,37 +245,21 @@ export function TaxSettings() {
                   }
                 />
                 <p className="mt-1 text-sm text-gray-500">
-                  Ces pourcentages seront proposés comme options de pourboire
+                  {t('taxAndTips:default-tips-description')}
                 </p>
               </div>
 
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Libellé du pourboire
+                  {t('taxAndTips:tips-label')}
                 </label>
                 <input
                   type="text"
                   {...register('tips.label')}
-                  placeholder="Ex: Pourboire"
+                  placeholder={t('taxAndTips:tips-placeholder')}
                   className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
                 />
               </div>
-
-              {/* <div className="md:col-span-2">
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    {...register('tips.allowCustom')}
-                    className="rounded border-gray-300 dark:border-gray-600"
-                  />
-                  <label className="text-sm font-medium">
-                    Autoriser les montants personnalisés
-                  </label>
-                </div>
-                <p className="mt-1 text-sm text-gray-500">
-                  Si activé, les clients pourront saisir un montant personnalisé
-                </p>
-              </div> */}
             </div>
           )}
         </div>

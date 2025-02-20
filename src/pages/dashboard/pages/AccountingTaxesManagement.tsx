@@ -8,12 +8,15 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { formatDate } from '../../../utils';
 import { formatCurrency } from '../../../utils/currency';
 import { Pagination } from '../../../components/ui/Pagination';
-import { Order } from '../../../types';
+import { Language, Order } from '../../../types';
+import { useTranslation } from 'react-i18next';
 
 const ITEMS_PER_PAGE = 8;
 
 export async function generateTaxReportCSV(
   receivedOrders: Order[],
+  t: (key: string) => string,
+  lng: Language,
   settings?: any,
   dateRange?: { from: Date; to: Date }
 ): Promise<void> {
@@ -21,14 +24,13 @@ export async function generateTaxReportCSV(
     const orders = receivedOrders.sort((a, b) => {
       return a.createdAt - b.createdAt;
     });
-    // Calculate tax totals
     const taxTotals = new Map<string, { amount: number; rate: number }>();
     let totalHT = 0;
     let totalTTC = 0;
 
     orders.forEach(order => {
       totalHT += order.subtotal;
-      totalTTC += order.total;
+      totalTTC += totalHT + order.taxTotal;
 
       order.taxes.forEach(tax => {
         const existing = taxTotals.get(tax.name);
@@ -40,31 +42,36 @@ export async function generateTaxReportCSV(
       });
     });
 
-    // Create CSV content
     let csvContent = '';
 
-    // Add header info
     csvContent += `${settings?.name || 'Restaurant'}\n`;
-    csvContent += `Rapport des taxes\n`;
-    csvContent += `Période: ${formatDate(dateRange?.from)} - ${formatDate(
-      dateRange?.to
-    )}\n\n`;
+    csvContent += t('comptability:tax-report') + '\n';
+    csvContent += `${t('common:period')} ${formatDate(
+      dateRange?.from
+    )} - ${formatDate(dateRange?.to)}\n\n`;
 
-    // Add summary section
-    csvContent += 'Résumé\n';
-    csvContent += `Total HT,${formatCurrency(totalHT, settings?.currency)}\n`;
-    csvContent += `Total Taxes,${formatCurrency(
+    csvContent += t('comptability:summary') + '\n';
+    csvContent += `${t('comptability:total-ht')},${formatCurrency(
+      totalHT,
+      settings?.currency
+    )}\n`;
+    csvContent += `${t('comptability:total-tax')},${formatCurrency(
       totalTTC - totalHT,
       settings?.currency
     )}\n`;
-    csvContent += `Total TTC,${formatCurrency(
+    csvContent += `${t('comptability:total-ttc')},${formatCurrency(
       totalTTC,
       settings?.currency
     )}\n\n`;
 
-    // Add tax summary
-    csvContent += 'Résumé par type de taxe\n';
-    csvContent += 'Type de taxe,Taux,Montant total\n';
+    csvContent += t('comptability:tax-details') + '\n';
+    csvContent +=
+      t('comptability:tax-name') +
+      ',' +
+      t('comptability:tax-rate') +
+      ',' +
+      t('comptability:tax-amount') +
+      '\n';
     Array.from(taxTotals.entries()).forEach(([name, data]) => {
       csvContent += `${name},${(data.rate * 100).toFixed(2)}%,${formatCurrency(
         data.amount,
@@ -73,10 +80,12 @@ export async function generateTaxReportCSV(
     });
     csvContent += '\n';
 
-    // Add detailed transactions
-    csvContent += 'Détail des transactions\n';
-    csvContent +=
-      'Date,Référence,Montant HT,Détails des taxes,Total Taxes,Total TTC\n';
+    csvContent += t('comptability:orders-details') + '\n';
+    csvContent += `${t('common:date')},${t('common:references')},${t(
+      'comptability:total-ht'
+    )},${t('comptability:tax-details')},${t('comptability:total-tax')},${t(
+      'comptability:total-ttc'
+    )}\n`;
 
     orders.forEach(order => {
       const taxDetails = order.taxes
@@ -100,7 +109,6 @@ export async function generateTaxReportCSV(
         ].join(',') + '\n';
     });
 
-    // Create and download file
     const blob = new Blob(['\ufeff' + csvContent], {
       type: 'text/csv;charset=utf-8;',
     });
@@ -110,7 +118,11 @@ export async function generateTaxReportCSV(
     link.setAttribute('href', url);
     link.setAttribute(
       'download',
-      `taxes-${formatDate(dateRange?.from)}-${formatDate(dateRange?.to)}.csv`
+      `taxes-${formatDate(dateRange?.from, false, lng)}-${formatDate(
+        dateRange?.to,
+        false,
+        lng
+      )}.csv`
     );
     document.body.appendChild(link);
     link.click();
@@ -122,17 +134,18 @@ export async function generateTaxReportCSV(
 }
 
 export const AccountingTaxesManagement = () => {
+  const { t, i18n } = useTranslation();
   const { settings, isLoading: settingsLoading } = useSettings();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const lng = i18n.language as Language;
 
   const { getDateOrders } = useOrders();
   const [currentPage, setCurrentPage] = useState(1);
 
   const filteredOrders = orders.filter(order => order?.taxes?.length > 0);
 
-  // Calculate pagination
   const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedOrders = filteredOrders.slice(
@@ -165,7 +178,7 @@ export const AccountingTaxesManagement = () => {
   const handleDownload = async () => {
     try {
       setIsDownloading(true);
-      await generateTaxReportCSV(filteredOrders, settings, dateRange);
+      await generateTaxReportCSV(filteredOrders, t, lng, settings, dateRange);
       setIsDownloading(false);
     } catch (error) {
       console.log(error);
@@ -190,7 +203,7 @@ export const AccountingTaxesManagement = () => {
             </div>
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Total Taxes
+                {t('comptability:total-taxes')}
               </p>
               <p className="text-2xl font-semibold">
                 {formatCurrency(
@@ -208,7 +221,7 @@ export const AccountingTaxesManagement = () => {
         <DateFilter
           startDate={dateRange.from}
           endDate={dateRange.to}
-          onDateChange={handleDateChange} //   onDateChange={handleDateChange}
+          onDateChange={handleDateChange}
         />
         <div className="flex gap-2">
           <Button
@@ -218,8 +231,8 @@ export const AccountingTaxesManagement = () => {
           >
             <Download className="w-4 h-4 mr-2" />
             {isDownloading
-              ? 'Téléchargement en cours...'
-              : 'Télécharger les taxes'}
+              ? t('common:downloading')
+              : t('comptability:download-taxes')}
           </Button>
         </div>
       </div>
@@ -230,22 +243,22 @@ export const AccountingTaxesManagement = () => {
             <thead>
               <tr className="border-b dark:border-gray-700 text-left">
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Date
+                  {t('comptability:date')}
                 </th>
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Référence
+                  {t('comptability:references')}
                 </th>
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Taxes
+                  {t('comptability:taxes')}
                 </th>
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Total Taxes
+                  {t('comptability:tax-total')}
                 </th>
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Montant (HT)
+                  {t('comptability:amount')} (HT)
                 </th>
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Montant (TTC)
+                  {t('comptability:amount')} (TTC)
                 </th>
               </tr>
             </thead>
@@ -264,7 +277,7 @@ export const AccountingTaxesManagement = () => {
                     className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                   >
                     <td className="px-6 py-4 text-sm whitespace-nowrap">
-                      {formatDate(order.createdAt)}
+                      {formatDate(order.createdAt, false, lng)}
                     </td>
                     <td className="px-6 py-4 text-sm whitespace-nowrap">
                       #{order.id}
@@ -288,7 +301,10 @@ export const AccountingTaxesManagement = () => {
                     </td>
 
                     <td className="px-6 py-4 text-sm whitespace-nowrap">
-                      {formatCurrency(order.total, settings?.currency)}
+                      {formatCurrency(
+                        order.subtotal + order.taxTotal,
+                        settings?.currency
+                      )}
                     </td>
                   </motion.tr>
                 ))}
@@ -300,7 +316,7 @@ export const AccountingTaxesManagement = () => {
         {!loading && paginatedOrders.length < 1 && (
           <div className="text-center py-8">
             <Package className="w-12 h-12 mx-auto text-gray-400 mb-3" />
-            <p className="text-gray-500">Pas de taxes trouvées</p>
+            <p className="text-gray-500">{t('comptability:no-tax-found')}</p>
           </div>
         )}
 

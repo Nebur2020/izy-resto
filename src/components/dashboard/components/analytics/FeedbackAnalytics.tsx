@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Star, MessageSquare, User, Phone } from 'lucide-react';
-import { Order } from '../../../../types';
+import { Language, Order } from '../../../../types';
 import { useSettings } from '../../../../hooks/useSettings';
 import {
   formatCurrency,
@@ -8,6 +8,7 @@ import {
 } from '../../../../utils/currency';
 import { formatFirestoreTimestamp } from '../../../../utils/date';
 import { Pagination } from '../../../ui/Pagination';
+import { useTranslation } from 'react-i18next';
 
 interface FeedbackAnalyticsProps {
   orders: Order[];
@@ -23,11 +24,11 @@ export function FeedbackAnalytics({
   itemsPerPage = 10,
 }: FeedbackAnalyticsProps) {
   const { settings } = useSettings();
+  const { t, i18n } = useTranslation('common');
+  const lng = i18n.language as Language;
 
-  // Filter orders with ratings
   const ratedOrders = orders.filter(order => order.rating);
 
-  // Calculate average rating
   const averageRating =
     ratedOrders.length > 0
       ? ratedOrders.reduce(
@@ -36,14 +37,12 @@ export function FeedbackAnalytics({
         ) / ratedOrders.length
       : 0;
 
-  // Calculate rating distribution
   const ratingDistribution = ratedOrders.reduce((acc, order) => {
     const rating = order.rating?.rating || 0;
     acc[rating] = (acc[rating] || 0) + 1;
     return acc;
   }, {} as Record<number, number>);
 
-  // Paginate orders
   const totalPages = Math.ceil(ratedOrders.length / itemsPerPage);
   const paginatedOrders = ratedOrders.slice(
     (currentPage - 1) * itemsPerPage,
@@ -52,9 +51,7 @@ export function FeedbackAnalytics({
 
   return (
     <div className="space-y-6">
-      {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Average Rating */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -66,7 +63,7 @@ export function FeedbackAnalytics({
             </div>
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Note moyenne
+                {t('average-rate')}
               </p>
               <div className="flex items-center gap-2">
                 <p className="text-2xl font-semibold">
@@ -91,8 +88,6 @@ export function FeedbackAnalytics({
             </div>
           </div>
         </motion.div>
-
-        {/* Total Reviews */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -105,14 +100,12 @@ export function FeedbackAnalytics({
             </div>
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Total avis
+                {t('common:total-note')}
               </p>
               <p className="text-2xl font-semibold">{ratedOrders.length}</p>
             </div>
           </div>
         </motion.div>
-
-        {/* Review Rate */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -125,7 +118,7 @@ export function FeedbackAnalytics({
             </div>
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Taux d'avis
+                {t('common:notification-rate')}
               </p>
               <p className="text-2xl font-semibold">
                 {orders.length > 0
@@ -141,10 +134,10 @@ export function FeedbackAnalytics({
           </div>
         </motion.div>
       </div>
-
-      {/* Rating Distribution */}
       <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-        <h3 className="text-lg font-semibold mb-4">Distribution des notes</h3>
+        <h3 className="text-lg font-semibold mb-4">
+          {t('common:note-dispatching')}
+        </h3>
         <div className="space-y-3">
           {[5, 4, 3, 2, 1].map(rating => {
             const count = ratingDistribution[rating] || 0;
@@ -176,13 +169,10 @@ export function FeedbackAnalytics({
           })}
         </div>
       </div>
-
-      {/* Reviews List */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm">
         <div className="p-6 border-b dark:border-gray-700">
-          <h3 className="text-lg font-semibold">Avis clients</h3>
+          <h3 className="text-lg font-semibold">{t('analyse:client-note')}</h3>
         </div>
-
         <div className="divide-y dark:divide-gray-700">
           {paginatedOrders.map(order => (
             <div key={order.id} className="p-6">
@@ -191,7 +181,7 @@ export function FeedbackAnalytics({
                   <div className="flex items-center gap-2 mb-1">
                     <h4 className="font-medium">{order.customerName}</h4>
                     <span className="text-sm text-gray-500">
-                      • Commande #{order.id.slice(0, 8)}
+                      • {t('order:order')} #{order.id.slice(0, 8)}
                     </span>
                   </div>
                   {order.customerPhone && (
@@ -216,7 +206,8 @@ export function FeedbackAnalytics({
                 <div className="text-right">
                   <p className="text-sm text-gray-500">
                     {formatFirestoreTimestamp(
-                      order.rating?.createdAt || order.createdAt
+                      order.rating?.createdAt || order.createdAt,
+                      lng
                     )}
                   </p>
                   <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
@@ -236,7 +227,7 @@ export function FeedbackAnalytics({
             <div className="p-12 text-center">
               <MessageSquare className="w-12 h-12 mx-auto text-gray-400 mb-4" />
               <p className="text-gray-500 dark:text-gray-400">
-                Aucun avis client pour le moment
+                {t('analyse:no-client-feedback')}
               </p>
             </div>
           )}

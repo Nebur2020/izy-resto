@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Edit2, Trash2 } from 'lucide-react';
 import { Transaction } from '../../../../types/accounting';
@@ -9,6 +9,8 @@ import { Button } from '../../../ui/Button';
 import { TransactionForm } from './TransactionForm';
 import { ConfirmationModal } from '../../../ui/ConfirmationModal';
 import { Pagination } from '../../../ui/Pagination';
+import { useTranslation } from 'react-i18next';
+import { Language } from '../../../../types';
 
 const ITEMS_PER_PAGE = 8;
 
@@ -30,10 +32,11 @@ export function TransactionList({
   onUpdate,
   onDelete,
 }: TransactionListProps) {
+  const { t, i18n } = useTranslation();
+  const lng = i18n.language as Language;
   const { settings } = useSettings();
   const totalPages = Math.ceil(transactions.length / ITEMS_PER_PAGE);
 
-  // Initialize with the last page
   const [currentPage, setCurrentPage] = useState(1);
   const [editingTransaction, setEditingTransaction] =
     useState<Transaction | null>(null);
@@ -42,14 +45,6 @@ export function TransactionList({
     transactionId?: string;
   }>({ isOpen: false });
 
-  // Keep currentPage in sync with data changes
-  // useEffect(() => {
-  //   if (totalPages > 0) {
-  //     setCurrentPage(totalPages);
-  //   }
-  // }, [totalPages]);
-
-  // Get transactions for current page
   const paginatedTransactions = transactions.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
@@ -76,22 +71,22 @@ export function TransactionList({
             <thead>
               <tr className="border-b dark:border-gray-700 text-left">
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Date
+                  {t('comptability:date')}
                 </th>
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Source
+                  {t('comptability:source')}
                 </th>
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Description
+                  {t('comptability:description')}
                 </th>
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Référence
+                  {t('comptability:reference')}
                 </th>
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase text-right">
-                  Débit (HT)
+                  {t('comptability:flow')} (HT)
                 </th>
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase text-right">
-                  Crédit (HT)
+                  {t('comptability:credit')} (HT)
                 </th>
                 <th className="px-6 py-3 text-xs font-medium text-gray-500"></th>
               </tr>
@@ -111,7 +106,7 @@ export function TransactionList({
                     className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                   >
                     <td className="px-6 py-4 text-sm whitespace-nowrap">
-                      {formatDate(transaction.date)}
+                      {formatDate(transaction.date, false, lng)}
                     </td>
                     <td className="px-6 py-4 text-sm">
                       {sourceText[transaction.source] || transaction.source}
@@ -143,9 +138,6 @@ export function TransactionList({
                         </span>
                       )}
                     </td>
-                    {/* <td className="px-6 py-4 text-sm font-medium text-right">
-                      {formatCurrency(transaction.gross, settings?.currency)}
-                    </td> */}
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2">
                         <Button
@@ -181,7 +173,7 @@ export function TransactionList({
                     colSpan={8}
                     className="px-6 py-8 text-center text-gray-500 dark:text-gray-400"
                   >
-                    Aucune transaction trouvée
+                    {t('comptability:no-transaction-found')}
                   </td>
                 </tr>
               )}
@@ -199,8 +191,6 @@ export function TransactionList({
           </div>
         )}
       </div>
-
-      {/* Transaction Edit Modal */}
       {editingTransaction && (
         <TransactionForm
           transaction={editingTransaction}
@@ -212,7 +202,6 @@ export function TransactionList({
         />
       )}
 
-      {/* Delete Confirmation Modal */}
       <ConfirmationModal
         isOpen={deleteConfirmation.isOpen}
         onClose={() => setDeleteConfirmation({ isOpen: false })}
@@ -222,8 +211,8 @@ export function TransactionList({
             setDeleteConfirmation({ isOpen: false });
           }
         }}
-        title="Supprimer la transaction"
-        message="Êtes-vous sûr de vouloir supprimer cette transaction ? Cette action est irréversible."
+        title={t('comptability:delete-transaction')}
+        message={t('comptability:delete-transaction-confirmation')}
       />
     </>
   );

@@ -37,6 +37,7 @@ interface IOrderConfirmationProps {
     address?: string;
     tableNumber?: string;
     diningOption: 'delivery' | 'dine-in';
+    selectedCode?: string;
   };
   onConfirm: () => void | Promise<void>;
   onBack: () => void;
@@ -49,7 +50,6 @@ interface IOrderConfirmationProps {
 export function OrderConfirmation(props: IOrderConfirmationProps) {
   const { t } = useTranslation('order');
 
-  // console.log(t('days.monday'));
   const {
     customerData,
     onConfirm,
@@ -222,6 +222,7 @@ export function OrderConfirmation(props: IOrderConfirmationProps) {
             {customerData.phone && (
               <p className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
                 <Phone className="w-4 h-4" />
+                {customerData.selectedCode}
                 {customerData.phone}
               </p>
             )}
@@ -241,7 +242,7 @@ export function OrderConfirmation(props: IOrderConfirmationProps) {
           </div>
         </div>
         <div className="space-y-3">
-          <h3 className="font-medium">{t('item-ordered')}</h3>
+          <h3 className="font-medium">{t('common:item-ordered')}</h3>
           {cart.map((item: CartItem) => (
             <div key={item.id} className="flex justify-between items-center">
               <div>
@@ -350,7 +351,7 @@ export function OrderConfirmation(props: IOrderConfirmationProps) {
         <div className="space-y-4">
           <h3 className="font-medium flex items-center gap-2">
             <CreditCard className="w-5 h-5" />
-            {t('payment-method')}
+            {t('common:payment-method')}
           </h3>
           <div className="space-y-3">
             {paymentMethods

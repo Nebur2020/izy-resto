@@ -1,15 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
-import {
-  Calendar as CalendarIcon,
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from './Button';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { format, addMonths, subMonths } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { fr, enUS as en } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
+import { Language } from '../../types';
 
-interface DatePickerProps {
+interface IDatePickerProps {
   date: Date;
   onSelect: (date: Date) => void;
   isOpen: boolean;
@@ -17,16 +15,20 @@ interface DatePickerProps {
   position?: 'top' | 'bottom';
 }
 
-export function DatePicker({
-  date,
-  onSelect,
-  isOpen,
-  onClose,
-  position = 'bottom',
-}: DatePickerProps) {
+export function DatePicker(props: IDatePickerProps) {
+  const { t, i18n } = useTranslation('common');
+  const { date, onSelect, isOpen, onClose, position = 'bottom' } = props;
   const [viewDate, setViewDate] = useState(date);
   const today = new Date();
   const calendarRef = useRef<HTMLDivElement>(null);
+  const lng = i18n.language as Language;
+
+  const localesMap: Record<Language, Locale> = {
+    en: en,
+    fr: fr,
+  };
+
+  const locale = localesMap[lng] || fr;
 
   const currentMonth = viewDate.getMonth();
   const currentYear = viewDate.getFullYear();
@@ -35,9 +37,16 @@ export function DatePicker({
   const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
 
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
-  const weekDays = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
-
-  // Handle clicks outside the calendar
+  const weekDays = [
+    t('common:sun'),
+    t('common:mon'),
+    t('common:tue'),
+    t('common:wed'),
+    t('common:thur'),
+    t('common:fri'),
+    t('common:sat'),
+  ];
+  
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -71,7 +80,6 @@ export function DatePicker({
         exit={{ opacity: 0, y: position === 'bottom' ? 10 : -10 }}
         className="bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
       >
-        {/* Header */}
         <div className="flex items-center justify-between p-3 border-b dark:border-gray-700">
           <Button
             variant="ghost"
@@ -83,7 +91,7 @@ export function DatePicker({
           </Button>
 
           <div className="text-sm font-medium">
-            {format(viewDate, 'MMMM yyyy', { locale: fr })}
+            {format(viewDate, 'MMMM yyyy', { locale })}
           </div>
 
           <Button
@@ -96,7 +104,6 @@ export function DatePicker({
           </Button>
         </div>
 
-        {/* Calendar Grid */}
         <div className="p-3">
           <div className="grid grid-cols-7 gap-1 mb-1">
             {weekDays.map(day => (
@@ -146,8 +153,6 @@ export function DatePicker({
             })}
           </div>
         </div>
-
-        {/* Quick Actions */}
         <div className="border-t dark:border-gray-700 p-2">
           <Button
             variant="ghost"
@@ -158,7 +163,7 @@ export function DatePicker({
               onClose();
             }}
           >
-            Aujourd'hui
+            {t('common:today')}
           </Button>
         </div>
       </motion.div>

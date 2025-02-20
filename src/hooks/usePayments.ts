@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { PaymentMethod } from '../types/payment';
 import { paymentService } from '../services/payments/payment.service';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 export function usePayments() {
+  const { t } = useTranslation();
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -18,7 +20,7 @@ export function usePayments() {
       setPaymentMethods(methods);
     } catch (error) {
       console.error('Error loading payment methods:', error);
-      toast.error('Failed to load payment methods');
+      toast.error(t('payment:failed-to-load-methods'));
     } finally {
       setIsLoading(false);
     }
@@ -28,11 +30,11 @@ export function usePayments() {
     try {
       const id = await paymentService.create(data);
       await loadPaymentMethods();
-      toast.success('Mode de paiement ajouté avec succès');
+      toast.success(t('payment:method-added-successfully'));
       return id;
     } catch (error) {
       console.error('Error adding payment method:', error);
-      toast.error("Impossible d'ajouter un mode de paiement");
+      toast.error(t('payment:failed-to-add-method'));
       throw error;
     }
   };
@@ -47,10 +49,10 @@ export function usePayments() {
         updatedAt: new Date().toISOString(),
       });
       await loadPaymentMethods();
-      toast.success('Mode de paiement mis à jour avec succès');
+      toast.success(t('payment:method-updated-successfully'));
     } catch (error) {
       console.error('Error updating payment method:', error);
-      toast.error('Failed to update payment method');
+      toast.error(t('payment:failed-to-update-method'));
       throw error;
     }
   };
@@ -62,10 +64,10 @@ export function usePayments() {
         updatedAt: new Date().toISOString(),
       });
       await loadPaymentMethods();
-      toast.success('Le mode de paiement a été supprimé avec succès');
+      toast.success(t('payment:method-deleted-successfully'));
     } catch (error) {
       console.error('Error deleting payment method:', error);
-      toast.error('Failed to delete payment method');
+      toast.error(t('payment:failed-to-delete-method'));
       throw error;
     }
   };

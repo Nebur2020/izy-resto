@@ -14,6 +14,9 @@ import {
   runTransaction,
   limit,
   updateDoc,
+  startAfter,
+  QueryDocumentSnapshot,
+  DocumentData,
 } from 'firebase/firestore';
 import { db } from '../../lib/firebase/config';
 import { DeliveryZone, Order, OrderStatus, TaxRate } from '../../types';
@@ -27,8 +30,92 @@ import { anonymousAuthService } from '../auth/anonymousAuth.service';
 import { calculateTaxes } from '../../utils/tax';
 import toast from 'react-hot-toast';
 
+interface PaginatedResult<T> {
+  items: T[];
+  lastDoc: QueryDocumentSnapshot<DocumentData> | null;
+  hasMore: boolean;
+}
+
 class OrderService {
   private collection = 'orders';
+  private readonly MAX_REALTIME_ORDERS = 100; // Limit to most recent 100 orders for better performance
+  private readonly PAGINATION_DEFAULT_SIZE = 10;
+
+  subscribeToRecentOrders(
+    onNewOrder: (newOrder: Order) => void,
+    onError: (error: Error) => void
+  ) {
+    try {
+      // Query only for very recent orders (most likely to be new)
+      const q = query(
+        collection(db, this.collection),
+        orderBy('createdAt', 'desc'),
+        limit(5) // Only need the most recent few
+      );
+
+      return onSnapshot(
+        q,
+        { includeMetadataChanges: true },
+        (snapshot: QuerySnapshot) => {
+          // Only process if snapshot is from server
+          if (snapshot.metadata.hasPendingWrites) {
+            return;
+          }
+
+          // Process only new orders that were added
+          snapshot.docChanges().forEach(change => {
+            if (change.type === 'added') {
+              // Only consider orders created in the last minute to be "new"
+              const orderData = {
+                id: change.doc.id,
+                ...change.doc.data(),
+              } as Order;
+
+              const createdAt = orderData.createdAt;
+              let orderTimestamp: number;
+
+              if (createdAt instanceof Timestamp) {
+                orderTimestamp = createdAt.toMillis();
+              } else if (createdAt instanceof Date) {
+                orderTimestamp = createdAt.getTime();
+              } else if (
+                typeof createdAt === 'object' &&
+                'seconds' in createdAt
+              ) {
+                orderTimestamp = createdAt.seconds * 1000;
+              } else {
+                orderTimestamp = new Date(createdAt).getTime();
+              }
+
+              // Only notify about orders created in the last minute
+              const isRecentOrder = Date.now() - orderTimestamp < 60000;
+
+              if (isRecentOrder) {
+                onNewOrder(orderData);
+              }
+            }
+          });
+        },
+        (error: FirestoreError) => {
+          console.error('Firestore subscription error:', error);
+          onError(
+            new OrderServiceError(
+              'Failed to subscribe to orders',
+              'orders/subscribe-error',
+              error
+            )
+          );
+        }
+      );
+    } catch (error) {
+      console.error('Error setting up orders subscription:', error);
+      throw new OrderServiceError(
+        'Failed to setup orders subscription',
+        'orders/subscribe-setup-error',
+        error
+      );
+    }
+  }
 
   subscribeToOrders(
     onUpdate: (orders: Order[]) => void,
@@ -39,7 +126,7 @@ class OrderService {
       const q = query(
         collection(db, this.collection),
         orderBy('createdAt', 'desc'),
-        limit(1000) // Limit to last 100 orders for better performance
+        limit(this.MAX_REALTIME_ORDERS)
       );
 
       return onSnapshot(
@@ -76,6 +163,145 @@ class OrderService {
     }
   }
 
+  async getOrdersPaginated(
+    pageSize: number = this.PAGINATION_DEFAULT_SIZE,
+    lastDoc: QueryDocumentSnapshot<DocumentData> | null = null,
+    filters?: OrderFilters
+  ): Promise<PaginatedResult<Order>> {
+    try {
+      let constraints = [];
+
+      // Add orderBy by default
+      constraints.push(orderBy('createdAt', 'desc'));
+
+      // Add filters if provided
+      if (filters?.status) {
+        constraints.push(where('status', '==', filters.status));
+      }
+
+      if (filters?.dateFrom) {
+        constraints.push(
+          where('createdAt', '>=', Timestamp.fromDate(filters.dateFrom))
+        );
+      }
+
+      if (filters?.dateTo) {
+        constraints.push(
+          where('createdAt', '<=', Timestamp.fromDate(filters.dateTo))
+        );
+      }
+
+      // Add pagination
+      constraints.push(limit(pageSize + 1));
+
+      let q = query(collection(db, this.collection), ...constraints);
+
+      // If we have a last document, start after it
+      if (lastDoc) {
+        q = query(q, startAfter(lastDoc));
+      }
+
+      const snapshot = await getDocs(q);
+      const orders: Order[] = [];
+      let newLastDoc: QueryDocumentSnapshot<DocumentData> | null = null;
+
+      // Check if we have more items
+      const hasMore = snapshot.docs.length > pageSize;
+
+      // Only process up to pageSize items
+      const docsToProcess = hasMore
+        ? snapshot.docs.slice(0, pageSize)
+        : snapshot.docs;
+
+      docsToProcess.forEach(doc => {
+        orders.push({
+          id: doc.id,
+          ...doc.data(),
+        } as Order);
+        newLastDoc = doc;
+      });
+
+      return {
+        items: orders,
+        lastDoc: newLastDoc,
+        hasMore,
+      };
+    } catch (error) {
+      console.error('Error fetching paginated orders:', error);
+      throw new OrderServiceError(
+        'Failed to fetch paginated orders',
+        'orders/fetch-paginated-error',
+        error
+      );
+    }
+  }
+
+  async searchOrders(searchTerm: string): Promise<Order[]> {
+    try {
+      // Since Firestore doesn't support full-text search natively,
+      // we need to fetch all orders and filter them
+      // For large collections, consider using Algolia or Elasticsearch
+      const snapshot = await getDocs(
+        query(
+          collection(db, this.collection),
+          orderBy('createdAt', 'desc'),
+          limit(500) // Limit search to last 500 orders for performance
+        )
+      );
+
+      const orders: Order[] = [];
+      const normalizedSearchTerm = searchTerm.toLowerCase().trim();
+
+      snapshot.forEach(doc => {
+        const order = { id: doc.id, ...doc.data() } as Order;
+
+        // Search in order ID
+        if (order.id.toLowerCase().includes(normalizedSearchTerm)) {
+          orders.push(order);
+          return;
+        }
+
+        // Search in customer name
+        if (order.customerName?.toLowerCase().includes(normalizedSearchTerm)) {
+          orders.push(order);
+          return;
+        }
+
+        // Search in customer email
+        if (order.customerEmail?.toLowerCase().includes(normalizedSearchTerm)) {
+          orders.push(order);
+          return;
+        }
+
+        // Search in customer phone
+        if (order.customerPhone?.toLowerCase().includes(normalizedSearchTerm)) {
+          orders.push(order);
+          return;
+        }
+
+        // Search in items (product names)
+        if (order.items && Array.isArray(order.items)) {
+          const foundInItems = order.items.some(item =>
+            item.name.toLowerCase().includes(normalizedSearchTerm)
+          );
+
+          if (foundInItems) {
+            orders.push(order);
+          }
+        }
+      });
+
+      return orders;
+    } catch (error) {
+      console.error('Error searching orders:', error);
+      throw new OrderServiceError(
+        'Failed to search orders',
+        'orders/search-error',
+        error
+      );
+    }
+  }
+
   async getOrders(filters?: OrderFilters): Promise<Order[]> {
     try {
       let q = collection(db, this.collection);
@@ -98,6 +324,7 @@ class OrderService {
       }
 
       constraints.push(orderBy('createdAt', 'desc'));
+      constraints.push(limit(1000)); // Add reasonable limit
 
       if (constraints.length > 0) {
         q = query(q, ...constraints);

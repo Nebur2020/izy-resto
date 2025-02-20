@@ -1,30 +1,23 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Minus, Trash2, ShoppingBag } from 'lucide-react';
-import { CartItem } from '../../types';
 import { Button } from '../ui/Button';
 import { useSettings } from '../../hooks/useSettings';
 import { formatCurrency } from '../../utils/currency';
 import { useServerCart } from '../../context/ServerCartContext';
-
-interface CartItemListProps {
-  items: CartItem[];
-  onUpdateQuantity: (itemId: string, delta: number) => void;
-  onRemoveItem: (itemId: string) => void;
-}
+import { useTranslation } from 'react-i18next';
 
 export function CartItemList() {
   const { settings } = useSettings();
+  const { t } = useTranslation('common');
 
   const { cart, updateQuantity, removeFromCart } = useServerCart();
-
-  // console.log(cart);
 
   if (cart.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
         <ShoppingBag className="w-12 h-12 mb-2 opacity-50" />
-        <p className="text-sm">Le panier est vide</p>
+        <p className="text-sm">{t('cart-empty')}</p>
       </div>
     );
   }
@@ -40,7 +33,6 @@ export function CartItemList() {
           exit={{ opacity: 0, y: -20 }}
           className="flex items-start gap-4 py-4 border-b dark:border-gray-700 last:border-0"
         >
-          {/* Item Image */}
           <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
             <img
               src={item.image}
@@ -48,14 +40,10 @@ export function CartItemList() {
               className="w-full h-full object-cover"
             />
           </div>
-
-          {/* Item Details */}
           <div className="flex-1 min-w-0">
             <h3 className="font-medium text-gray-900 dark:text-white truncate">
               {item.name}
             </h3>
-
-            {/* Variants if any */}
             {item?.selectedVariants?.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-1">
                 {item.selectedVariants.map(
@@ -71,14 +59,10 @@ export function CartItemList() {
                 )}
               </div>
             )}
-
-            {/* Price */}
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
               {formatCurrency(item.price, settings?.currency)}
             </p>
           </div>
-
-          {/* Quantity Controls */}
           <div className="flex items-center gap-2">
             <Button
               variant="secondary"

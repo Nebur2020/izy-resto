@@ -17,25 +17,27 @@ import { useSettings } from '../../../hooks';
 import { AccountingTaxesManagement } from './AccountingTaxesManagement';
 import { AccountingTipsManagement } from './AccountingTipsManagement';
 import { AccountingDeliveryManagement } from './AccountingDeliveryManagement';
-
-const tabs = [
-  { id: 'transactions', label: 'Transactions' },
-  { id: 'tax', label: 'Taxes' },
-  { id: 'tips', label: 'Pourboires' },
-  { id: 'delivery', label: 'Livraison' },
-];
+import { useTranslation } from 'react-i18next';
 
 export function AccountingManagement() {
+  const { t } = useTranslation();
   const { settings, isLoading: settingsLoading } = useSettings();
 
   const [activeTab, setActiveTab] = useState('transactions');
   const [dateRange, setDateRange] = useState({
-    startDate: new Date(new Date().setHours(0, 0, 0, 0)), // First day of current month
+    startDate: new Date(new Date().setHours(0, 0, 0, 0)),
     endDate: new Date(),
   });
   const [isDownloading, setIsDownloading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const statementRef = useRef<HTMLDivElement>(null);
+
+  const tabs = [
+    { id: 'transactions', label: t('comptability:transaction') },
+    { id: 'tax', label: t('comptability:tax') },
+    { id: 'tips', label: t('comptability:tip') },
+    { id: 'delivery', label: t('comptability:delivery') },
+  ];
 
   const { transactions, stats, isLoading, refreshData } =
     useAccounting(dateRange);
@@ -55,10 +57,10 @@ export function AccountingManagement() {
       await accountingService.createTransaction(data);
       setIsFormOpen(false);
       refreshData();
-      toast.success('Transaction ajoutée avec succès');
+      toast.success(t('comptability:transaction-successfully-add'));
     } catch (error) {
       console.error('Error saving transaction:', error);
-      toast.error('Erreur lors de la sauvegarde de la transaction');
+      toast.error(t('comptability:transaction-saving-error'));
     }
   };
 
@@ -66,10 +68,10 @@ export function AccountingManagement() {
     try {
       await accountingService.updateTransaction(id, data);
       refreshData();
-      toast.success('Transaction mise à jour avec succès');
+      toast.success(t('comptability:transaction-successfully-update'));
     } catch (error) {
       console.error('Error updating transaction:', error);
-      toast.error('Erreur lors de la mise à jour de la transaction');
+      toast.error(t('comptability:transaction-updating-error'));
     }
   };
 
@@ -77,25 +79,22 @@ export function AccountingManagement() {
     try {
       await accountingService.deleteTransaction(id);
       refreshData();
-      toast.success('Transaction supprimée avec succès');
+      toast.success(t('comptability:transaction-successfully-deleted'));
     } catch (error) {
       console.error('Error deleting transaction:', error);
-      toast.error('Erreur lors de la suppression de la transaction');
+      toast.error(t('comptability:transaction-deleting-error'));
     }
   };
-
-  // Update the handleExport function
+  
   const handleExport = async () => {
     if (!statementRef.current || !settings) return;
 
     try {
       setIsDownloading(true);
-      // Ensure we have the latest transactions for the selected period
       const fetchedTransactions = await accountingService.getTransactions(
         dateRange
       );
 
-      // Update the ref content with fresh data
       const statement = (
         <FinancialStatement
           transactions={fetchedTransactions}
@@ -104,7 +103,6 @@ export function AccountingManagement() {
         />
       );
 
-      // Render the statement into the hidden div
       const root = document.createElement('div');
       root.style.position = 'absolute';
       root.style.left = '-9999px';
@@ -114,21 +112,18 @@ export function AccountingManagement() {
       const reactRoot = createRoot(root);
       await new Promise<void>(resolve => {
         reactRoot.render(<div ref={statementRef}>{statement}</div>);
-        // Wait for render to complete
         setTimeout(resolve, 100);
       });
 
-      // Export to PNG
       await exportToPdf(root);
 
-      // Cleanup
       document.body.removeChild(root);
       reactRoot.unmount();
 
-      toast.success('États financiers exportés avec succès');
+      toast.success(t('comptability:financial-statements-successfully-export'));
     } catch (error) {
       console.error('Error exporting statement:', error);
-      toast.error("Erreur lors de l'export");
+      toast.error(t('comptability:export-error'));
     } finally {
       setIsDownloading(false);
     }
@@ -160,7 +155,7 @@ export function AccountingManagement() {
               <div className="flex gap-2">
                 <Button onClick={() => setIsFormOpen(true)}>
                   <Plus className="w-4 h-4 mr-2" />
-                  Ajouter une Transaction
+                  {t('comptability:add-transaction')}
                 </Button>
                 <Button
                   disabled={(settingsLoading && !settings) || isDownloading}
@@ -169,8 +164,8 @@ export function AccountingManagement() {
                 >
                   <Download className="w-4 h-4 mr-2" />
                   {isDownloading
-                    ? 'Téléchargement en cours...'
-                    : 'Télécharger les États financiers'}
+                    ? t('common:downloading')
+                    : t('comptability:download-financial-assments')}
                 </Button>
               </div>
             </div>

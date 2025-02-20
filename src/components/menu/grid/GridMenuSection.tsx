@@ -1,20 +1,29 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useMenu } from '../../../hooks/useMenu';
 import { GridMenuItem } from './GridMenuItem';
 import { GridMenuCategories } from './GridMenuCategories';
 import { SearchBar } from '../SearchBar';
-import { Pagination } from '../../ui/Pagination';
+import { RefreshCw } from 'lucide-react';
 
-const ITEMS_PER_PAGE = 12;
+const ITEMS_PER_PAGE = 9;
 
 export function GridMenuSection() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const { items, isLoading } = useMenu();
+  const [visibleItems, setVisibleItems] = useState(ITEMS_PER_PAGE);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const { items: menuItems } = useMenu();
 
-  // console.log(activeCategory);
+  const items = useMemo(() => {
+    return menuItems.map(item => ({
+      ...item,
+      variantPrices: [
+        ...(item.variantPrices || []),
+        ...(item?.defaultVariantPrices || []),
+      ],
+    }));
+  }, [menuItems]);
 
   // Filter items based on both category and search
   const filteredItems = items.filter(item => {
@@ -26,30 +35,48 @@ export function GridMenuSection() {
     return matchesCategory && matchesSearch;
   });
 
-  // Calculate pagination
-  const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
-  const paginatedItems = filteredItems.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
+  // Get current items to display
+  const currentItems = filteredItems.slice(0, visibleItems);
+
+  // Determine if there are more items to load
+  const hasMore = visibleItems < filteredItems.length;
+
+  // Handle load more
+  const handleLoadMore = () => {
+    setIsLoadingMore(true);
+
+    // Simulate loading delay for better UX
+    setTimeout(() => {
+      setVisibleItems(prev => prev + ITEMS_PER_PAGE);
+      setIsLoadingMore(false);
+    }, 500);
+  };
+
+  // Reset visible items when category or search changes
+  const handleCategoryChange = (category: string) => {
+    setActiveCategory(category);
+    setVisibleItems(ITEMS_PER_PAGE);
+  };
+
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+    setVisibleItems(ITEMS_PER_PAGE);
+  };
 
   return (
     <div className="space-y-12">
-      <SearchBar onSearch={setSearchTerm} />
+      <SearchBar onSearch={handleSearch} />
 
       <GridMenuCategories
         activeCategory={activeCategory}
-        onCategoryChange={category => {
-          setActiveCategory(category);
-          setCurrentPage(1); // Reset to first page on category change
-        }}
+        onCategoryChange={handleCategoryChange}
       />
 
       <motion.div
         layout
         className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6"
       >
-        {paginatedItems.map(item => (
+        {currentItems.map(item => (
           <GridMenuItem key={item.id} item={item} />
         ))}
       </motion.div>
@@ -61,13 +88,28 @@ export function GridMenuSection() {
           </p>
         </div>
       ) : (
-        totalPages > 1 && (
+        hasMore && (
           <div className="flex justify-center mt-12">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
+            <button
+              onClick={handleLoadMore}
+              disabled={isLoadingMore}
+              className="flex items-center gap-2 px-6 py-3 bg-blue-50 hover:bg-blue-100 
+                      dark:bg-blue-900/20 dark:hover:bg-blue-800/30
+                      text-blue-600 dark:text-blue-400 rounded-lg 
+                      transition-colors font-medium disabled:opacity-50"
+            >
+              {isLoadingMore ? (
+                <>
+                  <RefreshCw className="w-5 h-5 animate-spin" />
+                  Chargement...
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="w-5 h-5" />
+                  Voir plus de produits
+                </>
+              )}
+            </button>
           </div>
         )
       )}

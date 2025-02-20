@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Calendar, Clock, Globe, Truck } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import { timezones } from '../../../../../constants/timezones';
+import { useTranslation } from 'react-i18next';
 
 const ErrorAlert = ({ message }: { message: string }) => (
   <div
@@ -13,6 +14,7 @@ const ErrorAlert = ({ message }: { message: string }) => (
 );
 
 export function BusinessSettings() {
+  const { t } = useTranslation();
   const {
     register,
     watch,
@@ -25,7 +27,6 @@ export function BusinessSettings() {
   const canDineIn = watch('canDineIn');
   const hasOpeningHours = watch('hasOpeningHours');
 
-  // Validate that at least one option is selected
   useEffect(() => {
     if (!canDeliver && !canDineIn) {
       setError('serviceOptions', {
@@ -48,13 +49,13 @@ export function BusinessSettings() {
   ];
 
   const dayNames = {
-    monday: 'Lundi',
-    tuesday: 'Mardi',
-    wednesday: 'Mercredi',
-    thursday: 'Jeudi',
-    friday: 'Vendredi',
-    saturday: 'Samedi',
-    sunday: 'Dimanche',
+    monday: t('common:days.monday'),
+    tuesday: t('common:days.tuesday'),
+    wednesday: t('common:days.wednesday'),
+    thursday: t('common:days.thursday'),
+    friday: t('common:days.friday'),
+    saturday: t('common:days.saturday'),
+    sunday: t('common:days.sunday'),
   };
 
   return (
@@ -67,12 +68,16 @@ export function BusinessSettings() {
       <section className="space-y-6">
         <div className="flex items-center gap-3 mb-6">
           <Globe className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-          <h2 className="text-xl font-semibold">Contact & Emplacement</h2>
+          <h2 className="text-xl font-semibold">
+            {t('settingBusiness:contact-information')}
+          </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium mb-1">Adresse</label>
+            <label className="block text-sm font-medium mb-1">
+              {t('common:address')}
+            </label>
             <input
               type="text"
               {...register('address', { required: true })}
@@ -81,7 +86,9 @@ export function BusinessSettings() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Téléphone</label>
+            <label className="block text-sm font-medium mb-1">
+              {t('common:phone')}
+            </label>
             <input
               type="tel"
               {...register('phone', { required: true })}
@@ -94,7 +101,9 @@ export function BusinessSettings() {
       <section className="space-y-6">
         <div className="flex items-center gap-3">
           <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-          <h2 className="text-xl font-semibold">Fermeture exceptionnelle</h2>
+          <h2 className="text-xl font-semibold">
+            {t('settingBusiness:business-hours')}
+          </h2>
         </div>
 
         <div className="space-y-4">
@@ -105,7 +114,7 @@ export function BusinessSettings() {
               className="rounded border-gray-300 dark:border-gray-600"
             />
             <label className="text-sm font-medium">
-              Activer la fermeture exceptionnelle
+              {t('settingBusiness:enable-holiday-closure')}
             </label>
           </div>
 
@@ -113,7 +122,7 @@ export function BusinessSettings() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Date de début
+                  {t('settingBusiness:start-date')}
                 </label>
                 <input
                   type="date"
@@ -124,7 +133,7 @@ export function BusinessSettings() {
 
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Date de fin
+                  {t('settingBusiness:end-date')}
                 </label>
                 <input
                   type="date"
@@ -135,12 +144,12 @@ export function BusinessSettings() {
 
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium mb-1">
-                  Raison (optionnel)
+                  {t('settingBusiness:reason')}
                 </label>
                 <input
                   type="text"
                   {...register('holidayClosure.reason')}
-                  placeholder="Ex: Fermeture annuelle"
+                  placeholder={t('settingBusiness:reason-placeholder')}
                   className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
                 />
               </div>
@@ -150,18 +159,18 @@ export function BusinessSettings() {
       </section>
 
       <section>
-        {/* Timezone Selection */}
         <div className="mb-6">
           <label className="block text-sm font-medium mb-1">
-            Fuseau horaire <span className="text-red-500">*</span>
+            {t('settingBusiness:time-zone')}{' '}
+            <span className="text-red-500">*</span>
           </label>
           <select
             {...register('openingHours.timezone', {
-              required: 'Le fuseau horaire est requis',
+              required: t('settingBusiness:time-zone-required'),
             })}
             className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
           >
-            <option value="">Sélectionner un fuseau horaire</option>
+            <option value="">{t('settingBusiness:select-time-zone')}</option>
             {timezones.map(tz => (
               <option key={tz.value} value={tz.value}>
                 {tz.label}
@@ -169,17 +178,17 @@ export function BusinessSettings() {
             ))}
           </select>
           <p className="mt-1 text-sm text-gray-500">
-            Ce fuseau horaire sera utilisé pour tous les horaires d'ouverture
+            {t('settingBusiness:time-zone-description')}
           </p>
         </div>
       </section>
-
-      {/* Opening Hours */}
       <section className="space-y-6">
         <div className="flex items-center justify-between gap-3 mb-6">
           <div className="flex items-center gap-3">
             <Clock className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-            <h2 className="text-xl font-semibold">Horaires d'Ouverture</h2>
+            <h2 className="text-xl font-semibold">
+              {t('settingBusiness:opening-hours')}
+            </h2>
           </div>
           <label className="flex items-center space-x-2">
             <input
@@ -187,7 +196,11 @@ export function BusinessSettings() {
               {...register('hasOpeningHours')}
               className="rounded border-gray-300 dark:border-gray-600"
             />
-            <span>{hasOpeningHours ? 'Actif' : 'Inactif'}</span>
+            <span>
+              {hasOpeningHours
+                ? `(${t('common:Actif')})`
+                : `(${t('common:Inactif')})`}
+            </span>
           </label>
         </div>
 
@@ -203,7 +216,7 @@ export function BusinessSettings() {
                       {...register(`openingHours.${day}.closed`)}
                       className="rounded border-gray-300 dark:border-gray-600"
                     />
-                    <span>Fermé</span>
+                    <span>{t('settingBusiness:closed')} </span>
                   </label>
                   {!watch(`openingHours.${day}.closed`) && (
                     <>
@@ -212,7 +225,7 @@ export function BusinessSettings() {
                         {...register(`openingHours.${day}.open`)}
                         className="rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
                       />
-                      <span>à</span>
+                      <span>{t('settingBusiness:to')} </span>
                       <input
                         type="time"
                         {...register(`openingHours.${day}.close`)}
@@ -226,10 +239,10 @@ export function BusinessSettings() {
           </>
         )}
       </section>
-
-      {/* Service Options */}
       <div className="space-y-6 p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
-        <h3 className="font-medium text-lg">Options de Service</h3>
+        <h3 className="font-medium text-lg">
+          {t('settingBusiness:service-options')}
+        </h3>
 
         <section className="space-y-4">
           <div className="flex items-center gap-3">
@@ -240,7 +253,12 @@ export function BusinessSettings() {
                 {...register('canDeliver')}
                 className="rounded border-gray-300 dark:border-gray-600"
               />
-              <span>Livraison {canDeliver ? '(Actif)' : '(Inactif)'}</span>
+              <span>
+                {t('common:delivery')}{' '}
+                {canDeliver
+                  ? `(${t('common:Actif')})`
+                  : `(${t('common:Inactif')})`}
+              </span>
             </label>
           </div>
 
@@ -252,7 +270,12 @@ export function BusinessSettings() {
                 {...register('canDineIn')}
                 className="rounded border-gray-300 dark:border-gray-600"
               />
-              <span>Sur place {canDineIn ? '(Actif)' : '(Inactif)'}</span>
+              <span>
+                {t('common:on-site')}{' '}
+                {canDineIn
+                  ? `(${t('common:Actif')})`
+                  : `(${t('common:Inactif')})`}
+              </span>
             </label>
           </div>
 
@@ -264,7 +287,7 @@ export function BusinessSettings() {
                   {...register('paymentOnDineInActivated')}
                   className="rounded border-gray-300 dark:border-gray-600"
                 />
-                <span>Activer le paiement sur place</span>
+                <span>{t('settingBusiness:payment-on-dine-in')} </span>
               </label>
             </div>
           )}

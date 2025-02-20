@@ -3,19 +3,22 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useMenu } from '../../../hooks/useMenu';
 import { GridMenuItem } from './GridMenuItem';
 import { GridMenuCategories } from './GridMenuCategories';
-import { Pagination } from '../../ui/Pagination';
 import { SearchBar } from '../../menu/SearchBar';
 import { useTranslation } from 'react-i18next';
+import { RefreshCw } from 'lucide-react';
 
 export function GridMenuSection() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [visibleItems, setVisibleItems] = useState(9);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const { t } = useTranslation('menu');
+
+  const ITEMS_PER_PAGE = 12;
+
   const { items } = useMenu(
     activeCategory !== 'all' ? activeCategory : undefined
   );
-
-  const ITEMS_PER_PAGE = 9;
 
   const filteredItems = items.filter(item => {
     const matchesCategory =
@@ -26,23 +29,39 @@ export function GridMenuSection() {
     return matchesCategory && matchesSearch;
   });
 
-  const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const currentItems = filteredItems.slice(startIndex, endIndex);
+  // Get currently visible items
+  const currentItems = filteredItems.slice(0, visibleItems);
 
-  const { t } = useTranslation('menu');
+  // Check if there are more items to load
+  const hasMore = visibleItems < filteredItems.length;
+
+  const handleLoadMore = () => {
+    setIsLoadingMore(true);
+
+    // Simulate loading delay for better UX
+    setTimeout(() => {
+      setVisibleItems(prev => prev + ITEMS_PER_PAGE);
+      setIsLoadingMore(false);
+    }, 600);
+  };
+
+  const handleCategoryChange = (category: string) => {
+    setActiveCategory(category);
+    setVisibleItems(ITEMS_PER_PAGE);
+  };
+
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+    setVisibleItems(ITEMS_PER_PAGE);
+  };
 
   return (
     <div className="space-y-12">
-      <SearchBar onSearch={setSearchTerm} />
+      <SearchBar onSearch={handleSearch} />
 
       <GridMenuCategories
         activeCategory={activeCategory}
-        onCategoryChange={category => {
-          setActiveCategory(category);
-          setCurrentPage(1);
-        }}
+        onCategoryChange={handleCategoryChange}
       />
 
       <motion.div
@@ -79,18 +98,39 @@ export function GridMenuSection() {
       {filteredItems.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-gray-500 dark:text-gray-400">
-          {t('no-items-founds')}
+            {t('no-items-founds')}
           </p>
         </div>
       ) : (
-        totalPages > 1 && (
-          <div className="flex justify-center mt-12">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
-          </div>
+        hasMore && (
+          <motion.div
+            className="flex justify-center mt-12"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <button
+              onClick={handleLoadMore}
+              disabled={isLoadingMore}
+              className="flex items-center gap-2 px-6 py-3 bg-blue-50 hover:bg-blue-100 
+                        dark:bg-blue-900/20 dark:hover:bg-blue-800/30
+                        text-blue-600 dark:text-blue-400 rounded-lg 
+                        transition-all font-medium disabled:opacity-50
+                        hover:shadow-md"
+            >
+              {isLoadingMore ? (
+                <>
+                  <RefreshCw className="w-5 h-5 animate-spin" />
+                  {t('loading')}
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="w-5 h-5" />
+                  {t('common:load-more')}
+                </>
+              )}
+            </button>
+          </motion.div>
         )
       )}
     </div>

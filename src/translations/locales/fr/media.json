@@ -1,0 +1,16 @@
+{
+  "media-title": "Gallerie media",
+  "add-media": "Ajouter des médias",
+  "dnd-descrption": "Glissez et déposez plusieurs fichiers ici, ou",
+  "select-files": "cliquez pour sélectionner",
+  "file-type": "PNG, JPG, GIF jusqu'à {{maxSize}}MB",
+  "delete-file": "Supprimer le fichier",
+  "delete-files": "Supprimer les fichiers",
+  "deleting-confirmation": "Êtes-vous sûr de vouloir supprimer ce fichier ? Cette action est irréversible.",
+  "deleting-files-confirmation": "Êtes-vous sûr de vouloir supprimer {{deleteConfirmation}} fichiers ? Cette action est irréversible.",
+  "media-files": "Fichiers",
+  "element": "Élément",
+  "selected": "sélectionné",
+  "files-deleted": "Fichiers supprimés avec succès",
+  "file-deleted": "Fichier supprimé avec succès"
+}

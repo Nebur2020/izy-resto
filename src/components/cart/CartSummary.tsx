@@ -3,25 +3,30 @@ import { useCart } from '../../context/CartContext';
 import { useSettings } from '../../hooks/useSettings';
 import { formatCurrency } from '../../utils/currency';
 import { formatTaxRate } from '../../utils/tax';
+import { useTranslation } from 'react-i18next';
 
 export function CartSummary() {
+  const { t } = useTranslation();
   const { settings } = useSettings();
-  const { subtotal, taxes, taxTotal, tip, total, setTipPercentage } = useCart();
+  const { subtotal, taxes, tip, total, setTipPercentage } = useCart();
 
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
         <Receipt className="w-5 h-5 text-gray-500" />
-        <h3 className="font-medium">Résumé de la Commande</h3>
+        <h3 className="font-medium">
+          {t('common:cart-summary')}
+        </h3>
       </div>
 
       <div className="space-y-2">
         <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
-          <span>Sous-total</span>
+          <span>
+            {t('common:subtotal')}
+          </span>
           <span>{formatCurrency(subtotal, settings?.currency)}</span>
         </div>
 
-        {/* Taxes */}
         {taxes.map(tax => (
           <div
             key={tax.id}
@@ -34,7 +39,6 @@ export function CartSummary() {
           </div>
         ))}
 
-        {/* Tips */}
         {settings?.tips.enabled && (
           <div className="pt-2 border-t dark:border-gray-700">
             <div className="flex flex-wrap gap-2 mb-2">
@@ -58,7 +62,7 @@ export function CartSummary() {
                 onClick={() => setTipPercentage(null)}
                 className="px-3 py-1 text-sm rounded-full bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
               >
-                Aucun
+                {t('common:no-tip')}
               </button>
             </div>
 
@@ -73,9 +77,10 @@ export function CartSummary() {
           </div>
         )}
 
-        {/* Total */}
         <div className="flex justify-between text-lg font-semibold border-t dark:border-gray-700 pt-2">
-          <span>Total</span>
+          <span>
+            {t('common:total')}
+          </span>
           <span className="text-blue-600 dark:text-blue-400">
             {formatCurrency(total, settings?.currency)}
           </span>

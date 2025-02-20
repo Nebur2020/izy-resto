@@ -292,27 +292,6 @@ export const allCurrencies: AllCurrency[] = [
     display: 'BIF',
     acceptedPaymentMethods: [],
   },
-  {
-    label: 'Livre égyptienne (EGP)',
-    value: 'EGP',
-    infos: '',
-    display: 'EGP',
-    acceptedPaymentMethods: [],
-  },
-  {
-    label: 'Franc djiboutien (DJF)',
-    value: 'DJF',
-    infos: '',
-    display: 'DJF',
-    acceptedPaymentMethods: [],
-  },
-  {
-    label: 'Naira nigérian (NGN)',
-    value: 'NGN',
-    infos: '',
-    display: '₦',
-    acceptedPaymentMethods: [],
-  },
 ];
 
 export const getCurrencyObject = (currency: string) => {

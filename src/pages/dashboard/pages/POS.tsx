@@ -1,8 +1,5 @@
-import { useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useMenu } from '../../../hooks/useMenu';
-import { CartItem, Order } from '../../../types';
-import { orderService } from '../../../services/orders/order.service';
 import { useSettings } from '../../../hooks/useSettings';
 import { MenuFilters } from '../../../components/menu/MenuFilters';
 import { POSMenuGrid } from '../../../components/dashboard/components/pos/POSMenuGrid';
@@ -11,9 +8,16 @@ import { OrderConfirmationModal } from '../../../components/pos/OrderConfirmatio
 import toast from 'react-hot-toast';
 import { useServerCart } from '../../../context/ServerCartContext';
 import { useStaffCheck } from '../../../hooks/useStaffCheck';
+import { Order } from '../../../types';
+import { orderService } from '../../../services/orders/order.service';
+import { menuService } from '../../../services/menu/menu.service';
+import { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
+import { RefreshCw } from 'lucide-react';
+import { Button } from '../../../components/ui/Button';
+import { useTranslation } from 'react-i18next';
 
 export function POS() {
-  const { items } = useMenu();
+  const { t } = useTranslation();
   const { settings } = useSettings();
   const { staffData } = useStaffCheck();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -29,6 +33,14 @@ export function POS() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [completedOrder, setCompletedOrder] = useState<Order | null>(null);
 
+  const [menuItems, setMenuItems] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [lastDoc, setLastDoc] =
+    useState<QueryDocumentSnapshot<DocumentData> | null>(null);
+  const [hasMore, setHasMore] = useState(false);
+  const [pageSize] = useState(12);
+
   const {
     total,
     addToCart,
@@ -41,18 +53,139 @@ export function POS() {
     subtotal,
   } = useServerCart();
 
-  const filteredItems = items.filter(item => {
-    const matchesSearch = item.name
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      selectedCategory === 'all' || item.categoryId === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  useEffect(() => {
+    loadInitialItems();
+  }, [selectedCategory]);
 
-  // const removeFromCart = (itemId: string) => {
-  //   setCart(currentCart => currentCart.filter(item => item.id !== itemId));
-  // };
+  const loadInitialItems = async () => {
+    try {
+      setIsLoading(true);
+      setLastDoc(null);
+
+      if (selectedCategory !== 'all') {
+        try {
+          const categoryItems = await menuService.getMenuItemsByCategory(
+            selectedCategory
+          );
+
+          setMenuItems(categoryItems.slice(0, pageSize));
+          setHasMore(categoryItems.length > pageSize);
+
+          if (categoryItems.length > pageSize) {
+            setLastDoc({ id: pageSize.toString() } as any);
+          } else {
+            setLastDoc(null);
+          }
+        } catch (error) {
+          console.error('Error loading category items:', error);
+          toast.error(t('common:error-loading-category-items'));
+        }
+      } else {
+        try {
+          const result = await menuService.getMenuItemsPaginated(
+            pageSize,
+            null
+          );
+          setMenuItems(result.items);
+          setLastDoc(result.lastDoc);
+          setHasMore(result.hasMore);
+        } catch (error) {
+          console.error('Error loading paginated items:', error);
+          const allItems = await menuService.getAll();
+          setMenuItems(allItems.slice(0, pageSize));
+          setHasMore(allItems.length > pageSize);
+
+          if (allItems.length > pageSize) {
+            setLastDoc({ id: pageSize.toString() } as any);
+          } else {
+            setLastDoc(null);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error loading menu items:', error);
+      toast.error(t('common:error-loading-menu-items'));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loadMoreItems = async () => {
+    if (!hasMore || isLoadingMore) return;
+
+    try {
+      setIsLoadingMore(true);
+
+      if (selectedCategory !== 'all') {
+        const allCategoryItems = await menuService.getMenuItemsByCategory(
+          selectedCategory
+        );
+        const currentLength = menuItems.length;
+        const moreItems = allCategoryItems.slice(
+          currentLength,
+          currentLength + pageSize
+        );
+
+        setMenuItems(prevItems => [...prevItems, ...moreItems]);
+        setHasMore(currentLength + pageSize < allCategoryItems.length);
+
+        if (currentLength + pageSize < allCategoryItems.length) {
+          setLastDoc({ id: (currentLength + pageSize).toString() } as any);
+        } else {
+          setLastDoc(null);
+        }
+      } else {
+        if (typeof lastDoc?.id === 'string' && !isNaN(parseInt(lastDoc.id))) {
+          const allItems = await menuService.getAll();
+          const currentIndex = parseInt(lastDoc.id);
+          const moreItems = allItems.slice(
+            currentIndex,
+            currentIndex + pageSize
+          );
+
+          setMenuItems(prevItems => [...prevItems, ...moreItems]);
+          setHasMore(currentIndex + pageSize < allItems.length);
+
+          if (currentIndex + pageSize < allItems.length) {
+            setLastDoc({ id: (currentIndex + pageSize).toString() } as any);
+          } else {
+            setLastDoc(null);
+          }
+        } else {
+          const result = await menuService.getMenuItemsPaginated(
+            pageSize,
+            lastDoc
+          );
+          setMenuItems(prevItems => [...prevItems, ...result.items]);
+          setLastDoc(result.lastDoc);
+          setHasMore(result.hasMore);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading more menu items:', error);
+      toast.error(t('common:error-loading-more-menu-items'));
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+
+  const items = useMemo(() => {
+    return menuItems.map(item => ({
+      ...item,
+      variantPrices: [
+        ...(item.variantPrices || []),
+        ...(item?.defaultVariantPrices || []),
+      ],
+    }));
+  }, [menuItems]);
+
+  const filteredItems = useMemo(() => {
+    if (!searchTerm) return items;
+
+    return items.filter(item =>
+      item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [items, searchTerm]);
 
   const handleQuickAmount = (amount: number) => {
     setAmountPaid(amount);
@@ -90,6 +223,7 @@ export function POS() {
         change: amountPaid - total,
         tip,
         servedBy: staffData?.name || 'Le gérant',
+        delivery: null,
       };
 
       const orderId = await orderService.createOrder({
@@ -108,7 +242,7 @@ export function POS() {
       }
     } catch (error) {
       console.error('Error creating order:', error);
-      toast.error('Erreur lors de la création de la commande');
+      toast.error(t('common:error-creating-order'));
     } finally {
       setIsSubmitting(false);
     }
@@ -117,52 +251,81 @@ export function POS() {
   return (
     <>
       <div className="h-[calc(100vh-6rem)] flex flex-col lg:flex-row gap-6">
-        {/* Menu Section */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <MenuFilters
-            activeCategory={selectedCategory}
-            onCategoryChange={setSelectedCategory}
-          />
+        <div className="flex-1 flex flex-col">
+          <div>
+            <MenuFilters
+              activeCategory={selectedCategory}
+              onCategoryChange={setSelectedCategory}
+            />
+          </div>
 
-          <POSMenuGrid
-            items={filteredItems}
-            onAddToCart={addToCart}
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-            onToggleCart={() => setIsSidebarOpen(true)}
-          />
+          <div>
+            <POSMenuGrid
+              items={filteredItems}
+              onAddToCart={addToCart}
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              onToggleCart={() => setIsSidebarOpen(true)}
+              isLoading={isLoading}
+            />
+
+            {!isLoading && hasMore && !searchTerm && (
+              <div className="flex justify-center mt-6 mb-6">
+                <Button
+                  onClick={loadMoreItems}
+                  disabled={isLoadingMore}
+                  className="px-6 py-2 shadow-md"
+                  size="lg"
+                >
+                  {isLoadingMore ? (
+                    <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
+                  ) : (
+                    <RefreshCw className="w-5 h-5 mr-2" />
+                  )}
+                  {isLoadingMore ? t('common:loading') : t('common:load-more')}
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Mobile Cart */}
         <AnimatePresence>
           {isSidebarOpen && (
-            <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              className="fixed inset-y-0 right-0 w-full sm:w-96 bg-white dark:bg-gray-800 shadow-xl z-50 lg:hidden"
-            >
-              <POSCartSidebar
-                onClose={() => setIsSidebarOpen(false)}
-                cart={cart}
-                tableNumber={tableNumber}
-                setTableNumber={setTableNumber}
-                customerInfo={customerInfo}
-                setCustomerInfo={setCustomerInfo}
-                amountPaid={amountPaid}
-                setAmountPaid={setAmountPaid}
-                total={total}
-                onUpdateQuantity={updateQuantity}
-                // onRemoveItem={removeFromCart}
-                onQuickAmount={handleQuickAmount}
-                onCheckout={handleCheckout}
-                isSubmitting={isSubmitting}
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.5 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black z-40 lg:hidden"
+                onClick={() => setIsSidebarOpen(false)}
               />
-            </motion.div>
+
+              <motion.div
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                className="fixed inset-y-0 right-0 w-full sm:w-96 bg-white dark:bg-gray-800 shadow-xl z-50 lg:hidden"
+              >
+                <POSCartSidebar
+                  onClose={() => setIsSidebarOpen(false)}
+                  cart={cart}
+                  tableNumber={tableNumber}
+                  setTableNumber={setTableNumber}
+                  customerInfo={customerInfo}
+                  setCustomerInfo={setCustomerInfo}
+                  amountPaid={amountPaid}
+                  setAmountPaid={setAmountPaid}
+                  total={total}
+                  onUpdateQuantity={updateQuantity}
+                  onQuickAmount={handleQuickAmount}
+                  onCheckout={handleCheckout}
+                  isSubmitting={isSubmitting}
+                />
+              </motion.div>
+            </>
           )}
         </AnimatePresence>
 
-        {/* Desktop Cart */}
         <div className="hidden lg:block w-96 bg-white dark:bg-gray-800 rounded-lg p-6 flex flex-col">
           <POSCartSidebar
             cart={cart}
@@ -174,7 +337,6 @@ export function POS() {
             setAmountPaid={setAmountPaid}
             total={total}
             onUpdateQuantity={updateQuantity}
-            // onRemoveItem={removeFromCart}
             onQuickAmount={handleQuickAmount}
             onCheckout={handleCheckout}
             isSubmitting={isSubmitting}
@@ -182,7 +344,6 @@ export function POS() {
         </div>
       </div>
 
-      {/* Order Confirmation Modal */}
       {completedOrder && (
         <OrderConfirmationModal
           order={completedOrder}

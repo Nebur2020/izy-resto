@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion';
 import { AlertTriangle, X } from 'lucide-react';
 import { Button } from './Button';
+import { useTranslation } from 'react-i18next';
 
-interface ConfirmDialogProps {
+interface IConfirmDialogProps {
   isOpen: boolean;
   title: string;
   message: string;
@@ -13,16 +14,18 @@ interface ConfirmDialogProps {
   isLoading?: boolean;
 }
 
-export function ConfirmDialog({
-  isOpen,
-  title,
-  message,
-  confirmLabel = 'Confirmer',
-  cancelLabel = 'Annuler',
-  onConfirm,
-  onCancel,
-  isLoading = false
-}: ConfirmDialogProps) {
+export function ConfirmDialog(props: IConfirmDialogProps) {
+  const { t } = useTranslation();
+  const {
+    isOpen,
+    title,
+    message,
+    confirmLabel = t('common:confirm'),
+    cancelLabel = t('common:cancel'),
+    onConfirm,
+    onCancel,
+    isLoading,
+  } = props;
   if (!isOpen) return null;
 
   return (
@@ -33,7 +36,6 @@ export function ConfirmDialog({
         exit={{ opacity: 0, scale: 0.95 }}
         className="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden"
       >
-        {/* Header */}
         <div className="flex items-center gap-4 p-6 border-b dark:border-gray-700">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/20">
             <AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-400" />
@@ -53,22 +55,12 @@ export function ConfirmDialog({
             <X className="w-5 h-5" />
           </button>
         </div>
-
-        {/* Actions */}
         <div className="flex justify-end gap-3 p-6 bg-gray-50 dark:bg-gray-800/50">
-          <Button
-            variant="secondary"
-            onClick={onCancel}
-            disabled={isLoading}
-          >
+          <Button variant="secondary" onClick={onCancel} disabled={isLoading}>
             {cancelLabel}
           </Button>
-          <Button
-            variant="danger"
-            onClick={onConfirm}
-            disabled={isLoading}
-          >
-            {isLoading ? 'Suppression...' : confirmLabel}
+          <Button variant="danger" onClick={onConfirm} disabled={isLoading}>
+            {isLoading ? t('common:deleting') : confirmLabel}
           </Button>
         </div>
       </motion.div>

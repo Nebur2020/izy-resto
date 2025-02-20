@@ -17,6 +17,7 @@ import {
   RestaurantSettings,
   SocialMediaProfile,
 } from '../../../../../types/settings';
+import { useTranslation } from 'react-i18next';
 
 const PLATFORMS = [
   { id: 'whatsapp', name: 'Whatsapp', icon: MessageCircle },
@@ -29,11 +30,12 @@ const PLATFORMS = [
 ];
 
 export function SocialMediaSettings() {
+  const { t } = useTranslation();
   const { watch, setValue } = useFormContext<RestaurantSettings>();
   const socialMedia = watch('socialMedia') || [];
 
   const handleAddProfile = (e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent form submission
+    e.preventDefault();
     setValue(
       'socialMedia',
       [...socialMedia, { platform: 'whatsapp', url: '', active: true }],
@@ -42,7 +44,7 @@ export function SocialMediaSettings() {
   };
 
   const handleRemoveProfile = (e: React.MouseEvent, index: number) => {
-    e.preventDefault(); // Prevent form submission
+    e.preventDefault();
     setValue(
       'socialMedia',
       socialMedia.filter((_, i) => i !== index),
@@ -55,7 +57,7 @@ export function SocialMediaSettings() {
     index: number,
     updates: Partial<SocialMediaProfile>
   ) => {
-    e.preventDefault(); // Prevent form submission
+    e.preventDefault();
     const updatedProfiles = [...socialMedia];
     updatedProfiles[index] = { ...updatedProfiles[index], ...updates };
     setValue('socialMedia', updatedProfiles, { shouldDirty: true });
@@ -66,11 +68,13 @@ export function SocialMediaSettings() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Share2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-          <h2 className="text-xl font-semibold">Réseaux Sociaux</h2>
+          <h2 className="text-xl font-semibold">
+            {t('setting:social-media-profiles')}
+          </h2>
         </div>
         <Button type="button" onClick={handleAddProfile}>
           <Plus className="w-4 h-4 mr-2" />
-          Ajouter un profil
+          {t('setting:add-profile')}
         </Button>
       </div>
 
@@ -85,7 +89,6 @@ export function SocialMediaSettings() {
               className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700"
             >
               <div className="grid grid-cols-1 md:grid-cols-[200px,1fr,auto] gap-4 items-center">
-                {/* Platform Selection */}
                 <select
                   value={profile.platform}
                   onChange={e =>
@@ -102,8 +105,6 @@ export function SocialMediaSettings() {
                     </option>
                   ))}
                 </select>
-
-                {/* URL Input */}
                 <div className="relative flex-1">
                   <div className="absolute left-3 top-1/2 -translate-y-1/2">
                     <Icon className="w-4 h-4 text-gray-400" />
@@ -116,14 +117,12 @@ export function SocialMediaSettings() {
                     }
                     placeholder={
                       profile.platform === 'whatsapp'
-                        ? 'Numéro de téléphone'
+                        ? t('common:phone-number')
                         : `https://${profile.platform}.com/...`
                     }
                     className="w-full pl-10 rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
                   />
                 </div>
-
-                {/* Actions */}
                 <div className="flex items-center gap-2">
                   <Button
                     type="button"
@@ -154,10 +153,10 @@ export function SocialMediaSettings() {
           <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
             <Share2 className="w-12 h-12 mx-auto text-gray-400 mb-4" />
             <p className="text-gray-600 dark:text-gray-400">
-              Aucun profil social ajouté
+              {t('setting:no-social-media-profiles')}
             </p>
             <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
-              Cliquez sur "Ajouter un profil" pour commencer
+              {t('setting:add-social-media-profiles')}
             </p>
           </div>
         )}

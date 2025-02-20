@@ -9,8 +9,10 @@ import {
 import { formatDate } from '../../../../utils/date';
 import { useSettings } from '../../../../hooks/useSettings';
 import { Pagination } from '../../../ui/Pagination';
+import { useTranslation } from 'react-i18next';
+import { Language } from '../../../../types';
 
-interface InventoryListProps {
+interface IInventoryListProps {
   items: InventoryItem[];
   isLoading: boolean;
   onEdit: (item: InventoryItem) => void;
@@ -19,16 +21,13 @@ interface InventoryListProps {
 
 const ITEMS_PER_PAGE = 9;
 
-export function InventoryList({
-  items,
-  isLoading,
-  onEdit,
-  onDelete,
-}: InventoryListProps) {
+export function InventoryList(props: IInventoryListProps) {
+  const { items, isLoading, onEdit, onDelete } = props;
   const { settings } = useSettings();
   const [currentPage, setCurrentPage] = useState(1);
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language as Language;
 
-  // Calculate pagination
   const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedItems = items.slice(startIndex, startIndex + ITEMS_PER_PAGE);
@@ -54,11 +53,10 @@ export function InventoryList({
             <PackageX className="w-8 h-8 text-gray-500 dark:text-gray-400" />
           </div>
           <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-            Aucun produit en stock
+            {t('common:no-product-in-stock')}
           </h3>
           <p className="text-gray-500 dark:text-gray-400 mb-6">
-            Il n'y a actuellement aucun produit dans votre inventaire. Commencez
-            par en ajouter un.
+            {t('common:no-product-in-stock-description')}
           </p>
         </div>
       </div>
@@ -71,12 +69,18 @@ export function InventoryList({
         <table className="w-full">
           <thead>
             <tr className="border-b dark:border-gray-700">
-              <th className="px-4 py-3 text-left">Produit</th>
-              <th className="px-4 py-3 text-left">Catégorie</th>
-              <th className="px-4 py-3 text-right">Quantité</th>
-              <th className="px-4 py-3 text-right">Prix Unitaire</th>
-              <th className="px-4 py-3 text-left">Date d'expiration</th>
-              <th className="px-4 py-3 text-right">Actions</th>
+              <th className="px-4 py-3 text-left">{t('inventory:product')}</th>
+              <th className="px-4 py-3 text-left">{t('inventory:category')}</th>
+              <th className="px-4 py-3 text-right">
+                {t('inventory:quantity')}
+              </th>
+              <th className="px-4 py-3 text-right">
+                {t('inventory:unit-price')}
+              </th>
+              <th className="px-4 py-3 text-left">
+                {t('inventory:expiry-date')}
+              </th>
+              <th className="px-4 py-3 text-right">{t('inventory:actions')}</th>
             </tr>
           </thead>
           <tbody>
@@ -107,7 +111,7 @@ export function InventoryList({
                   </td>
                   <td className="px-4 py-3">
                     <span className="rounded-full bg-gray-100 px-3 py-1 text-sm dark:bg-gray-800">
-                      {item.category}
+                      {t(`common:category-names.${item.category}`)}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right">
@@ -120,14 +124,16 @@ export function InventoryList({
                         Number(Number(item.quantity).toFixed(2)),
                         'fr-FR'
                       )}{' '}
-                      {item.unit}
+                      {t(`common:units-name.${item.unit}`)}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right">
                     {formatCurrency(numericPrice, settings?.currency)}
                   </td>
                   <td className="px-4 py-3">
-                    {item.expiryDate ? formatDate(item.expiryDate) : '-'}
+                    {item.expiryDate
+                      ? formatDate(item.expiryDate, false, lang)
+                      : '-'}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex justify-end gap-2">

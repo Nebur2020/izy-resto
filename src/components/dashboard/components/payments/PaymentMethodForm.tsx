@@ -5,8 +5,8 @@ import { Button } from '../../../ui/Button';
 import { LogoUploader } from '../../../settings/LogoUploader';
 import { paymentService } from '../../../../services/payments/payment.service';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
-// Types
 type PaymentMethodType =
   | 'Wave'
   | 'PayTech'
@@ -45,26 +45,37 @@ const PaymentTypeSelect = ({
   value,
   onChange,
   disabled,
+  t,
 }: {
   value: PaymentMethodType;
   onChange: (value: PaymentMethodType) => void;
   disabled?: boolean;
+  t: (key: string) => string;
 }) => (
   <div className="space-y-1">
-    <label className="block text-sm font-medium">Type de méthode</label>
+    <label className="block text-sm font-medium">
+      {t('payment:payment-type')}
+    </label>
     <select
       value={value}
       onChange={e => onChange(e.target.value as PaymentMethodType)}
       disabled={disabled}
       className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
     >
-      <option value="Paiement à la livraison">Paiement à la livraison</option>
-      <option value="CinetPay">CinetPay</option>
-      <option value="PayTech">PayTech</option>
-      <option value="Stripe">Stripe</option>
-      <option value="Wave">Wave</option>
-      <option value="Money Fusion">Money Fusion</option>
-      <option value="Autres">Autres</option>
+      {[
+        'Paiement à la livraison',
+        'CinetPay',
+        'PayTech',
+        'Stripe',
+        'Wave',
+        'Money Fusion',
+        'Paiement à la caisse',
+        'Autres',
+      ].map((type, index) => (
+        <option key={index} value={type}>
+          {t(`order:payment-method-names.${type}`)}
+        </option>
+      ))}
     </select>
   </div>
 );
@@ -74,6 +85,8 @@ export function PaymentMethodForm({
   onSave,
   onCancel,
 }: PaymentMethodFormProps) {
+  const { t } = useTranslation();
+
   const [methodType, setMethodType] = useState<PaymentMethodType>(
     PAYMENT_TYPES[`${method?.name}`] ?? 'Autres'
   );
@@ -83,7 +96,6 @@ export function PaymentMethodForm({
     register,
     handleSubmit,
     setValue,
-    watch,
     formState: { errors, isSubmitting },
   } = useForm<PaymentMethodFormData>({
     defaultValues: method || {
@@ -117,16 +129,16 @@ export function PaymentMethodForm({
       );
 
       if (nameExists) {
-        toast.error('Une méthode de paiement avec ce nom existe déjà');
+        toast.error(t('payment:payment-methode-with-same-name-already-exist'));
         return;
       }
 
       await onSave(data);
     } catch (error: any) {
       if (error.code === 'payment/duplicate-name') {
-        toast.error('Une méthode de paiement avec ce nom existe déjà');
+        toast.error(t('payment:methode-with-same-name-already-exist'));
       } else {
-        toast.error('Une erreur est survenue');
+        toast.error(t('payment:an-error-occur'));
       }
     }
   };
@@ -160,12 +172,12 @@ export function PaymentMethodForm({
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-1">
-                Lien de paiement Wave
+                {t('payment:wave-payment-link')}
               </label>
               <input
                 type="url"
                 {...register('url', {
-                  required: 'Le lien Wave est requis',
+                  required: t('payment:wave-link-required'),
                 })}
                 className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
                 placeholder="https://pay.wave.com/m/xxxxxxxxxxxxxx/c/sn/"
@@ -176,7 +188,7 @@ export function PaymentMethodForm({
                 </p>
               )}
               <small className="text-red-800 dark:text-red-400">
-                Coller votre lien de paiement wave marchand
+                {t('payment:past-merchand-wavepayment-link')}
               </small>
             </div>
           </div>
@@ -215,7 +227,7 @@ export function PaymentMethodForm({
               <input
                 type="text"
                 {...register('apiSecret', {
-                  required: 'Ce champ est requis',
+                  required: t('common:filed-is-required'),
                 })}
                 className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
                 placeholder={
@@ -237,11 +249,13 @@ export function PaymentMethodForm({
         return (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1">SITE ID</label>
+              <label className="block text-sm font-medium mb-1">
+                {t('payment:site-id')}
+              </label>
               <input
                 type="text"
                 {...register('apiSecret', {
-                  required: 'Ce champ est requis',
+                  required: t('common:filed-is-required'),
                 })}
                 className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
                 placeholder="96bc36c11560f2151c4b43eee310cefabc2e9e9000f7e315c3ca3d279e3f98ac"
@@ -253,11 +267,13 @@ export function PaymentMethodForm({
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">API KEY</label>
+              <label className="block text-sm font-medium mb-1">
+                {t('payment:api-key')}
+              </label>
               <input
                 type="text"
                 {...register('apiKey', {
-                  required: 'API key obligatoire',
+                  required: t('common:api-key-is-required'),
                 })}
                 className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
                 placeholder="1afac858d4fa5ec74e3e3734c3829793eb6bd5f4602c84ac4a5069369812915e"
@@ -276,12 +292,12 @@ export function PaymentMethodForm({
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-1">
-                Nom de la méthode
+                {t('payment:methode-name')}
               </label>
               <input
                 type="text"
                 {...register('name', {
-                  required: 'Le nom est requis',
+                  required: t('payment:name-is-required'),
                 })}
                 className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
               />
@@ -298,8 +314,8 @@ export function PaymentMethodForm({
                 <LogoUploader
                   value={field.value}
                   onChange={field.onChange}
-                  label="QR Code de paiement"
-                  description="Format recommandé: PNG avec fond transparent"
+                  label={t('payment:payment-qr-code-title')}
+                  description={t('payment:recommended-format')}
                 />
               )}
             />
@@ -316,7 +332,9 @@ export function PaymentMethodForm({
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-[90vw] max-w-2xl h-[75vh] flex flex-col">
         <div className="flex justify-between items-center p-4 md:p-6 border-b dark:border-gray-700">
           <h2 className="text-lg md:text-xl font-semibold">
-            {method ? 'Modifier la méthode' : 'Nouvelle méthode de paiement'}
+            {method
+              ? t('payment:update-payment-method')
+              : t('payment:new-payment-method')}
           </h2>
           <button
             onClick={onCancel}
@@ -335,19 +353,18 @@ export function PaymentMethodForm({
               value={methodType}
               onChange={setMethodType}
               disabled={isEditing}
+              t={t}
             />
-
             {renderPaymentFields()}
-
             <div>
               <label className="block text-sm font-medium mb-1">
-                Consigne à l'utilisateur pour ce type de paiement
+                {t('payment:instruction-to-user')}
               </label>
               <textarea
                 {...register('instruction')}
                 rows={2}
                 className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
-                placeholder="Consigne ou instruction à partager pendant le paiement..."
+                placeholder={t('payment:instruction-placeholder')}
               />
             </div>
           </div>
@@ -355,14 +372,14 @@ export function PaymentMethodForm({
           <div className="p-4 md:p-6 border-t dark:border-gray-700 mt-auto">
             <div className="flex justify-end gap-4">
               <Button type="button" variant="secondary" onClick={onCancel}>
-                Annuler
+                {t('common:cancel')}
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting
-                  ? 'Enregistrement...'
+                  ? t('common:saving')
                   : method
-                  ? 'Mettre à jour'
-                  : 'Ajouter'}
+                  ? t('common:update')
+                  : t('common:add')}
               </Button>
             </div>
           </div>

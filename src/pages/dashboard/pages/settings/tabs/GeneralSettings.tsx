@@ -5,8 +5,10 @@ import { RestaurantSettings } from '../../../../../types';
 import { SocialMediaSettings } from './SocialMediaSettings';
 import { allCurrencies } from '../../../../../constants/defaultSettings';
 import LanguageSwitcher from './LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 export function GeneralSettings() {
+  const { t } = useTranslation();
   const {
     register,
     watch,
@@ -32,18 +34,20 @@ export function GeneralSettings() {
       <section className="space-y-6">
         <div className="flex items-center gap-3 mb-6">
           <Building2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-          <h2 className="text-xl font-semibold">Informations Générales</h2>
+          <h2 className="text-xl font-semibold">
+            {t('setting:general-information')}
+          </h2>
         </div>
 
         <div className="space-y-6">
           <div>
             <label className="block text-sm font-medium mb-1">
-              Nom du Restaurant
+              {t('setting:restaurant-name')}
             </label>
             <input
               type="text"
               {...register('name', {
-                required: 'Le nom du restaurant est requis',
+                required: t('setting:restaurant-name-required'),
               })}
               className={`w-full rounded-lg border p-2 dark:bg-gray-700 ${
                 errors.name
@@ -58,19 +62,20 @@ export function GeneralSettings() {
 
           <div>
             <label className="block text-sm font-medium mb-1">
-              Description
+              {t('setting:restaurant-description')}
             </label>
             <textarea
               {...register('description', {
-                required: 'La description est requise',
+                required: t('setting:restaurant-description-required'),
                 maxLength: {
-                  value: 150,
-                  message: 'La description ne peut pas dépasser 150 caractères',
+                  value: 250,
+                  message: t('description-max-limit', {
+                    maxLimit: 250,
+                  }),
                 },
                 minLength: {
                   value: 10,
-                  message:
-                    'La description doit contenir au moins 10 caractères',
+                  message: t('description-min-limit', { minLimit: 10 }),
                 },
               })}
               rows={3}
@@ -88,13 +93,15 @@ export function GeneralSettings() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
+            <label className="block text-sm font-medium mb-1">
+              {t('common:email')}
+            </label>
             <input
               type="email"
               {...register('email', {
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: 'Adresse email invalide',
+                  message: t('common:email-invalid'),
                 },
               })}
               className={`w-full rounded-lg border p-2 dark:bg-gray-700 ${
@@ -121,16 +128,18 @@ export function GeneralSettings() {
             <LogoUploader
               value={watch('coverImage')}
               onChange={url => handleFieldChange('coverImage', url)}
-              label="Image de Couverture"
-              description="Format recommandé: JPG ou PNG en haute résolution (1920x1080px minimum)"
+              label={t('setting:cover-image')}
+              description={t('setting:image-recommanded-format')}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Devise</label>
+            <label className="block text-sm font-medium mb-1">
+              {t('setting:currency')}
+            </label>
             <select
               {...register('currency', {
-                required: 'La devise est requise',
+                required: t('setting:currency-required'),
               })}
               className={`w-full rounded-lg border p-2 dark:bg-gray-700 ${
                 errors.currency
@@ -166,14 +175,14 @@ export function GeneralSettings() {
               {currencyObject &&
                 (currencyObject?.acceptedPaymentMethods?.length < 1 ? (
                   <span>
-                    Moyen de payment disponibles:{' '}
+                    {t('setting:available-payment-method')}{' '}
                     <span className="font-semibold">
-                      Livraison et autres moyens ajoutés personnellement
+                      {t('setting:delivery-and-add-payment-method')}
                     </span>
                   </span>
                 ) : (
                   <span>
-                    Moyen de payment disponibles:{' '}
+                    {t('setting:available-payment-method')}{' '}
                     <span className="font-semibold">
                       {currencyObject?.acceptedPaymentMethods.join(', ')}{' '}
                     </span>
@@ -194,21 +203,25 @@ export function GeneralSettings() {
       <section className="space-y-6">
         <div className="flex items-center gap-3">
           <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-          <h2 className="text-xl font-semibold">Limites de commande</h2>
+          <h2 className="text-xl font-semibold">
+            {t('setting:security-and-rate-limits')}
+          </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium mb-1">
-              Nombre maximum de commandes
+              {t('setting:rate-limit-max-orders')}
             </label>
             <input
               type="number"
               {...register('rateLimits.maxOrders', {
-                required: 'Ce champ est requis',
+                required: t('setting:rate-limit-max-orders-required'),
                 min: {
                   value: 1,
-                  message: 'La valeur minimum est 1',
+                  message: t('setting:rate-limit-max-orders-min', {
+                    minValue: 1,
+                  }),
                 },
               })}
               className={`w-full rounded-lg border p-2 dark:bg-gray-700 ${
@@ -223,21 +236,23 @@ export function GeneralSettings() {
               </p>
             )}
             <p className="mt-1 text-sm text-gray-500">
-              Nombre maximum de commandes par période
+              {t('setting:rate-limit-max-orders-description')}
             </p>
           </div>
 
           <div>
             <label className="block text-sm font-medium mb-1">
-              Période (en heures)
+              {t('setting:rate-limit-time-window-hours')}
             </label>
             <input
               type="number"
               {...register('rateLimits.timeWindowHours', {
-                required: 'Ce champ est requis',
+                required: t('setting:rate-limit-max-orders-required'),
                 min: {
                   value: 1,
-                  message: 'La valeur minimum est 1',
+                  message: t('setting:rate-limit-time-window-hours-min', {
+                    minValue: 1,
+                  }),
                 },
               })}
               className={`w-full rounded-lg border p-2 dark:bg-gray-700 ${
@@ -252,7 +267,7 @@ export function GeneralSettings() {
               </p>
             )}
             <p className="mt-1 text-sm text-gray-500">
-              Durée de la période de limitation
+              {t('setting:rate-limit-time-window-hours-description')}
             </p>
           </div>
         </div>

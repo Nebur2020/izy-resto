@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState } from 'react';
 import { Search, Grid, List } from 'lucide-react';
 import { MediaGrid } from '../../../components/dashboard/components/media/MediaGrid';
 import { MediaList } from '../../../components/dashboard/components/media/MediaList';
@@ -9,10 +8,12 @@ import { useMediaGallery } from '../../../hooks/useMediaGallery';
 import { Pagination } from '../../../components/ui/Pagination';
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 const ITEMS_PER_PAGE = 12;
 
 export function MediaLibrary() {
+  const { t } = useTranslation();
   const [isGridView, setIsGridView] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -22,20 +23,19 @@ export function MediaLibrary() {
     isBulk: boolean;
     fileIds?: string[];
   }>({ isOpen: false, isBulk: false });
-  
-  const { 
-    files, 
+
+  const {
+    files,
     totalFiles,
-    currentPage, 
-    totalPages, 
+    currentPage,
+    totalPages,
     setCurrentPage,
-    isLoading, 
+    isLoading,
     uploadFiles,
     deleteFiles,
-    refreshFiles
   } = useMediaGallery(ITEMS_PER_PAGE);
 
-  const filteredFiles = files.filter(file => 
+  const filteredFiles = files.filter(file =>
     file.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -43,27 +43,24 @@ export function MediaLibrary() {
     try {
       await uploadFiles(files);
       setIsUploadModalOpen(false);
-   
     } catch (error) {
       console.error('Upload error:', error);
-    
     }
   };
 
   const handleDelete = async () => {
     if (!deleteConfirmation.fileIds?.length) return;
-    
+
     try {
       await deleteFiles(deleteConfirmation.fileIds);
       setSelectedFiles(new Set());
       toast.success(
         deleteConfirmation.isBulk
-          ? 'Fichiers supprimés avec succès'
-          : 'Fichier supprimé avec succès'
+          ? t('media:files-deleted')
+          : t('media:file-deleted')
       );
     } catch (error) {
       console.error('Delete error:', error);
-
     } finally {
       setDeleteConfirmation({ isOpen: false, isBulk: false });
     }
@@ -81,38 +78,37 @@ export function MediaLibrary() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Gallerie media
+            {t('media:media-title')}
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            {totalFiles} Fichiers
+            {totalFiles} {t('media:media-files')}
           </p>
         </div>
-        
+
         <BulkActions
           selectedCount={selectedFiles.size}
           onUpload={() => setIsUploadModalOpen(true)}
-          onDelete={() => setDeleteConfirmation({
-            isOpen: true,
-            isBulk: true,
-            fileIds: Array.from(selectedFiles)
-          })}
+          onDelete={() =>
+            setDeleteConfirmation({
+              isOpen: true,
+              isBulk: true,
+              fileIds: Array.from(selectedFiles),
+            })
+          }
           onClearSelection={() => setSelectedFiles(new Set())}
         />
       </div>
-
-      {/* Search and View Toggle */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
-            placeholder="Search..."
+            placeholder={t('common:search')}
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={e => setSearchTerm(e.target.value)}
             className="w-full rounded-lg border pl-10 pr-4 py-2 dark:border-gray-700 dark:bg-gray-800"
           />
         </div>
@@ -139,18 +135,18 @@ export function MediaLibrary() {
           </button>
         </div>
       </div>
-
-      {/* Content */}
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
         {isGridView ? (
-          <MediaGrid 
+          <MediaGrid
             files={filteredFiles}
             isLoading={isLoading}
-            onDelete={(id) => setDeleteConfirmation({
-              isOpen: true,
-              isBulk: false,
-              fileIds: [id]
-            })}
+            onDelete={id =>
+              setDeleteConfirmation({
+                isOpen: true,
+                isBulk: false,
+                fileIds: [id],
+              })
+            }
             selectedFiles={selectedFiles}
             onToggleSelect={toggleFileSelection}
           />
@@ -158,17 +154,17 @@ export function MediaLibrary() {
           <MediaList
             files={filteredFiles}
             isLoading={isLoading}
-            onDelete={(id) => setDeleteConfirmation({
-              isOpen: true,
-              isBulk: false,
-              fileIds: [id]
-            })}
+            onDelete={id =>
+              setDeleteConfirmation({
+                isOpen: true,
+                isBulk: false,
+                fileIds: [id],
+              })
+            }
             selectedFiles={selectedFiles}
             onToggleSelect={toggleFileSelection}
           />
         )}
-
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="mt-6 pt-6 border-t dark:border-gray-700">
             <Pagination
@@ -179,8 +175,6 @@ export function MediaLibrary() {
           </div>
         )}
       </div>
-
-      {/* Upload Modal */}
       {isUploadModalOpen && (
         <BulkUploader
           onClose={() => setIsUploadModalOpen(false)}
@@ -189,17 +183,21 @@ export function MediaLibrary() {
           acceptedFileTypes={['.png', '.jpg', '.jpeg', '.gif']}
         />
       )}
-
-      {/* Delete Confirmation Dialog */}
       <ConfirmDialog
         isOpen={deleteConfirmation.isOpen}
-        title={deleteConfirmation.isBulk ? 'Supprimer les fichiers' : 'Supprimer le fichier'}
+        title={
+          deleteConfirmation.isBulk
+            ? t('media:delete-files')
+            : t('media:delete-file')
+        }
         message={
           deleteConfirmation.isBulk
-            ? `Êtes-vous sûr de vouloir supprimer ${deleteConfirmation.fileIds?.length} fichiers ? Cette action est irréversible.`
-            : 'Êtes-vous sûr de vouloir supprimer ce fichier ? Cette action est irréversible.'
+            ? t('media:deleting-files-confirmation', {
+                count: deleteConfirmation.fileIds?.length,
+              })
+            : t('media:deleting-confirmation')
         }
-        confirmLabel="Supprimer"
+        confirmLabel={t('common:delete')}
         onConfirm={handleDelete}
         onCancel={() => setDeleteConfirmation({ isOpen: false, isBulk: false })}
       />

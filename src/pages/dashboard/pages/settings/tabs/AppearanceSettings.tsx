@@ -19,8 +19,10 @@ import { TemplateOption } from './components/TemplateOption';
 import { useAppVersion } from '../../../../../hooks/useAppVersion';
 import { useDeployment } from '../../../../../hooks/useDeployment';
 import packageJson from '../../../../../../package.json';
+import { useTranslation } from 'react-i18next';
+import { Version } from '../../../../../services/version/version.service';
 
-const COOLDOWN_DURATION = 6 * 60; // 10 minutes in seconds
+const COOLDOWN_DURATION = 6 * 60;
 const DEPLOY_STORAGE_KEY = 'deploymentCooldown';
 
 interface DeploymentCooldown {
@@ -37,7 +39,6 @@ const getStoredCooldown = (): DeploymentCooldown | null => {
     const now = Date.now();
     const elapsed = Math.floor((now - data.timestamp) / 1000);
 
-    // If cooldown has expired or it's for a different version, clear it
     if (elapsed >= COOLDOWN_DURATION || data.version !== packageJson.version) {
       localStorage.removeItem(DEPLOY_STORAGE_KEY);
       return null;
@@ -64,15 +65,16 @@ const setStoredCooldown = (version: string) => {
 };
 
 export function AppearanceSettings() {
+  const { t } = useTranslation();
   const { register, watch, setValue } = useFormContext<RestaurantSettings>();
   const { theme, toggleTheme } = useTheme();
 
-  const { version, loading, errorLoading, refresh } = useAppVersion();
+  const { version, loading, errorLoading, versions } = useAppVersion();
   const { redeploy, isDeploying, error } = useDeployment();
 
   const [cooldownTime, setCooldownTime] = useState(0);
+  const [selectedVersion, setSelectedVersion] = useState<Version | null>(null);
 
-  // Initialize cooldown state from localStorage
   useEffect(() => {
     const storedCooldown = getStoredCooldown();
     if (storedCooldown) {
@@ -85,8 +87,14 @@ export function AppearanceSettings() {
       }
     }
   }, []);
+  
+  useEffect(() => {
+    if (versions.length > 0) {
+      const vers = versions.find(v => v.value === packageJson.version);
+      setSelectedVersion(vers || null);
+    }
+  }, [versions]);
 
-  // Update cooldown timer
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
@@ -110,7 +118,6 @@ export function AppearanceSettings() {
     };
   }, [cooldownTime]);
 
-  // Synchronize cooldown across tabs/windows
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === DEPLOY_STORAGE_KEY) {
@@ -139,7 +146,14 @@ export function AppearanceSettings() {
     try {
       if (!version?.value || packageJson.version === version?.value) return;
       await redeploy(version?.value);
-      // Only set cooldown if deployment was successful
+      if (
+        !selectedVersion?.value ||
+        packageJson.version === selectedVersion?.value
+      ) {
+        return;
+      }
+
+      await redeploy(selectedVersion.value);
       setStoredCooldown(packageJson.version);
       setCooldownTime(COOLDOWN_DURATION);
     } catch (e) {
@@ -164,28 +178,28 @@ export function AppearanceSettings() {
 
   return (
     <div className="space-y-8">
-      {/* Theme Selection */}
       <section className="space-y-6">
         <div className="flex items-center gap-3 mb-6">
           <Layout className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-          <h2 className="text-xl font-semibold">Thème par défaut</h2>
+          <h2 className="text-xl font-semibold">
+            {t('settingAppearence:theme')}
+          </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <ThemeOption
             icon={Sun}
-            title="Mode Clair"
-            description="Interface lumineuse avec un contraste optimal"
+            title={t('settingAppearence:light-mode')}
+            description={t('settingAppearence:light-mode-description')}
             value="light"
             selected={watch('defaultTheme') === 'light'}
             onChange={handleThemeChange}
             register={register}
           />
-
           <ThemeOption
             icon={Moon}
-            title="Mode Sombre"
-            description="Interface sombre pour une meilleure visibilité nocturne"
+            title={t('settingAppearence:dark-mode')}
+            description={t('settingAppearence:dark-mode-description')}
             value="dark"
             selected={watch('defaultTheme') === 'dark'}
             onChange={handleThemeChange}
@@ -193,18 +207,18 @@ export function AppearanceSettings() {
           />
         </div>
       </section>
-      {/* Header Style */}
       <section className="space-y-6">
         <div className="flex items-center gap-3">
           <MenuSquare className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-          <h2 className="text-xl font-semibold">Style d'en-tête</h2>
+          <h2 className="text-xl font-semibold">
+            {t('settingAppearence:header')}
+          </h2>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <HeaderOption
             icon={LayoutDashboard}
-            title="En-tête Moderne"
-            description="Design moderne avec une mise en page élégante"
+            title={t('settingAppearence:modern-header')}
+            description={t('settingAppearence:modern-header-description')}
             value="modern"
             selected={watch('activeHeader') === 'modern'}
             onChange={value =>
@@ -212,11 +226,10 @@ export function AppearanceSettings() {
             }
             register={register}
           />
-
           <HeaderOption
             icon={LayoutList}
-            title="En-tête Classique"
-            description="Design traditionnel avec navigation simple"
+            title={t('settingAppearence:classic-header')}
+            description={t('settingAppearence:classic-header-description')}
             value="classic"
             selected={watch('activeHeader') === 'classic'}
             onChange={value =>
@@ -226,18 +239,19 @@ export function AppearanceSettings() {
           />
         </div>
       </section>
-      {/* Landing Template */}
       <section className="space-y-6">
         <div className="flex items-center gap-3">
           <LayoutGrid className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-          <h2 className="text-xl font-semibold">Template de Page d'Accueil</h2>
+          <h2 className="text-xl font-semibold">
+            {t('settingAppearence:landing-page')}
+          </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <TemplateOption
             icon={Rows}
-            title="Modern"
-            description="Design moderne avec une grande image d'en-tête"
+            title={t('settingAppearence:modern')}
+            description={t('settingAppearence:modern-description')}
             value="modern"
             selected={watch('activeLanding') === 'modern'}
             onChange={value =>
@@ -249,8 +263,8 @@ export function AppearanceSettings() {
 
           <TemplateOption
             icon={Columns}
-            title="Minimal"
-            description="Design épuré et minimaliste"
+            title={t('settingAppearence:minimal')}
+            description={t('settingAppearence:minimal-description')}
             value="minimal"
             selected={watch('activeLanding') === 'minimal'}
             onChange={value =>
@@ -262,8 +276,8 @@ export function AppearanceSettings() {
 
           <TemplateOption
             icon={LayoutGrid}
-            title="Grid"
-            description="Mise en page en grille avec images"
+            title={t('settingAppearence:grid')}
+            description={t('settingAppearence:grid-description')}
             value="grid"
             selected={watch('activeLanding') === 'grid'}
             onChange={value =>
@@ -278,32 +292,50 @@ export function AppearanceSettings() {
       <section className="space-y-6">
         <div className="flex items-center gap-3">
           <Layout className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-          <h2 className="text-xl font-semibold">Mise à jour du site</h2>
+          <h2 className="text-xl font-semibold">
+            {t('settingAppearence:deployment')}
+          </h2>
         </div>
 
         <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
           <div className="space-y-2">
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Version actuelle: {packageJson.version || 'Chargement...'}
+              {t('settingAppearence:version')}{' '}
+              {packageJson.version || t('common:loading')}
             </p>
+            <select
+              value={`${selectedVersion?.value}`}
+              className={`rounded-lg border p-2 dark:bg-gray-700`}
+              onChange={vers => {
+                const value = versions.find(v => v.value === vers.target.value);
+                setSelectedVersion(value || null);
+              }}
+            >
+              <option value="">
+                {t('settingAppearence:select-version')}
+              </option>
+              {versions.map(vers => (
+                <option key={vers.id} value={vers.value}>
+                  v{vers.value}
+                </option>
+              ))}
+            </select>
             {version?.value && (
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Nouvelle version: {version?.value}
+                {t('settingAppearence:new-version')} {version?.value}
               </p>
             )}
-
             {cooldownTime > 0 && (
               <p className="text-sm text-amber-600 dark:text-amber-400">
-                Déploiement en cours, rafraichissez votre site dans exactement:{' '}
+                {t('settingAppearence:deployment-inprogress')}{' '}
                 {formatTimeRemaining(cooldownTime)}
               </p>
             )}
           </div>
-
           {error && (
             <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
               <p className="text-sm text-red-600 dark:text-red-400">
-                Erreur lors du redéploiement: {error}
+                {t('settingAppearence:error-during-deployment')} {error}
               </p>
             </div>
           )}
@@ -315,7 +347,8 @@ export function AppearanceSettings() {
               loading ||
               !!errorLoading ||
               cooldownTime > 0 ||
-              packageJson.version === version?.value
+              packageJson.version === selectedVersion?.value ||
+              !selectedVersion
             }
             className="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors
                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
@@ -345,14 +378,16 @@ export function AppearanceSettings() {
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
                   />
                 </svg>
-                Redéploiement en cours...
+                {t('settingAppearence:re-deployment-inprogress')}
               </>
             ) : cooldownTime > 0 ? (
-              `Disponible dans ${formatTimeRemaining(cooldownTime)}`
+              `${t('settingAppearence:available-in')} ${formatTimeRemaining(
+                cooldownTime
+              )}`
             ) : packageJson.version === version?.value ? (
-              'Votre site est à jour'
+              t('settingAppearence:up-to-date')
             ) : (
-              'Mettre à jour le site'
+              t('settingAppearence:re-deploy')
             )}
           </button>
         </div>

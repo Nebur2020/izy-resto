@@ -5,7 +5,6 @@
   "order": "Commande",
   "on-site": "Sur place",
   "delivery": "Livraison",
-  "item-ordered": "Articles commandés",
   "tip": "Pourboire",
   "customer-information": "Informations client",
   "delivery-address": "Adresse de livraison",
@@ -17,6 +16,7 @@
   "show-qr-code": "Afficher le QR Code",
   "scan-and-track": "Scannez pour suivre votre commande",
   "cancel-order": "Annuler la commande",
+  "cancel-order-message": "Êtes-vous sûr de vouloir annuler cette commande ? Cette action est irréversible.",
   "your-opinion": "Votre avis compte !",
   "help-us-to-improve": "Aidez-nous à améliorer notre service en notant votre commande",
   "rate-order": "Noter ma commande",
@@ -37,7 +37,6 @@
   "no-order-found": "Aucune commande trouvée",
   "print-bill": "Imprimer le ticket",
   "in-cooking": "En préparation",
-  "payment-method": "Mode de paiement",
   "confirm-order": "Confirmation de commande",
   "no-tip": "Aucun",
   "payment-confirmation": "Après avoir effectué le paiement, cliquez sur le bouton J'ai payé ci-dessous",
@@ -84,12 +83,16 @@
   "payment-method-names": {
     "Paiement à la livraison": "Paiement à la livraison",
     "CinetPay": "Payer avec CinetPay",
-    "Orange Money": "Payer avec Orange Money",
     "PayTech": "Payer avec PayTech",
     "Stripe": "Payer avec Stripe",
     "Wave": "Payer avec Wave",
     "Money Fusion": "Payer avec Money Fusion",
-    "Paiement à la caisse": "Paiement à la caisse"
+    "Paiement à la caisse": "Paiement à la caisse",
+    "Autres": "Autre",
+    "Test payments": "Paiements de test",
+    "Orange Money": "Orange Money",
+    "Amadou Money": "Amadou Money"
   },
-  "at-table": "A table"
+  "search-orders": "Rechercher des commandes",
+  "new-order-notification": "Nouvelle commande"
 }

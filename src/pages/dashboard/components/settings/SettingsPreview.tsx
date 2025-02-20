@@ -7,13 +7,14 @@ interface SettingsPreviewProps {
   watch: UseFormWatch<RestaurantSettings>;
 }
 
-interface InfoCardProps {
+interface IInfoCardProps {
   icon: React.ElementType;
   title: string;
   description: string;
 }
 
-function InfoCard({ icon: Icon, title, description }: InfoCardProps) {
+function InfoCard(props: IInfoCardProps) {
+  const { icon: Icon, title, description } = props;
   return (
     <div className="bg-white dark:bg-gray-700/30 border dark:border-gray-600 rounded-lg p-4 text-gray-800 dark:text-gray-100 flex items-start space-x-4">
       <div className="flex-shrink-0">
