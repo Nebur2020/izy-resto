@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, memo, useMemo } from 'react';
+import React, { useState, useCallback, memo, useMemo } from 'react';
 import { Plus, X } from 'lucide-react';
 import { FormProvider, useForm, UseFormReturn } from 'react-hook-form';
 import { Button } from '../../components/ui/Button';
@@ -440,42 +440,6 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
       const allCombinations = getVariantCombinations();
       const basePrice = Number(formData.price);
 
-      const isVariantsValid =
-        variantPrices.length < 1 ||
-        variantPrices.every(
-          vp => vp.variantCombination.length === variants.length
-        );
-
-      if (!isVariantsValid) {
-        console.log('isVariantsValid', isVariantsValid);
-        console.log('formData', formData);
-        console.log('allCombinations', allCombinations);
-        console.log('basePrice', basePrice);
-        console.log('variantPrices', variantPrices);
-        console.log('variants', variants);
-
-        return;
-      }
-
-      const defaultVariantPrices = allCombinations
-        .filter(
-          combination =>
-            !variantPrices.some(
-              vp =>
-                JSON.stringify(vp.variantCombination) ===
-                JSON.stringify(combination)
-            )
-        )
-        .map(combination => {
-          const priceModifier = calculatePriceModifiers(combination);
-
-          return {
-            variantCombination: combination,
-            price: basePrice + priceModifier,
-            image: formData.image,
-          };
-        });
-
       const menuItem: MenuItemWithVariants = {
         ...formData,
         price: Number(formData.price),
@@ -484,7 +448,7 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
           ...vp,
           price: Number(vp.price),
         })),
-        defaultVariantPrices,
+        defaultVariantPrices: [],
         inventoryConnections: formData.inventoryConnections
           .filter((conn: any) => conn.itemId && conn.ratio)
           .map((conn: any) => ({
