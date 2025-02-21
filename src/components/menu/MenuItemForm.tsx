@@ -216,132 +216,140 @@ export const InventoryTab: React.FC<any> = ({
 };
 
 // Memoize the BasicInfoTab component
-const BasicInfoTab = memo(
-  ({
-    register,
-    errors,
-    watch,
-    setValue,
-    settings,
-    categories,
-    selectedCategory,
-    handleCategoryChange,
-  }: ProductTabProps) => {
-    const { t } = useTranslation();
+const BasicInfoTab = ({
+  register,
+  errors,
+  watch,
+  setValue,
+  settings,
+  categories,
+  selectedCategory,
+  handleCategoryChange,
+}: ProductTabProps) => {
+  const { t } = useTranslation();
 
-    return (
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              {t('common:name')}
-            </label>
-            <input
-              type="text"
-              {...register('name', { required: t('common:name-is-required') })}
-              className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
-            />
-            {errors.name && (
-              <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
-            )}
-          </div>
+  const [image, setImage] = useState<string>(watch('image'));
 
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              {t('common:category')}
-            </label>
-            <select
-              {...register('categoryId', {
-                required: t('common:category-is-required'),
-              })}
-              onChange={handleCategoryChange}
-              value={selectedCategory}
-              className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
-            >
-              <option value="">{t('common:select-category')}</option>
-              {categories.map(category => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-            {errors.categoryId && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.categoryId.message}
-              </p>
-            )}
-          </div>
+  // Watch for changes to inventoryConnections
+  React.useEffect(() => {
+    const subscription = watch((value, { name }) => {
+      if (name?.startsWith('image')) {
+        setImage(value.image || '');
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
 
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              {t('common:price')}
-            </label>
-            <input
-              type="number"
-              step={settings?.currency === 'XOF' ? '1' : '0.01'}
-              {...register('price', {
-                required: t('common:price-is-required'),
-                min: { value: 0, message: t('common:price-must-be-positive') },
-              })}
-              className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
-            />
-            {errors.price && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.price.message}
-              </p>
-            )}
-          </div>
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            {t('common:name')}
+          </label>
+          <input
+            type="text"
+            {...register('name', { required: t('common:name-is-required') })}
+            className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
+          />
+          {errors.name && (
+            <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
+          )}
+        </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              {t('common:stock-quantity')}
-            </label>
-            <input
-              type="number"
-              {...register('stockQuantity', {
-                required: t('common:stock-quantity-is-required'),
-                min: { value: 0, message: 'Le stock doit être positif' },
-              })}
-              className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
-            />
-            {errors.stockQuantity && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.stockQuantity.message}
-              </p>
-            )}
-          </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            {t('common:category')}
+          </label>
+          <select
+            {...register('categoryId', {
+              required: t('common:category-is-required'),
+            })}
+            onChange={handleCategoryChange}
+            value={selectedCategory}
+            className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
+          >
+            <option value="">{t('common:select-category')}</option>
+            {categories.map(category => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+          {errors.categoryId && (
+            <p className="mt-1 text-sm text-red-500">
+              {errors.categoryId.message}
+            </p>
+          )}
+        </div>
 
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium mb-1">
-              {t('common:description')}
-            </label>
-            <textarea
-              {...register('description', {
-                required: t('common:description-is-required'),
-              })}
-              rows={3}
-              className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
-            />
-            {errors.description && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.description.message}
-              </p>
-            )}
-          </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            {t('common:price')}
+          </label>
+          <input
+            type="number"
+            step={settings?.currency === 'XOF' ? '1' : '0.01'}
+            {...register('price', {
+              required: t('common:price-is-required'),
+              min: { value: 0, message: t('common:price-must-be-positive') },
+            })}
+            className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
+          />
+          {errors.price && (
+            <p className="mt-1 text-sm text-red-500">{errors.price.message}</p>
+          )}
+        </div>
 
-          <div className="md:col-span-2">
-            <LogoUploader
-              value={watch('image')}
-              onChange={url => setValue('image', url, { shouldDirty: true })}
-              label={t('common:product-image')}
-              description={t('common:product-image-description')}
-            />
-          </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            {t('common:stock-quantity')}
+          </label>
+          <input
+            type="number"
+            {...register('stockQuantity', {
+              required: t('common:stock-quantity-is-required'),
+              min: { value: 0, message: 'Le stock doit être positif' },
+            })}
+            className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
+          />
+          {errors.stockQuantity && (
+            <p className="mt-1 text-sm text-red-500">
+              {errors.stockQuantity.message}
+            </p>
+          )}
+        </div>
+
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium mb-1">
+            {t('common:description')}
+          </label>
+          <textarea
+            {...register('description', {
+              required: t('common:description-is-required'),
+            })}
+            rows={3}
+            className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
+          />
+          {errors.description && (
+            <p className="mt-1 text-sm text-red-500">
+              {errors.description.message}
+            </p>
+          )}
+        </div>
+
+        <div className="md:col-span-2">
+          <LogoUploader
+            value={image}
+            onChange={url => setValue('image', url, { shouldDirty: true })}
+            label={t('common:product-image')}
+            description={t('common:product-image-description')}
+          />
         </div>
       </div>
-    );
-  }
-);
+    </div>
+  );
+};
 
 export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
   const { t } = useTranslation();

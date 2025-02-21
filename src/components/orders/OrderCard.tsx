@@ -52,7 +52,11 @@ export const OrderCard = React.forwardRef<HTMLDivElement, OrderCardProps>(
           {
             ...translations,
             paymentMethodName: t(
-              `order:payment-method-names.${order.paymentMethod?.name}`
+              `payment-method-names.${
+                order.diningOption === 'dine-in'
+                  ? 'dine-in'
+                  : order.paymentMethod?.name
+              }`
             ),
           },
           t,

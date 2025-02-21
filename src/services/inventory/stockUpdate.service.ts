@@ -203,7 +203,7 @@ class StockUpdateService {
           for (const connection of connections) {
             if (!connection.itemId || !connection.ratio) continue;
 
-            const inventoryNeeded = orderQuantity / connection.ratio;
+            const inventoryNeeded = orderQuantity * connection.ratio;
             const currentUpdate = inventoryUpdates.get(connection.itemId);
 
             if (currentUpdate) {

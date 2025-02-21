@@ -37,6 +37,10 @@ export function OrderManagement() {
   const seenOrderIdsRef = useRef<Set<string>>(new Set());
   const isFirstLoadRef = useRef(true);
 
+  useEffect(() => {
+    refreshOrders();
+  }, []);
+
   // Detect new orders using order IDs
   useEffect(() => {
     // Skip detection during initial load or when searching

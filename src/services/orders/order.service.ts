@@ -117,6 +117,28 @@ class OrderService {
     }
   }
 
+  subscribeCreationOrder(
+    onUpdate: (orders: Order) => void,
+    onError: (error: Error) => void
+  ) {
+    try {
+      return onSnapshot(collection(db, this.collection), snapshot => {
+        snapshot.docChanges().forEach(change => {
+          if (change.type === 'added') {
+            console.log('New document added:', change.doc.data());
+          }
+        });
+      });
+    } catch (error) {
+      console.error('Error setting up orders subscription:', error);
+      throw new OrderServiceError(
+        'Failed to setup orders subscription',
+        'orders/subscribe-setup-error',
+        error
+      );
+    }
+  }
+
   subscribeToOrders(
     onUpdate: (orders: Order[]) => void,
     onError: (error: Error) => void

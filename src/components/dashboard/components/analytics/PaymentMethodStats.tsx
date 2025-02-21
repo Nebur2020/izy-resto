@@ -13,11 +13,11 @@ export const PaymentMethodStats = ({ orders }: { orders: Order[] }) => {
   const paymentStats = useMemo(() => {
     // Group payments by method
     const paymentTotals = orders.reduce((acc, order) => {
-      if (order.paymentMethod) {
-        const methodName = order.paymentMethod.name;
-        acc[methodName] =
-          (acc[methodName] || 0) + Number(order.amountPaid || order.total || 0);
-      }
+      const methodName = t(
+        `order:payment-method-names.${order?.paymentMethod?.name || 'dine-in'}`
+      );
+      acc[methodName] =
+        (acc[methodName] || 0) + Number(order.amountPaid || order.total || 0);
       return acc;
     }, {} as Record<string, number>);
 
@@ -88,7 +88,6 @@ export const PaymentMethodStats = ({ orders }: { orders: Order[] }) => {
                   style={{ width: `${stat.percentage}%` }}
                 />
               </div>
-              ({stat.percentage}%)
             </div>
           ))}
         </div>
