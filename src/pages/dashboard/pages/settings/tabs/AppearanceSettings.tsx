@@ -87,7 +87,7 @@ export function AppearanceSettings() {
       }
     }
   }, []);
-  
+
   useEffect(() => {
     if (versions.length > 0) {
       const vers = versions.find(v => v.value === packageJson.version);
@@ -311,12 +311,15 @@ export function AppearanceSettings() {
                 setSelectedVersion(value || null);
               }}
             >
-              <option value="">
-                {t('settingAppearence:select-version')}
-              </option>
+              <option value="">{t('settingAppearence:select-version')}</option>
               {versions.map(vers => (
                 <option key={vers.id} value={vers.value}>
-                  v{vers.value}
+                  v{vers.value}{' '}
+                  {vers.isLatest
+                    ? `(${t('common:latest')})`
+                    : vers.isStable
+                    ? `(${t('common:stable')})`
+                    : ''}
                 </option>
               ))}
             </select>

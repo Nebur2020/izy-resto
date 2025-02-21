@@ -274,5 +274,7 @@
   "thank-you-label": "Merci pour votre commande !",
   "value-name": "Valeur",
   "price-adjustment": "Ajustment de prix",
-  "all-taxes-included": "Toutes taxes comprises (TTC)"
+  "all-taxes-included": "Toutes taxes comprises (TTC)",
+  "latest": "Dernière",
+  "stable": "Stable"
 }

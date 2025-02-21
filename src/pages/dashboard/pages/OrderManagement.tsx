@@ -214,13 +214,6 @@ export function OrderManagement() {
     }
   };
 
-  // For debugging in development mode
-  const testNotification = () => {
-    if (process.env.NODE_ENV === 'development') {
-      playNotificationSound();
-    }
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex gap-2 items-center">
