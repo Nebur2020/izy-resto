@@ -206,14 +206,14 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
             return acc;
           }, {} as Record<string, string>);
 
-          console.log('selectedVariantMap', selectedVariantMap);
+          // console.log('selectedVariantMap', selectedVariantMap);
 
           let calculatedPrice = item.price;
 
           // Calculate price from each selected variant
           categoryVariants.forEach(variant => {
             const selectedValue = selectedVariantMap[variant.name];
-            console.log('selectedValue', selectedValue);
+            // console.log('selectedValue', selectedValue);
             if (selectedValue && variant.prices) {
               const valueIndex = variant.values.findIndex(
                 v => v === selectedValue
@@ -224,11 +224,11 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
                 !isNaN(variant.prices[valueIndex]) &&
                 typeof variant.prices[valueIndex] === 'number'
               ) {
-                console.log(
-                  'valueIndex',
-                  valueIndex,
-                  variant.prices[valueIndex]
-                );
+                // console.log(
+                //   'valueIndex',
+                //   valueIndex,
+                //   variant.prices[valueIndex]
+                // );
                 calculatedPrice += variant.prices[valueIndex];
               }
             }
