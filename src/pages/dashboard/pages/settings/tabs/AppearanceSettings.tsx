@@ -144,7 +144,8 @@ export function AppearanceSettings() {
 
   const handleRedeploy = async () => {
     try {
-      if (!version?.value || packageJson.version === version?.value) return;
+      if (!version?.value || packageJson.version === selectedVersion?.value)
+        return;
       await redeploy(version?.value);
       if (
         !selectedVersion?.value ||
@@ -344,6 +345,7 @@ export function AppearanceSettings() {
           )}
 
           <button
+            type="button"
             onClick={handleRedeploy}
             disabled={
               isDeploying ||
@@ -387,7 +389,7 @@ export function AppearanceSettings() {
               `${t('settingAppearence:available-in')} ${formatTimeRemaining(
                 cooldownTime
               )}`
-            ) : packageJson.version === version?.value ? (
+            ) : packageJson.version === selectedVersion?.value ? (
               t('settingAppearence:up-to-date')
             ) : (
               t('settingAppearence:re-deploy')
