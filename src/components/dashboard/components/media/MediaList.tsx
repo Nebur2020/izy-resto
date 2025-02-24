@@ -81,7 +81,6 @@ export function MediaList({
             `}
           >
             <div className="flex items-center p-4">
-              {/* Selection Checkbox */}
               <div
                 className={`
                 w-6 h-6 rounded-full border-2 mr-4
@@ -99,7 +98,6 @@ export function MediaList({
                 )}
               </div>
 
-              {/* Thumbnail */}
               <div className="h-16 w-16 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-700">
                 <img
                   src={file.url}
@@ -108,7 +106,6 @@ export function MediaList({
                 />
               </div>
 
-              {/* Info */}
               <div className="flex-1 min-w-0 ml-4">
                 <p className="font-medium text-gray-900 dark:text-white truncate">
                   {file.name}
@@ -127,7 +124,6 @@ export function MediaList({
                 </div>
               </div>
 
-              {/* Actions */}
               <div className="flex items-center gap-2 ml-4">
                 {onSelect ? (
                   <Button
@@ -163,7 +159,7 @@ export function MediaList({
                   }}
                   className="opacity-0 group-hover:opacity-100 transition-opacity"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-4 w-4 text-white" />
                 </Button>
               </div>
             </div>

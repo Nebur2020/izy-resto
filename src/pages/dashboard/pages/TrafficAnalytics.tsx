@@ -60,6 +60,7 @@ export function TrafficAnalytics() {
       filteredOrders.length > 0 ? totalRevenue / filteredOrders.length : 0;
 
     const canceledOrders = orders.filter(o => o.status === 'cancelled');
+    console.log('canceledOrders: ', canceledOrders);
     const cancelRate =
       filteredOrders.length > 0
         ? (canceledOrders.length / orders.length) * 100

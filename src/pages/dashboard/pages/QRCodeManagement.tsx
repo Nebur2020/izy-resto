@@ -194,7 +194,7 @@ export function QRCodeManagement() {
                 disabled={!url || isGenerating}
                 className={`
                   relative inline-flex items-center justify-center px-6 py-3 
-                  text-sm font-medium !text-white
+                  text-sm font-medium text-white
                   bg-gradient-to-r from-blue-500 to-indigo-600 
                   hover:from-blue-600 hover:to-indigo-700 
                   rounded-xl shadow-lg hover:shadow-xl 
@@ -202,7 +202,7 @@ export function QRCodeManagement() {
                   disabled:opacity-50 disabled:cursor-not-allowed 
                   transform hover:-translate-y-0.5 active:scale-95
                   [&>*]:text-white [&>span]:text-white
-                  disabled:from-gray-400 disabled:to-gray-500
+                  disabled:from-gray-300 disabled:to-gray-300
                 `}
               >
                 <Sparkles
@@ -210,7 +210,7 @@ export function QRCodeManagement() {
                     isGenerating ? 'animate-spin' : ''
                   }`}
                 />
-                <span className='!text-white'>
+                <span>
                   {isGenerating
                     ? t('qrCode:generating')
                     : t('qrCode:generator')}

@@ -31,7 +31,7 @@ export function Button({
     primary: `
    bg-gradient-to-r from-blue-100 to-blue-200
    hover:from-blue-300 hover:to-blue-200
-   text-gray-900
+   text-white !text-white 
    shadow-sm
    focus:ring-blue-500/50
    dark:from-blue-500 dark:to-blue-400
@@ -44,12 +44,12 @@ export function Button({
    hover:bg-gray-50 dark:hover:bg-gray-700
    hover:border-gray-300 dark:hover:border-gray-600
    focus:ring-gray-500/50
-   shadow-sm text-gray-900
+   shadow-sm text-white !text-white 
  `,
     danger: `
    bg-gradient-to-r from-red-600 to-red-500
    hover:from-red-700 hover:to-red-600
-   text-gray-900
+   text-white !text-white 
    shadow-sm
    focus:ring-red-500/50
    dark:from-red-500 dark:to-red-400 
@@ -59,7 +59,7 @@ export function Button({
    text-gray-600 hover:text-gray-900
    dark:text-gray-400 dark:hover:text-gray-100
    hover:bg-gray-100 dark:hover:bg-gray-800
-   focus:ring-gray-500/50 text-gray-900
+   focus:ring-gray-500/50 text-white !text-white 
  `,
   };
 
@@ -82,9 +82,9 @@ export function Button({
       {...props}
     >
       {hoverOverlay}
-      <section className={`relative flex items-center ${spanClassName}`}>
+      <span className={`relative flex items-center ${spanClassName}`}>
         {content}
-      </section>
+      </span>
     </button>
   );
 }

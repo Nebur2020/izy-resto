@@ -113,7 +113,8 @@ export function OrderTrackingTimeline({ order }: OrderTrackingTimelineProps) {
                 disabled={isCancelling}
                 variant="danger"
                 onClick={handleCancelOrder}
-                className="w-full mt-4 !text-white"
+                className="w-full mt-4"
+                spanClassName='text-white'
               >
                 {t('cancel-order')}
               </Button>

@@ -80,6 +80,7 @@ export function PaymentMethodList(props: IPaymentMethodListProps) {
                   size="sm"
                   onClick={() => onDelete(method.id)}
                   disabled={methods.length < 2}
+                  spanClassName='text-white'
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>

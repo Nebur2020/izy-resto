@@ -1,4 +1,3 @@
-import React from 'react';
 import { X } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { Button } from '../../../ui/Button';
@@ -126,7 +125,7 @@ export function ExpenseForm({ expense, onSave, onCancel }: ExpenseFormProps) {
             <Button type="button" variant="secondary" onClick={onCancel}>
               Annuler
             </Button>
-            <Button type="submit" className='text-gray-900'>
+            <Button type="submit">
               {expense ? 'Mettre à jour' : 'Ajouter'}
             </Button>
           </div>

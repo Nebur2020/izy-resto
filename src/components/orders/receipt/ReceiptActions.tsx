@@ -67,7 +67,7 @@ export function ReceiptActions(props: IReceiptActionsProps) {
       </AnimatePresence>
 
       {order.status === 'pending' && onCancel && (
-        <Button variant="danger" onClick={onCancel} className="w-full mt-4 !text-white">
+        <Button variant="danger" onClick={onCancel} className="w-full mt-4">
           {t('cancel-order')}
         </Button>
       )}

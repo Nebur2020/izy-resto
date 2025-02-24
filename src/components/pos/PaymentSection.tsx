@@ -3,18 +3,15 @@ import { useSettings } from '../../hooks/useSettings';
 import { formatCurrency, getCurrencyStep } from '../../utils/currency';
 import { useTranslation } from 'react-i18next';
 
-interface PaymentSectionProps {
+interface IPaymentSectionProps {
   total: number;
   amountPaid: number;
   onAmountPaidChange: (amount: number) => void;
   onQuickAmount: (amount: number) => void;
 }
 
-export function PaymentSection({
-  total,
-  amountPaid,
-  onAmountPaidChange,
-}: PaymentSectionProps) {
+export function PaymentSection(props: IPaymentSectionProps) {
+  const { total, amountPaid, onAmountPaidChange } = props;
   const { t } = useTranslation('common');
   const { settings } = useSettings();
   const change = amountPaid - total;

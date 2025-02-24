@@ -35,8 +35,8 @@ export function BulkActions(props: IBulkActionsProps) {
         {selectedCount > 1 ? 's' : ''}
       </span>
 
-      <Button variant="danger" onClick={onDelete} className='text-white'>
-        <Trash2 className="w-4 h-4 mr-2" />
+      <Button variant="danger" onClick={onDelete} spanClassName='text-white'>
+        <Trash2 className="w-4 h-4 mr-2 text-white" />
         {t('common:delete')}
       </Button>
 

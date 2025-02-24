@@ -229,7 +229,7 @@ export function DataManagement() {
                     {isDeleting === name ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
                     ) : (
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-4 h-4 text-white" />
                     )}
                   </Button>
                 )}
@@ -256,11 +256,12 @@ export function DataManagement() {
             variant="danger"
             onClick={() => setResetConfirmation(true)}
             disabled={isResetting}
-            className="w-full sm:w-auto text-white"
+            className="w-full sm:w-auto"
+            spanClassName='text-white'
           >
             {isResetting ? (
               <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                <Loader2 className="w-4 h-4 mr-2 animate-spin text-white" />
                 {t('settingData:resetting-website')}
               </>
             ) : (

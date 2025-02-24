@@ -458,7 +458,7 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
             <Button type="button" variant="secondary" onClick={onCancel}>
               Annuler
             </Button>
-            <Button type="submit" className="text-gray-900">{item ? 'Mettre à jour' : 'Ajouter'}</Button>
+            <Button type="submit">{item ? 'Mettre à jour' : 'Ajouter'}</Button>
           </div>
         </form>
       </div>

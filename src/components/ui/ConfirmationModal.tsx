@@ -31,7 +31,7 @@ export function ConfirmationModal(props: IConfirmationModalProps) {
           <Button variant="secondary" onClick={onClose}>
             {t('common:cancel')}
           </Button>
-          <Button variant="danger" onClick={onConfirm} className='text-white'>
+          <Button variant="danger" onClick={onConfirm} spanClassName='text-white'>
             {t('common:delete')}
           </Button>
         </div>

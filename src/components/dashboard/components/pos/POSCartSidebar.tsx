@@ -145,7 +145,7 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
           <Button
             onClick={handleCheckout}
             disabled={cart.length === 0 || isSubmitting}
-            className="w-full py-3 text-base font-medium bg-blue-600 hover:bg-blue-700 text-gray-900 rounded-lg
+            className="w-full py-3 text-base font-medium bg-blue-600 hover:bg-blue-700 text-white  rounded-lg
                      transition-colors duration-200 shadow-sm hover:shadow-md
                      disabled:bg-gray-400 disabled:cursor-not-allowed"
           >

@@ -69,21 +69,6 @@ export function MediaGrid({
               }
             `}
           >
-            {/* Selection Indicator */}
-            {/* <div className={`
-              absolute top-3 left-3 z-20 w-6 h-6 rounded-full border-2 
-              transition-colors duration-200 flex items-center justify-center
-              ${selectedFiles.has(file.id)
-                ? 'border-blue-500 bg-blue-500 dark:border-blue-400 dark:bg-blue-400'
-                : 'border-white bg-white/80 dark:border-gray-600 dark:bg-gray-600/80'
-              }
-            `}>
-              {selectedFiles.has(file.id) && (
-                <Check className="w-4 h-4 text-white" />
-              )}
-            </div> */}
-
-            {/* Image */}
             <img
               src={file.url}
               alt={file.name}
@@ -91,7 +76,6 @@ export function MediaGrid({
               loading="lazy"
             />
 
-            {/* Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
               <div className="absolute inset-x-0 bottom-0 p-4">
                 <p className="text-white font-medium truncate mb-1">
@@ -136,7 +120,7 @@ export function MediaGrid({
                       }}
                       className="bg-red-500/80 hover:bg-red-500"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-4 h-4 text-white" />
                     </Button>
                   </div>
                 </div>
