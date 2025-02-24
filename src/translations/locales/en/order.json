@@ -97,5 +97,6 @@
     "dine-in": "Sur place"
   },
   "search-orders": "Search orders",
-  "new-order-notification": "New order"
+  "new-order-notification": "New order",
+  "no-orders-found": "No orders found"
 }

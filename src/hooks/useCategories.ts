@@ -6,7 +6,11 @@ import { QueryDocumentSnapshot, DocumentData } from 'firebase/firestore';
 
 export function useCategories() {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [allCategories, setAllCategories] = useState<Category[]>([]);
+
   const [isLoading, setIsLoading] = useState(true);
+  const [isAllLoading, setIsAllLoading] = useState(true);
+
   const [lastDoc, setLastDoc] =
     useState<QueryDocumentSnapshot<DocumentData> | null>(null);
   const [hasMore, setHasMore] = useState(false);
@@ -14,7 +18,22 @@ export function useCategories() {
 
   useEffect(() => {
     loadCategories();
+    loadAllCategories();
   }, []);
+
+  const loadAllCategories = async () => {
+    try {
+      setIsAllLoading(true);
+
+      const result = await categoryService.getCategories();
+      setAllCategories(result);
+    } catch (error) {
+      console.error('Error loading categories:', error);
+      toast.error('Echec de chargement des catégories');
+    } finally {
+      setIsAllLoading(false);
+    }
+  };
 
   const loadCategories = async (reset: boolean = true) => {
     try {
@@ -107,5 +126,7 @@ export function useCategories() {
     updateCategory,
     deleteCategory,
     refreshCategories: loadCategories,
+    isAllLoading,
+    allCategories,
   };
 }

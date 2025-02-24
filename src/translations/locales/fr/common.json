@@ -268,7 +268,7 @@
   "no-history-found": "Aucun historique disponible",
   "selected": "sélectionné",
   "customer-label": "Client",
-  "qty-label": "Quantityé",
+  "qty-label": "Quantité",
   "item-label": "Article",
   "amount-label": "Montant",
   "thank-you-label": "Merci pour votre commande !",
@@ -276,5 +276,8 @@
   "price-adjustment": "Ajustment de prix",
   "all-taxes-included": "Toutes taxes comprises (TTC)",
   "latest": "Dernière",
-  "stable": "Stable"
+  "stable": "Stable",
+  "try-different-date-range": "Essayez une plage de dates différente",
+  "menu-product": "produit du menu",
+  "inventory-product": "produit d'inventaire"
 }

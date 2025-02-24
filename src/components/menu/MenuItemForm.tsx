@@ -158,8 +158,8 @@ export const InventoryTab: React.FC<any> = ({
   return (
     <div className="space-y-4">
       {connections.map((connection: InventoryConnection, index: number) => (
-        <div key={`connection-${index}`} className="flex items-center gap-4">
-          <div className="flex-1">
+        <div key={`connection-${index}`} className="flex items-start gap-4">
+          <div className="flex-1 self-end">
             <label className="block text-sm font-medium mb-1">
               {t('variant:product')}
             </label>
@@ -177,18 +177,26 @@ export const InventoryTab: React.FC<any> = ({
           </div>
 
           <div className="flex-1">
-            <label className="block text-sm font-medium mb-1">
-              Ratio (1:{watch(`inventoryConnections.${index}.ratio`) || '0'})
-            </label>
-            <span className="text-sm">{t('variant:ratio-description')}</span>
-            <input
-              type="number"
-              step="0.01"
-              min="0.01"
-              {...register(`inventoryConnections.${index}.ratio`)}
-              className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
-              placeholder="Ex: 3 pour 1:3"
-            />
+            <div className="flex flex-col">
+              <label className="text-sm font-medium">
+                <span className="inline-flex items-center gap-1">
+                  Ratio <br /> 1 ({t('common:menu-product')}) :{' '}
+                  {watch(`inventoryConnections.${index}.ratio`) || '0'} (
+                  {t('common:inventory-product')})
+                </span>
+              </label>
+              <span className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                {t('variant:ratio-description')}
+              </span>
+              <input
+                type="number"
+                step="0.01"
+                min="0.01"
+                {...register(`inventoryConnections.${index}.ratio`)}
+                className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
+                placeholder="Ex: 3 pour 1:3"
+              />
+            </div>
           </div>
 
           <Button
@@ -354,7 +362,7 @@ const BasicInfoTab = ({
 export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('product');
-  const { categories } = useCategories();
+  const { allCategories } = useCategories();
   const { settings } = useSettings();
   const [selectedCategory, setSelectedCategory] = useState(
     item?.categoryId || ''
@@ -499,7 +507,7 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
             watch={watch}
             setValue={setValue}
             settings={settings!}
-            categories={categories}
+            categories={allCategories}
             selectedCategory={selectedCategory}
             handleCategoryChange={handleCategoryChange}
           />
@@ -533,7 +541,7 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
     watch,
     setValue,
     settings,
-    categories,
+    allCategories,
     selectedCategory,
     handleCategoryChange,
     inventory,

@@ -275,5 +275,8 @@
   "price-adjustment": "Price adjustment",
   "all-taxes-included": "All taxes included (ATI)",
   "latest": "Latest",
-  "stable": "Stable"
+  "stable": "Stable",
+  "try-different-date-range": "Try different date range",
+  "menu-product": "menu product",
+  "inventory-product": "inventory product"
 }
