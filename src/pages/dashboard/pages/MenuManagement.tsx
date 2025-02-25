@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, RefreshCw, Search as SearchIcon } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -44,13 +44,11 @@ export function MenuManagement() {
     }
   }, [selectedCategory, isSearching]);
 
-  // Handle search with debounce
   useEffect(() => {
     const timer = setTimeout(() => {
       if (searchTerm) {
         performSearch();
       } else if (isSearching) {
-        // Clear search and load normal items when search term is empty
         setIsSearching(false);
         loadInitialItems();
       }

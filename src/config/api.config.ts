@@ -15,10 +15,6 @@ export const cloudinaryConfig = {
   apiSecret: import.meta.env.VITE_CLOUDINARY_API_SECRET,
 };
 
-export const appConfig = {
-  baseUrl: import.meta.env.VITE_APP_URL || 'https://restaurant-5ba0f.web.app',
-};
-
 export const secretKeys = {
   secret: '_[kX/hgy^75R*XDg7AT',
 };

@@ -51,18 +51,6 @@ export function calculateTaxes(
 }
 
 /**
- * Calculate price with all applicable taxes included
- */
-export function calculatePriceWithTaxes(
-  price: number,
-  taxRates: TaxRate[],
-  categoryIds?: string[]
-): number {
-  const { total: taxAmount } = calculateTaxes(price, taxRates, categoryIds);
-  return Math.round((price + taxAmount) * 100) / 100;
-}
-
-/**
  * Calculate price without tax (when tax is included in price)
  */
 export function calculatePriceWithoutTaxes(
