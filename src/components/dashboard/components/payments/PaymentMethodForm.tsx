@@ -69,7 +69,6 @@ const PaymentTypeSelect = ({
         'Stripe',
         'Wave',
         'Money Fusion',
-        'Paiement à la caisse',
         'Autres',
       ].map((type, index) => (
         <option key={index} value={type}>
