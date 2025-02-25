@@ -21,7 +21,7 @@
   "resetting-website": "Resetting website...",
   "reset-website-title": "Reset Website",
   "delete-collection": "Delete collection {{collection}}",
-  "delete-collection-desc": "Are you sure you want to delete collection {{deleteConfirmationCollection}}? This action will delete {{deleteConfirmationItemCount} documents and is irreversible.",
+  "delete-collection-desc": "Are you sure you want to delete collection {{deleteConfirmationCollection}}? This action will delete {{deleteConfirmationItemCount}} documents and is irreversible.",
   "reset-website-sub-title": "Reset website",
   "reset-website-desc": "Are you sure you want to reset the website? This action will delete all data and is irreversible. Site settings will be preserved.",
   "reinitialise-website": "Reset",
