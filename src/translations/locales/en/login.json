@@ -1,0 +1,16 @@
+{
+  "fields-required": "Please fill all fields",
+  "invalid-email": "Invalid email",
+  "password-length": "Password must be at least {{length}} characters",
+  "unknown-error": "Please check your credentials",
+  "user-disabled": "This account has been disabled",
+  "user-not-found": "No account found with this email",
+  "wrong-password": "Incorrect password",
+  "too-many-requests": "Too many attempts. Please try again later.",
+  "network-request-failed": "Connection error. Check your internet connection.",
+  "back-to-restaurants": "Back to Restaurants",
+  "personal-account": "Access reserved for staff",
+  "login": "Login",
+  "email": "Email",
+  "password": "Password"
+}

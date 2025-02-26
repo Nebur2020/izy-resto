@@ -132,12 +132,6 @@ export function HolidayClosureModal() {
                 </Link>
               </div>
             </div>
-            {/* Action */}
-            {/* <div className="mt-6">
-              <Button onClick={onClose} className="w-full">
-                J'ai compris
-              </Button>
-            </div> */}
           </div>
         </motion.div>
       </motion.div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
@@ -17,6 +18,7 @@ export function Button({
   spanClassName = '',
   ...props
 }: ButtonProps) {
+  const { t } = useTranslation();
   const baseStyles = `
     relative inline-flex items-center justify-center
     font-medium transition-all duration-200
@@ -47,11 +49,11 @@ export function Button({
     danger: `
    bg-gradient-to-r from-red-600 to-red-500
    hover:from-red-700 hover:to-red-600
-   text-white !text-white
+   text-white !text-white 
    shadow-sm
    focus:ring-red-500/50
    dark:from-red-500 dark:to-red-400 
-   dark:hover:from-red-600 dark:hover:to-red-500 text-white !text-white 
+   dark:hover:from-red-600 dark:hover:to-red-500 text-gray-900
  `,
     ghost: `
    text-gray-600 hover:text-gray-900

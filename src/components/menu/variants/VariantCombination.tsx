@@ -109,7 +109,7 @@ export function VariantCombination(props: IVariantCombinationProps) {
           onClick={e => onRemove(e)}
           className="ml-4"
         >
-          <X className="w-4 h-4" />
+          <X className="w-4 h-4 text-white" />
         </Button>
       </div>
     </div>
