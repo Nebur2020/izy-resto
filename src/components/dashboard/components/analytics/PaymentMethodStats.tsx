@@ -13,11 +13,11 @@ export const PaymentMethodStats = ({ orders }: { orders: Order[] }) => {
   const paymentStats = useMemo(() => {
     // Group payments by method
     const paymentTotals = orders.reduce((acc, order) => {
-      if (order.paymentMethod) {
-        const methodName = order.paymentMethod.name;
-        acc[methodName] =
-          (acc[methodName] || 0) + Number(order.amountPaid || order.total || 0);
-      }
+      const methodName = t(
+        `order:payment-method-names.${order?.paymentMethod?.name || 'dine-in'}`
+      );
+      acc[methodName] =
+        (acc[methodName] || 0) + Number(order.amountPaid || order.total || 0);
       return acc;
     }, {} as Record<string, number>);
 
@@ -56,7 +56,8 @@ export const PaymentMethodStats = ({ orders }: { orders: Order[] }) => {
     >
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold">
-          {t('settingData:payment-methods') || 'Payment Methods'}
+          {t('settingData:payment-methods') || 'Payment Methods'} <br />{' '}
+          <span className="text-sm">{t('common:all-taxes-included')}</span>
         </h3>
         <div className="flex items-center space-x-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full">
           <DollarSign className="w-4 h-4" />
@@ -87,7 +88,6 @@ export const PaymentMethodStats = ({ orders }: { orders: Order[] }) => {
                   style={{ width: `${stat.percentage}%` }}
                 />
               </div>
-              ({stat.percentage}%)
             </div>
           ))}
         </div>

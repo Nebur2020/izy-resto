@@ -33,114 +33,46 @@ export function OrderManagement() {
   const [isSearching, setIsSearching] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
 
-  // Track the previous order count to detect new orders
-  const prevOrderCountRef = useRef(0);
+  // Track seen order IDs to detect new orders
+  const seenOrderIdsRef = useRef<Set<string>>(new Set());
+  const isFirstLoadRef = useRef(true);
 
-  // Audio element reference
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  // Initialize audio element once
   useEffect(() => {
-    audioRef.current = new Audio('/notification.mp3');
-    audioRef.current.volume = 0.7;
-
-    // iOS requires user interaction before playing audio
-    // Let's try to "unlock" audio on first user interaction
-    const unlockAudio = () => {
-      if (audioRef.current) {
-        // Play and immediately pause to unlock
-        audioRef.current.play().catch(() => {});
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-      }
-
-      // Remove event listeners after first interaction
-      document.removeEventListener('click', unlockAudio);
-      document.removeEventListener('touchstart', unlockAudio);
-    };
-
-    document.addEventListener('click', unlockAudio);
-    document.addEventListener('touchstart', unlockAudio);
-
-    return () => {
-      document.removeEventListener('click', unlockAudio);
-      document.removeEventListener('touchstart', unlockAudio);
-    };
+    refreshOrders();
   }, []);
 
-  // Auto-refresh orders every minute when tab is visible
+  // Detect new orders using order IDs
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      if (
-        document.visibilityState === 'visible' &&
-        !isLoading &&
-        !isSearching
-      ) {
-        refreshOrders();
-      }
-    }, 60000);
+    // Skip detection during initial load or when searching
+    if (isLoading || isSearching || orders.length === 0) return;
 
-    return () => clearInterval(intervalId);
-  }, [refreshOrders, isLoading, isSearching]);
-
-  // Detect new orders
-  useEffect(() => {
-    // Only run this check after initial loading is complete
-    if (!isLoading && orders.length > 0) {
-      const pendingCount = orders.filter(o => o.status === 'pending').length;
-
-      // If we previously had orders and there are more pending orders now
-      if (
-        prevOrderCountRef.current > 0 &&
-        pendingCount > prevOrderCountRef.current
-      ) {
-        // Play notification sound if we're not in focus
-        if (document.visibilityState !== 'visible') {
-          playNotificationSound();
-        }
-      }
-
-      // Update the counter
-      prevOrderCountRef.current = pendingCount;
+    // On first successful load, just record all current orders without notification
+    if (isFirstLoadRef.current) {
+      orders.forEach(order => {
+        seenOrderIdsRef.current.add(order.id);
+      });
+      isFirstLoadRef.current = false;
+      return;
     }
-  }, [orders, isLoading, t]);
 
-  // Play notification sound
-  const playNotificationSound = () => {
-    if (!audioRef.current) return;
+    // Find new orders that we haven't seen before
+    const newOrders = orders.filter(
+      order => !seenOrderIdsRef.current.has(order.id)
+    );
 
-    try {
-      // Reset to beginning before playing (in case it was already played)
-      audioRef.current.currentTime = 0;
+    // If there are any new orders
+    if (newOrders.length > 0) {
+      // Only play sound for new pending orders
+      const newPendingOrders = newOrders.filter(
+        order => order.status === 'pending'
+      );
 
-      // Create a promise that uses the built-in audio element
-      const playPromise = audioRef.current.play();
-
-      // Modern browsers return a promise from audio.play()
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
-          // Auto-play was prevented (common on mobile)
-          console.warn('Audio playback was prevented:', error);
-
-          // For iOS, we can try playing on the next user interaction
-          const playOnInteraction = () => {
-            if (audioRef.current) {
-              audioRef.current.play().catch(() => {});
-            }
-            window.removeEventListener('touchend', playOnInteraction);
-            window.removeEventListener('click', playOnInteraction);
-          };
-
-          window.addEventListener('touchend', playOnInteraction, {
-            once: true,
-          });
-          window.addEventListener('click', playOnInteraction, { once: true });
-        });
-      }
-    } catch (error) {
-      console.error('Error playing notification sound:', error);
+      // Update seen orders reference with all new orders
+      newOrders.forEach(order => {
+        seenOrderIdsRef.current.add(order.id);
+      });
     }
-  };
+  }, [orders, isLoading, isSearching]);
 
   // Handle search with debounce
   useEffect(() => {
@@ -316,7 +248,7 @@ export function OrderManagement() {
                 </span>
               ) : (
                 <span>
-                  {t('order:search-results', { count: searchResults.length })}
+                  {t('common:search-results', { count: searchResults.length })}
                 </span>
               )}
             </div>
@@ -339,8 +271,6 @@ export function OrderManagement() {
         </div>
       </div>
 
-      {/* <div className="flex items-center justify-between">
-      </div> */}
       <OrderStats stats={stats} />
 
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6">

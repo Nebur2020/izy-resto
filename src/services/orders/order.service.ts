@@ -55,7 +55,7 @@ class OrderService {
 
       return onSnapshot(
         q,
-        { includeMetadataChanges: true },
+        { includeMetadataChanges: false },
         (snapshot: QuerySnapshot) => {
           // Only process if snapshot is from server
           if (snapshot.metadata.hasPendingWrites) {
@@ -88,7 +88,7 @@ class OrderService {
               }
 
               // Only notify about orders created in the last minute
-              const isRecentOrder = Date.now() - orderTimestamp < 60000;
+              const isRecentOrder = Date.now() - orderTimestamp < 30000;
 
               if (isRecentOrder) {
                 onNewOrder(orderData);

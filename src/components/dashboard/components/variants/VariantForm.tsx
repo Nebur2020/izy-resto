@@ -341,7 +341,7 @@ export function VariantForm(props: IVariantFormProps) {
                   <div className="flex overflow-x-auto bg-gray-50 dark:bg-gray-800 border-b dark:border-gray-700">
                     {values.map((value, index) => (
                       <button
-                        key={index}
+                        key={Math.random()}
                         type="button"
                         onClick={() => setActiveValueTab(index)}
                         className={`flex items-center gap-2 px-4 py-2.5 text-sm whitespace-nowrap ${
@@ -379,6 +379,7 @@ export function VariantForm(props: IVariantFormProps) {
                           {t('common:value-name')}
                         </label>
                         <input
+                          value={watch(`values.${activeValueTab}`)}
                           {...register(`values.${activeValueTab}`, {
                             required: 'La valeur est requise',
                           })}
@@ -401,6 +402,7 @@ export function VariantForm(props: IVariantFormProps) {
                           </span>
                           <input
                             type="number"
+                            value={watch(`prices.${activeValueTab}`)}
                             {...register(`prices.${activeValueTab}`, {
                               valueAsNumber: true,
                             })}
@@ -483,6 +485,9 @@ export function VariantForm(props: IVariantFormProps) {
                                       </span>
                                       <input
                                         type="number"
+                                        value={watch(
+                                          `inventory.${activeValueTab}.${connectionIndex}.ratio`
+                                        )}
                                         {...register(
                                           `inventory.${activeValueTab}.${connectionIndex}.ratio`,
                                           {

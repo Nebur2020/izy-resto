@@ -45,7 +45,6 @@ export function OrderTrackingTimeline({ order }: OrderTrackingTimelineProps) {
     try {
       setIsDownloading(true);
       const pdf = await generateUserReceipt(order, t, settings);
-      console.log('pdf', pdf);
       pdf.save(`commande-${order.id.slice(0, 8)}.pdf`);
       toast.success(t('common:download-success'));
     } catch (error) {

@@ -91,8 +91,10 @@
     "Autres": "Autre",
     "Test payments": "Paiements de test",
     "Orange Money": "Orange Money",
-    "Amadou Money": "Amadou Money"
+    "Amadou Money": "Amadou Money",
+    "dine-in": "Paiement sur place"
   },
   "search-orders": "Rechercher des commandes",
-  "new-order-notification": "Nouvelle commande"
+  "new-order-notification": "Nouvelle commande",
+  "no-orders-found": "Aucune commande trouvée"
 }

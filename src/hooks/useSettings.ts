@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { settingsService } from '../services/settings/settings.service';
 import { RestaurantSettings } from '../types';
+import i18n from '../translations/i18n';
 
 export function useSettings() {
   const [settings, setSettings] = useState<RestaurantSettings | null>(null);
@@ -14,6 +15,7 @@ export function useSettings() {
     try {
       setIsLoading(true);
       const data = await settingsService.getSettings();
+      i18n.changeLanguage(data.language);
       setSettings(data);
     } catch (error) {
       console.error('Error loading settings:', error);

@@ -132,7 +132,7 @@ export function SocialMediaSettings() {
                       handleUpdateProfile(e, index, { active: !profile.active })
                     }
                   >
-                    {profile.active ? 'Actif' : 'Inactif'}
+                    {profile.active ? t('common:Actif') : t('common:Inactif')}
                   </Button>
                   <Button
                     type="button"

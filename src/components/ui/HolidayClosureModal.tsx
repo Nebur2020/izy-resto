@@ -34,8 +34,6 @@ export function HolidayClosureModal() {
     saturday: t('common:days.saturday'),
   };
 
-  console.log('FRENCH_DAYS :', FRENCH_DAYS);
-
   const isProtectedRoute =
     location.pathname.startsWith('/dashboard') ||
     location.pathname === '/login';

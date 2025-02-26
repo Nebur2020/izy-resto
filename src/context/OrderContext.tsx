@@ -109,22 +109,6 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
       </div>,
       { duration: 5000 }
     );
-
-    if (document.visibilityState !== 'visible') {
-      playNotificationSound();
-    }
-  };
-
-  const playNotificationSound = () => {
-    try {
-      const audio = new Audio('/notification.mp3');
-      audio.volume = 0.5;
-      audio
-        .play()
-        .catch(err => console.error('Failed to play notification sound:', err));
-    } catch (error) {
-      console.error('Error playing notification sound:', error);
-    }
   };
 
   const loadInitialOrders = async () => {

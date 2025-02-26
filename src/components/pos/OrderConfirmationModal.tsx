@@ -35,7 +35,11 @@ export function OrderConfirmationModal(props: IOrderConfirmationModalProps) {
         {
           ...translations,
           paymentMethodName: t(
-            `payment-method-names.${order.paymentMethod?.name}`
+            `payment-method-names.${
+              order.diningOption === 'dine-in'
+                ? 'dine-in'
+                : order.paymentMethod?.name
+            }`
           ),
         },
         t,
@@ -62,7 +66,11 @@ export function OrderConfirmationModal(props: IOrderConfirmationModalProps) {
         {
           ...translations,
           paymentMethodName: t(
-            `payment-method-names.${order.paymentMethod?.name}`
+            `payment-method-names.${
+              order.diningOption === 'dine-in'
+                ? 'dine-in'
+                : order.paymentMethod?.name
+            }`
           ),
         },
         t,
@@ -119,7 +127,9 @@ export function OrderConfirmationModal(props: IOrderConfirmationModalProps) {
             className="w-full flex items-center justify-center gap-2"
           >
             <Download className="w-4 h-4 mr-1" />
-            {isDownloading ? t('common:downloading') : t('common:download-bill')}
+            {isDownloading
+              ? t('common:downloading')
+              : t('common:download-bill')}
           </Button>
 
           <Button variant="ghost" onClick={onClose} className="w-full">

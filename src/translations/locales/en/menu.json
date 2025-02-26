@@ -8,5 +8,6 @@
   "units": "units",
   "unit": "unit",
   "select-minus-variant": "Please select at least one item from these required variants",
-  "add-to-cart": "Add to Cart"
+  "add-to-cart": "Add to Cart",
+  "select-required-variants": "Select required variants"
 }

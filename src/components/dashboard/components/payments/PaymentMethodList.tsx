@@ -54,7 +54,10 @@ export function PaymentMethodList(props: IPaymentMethodListProps) {
 
               <div>
                 <h3 className="font-medium text-lg">
-                  {t(`order:payment-method-names.${method.name}`)}
+                  {t(`order:payment-method-names.${method.name}`) ===
+                  `order:payment-method-names.${method.name}`
+                    ? t(`order:payment-method-names.${method.name}`)
+                    : method.name}
                   {method.isDefault && (
                     <span className="ml-2 text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
                       {t('common:payment-method-default')}

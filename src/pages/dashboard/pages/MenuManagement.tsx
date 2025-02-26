@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, RefreshCw, Search as SearchIcon } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -186,7 +186,6 @@ export function MenuManagement() {
   };
 
   const handleCategoryChange = (category: string) => {
-    console.log('Category changed to:', category);
     setSelectedCategory(category);
 
     // Reset pagination state

@@ -153,11 +153,9 @@ class StockUpdateService {
 
           // Process variant inventory connections
           for (const variant of menuDoc.variants) {
-            console.log('variant.selectedIndexes', variant.selectedIndexes);
             for (const selectedIndex of variant.selectedIndexes) {
               // Get all inventory connections for this variant value
               const connections = variant.parsedInventory[selectedIndex] || [];
-              console.log('connections', connections);
 
               for (const connection of connections) {
                 if (!connection.itemId || !connection.ratio) continue;
@@ -205,7 +203,7 @@ class StockUpdateService {
           for (const connection of connections) {
             if (!connection.itemId || !connection.ratio) continue;
 
-            const inventoryNeeded = orderQuantity / connection.ratio;
+            const inventoryNeeded = orderQuantity * connection.ratio;
             const currentUpdate = inventoryUpdates.get(connection.itemId);
 
             if (currentUpdate) {
