@@ -54,7 +54,7 @@ export function PaymentMethodList(props: IPaymentMethodListProps) {
 
               <div>
                 <h3 className="font-medium text-lg">
-                  {t(`order:payment-method-names.${method.name}`) ===
+                  {`order:payment-method-names.${method.name}` ===
                   `order:payment-method-names.${method.name}`
                     ? t(`order:payment-method-names.${method.name}`)
                     : method.name}
@@ -83,7 +83,7 @@ export function PaymentMethodList(props: IPaymentMethodListProps) {
                   size="sm"
                   onClick={() => onDelete(method.id)}
                   disabled={methods.length < 2}
-                  spanClassName='text-white'
+                  spanClassName="text-white"
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>
