@@ -1,6 +1,6 @@
 import { X } from 'lucide-react';
 import { useForm, Controller } from 'react-hook-form';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Button } from '../../../ui/Button';
 import { LogoUploader } from '../../../settings/LogoUploader';
 import { paymentService } from '../../../../services/payments/payment.service';
@@ -14,6 +14,7 @@ type PaymentMethodType =
   | 'Paiement à la livraison'
   | 'CinetPay'
   | 'Money Fusion'
+  | 'Paiement à la caisse'
   | 'Autres';
 
 interface PaymentMethodFormData {
@@ -32,14 +33,16 @@ interface PaymentMethodFormProps {
   onCancel: () => void;
 }
 
-const PAYMENT_TYPES: Record<string, PaymentMethodType> = {
-  Wave: 'Wave',
-  PayTech: 'PayTech',
-  Stripe: 'Stripe',
-  CinetPay: 'CinetPay',
-  'Money Fusion': 'Money Fusion',
-  'Paiement à la livraison': 'Paiement à la livraison',
-};
+// Built-in payment methods that don't need custom names
+const BUILT_IN_METHODS = new Set([
+  'Wave',
+  'PayTech',
+  'Stripe',
+  'Paiement à la livraison',
+  'CinetPay',
+  'Money Fusion',
+  'Paiement à la caisse',
+]);
 
 const PaymentTypeSelect = ({
   value,
@@ -87,44 +90,54 @@ export function PaymentMethodForm({
 }: PaymentMethodFormProps) {
   const { t } = useTranslation();
 
-  const [methodType, setMethodType] = useState<PaymentMethodType>(
-    PAYMENT_TYPES[`${method?.name}`] ?? 'Autres'
-  );
+  // Initialize payment type based on existing method or default to 'Autres'
+  const initialType =
+    method?.name && BUILT_IN_METHODS.has(method.name)
+      ? (method.name as PaymentMethodType)
+      : 'Autres';
+
+  const [methodType, setMethodType] = useState<PaymentMethodType>(initialType);
 
   const {
     control,
     register,
     handleSubmit,
-    setValue,
     formState: { errors, isSubmitting },
   } = useForm<PaymentMethodFormData>({
-    defaultValues: method || {
-      name: '',
-      qrCode: '',
-      url: '',
-      isDefault: false,
-      apiKey: '',
-      apiSecret: '',
-      instruction: '',
+    defaultValues: {
+      name: method?.name || '',
+      qrCode: method?.qrCode || '',
+      url: method?.url || '',
+      isDefault: method?.isDefault || false,
+      apiKey: method?.apiKey || '',
+      apiSecret: method?.apiSecret || '',
+      instruction: method?.instruction || '',
     },
   });
 
   const isEditing = useMemo(() => !!method?.name, [method?.name]);
 
-  useEffect(() => {
-    if (methodType !== 'Autres' && PAYMENT_TYPES[methodType]) {
-      setValue('name', methodType);
-    } else if (methodType === 'Autres' && !isEditing) {
-      setValue('name', '');
-    }
-  }, [methodType, setValue, isEditing]);
-
   const handleFormSubmit = async (data: PaymentMethodFormData) => {
     try {
       const methods = await paymentService.getActivePaymentMethods();
+
+      // Prepare submission data
+      const submissionData: PaymentMethodFormData = {
+        ...data,
+        // For built-in methods, use the method type as name
+        name: BUILT_IN_METHODS.has(methodType) ? methodType : data.name.trim(),
+      };
+
+      // Validate name
+      if (!submissionData.name) {
+        toast.error(t('payment:name-is-required'));
+        return;
+      }
+
+      // Check for duplicate names
       const nameExists = methods.some(
         m =>
-          m.name.toLowerCase() === data.name.toLowerCase() &&
+          m.name.toLowerCase() === submissionData.name.toLowerCase() &&
           m.id !== method?.id
       );
 
@@ -133,7 +146,7 @@ export function PaymentMethodForm({
         return;
       }
 
-      await onSave(data);
+      await onSave(submissionData);
     } catch (error: any) {
       if (error.code === 'payment/duplicate-name') {
         toast.error(t('payment:methode-with-same-name-already-exist'));

@@ -23,7 +23,7 @@
   "variant-image-description": "Image spécifique pour cette combinaison (optionnel)",
   "select-variant-value": "Sélectionner une valeur",
   "add-inventory-connection": "Ajouter une connexion",
-  "ratio-description": "Le ratio est une règle de proportion simple entre le produit d'inventaire et le produit du menu",
+  "ratio-description": "Le ratio est une règle de proportion simple entre le produit du menu et le produit d'inventaire",
   "select-inventory-product": "Sélectionner un produit",
   "product": "Produit d'inventaire",
   "add-item": "Ajouter un Item",

@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback, memo, useMemo } from 'react';
 import { Plus, X } from 'lucide-react';
 import { FormProvider, useForm, UseFormReturn } from 'react-hook-form';
 import { Button } from '../../components/ui/Button';
 import {
+  InventoryConnection,
   MenuItem,
   MenuItemWithVariants,
   RestaurantSettings,
@@ -76,149 +77,89 @@ interface VariantsTabProps {
   onVariantChange: () => void;
 }
 
-export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
+// Memoize the VariantsTab component to prevent unnecessary re-renders
+const MemoizedVariantsTab = memo(
+  ({
+    selectedCategory,
+    variants,
+    variantPrices,
+    setVariantPrices,
+    onVariantChange,
+  }: VariantsTabProps) => {
+    const { t } = useTranslation();
+
+    // Memoize the onChange callback to maintain stable reference
+    const handlePriceChange = useCallback(
+      newPrices => {
+        setVariantPrices(newPrices);
+        onVariantChange();
+      },
+      [setVariantPrices, onVariantChange]
+    );
+
+    return (
+      <div>
+        {selectedCategory && variants.length > 0 ? (
+          <VariantManager
+            variants={variants}
+            value={variantPrices}
+            onChange={handlePriceChange}
+          />
+        ) : (
+          <div className="text-center py-8 text-gray-500">
+            {t('inventory:select-category-to-add-variants')}
+          </div>
+        )}
+      </div>
+    );
+  }
+);
+
+export const InventoryTab: React.FC<any> = ({
+  register,
+  watch,
+  setValue,
+  inventory,
+}) => {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState('product');
-  const { categories } = useCategories();
-  const { settings } = useSettings();
-  const [selectedCategory, setSelectedCategory] = useState(
-    item?.categoryId || ''
-  );
-  const { items: inventory } = useInventory();
-  const { variants } = useVariants(selectedCategory);
-  const [variantPrices, setVariantPrices] = useState(
-    (item as MenuItemWithVariants)?.variantPrices || []
+  const [connections, setConnections] = useState<InventoryConnection[]>(
+    watch('inventoryConnections') || []
   );
 
-  const [isVariantPricesDirty, setIsVariantPricesDirty] = useState(false);
-
-  const methods = useForm<FormInputs>({
-    defaultValues: {
-      name: item?.name || '',
-      description: item?.description || '',
-      price: item?.price || 0,
-      image: item?.image || '',
-      categoryId: item?.categoryId || '',
-      stockQuantity: item?.stockQuantity || 0,
-      inventoryConnections: item?.inventoryConnections || [],
-    },
-  });
-
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors },
-  } = methods;
-
-  const [initialVariantPrices] = useState(
-    JSON.stringify((item as MenuItemWithVariants)?.variantPrices || [])
-  );
-
-  useEffect(() => {
-    const currentVariantPrices = JSON.stringify(variantPrices);
-    setIsVariantPricesDirty(currentVariantPrices !== initialVariantPrices);
-  }, [variantPrices, initialVariantPrices]);
-
-  const getVariantPriceModifier = (
-    variantName: string,
-    value: string
-  ): number => {
-    const variant = variants.find(v => v.name === variantName);
-    if (!variant) return 0;
-
-    const variantValue = variant.values.find(v => v === value);
-    const priceModifier =
-      variant.prices?.[variant.values.indexOf(variantValue)] || 0;
-    return priceModifier;
-  };
-
-  const calculatePriceModifiers = (combination: string[]): number => {
-    return combination.reduce((total, variantStr) => {
-      const [variantName, value] = variantStr.split(': ');
-      return total + getVariantPriceModifier(variantName, value);
-    }, 0);
-  };
-
-  const getVariantCombinations = () => {
-    if (!variants.length) return [];
-
-    const combinations: string[][] = [[]];
-    variants.forEach(variant => {
-      const newCombinations: string[][] = [];
-      variant.values.forEach(value => {
-        combinations.forEach(combo => {
-          newCombinations.push([...combo, `${variant.name}: ${value}`]);
-        });
-      });
-      combinations.length = 0;
-      combinations.push(...newCombinations);
+  // Watch for changes to inventoryConnections
+  React.useEffect(() => {
+    const subscription = watch((value, { name }) => {
+      if (name?.startsWith('inventoryConnections')) {
+        setConnections(value.inventoryConnections || []);
+      }
     });
-    return combinations;
-  };
+    return () => subscription.unsubscribe();
+  }, [watch]);
 
-  const handleFormSubmit = (formData: any) => {
-    const allCombinations = getVariantCombinations();
-    const basePrice = Number(formData.price);
-
-    const defaultVariantPrices = allCombinations
-      .filter(
-        combination =>
-          !variantPrices.some(
-            vp =>
-              JSON.stringify(vp.variantCombination) ===
-              JSON.stringify(combination)
-          )
-      )
-      .map(combination => {
-        const priceModifier = calculatePriceModifiers(combination);
-
-        return {
-          variantCombination: combination,
-          price: basePrice + priceModifier,
-          image: formData.image,
-        };
+  const handleRemoveConnection = useCallback(
+    (index: number) => {
+      const currentConnections = [...connections];
+      currentConnections.splice(index, 1);
+      setValue('inventoryConnections', currentConnections, {
+        shouldDirty: true,
       });
+    },
+    [connections, setValue]
+  );
 
-    const menuItem: MenuItemWithVariants = {
-      ...formData,
-      price: Number(formData.price),
-      stockQuantity: Number(formData.stockQuantity),
-      variantPrices: variantPrices.map(vp => ({
-        ...vp,
-        price: Number(vp.price),
-      })),
-      defaultVariantPrices,
-      inventoryConnections: formData.inventoryConnections
-        .filter((conn: any) => conn.itemId && conn.ratio)
-        .map((conn: any) => ({
-          ...conn,
-          ratio: Number(conn.ratio),
-        })),
-    };
-    onSave(menuItem);
-  };
+  const handleAddConnection = useCallback(() => {
+    const newConnection = { itemId: '', ratio: 1 };
+    setValue('inventoryConnections', [...connections, newConnection], {
+      shouldDirty: true,
+      shouldTouch: true,
+    });
+  }, [connections, setValue]);
 
-  const handleVariantChange = () => {
-    setIsVariantPricesDirty(true);
-  };
-
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    setSelectedCategory(value);
-    setValue('categoryId', value, { shouldDirty: true });
-    if (value !== item?.categoryId) {
-      setVariantPrices([]);
-      setIsVariantPricesDirty(true);
-    }
-  };
-
-  const InventoryTab = ({ register, watch, setValue, inventory }) => (
+  return (
     <div className="space-y-4">
-      {watch('inventoryConnections')?.map((connection: any, index: number) => (
-        <div key={index} className="flex items-center gap-4">
-          <div className="flex-1">
+      {connections.map((connection: InventoryConnection, index: number) => (
+        <div key={`connection-${index}`} className="flex items-start gap-4">
+          <div className="flex-1 self-end">
             <label className="block text-sm font-medium mb-1">
               {t('variant:product')}
             </label>
@@ -236,30 +177,32 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
           </div>
 
           <div className="flex-1">
-            <label className="block text-sm font-medium mb-1">
-              Ratio (1:{watch(`inventoryConnections.${index}.ratio`) || '0'})
-            </label>
-            <span className="text-sm">{t('variant:ratio-description')}</span>
-            <input
-              type="number"
-              step="0.01"
-              min="0.01"
-              {...register(`inventoryConnections.${index}.ratio`)}
-              className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
-              placeholder="Ex: 3 pour 1:3"
-            />
+            <div className="flex flex-col">
+              <label className="text-sm font-medium">
+                <span className="inline-flex items-center gap-1">
+                  Ratio <br /> 1 ({t('common:menu-product')}) :{' '}
+                  {watch(`inventoryConnections.${index}.ratio`) || '0'} (
+                  {t('common:inventory-product')})
+                </span>
+              </label>
+              <span className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                {t('variant:ratio-description')}
+              </span>
+              <input
+                type="number"
+                step="0.01"
+                min="0.01"
+                {...register(`inventoryConnections.${index}.ratio`)}
+                className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
+                placeholder="Ex: 3 pour 1:3"
+              />
+            </div>
           </div>
 
           <Button
             type="button"
             variant="ghost"
-            onClick={() => {
-              const connections = watch('inventoryConnections');
-              const value = connections.filter((_, i) => i !== index);
-              setValue('inventoryConnections', [...value], {
-                shouldDirty: true,
-              });
-            }}
+            onClick={() => handleRemoveConnection(index)}
             className="mt-6"
           >
             <X className="w-4 h-4" />
@@ -270,34 +213,42 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
       <Button
         type="button"
         variant="secondary"
-        onClick={() => {
-          const connections = watch('inventoryConnections') || [];
-          setValue(
-            'inventoryConnections',
-            [...connections, { itemId: '', ratio: 1 }],
-            {
-              shouldDirty: true,
-              shouldTouch: true,
-            }
-          );
-        }}
+        onClick={handleAddConnection}
+        className="mt-4"
       >
         <Plus className="w-4 h-4 mr-2" />
         {t('variant:add-inventory-connection')}
       </Button>
     </div>
   );
+};
 
-  const BasicInfoTab = ({
-    register,
-    errors,
-    watch,
-    setValue,
-    settings,
-    categories,
-    selectedCategory,
-    handleCategoryChange,
-  }: ProductTabProps) => (
+// Memoize the BasicInfoTab component
+const BasicInfoTab = ({
+  register,
+  errors,
+  watch,
+  setValue,
+  settings,
+  categories,
+  selectedCategory,
+  handleCategoryChange,
+}: ProductTabProps) => {
+  const { t } = useTranslation();
+
+  const [image, setImage] = useState<string>(watch('image'));
+
+  // Watch for changes to inventoryConnections
+  React.useEffect(() => {
+    const subscription = watch((value, { name }) => {
+      if (name?.startsWith('image')) {
+        setImage(value.image || '');
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
+
+  return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
@@ -397,7 +348,7 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
 
         <div className="md:col-span-2">
           <LogoUploader
-            value={watch('image')}
+            value={image}
             onChange={url => setValue('image', url, { shouldDirty: true })}
             label={t('common:product-image')}
             description={t('common:product-image-description')}
@@ -406,39 +357,147 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
       </div>
     </div>
   );
+};
 
-  const tabs = [
-    { id: 'product', label: t('common:base-information') },
-    { id: 'variants', label: t('common:variants') },
-    { id: 'inventory', label: t('common:inventory') },
-  ];
-
-  const VariantsTab: React.FC<VariantsTabProps> = ({
-    selectedCategory,
-    variants,
-    variantPrices,
-    setVariantPrices,
-    onVariantChange,
-  }: any) => (
-    <div>
-      {selectedCategory && variants.length > 0 ? (
-        <VariantManager
-          variants={variants}
-          value={variantPrices}
-          onChange={newPrices => {
-            setVariantPrices(newPrices);
-            onVariantChange();
-          }}
-        />
-      ) : (
-        <div className="text-center py-8 text-gray-500">
-          {t('inventory:select-category-to-add-variants')}
-        </div>
-      )}
-    </div>
+export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
+  const { t } = useTranslation();
+  const [activeTab, setActiveTab] = useState('product');
+  const { allCategories } = useCategories();
+  const { settings } = useSettings();
+  const [selectedCategory, setSelectedCategory] = useState(
+    item?.categoryId || ''
+  );
+  const { items: inventory } = useInventory();
+  const { variants } = useVariants(selectedCategory);
+  const [variantPrices, setVariantPrices] = useState(
+    (item as MenuItemWithVariants)?.variantPrices || []
   );
 
-  const renderTabContent = () => {
+  const [isVariantPricesDirty, setIsVariantPricesDirty] = useState(false);
+
+  const methods = useForm<FormInputs>({
+    defaultValues: {
+      name: item?.name || '',
+      description: item?.description || '',
+      price: item?.price || 0,
+      image: item?.image || '',
+      categoryId: item?.categoryId || '',
+      stockQuantity: item?.stockQuantity || 0,
+      inventoryConnections: item?.inventoryConnections || [],
+    },
+    mode: 'onChange', // This will validate on change
+  });
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = methods;
+
+  const [initialVariantPrices] = useState(
+    JSON.stringify((item as MenuItemWithVariants)?.variantPrices || [])
+  );
+
+  // Memoize variant calculations
+  const getVariantPriceModifier = useCallback(
+    (variantName: string, value: string): number => {
+      const variant = variants.find(v => v.name === variantName);
+      if (!variant) return 0;
+
+      const variantValue = variant.values.find(v => v === value);
+      if (!variantValue) return 0;
+
+      const valueIndex = variant.values.indexOf(variantValue);
+      return variant.prices?.[valueIndex] || 0;
+    },
+    [variants]
+  );
+
+  const calculatePriceModifiers = useCallback(
+    (combination: string[]): number => {
+      return combination.reduce((total, variantStr) => {
+        const [variantName, value] = variantStr.split(': ');
+        return total + getVariantPriceModifier(variantName, value);
+      }, 0);
+    },
+    [getVariantPriceModifier]
+  );
+
+  const getVariantCombinations = useCallback(() => {
+    if (!variants.length) return [];
+
+    const combinations: string[][] = [[]];
+    variants.forEach(variant => {
+      const newCombinations: string[][] = [];
+      variant.values.forEach(value => {
+        combinations.forEach(combo => {
+          newCombinations.push([...combo, `${variant.name}: ${value}`]);
+        });
+      });
+      combinations.length = 0;
+      combinations.push(...newCombinations);
+    });
+    return combinations;
+  }, [variants]);
+
+  // Memoize handlers to prevent recreation on each render
+  const handleVariantChange = useCallback(() => {
+    setIsVariantPricesDirty(true);
+  }, []);
+
+  const handleCategoryChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const value = e.target.value;
+      setSelectedCategory(value);
+      setValue('categoryId', value, { shouldDirty: true });
+      if (value !== item?.categoryId) {
+        setVariantPrices([]);
+        setIsVariantPricesDirty(true);
+      }
+    },
+    [item?.categoryId, setValue]
+  );
+
+  const handleFormSubmit = useCallback(
+    (formData: any) => {
+      const allCombinations = getVariantCombinations();
+      const basePrice = Number(formData.price);
+
+      const menuItem: MenuItemWithVariants = {
+        ...formData,
+        price: Number(formData.price),
+        stockQuantity: Number(formData.stockQuantity),
+        variantPrices: variantPrices.map(vp => ({
+          ...vp,
+          price: Number(vp.price),
+        })),
+        defaultVariantPrices: [],
+        inventoryConnections: formData.inventoryConnections
+          .filter((conn: any) => conn.itemId && conn.ratio)
+          .map((conn: any) => ({
+            ...conn,
+            ratio: Number(conn.ratio),
+          })),
+      };
+      onSave(menuItem);
+    },
+    [variantPrices, calculatePriceModifiers, getVariantCombinations, onSave]
+  );
+
+  // Memoize tabs array
+  const tabs = useMemo(
+    () => [
+      { id: 'product', label: t('common:base-information') },
+      { id: 'variants', label: t('common:variants') },
+      { id: 'inventory', label: t('common:inventory') },
+    ],
+    [t]
+  );
+
+  // Memoize tab content renderer
+  const renderTabContent = useCallback(() => {
     switch (activeTab) {
       case 'product':
         return (
@@ -448,7 +507,7 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
             watch={watch}
             setValue={setValue}
             settings={settings!}
-            categories={categories}
+            categories={allCategories}
             selectedCategory={selectedCategory}
             handleCategoryChange={handleCategoryChange}
           />
@@ -464,7 +523,7 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
         );
       case 'variants':
         return (
-          <VariantsTab
+          <MemoizedVariantsTab
             selectedCategory={selectedCategory}
             variants={variants}
             variantPrices={variantPrices}
@@ -475,7 +534,21 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
       default:
         return null;
     }
-  };
+  }, [
+    activeTab,
+    register,
+    errors,
+    watch,
+    setValue,
+    settings,
+    allCategories,
+    selectedCategory,
+    handleCategoryChange,
+    inventory,
+    variants,
+    variantPrices,
+    handleVariantChange,
+  ]);
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">

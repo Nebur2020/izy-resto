@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Transaction,
   AccountingStats,
@@ -6,10 +6,17 @@ import {
 } from '../types/accounting';
 import { accountingService } from '../services/accounting/accounting.service';
 import toast from 'react-hot-toast';
+import { QueryDocumentSnapshot, DocumentData } from 'firebase/firestore';
+
+const ITEMS_PER_PAGE = 10;
 
 export function useAccounting(period: AccountingPeriod) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [totalCount, setTotalCount] = useState(0);
+  const lastDocRef = useRef<QueryDocumentSnapshot<DocumentData> | null>(null);
 
   // Calculate stats from transactions with proper type handling and validation
   const stats = useMemo<AccountingStats>(() => {
@@ -47,45 +54,80 @@ export function useAccounting(period: AccountingPeriod) {
     };
   }, [transactions]);
 
+  // Initial data load when period changes
   useEffect(() => {
-    loadData();
+    loadInitialData();
   }, [period]);
 
-  const loadData = async () => {
+  const loadInitialData = async () => {
     try {
       setIsLoading(true);
-      const fetchedTransactions = await accountingService.getTransactions(
-        period
+      setTransactions([]);
+      lastDocRef.current = null;
+
+      // Get total count for the period
+      const count = await accountingService.getTransactionsCount(period);
+      setTotalCount(count);
+
+      // Get first batch of transactions
+      const result = await accountingService.getPaginatedTransactions(
+        period,
+        ITEMS_PER_PAGE
       );
 
-      // Validate and clean transactions before setting
-      const cleanedTransactions = fetchedTransactions.map(t => ({
-        ...t,
-        debit: typeof t.debit === 'number' ? t.debit : 0,
-        credit: typeof t.credit === 'number' ? t.credit : 0,
-      }));
-
-      setTransactions(cleanedTransactions);
-
-      // Log validation info
-      const invalidCount = fetchedTransactions.filter(
-        t =>
-          (typeof t.debit !== 'number' && t.debit !== null) ||
-          (typeof t.credit !== 'number' && t.credit !== null) ||
-          isNaN(t.debit || 0) ||
-          isNaN(t.credit || 0)
-      ).length;
-
-      if (invalidCount > 0) {
-        console.warn(
-          `Found ${invalidCount} transactions with invalid debit/credit values`
-        );
-      }
+      setTransactions(result.transactions);
+      lastDocRef.current = result.lastDoc;
+      setHasMore(result.transactions.length < count);
     } catch (error) {
-      console.error('Error loading accounting data:', error);
+      console.error('Error loading initial accounting data:', error);
       toast.error('Erreur lors du chargement des données comptables');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loadMore = async () => {
+    if (isLoadingMore || !hasMore || !lastDocRef.current) return;
+
+    try {
+      setIsLoadingMore(true);
+
+      const result = await accountingService.getPaginatedTransactions(
+        period,
+        ITEMS_PER_PAGE,
+        lastDocRef.current
+      );
+
+      if (result.transactions.length > 0) {
+        setTransactions(prevTransactions => [
+          ...prevTransactions,
+          ...result.transactions,
+        ]);
+        lastDocRef.current = result.lastDoc;
+
+        // Check if we've loaded all transactions
+        setHasMore(
+          transactions.length + result.transactions.length < totalCount
+        );
+      } else {
+        setHasMore(false);
+      }
+    } catch (error) {
+      console.error('Error loading more transactions:', error);
+      toast.error('Erreur lors du chargement de transactions supplémentaires');
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+
+  // Function to fetch all transactions (for exports, reports, etc.)
+  const fetchAllTransactions = async (): Promise<Transaction[]> => {
+    try {
+      return await accountingService.getTransactions(period);
+    } catch (error) {
+      console.error('Error fetching all transactions:', error);
+      toast.error('Erreur lors du chargement complet des transactions');
+      return [];
     }
   };
 
@@ -93,6 +135,12 @@ export function useAccounting(period: AccountingPeriod) {
     transactions,
     stats,
     isLoading,
-    refreshData: loadData,
+    isLoadingMore,
+    refreshData: loadInitialData,
+    loadMore,
+    hasMore,
+    displayedCount: transactions.length,
+    totalCount,
+    fetchAllTransactions,
   };
 }

@@ -5,7 +5,6 @@ import { MenuItem } from './MenuItem';
 import { MenuFilters } from './MenuFilters';
 import { SearchBar } from './SearchBar';
 import { useTranslation } from 'react-i18next';
-import { Button } from '../ui/Button';
 import { RefreshCw } from 'lucide-react';
 
 const INITIAL_ITEMS_COUNT = 9;
@@ -28,10 +27,7 @@ export function MenuSection() {
   const items = useMemo(() => {
     return menuItems.map(item => ({
       ...item,
-      variantPrices: [
-        ...(item.variantPrices || []),
-        ...(item?.defaultVariantPrices || []),
-      ],
+      variantPrices: [...(item.variantPrices || [])],
     }));
   }, [menuItems]);
 

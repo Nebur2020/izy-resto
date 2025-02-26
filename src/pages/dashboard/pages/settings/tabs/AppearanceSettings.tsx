@@ -96,6 +96,13 @@ export function AppearanceSettings() {
   }, [versions]);
 
   useEffect(() => {
+    if (versions.length > 0) {
+      const vers = versions.find(v => v.value === packageJson.version);
+      setSelectedVersion(vers || null);
+    }
+  }, [versions]);
+
+  useEffect(() => {
     let interval: NodeJS.Timeout;
 
     if (cooldownTime > 0) {
@@ -144,7 +151,8 @@ export function AppearanceSettings() {
 
   const handleRedeploy = async () => {
     try {
-      if (!version?.value || packageJson.version === version?.value) return;
+      if (!version?.value || packageJson.version === selectedVersion?.value)
+        return;
       await redeploy(version?.value);
       if (
         !selectedVersion?.value ||
@@ -311,12 +319,15 @@ export function AppearanceSettings() {
                 setSelectedVersion(value || null);
               }}
             >
-              <option value="">
-                {t('settingAppearence:select-version')}
-              </option>
+              <option value="">{t('settingAppearence:select-version')}</option>
               {versions.map(vers => (
                 <option key={vers.id} value={vers.value}>
-                  v{vers.value}
+                  v{vers.value}{' '}
+                  {vers.isLatest
+                    ? `(${t('common:latest')})`
+                    : vers.isStable
+                    ? `(${t('common:stable')})`
+                    : ''}
                 </option>
               ))}
             </select>
@@ -341,6 +352,7 @@ export function AppearanceSettings() {
           )}
 
           <button
+            type="button"
             onClick={handleRedeploy}
             disabled={
               isDeploying ||
@@ -384,7 +396,7 @@ export function AppearanceSettings() {
               `${t('settingAppearence:available-in')} ${formatTimeRemaining(
                 cooldownTime
               )}`
-            ) : packageJson.version === version?.value ? (
+            ) : packageJson.version === selectedVersion?.value ? (
               t('settingAppearence:up-to-date')
             ) : (
               t('settingAppearence:re-deploy')

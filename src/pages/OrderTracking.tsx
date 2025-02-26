@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, CheckCircle, Home, Star, XCircle } from 'lucide-react';
 import { Button } from '../components/ui/Button';
@@ -26,28 +26,44 @@ export default function OrderTracking() {
   const [order, setOrder] = useState<Order | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Memoize the fetchInitialOrder function to prevent recreation on each render
+  const fetchInitialOrder = useCallback(
+    async (id: string) => {
+      try {
+        return await getOrderById(id);
+      } catch (error) {
+        console.error('Error fetching initial order:', error);
+        return undefined;
+      }
+    },
+    [getOrderById]
+  );
+
   // Fetch initial order data and set up real-time listener
   useEffect(() => {
     let unsubscribe: () => void = () => {};
+    let isMounted = true;
 
     async function setupOrderListener() {
       if (!orderId) {
-        setIsLoading(false);
+        if (isMounted) setIsLoading(false);
         return;
       }
 
       try {
-        setIsLoading(true);
-
         // Initial fetch to quickly display something
-        const initialOrder = await getOrderById(orderId);
-        setOrder(initialOrder);
+        const initialOrder = await fetchInitialOrder(orderId);
+        if (isMounted) {
+          setOrder(initialOrder);
+        }
 
         // Set up real-time listener
         const orderRef = doc(db, 'orders', orderId);
         unsubscribe = onSnapshot(
           orderRef,
           docSnapshot => {
+            if (!isMounted) return;
+
             if (docSnapshot.exists()) {
               const orderData = {
                 id: docSnapshot.id,
@@ -61,12 +77,14 @@ export default function OrderTracking() {
             setIsLoading(false);
           },
           error => {
+            if (!isMounted) return;
             console.error('Error listening to order updates:', error);
             toast.error(t('error-tracking-order'));
             setIsLoading(false);
           }
         );
       } catch (error) {
+        if (!isMounted) return;
         console.error('Error setting up order listener:', error);
         toast.error(t('error-loading-order'));
         setIsLoading(false);
@@ -77,11 +95,12 @@ export default function OrderTracking() {
 
     // Clean up listener on unmount
     return () => {
+      isMounted = false;
       unsubscribe();
     };
-  }, [orderId, getOrderById, t]);
+  }, [orderId, fetchInitialOrder, t]);
 
-  const handleSubmitRating = async () => {
+  const handleSubmitRating = useCallback(async () => {
     if (!orderId || rating === 0) return;
 
     try {
@@ -96,7 +115,7 @@ export default function OrderTracking() {
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [orderId, rating, feedback, t]);
 
   if (isLoading) {
     return <LoadingScreen isLoading={true} />;

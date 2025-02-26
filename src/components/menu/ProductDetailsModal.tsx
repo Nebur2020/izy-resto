@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
-import { X, Plus, Minus, ShoppingBag, AlertCircle } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { X, Plus, Minus, ShoppingBag, AlertCircle, Loader } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { MenuItem, MenuItemWithVariants } from '../../types/menu';
 import { Button } from '../ui/Button';
@@ -7,9 +7,10 @@ import { useCart } from '../../context/CartContext';
 import { useSettings } from '../../hooks/useSettings';
 import { formatCurrency } from '../../utils/currency';
 import { useVariants } from '../../hooks/useVariants';
-import VariantCombinationError from './VariantCombinationError';
 import UnselectedRequiredVariantType from './UnselectedRequiredVariantType';
 import { useTranslation } from 'react-i18next';
+import { variantService } from '../../services';
+import { Variant } from '../../types';
 
 interface IProductDetailsModalProps {
   item: MenuItemWithVariants | null;
@@ -25,22 +26,120 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
     item,
     onClose,
     onAddToCart,
-    addProductToCartBgColor = 'bg-blue-600 text-white  hover:bg-blue-700  focus:ring-2 focus:ring-blue-300',
+    addProductToCartBgColor = 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-300',
     stockAvailableBgColor = 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
     priceStyle = 'text-base sm:text-lg font-bold text-blue-600 dark:text-blue-400',
   } = props;
+
+  // Basic state
+  const [fullPrice, setFullPrice] = useState(item?.price || 0);
+  const [quantity, setQuantity] = useState(1);
+  const [selectedVariants, setSelectedVariants] = useState<string[]>([]);
+  const [selectedVariantTypes, setSelectedVariantTypes] = useState<
+    Record<string, boolean>
+  >({});
+  const [variantCombinationError, setVariantCombinationError] = useState('');
+  const [unselectedRequiredVariantType, setUnselectedRequiredVariantType] =
+    useState<string[]>([]);
+  const [isLoadingPrice, setIsLoadingPrice] = useState(false);
+  const [categoryVariants, setCategoryVariants] = useState<Variant[]>([]);
+
+  // Refs and hooks
   const modalRef = useRef<HTMLDivElement>(null);
   const { addToCart, cart } = useCart();
   const { settings } = useSettings();
-  const [selectedVariants, setSelectedVariants] = useState<string[]>([]);
-  const [unselectedRequiredVariantType, setUnselectedRequiredVariantType] =
-    useState<string[]>([]);
-  const [quantity, setQuantity] = useState(1);
-  const [variantCombinationError, setVariantCombinationError] = useState('');
   const { variants } = useVariants();
-
   const { t } = useTranslation(['menu', 'cart']);
 
+  if (!item) return null;
+
+  const isOutOfStock = item.stockQuantity === 0;
+  const itemWithVariants = item as MenuItemWithVariants;
+
+  // Memoized values
+  const variantTypes = useMemo(() => {
+    return (
+      itemWithVariants.variantPrices?.reduce((acc, vp) => {
+        vp.variantCombination.forEach(combo => {
+          const [type, value] = combo.split(': ');
+          if (!acc[type]) {
+            acc[type] = new Set();
+          }
+          acc[type].add(value);
+        });
+        return acc;
+      }, {} as Record<string, Set<string>>) || {}
+    );
+  }, [itemWithVariants.variantPrices]);
+
+  // Memoized functions
+  const getVariantId = useCallback(() => {
+    if (!selectedVariants.length) return item.id;
+    return `${item.id}-${selectedVariants.sort().join('-')}`;
+  }, [item.id, selectedVariants]);
+
+  const getVariantImage = useCallback(() => {
+    if (!itemWithVariants.variantPrices?.length) return item.image;
+
+    const variantPrice = itemWithVariants.variantPrices.find(
+      vp =>
+        JSON.stringify(vp.variantCombination.sort()) ===
+        JSON.stringify(selectedVariants.sort())
+    );
+
+    return variantPrice?.image || item.image;
+  }, [item.image, itemWithVariants.variantPrices, selectedVariants]);
+
+  const getVariantValues = useCallback(() => {
+    return selectedVariants
+      .map(v => v.split(': ')[1])
+      .filter(value => value && value.length > 0)
+      .join(' ');
+  }, [selectedVariants]);
+
+  const isVariantRequired = useCallback(
+    (type: string) => {
+      return !!variants.find(v => v.name.toLowerCase() === type.toLowerCase())
+        ?.isRequired;
+    },
+    [variants]
+  );
+  const areAllRequiredVariantsSelected = useCallback(() => {
+    // Check each required variant from categoryVariants
+    return categoryVariants
+      .filter(variant => variant.isRequired)
+      .every(variant => {
+        // Check if any value for this variant type is selected
+        return selectedVariants.some(selected =>
+          selected.startsWith(`${variant.name}: `)
+        );
+      });
+  }, [categoryVariants, selectedVariants]);
+
+  const getCartItem = useCallback(() => {
+    const variantId = getVariantId();
+    return cart.find(item => item.id === variantId);
+  }, [cart, getVariantId]);
+
+  // Load category variants once
+  useEffect(() => {
+    if (item && item.categoryId) {
+      const loadCategoryVariants = async () => {
+        try {
+          const allVariants = await variantService.getAllVariantsByCategory(
+            item.categoryId
+          );
+          setCategoryVariants(allVariants);
+        } catch (error) {
+          console.error('Error loading category variants:', error);
+        }
+      };
+
+      loadCategoryVariants();
+    }
+  }, [item?.categoryId]);
+
+  // Handle clicks outside modal and escape key
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -66,145 +165,204 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
     };
   }, [onClose]);
 
-  if (!item) return null;
-
-  const itemWithVariants = item as MenuItemWithVariants;
-  const isOutOfStock = item.stockQuantity === 0;
-
-  const getVariantPrice = () => {
-    if (!itemWithVariants.variantPrices?.length) return item.price;
-
-    const variantPrice = itemWithVariants.variantPrices.find(
-      vp =>
-        JSON.stringify(vp.variantCombination.sort()) ===
-        JSON.stringify(selectedVariants.sort())
-    );
-
-    return variantPrice?.price || item.price;
-  };
-
-  const getVariantImage = () => {
-    if (!itemWithVariants.variantPrices?.length) return item.image;
-
-    const variantPrice = itemWithVariants.variantPrices.find(
-      vp =>
-        JSON.stringify(vp.variantCombination.sort()) ===
-        JSON.stringify(selectedVariants.sort())
-    );
-
-    return variantPrice?.image || item.image;
-  };
-
-  const getVariantId = () => {
-    if (!selectedVariants.length) return item.id;
-    return `${item.id}-${selectedVariants.sort().join('-')}`;
-  };
-
-  const variantTypes = itemWithVariants.variantPrices?.reduce((acc, vp) => {
-    vp.variantCombination.forEach(combo => {
-      const [type, value] = combo.split(': ');
-      if (!acc[type]) {
-        acc[type] = new Set();
-      }
-      acc[type].add(value);
-    });
-    return acc;
-  }, {} as Record<string, Set<string>>);
-
-  const handleVariantSelect = (variant: string) => {
-    const [type] = variant.split(': ');
-
-    setUnselectedRequiredVariantType([]);
-
-    setVariantCombinationError('');
-
-    setSelectedVariants(prev => {
-      if (prev.includes(variant)) {
-        return prev.filter(v => v !== variant);
+  // Update price whenever selected variants change
+  useEffect(() => {
+    const updatePrice = async () => {
+      if (!selectedVariants.length) {
+        setFullPrice(item.price);
+        setIsLoadingPrice(false);
+        return;
       }
 
-      const filtered = prev.filter(v => !v.startsWith(`${type}: `));
+      try {
+        setIsLoadingPrice(true);
 
-      const updatedSelection = [...filtered, variant];
+        // First check if we have predefined variant prices
+        if (item.variantPrices && item.variantPrices.length > 0) {
+          const sorted = selectedVariants.sort();
+          const filtered = item.variantPrices.filter(
+            vp => vp.variantCombination.length === sorted.length
+          );
 
-      const validSelection = updatedSelection.filter(() => {
-        return item.variantPrices.some(({ variantCombination }) =>
-          updatedSelection.every(v => variantCombination.includes(v))
-        );
+          // Check if the exact combination exists
+          const exists = filtered.find(
+            vp =>
+              JSON.stringify(vp.variantCombination) === JSON.stringify(sorted)
+          );
+
+          if (exists) {
+            setFullPrice(exists.price);
+            setIsLoadingPrice(false);
+            return;
+          }
+        }
+
+        // If no predefined price or no match found, calculate using categoryVariants
+        if (categoryVariants.length > 0) {
+          // Parse selected variant values
+          const selectedVariantMap = selectedVariants.reduce((acc, curr) => {
+            const [name, value] = curr.split(': ');
+            acc[name] = value;
+            return acc;
+          }, {} as Record<string, string>);
+
+          // console.log('selectedVariantMap', selectedVariantMap);
+
+          let calculatedPrice = item.price;
+
+          // Calculate price from each selected variant
+          categoryVariants.forEach(variant => {
+            const selectedValue = selectedVariantMap[variant.name];
+            // console.log('selectedValue', selectedValue);
+            if (selectedValue && variant.prices) {
+              const valueIndex = variant.values.findIndex(
+                v => v === selectedValue
+              );
+              if (
+                valueIndex >= 0 &&
+                variant.prices[valueIndex] !== undefined &&
+                !isNaN(variant.prices[valueIndex]) &&
+                typeof variant.prices[valueIndex] === 'number'
+              ) {
+                // console.log(
+                //   'valueIndex',
+                //   valueIndex,
+                //   variant.prices[valueIndex]
+                // );
+                calculatedPrice += variant.prices[valueIndex];
+              }
+            }
+          });
+
+          setFullPrice(calculatedPrice);
+        } else {
+          // Fallback to base price if no variants data available
+          setFullPrice(item.price);
+        }
+      } catch (error) {
+        console.error('Error updating price:', error);
+        setFullPrice(item.price); // Fallback to base price on error
+      } finally {
+        setIsLoadingPrice(false);
+      }
+    };
+
+    updatePrice();
+  }, [selectedVariants, item.price, item.variantPrices, categoryVariants]);
+
+  const handleVariantSelect = useCallback(
+    (variant: string) => {
+      const [type, value] = variant.split(': ');
+
+      setUnselectedRequiredVariantType([]);
+      setVariantCombinationError('');
+      setIsLoadingPrice(true);
+
+      setSelectedVariants(prev => {
+        // If already selected, deselect it
+        if (prev.includes(variant)) {
+          const updatedSelection = prev.filter(v => v !== variant);
+          const hasOtherOfSameType = updatedSelection.some(v =>
+            v.startsWith(`${type}: `)
+          );
+
+          // Update selection tracking
+          setSelectedVariantTypes(current => ({
+            ...current,
+            [type]: hasOtherOfSameType,
+          }));
+
+          return updatedSelection;
+        }
+
+        // Replace any existing variant of same type
+        const filtered = prev.filter(v => !v.startsWith(`${type}: `));
+        const updatedSelection = [...filtered, variant];
+
+        // Track that this variant type has been selected
+        setSelectedVariantTypes(current => ({
+          ...current,
+          [type]: true,
+        }));
+
+        // Always accept the selection - don't validate combinations
+        return updatedSelection;
       });
+    },
+    [itemWithVariants.variantPrices]
+  );
 
-      if (validSelection.length < 1) {
-        setVariantCombinationError('Combinaison inexistante...');
-      }
-
-      return validSelection;
-    });
-  };
-
-  const getVariantValues = () => {
-    return selectedVariants
-      .map(v => v.split(': ')[1])
-      .filter(value => value && value.length > 0)
-      .join(' ');
-  };
-
-  const getCartItem = () => {
-    const variantId = getVariantId();
-    return cart.find(item => item.id === variantId);
-  };
-
-  const isVariantRequired = (type: string) => {
-    return !!variants.find(v => v.name.toLowerCase() === type.toLowerCase())
-      ?.isRequired;
-  };
-
-  const handleAddToCart = () => {
+  const handleAddToCart = useCallback(async () => {
     if (isOutOfStock) return;
+
+    setIsLoadingPrice(true);
     setUnselectedRequiredVariantType([]);
-    const requiredVariants = variants
+
+    // Check for required variants that haven't been selected
+    const requiredVariantTypes = variants
       .filter(v =>
         Object.keys(variantTypes)
-          .map(v => v.toLowerCase())
+          .map(vt => vt.toLowerCase())
           .includes(v.name.toLowerCase())
       )
-      .filter(v => Boolean(v.isRequired));
-
-    const unselectedVariants: string[] = requiredVariants
-      .filter(
-        v =>
-          !selectedVariants
-            .map(v1 => v1.toLowerCase())
-            .some(v2 => v2.includes(v.name.toLowerCase()))
-      )
+      .filter(v => Boolean(v.isRequired))
       .map(v => v.name);
+
+    const unselectedVariants: string[] = requiredVariantTypes.filter(
+      type => !selectedVariantTypes[type]
+    );
 
     setUnselectedRequiredVariantType(unselectedVariants);
 
-    if (unselectedVariants.length > 0) return;
-
-    const variantValues = getVariantValues();
-    const productName = variantValues
-      ? `${item.name} ${variantValues}`
-      : item.name;
-    const variantId = getVariantId();
-
-    const cartItem = {
-      ...item,
-      id: variantId,
-      name: productName,
-      price: getVariantPrice(),
-      image: getVariantImage(),
-      selectedVariants,
-      quantity,
-    };
-
-    if (onAddToCart) {
-      onAddToCart(cartItem);
-    } else {
-      addToCart(cartItem);
+    if (unselectedVariants.length > 0) {
+      setIsLoadingPrice(false);
+      return;
     }
-    onClose();
-  };
+
+    try {
+      const productName = getVariantValues()
+        ? `${item.name} ${getVariantValues()}`
+        : item.name;
+
+      const variantId = getVariantId();
+
+      const cartItem = {
+        ...item,
+        id: variantId,
+        name: productName,
+        price: fullPrice,
+        image: getVariantImage(),
+        selectedVariants,
+        quantity,
+      };
+
+      if (onAddToCart) {
+        onAddToCart(cartItem);
+      } else {
+        addToCart(cartItem);
+      }
+      onClose();
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+    } finally {
+      setIsLoadingPrice(false);
+    }
+  }, [
+    isOutOfStock,
+    variants,
+    variantTypes,
+    selectedVariantTypes,
+    getVariantValues,
+    item,
+    getVariantId,
+    fullPrice,
+    getVariantImage,
+    selectedVariants,
+    quantity,
+    onAddToCart,
+    addToCart,
+    onClose,
+  ]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
@@ -262,29 +420,62 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
                   : `${item.stockQuantity} ${t('in-stock')}`}
               </span>
             </div>
-            {variantTypes &&
-              Object.entries(variantTypes).map(([type, values]) => {
-                if (!values.size || Array.from(values).every(v => !v.length)) {
+
+            {/* Variant Selection UI using categoryVariants */}
+            {categoryVariants
+              .sort((a, b) => {
+                if (a.name < b.name) {
+                  return -1;
+                }
+                if (a.name > b.name) {
+                  return 1;
+                }
+                return 0;
+              })
+              .map(variant => {
+                if (!variant.values.length) {
                   return null;
                 }
 
+                const isRequired = !!variant.isRequired;
+                const isSelected = selectedVariantTypes[variant.name];
+
                 return (
-                  <div key={type}>
-                    <h3 className="mb-2 text-sm font-semibold text-gray-900 dark:text-white">
-                      {type} {isVariantRequired(type) ? '*' : ''}
-                    </h3>
+                  <div key={variant.id} className="relative">
+                    <div className="flex items-center mb-2">
+                      <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                        {variant.name}
+                      </h3>
+
+                      {/* Selection status indicator */}
+                      {isRequired && (
+                        <div className="ml-2">
+                          {isSelected ? (
+                            <div
+                              className="h-2 w-2 rounded-full bg-green-500"
+                              title="Selected"
+                            />
+                          ) : (
+                            <div
+                              className="h-2 w-2 rounded-full bg-red-500"
+                              title="Required but not selected"
+                            />
+                          )}
+                        </div>
+                      )}
+                    </div>
+
                     <div className="flex flex-wrap gap-1 sm:gap-2">
-                      {Array.from(values).map(value => {
+                      {variant.values.map((value, index) => {
                         if (!value.length) return null;
 
-                        const variantString = `${type}: ${value}`;
-
+                        const variantString = `${variant.name}: ${value}`;
                         const isSelected =
                           selectedVariants.includes(variantString);
 
                         return (
                           <button
-                            key={value}
+                            key={`${variant.id}-${value}`}
                             onClick={() => handleVariantSelect(variantString)}
                             className={`
                             px-3 py-1.5 rounded-full text-xs font-medium 
@@ -306,6 +497,7 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
                   </div>
                 );
               })}
+
             {getCartItem() && (
               <div className="bg-blue-50 dark:bg-blue-900/30 p-2 sm:p-2.5 rounded-lg text-blue-600 dark:text-blue-400 text-[10px] sm:text-xs font-medium text-center">
                 {t('already-in-cart')}: {getCartItem()?.quantity}{' '}
@@ -342,28 +534,42 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
                 <Plus className="h-4 w-4" />
               </Button>
             </div>
-            <div className={`${priceStyle}`}>
-              {formatCurrency(getVariantPrice() * quantity, settings?.currency)}
+
+            <div className={`${priceStyle} flex items-center`}>
+              {isLoadingPrice ? (
+                <Loader className="h-4 w-4 animate-spin mr-2" />
+              ) : null}
+              {formatCurrency(fullPrice * quantity, settings?.currency)}
             </div>
           </div>
 
-          {variantCombinationError && (
-            <VariantCombinationError
-              variantCombinationError={variantCombinationError}
-            />
-          )}
           {unselectedRequiredVariantType.length > 0 && (
             <UnselectedRequiredVariantType
               unselectedRequiredVariantType={unselectedRequiredVariantType}
             />
           )}
+
           <Button
             onClick={handleAddToCart}
-            disabled={isOutOfStock}
+            disabled={
+              isOutOfStock ||
+              isLoadingPrice ||
+              !areAllRequiredVariantsSelected()
+            }
             className={`${addProductToCartBgColor} w-full rounded-full py-2 sm:py-3 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 ease-in-out disabled:bg-gray-300 disabled:cursor-not-allowed dark:bg-blue-500 dark:hover:bg-blue-600 dark:disabled:bg-gray-700`}
           >
-            <ShoppingBag className="h-5 w-5 mr-1" />
-            {isOutOfStock ? t('out-of-stock') : t('add-to-cart')}
+            {isLoadingPrice ? (
+              <Loader className="h-5 w-5 animate-spin mr-1" />
+            ) : (
+              <ShoppingBag className="h-5 w-5 mr-1" />
+            )}
+            {isOutOfStock
+              ? t('out-of-stock')
+              : isLoadingPrice
+              ? t('loading')
+              : !areAllRequiredVariantsSelected()
+              ? t('select-required-variants')
+              : t('add-to-cart')}
           </Button>
         </div>
       </motion.div>
