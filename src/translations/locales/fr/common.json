@@ -200,7 +200,20 @@
   "staff-names": {
     "admin": "Admin",
     "staff": "Staff",
-    "Le gérant": "Le gérant"
+    "Le gérant": "Le gérant",
+    "LIVREUR": "Livreur",
+    "Le serveur": "Le serveur",
+    "Le chef": "Le chef",
+    "Le caissier": "Le caissier",
+    "Le barman": "Le barman",
+    "Le commis": "Le commis",
+    "Le plongeur": "Le plongeur",
+    "Le cuisinier": "Le cuisinier",
+    "Le pâtissier": "Le pâtissier",
+    "Le boulanger": "Le boulanger",
+    "Le sommelier": "Le sommelier",
+    "Le maître d'hôtel": "Le maître d'hôtel",
+    "Le réceptionniste": "Le réceptionniste"
   },
   "financial-statement": "États Financiers",
   "period": "Période:",
