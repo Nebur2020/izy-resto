@@ -83,16 +83,16 @@ export async function generateReceiptPDF(
 ): Promise<jsPDF> {
   try {
     const receiptDiv = document.createElement('div');
-    receiptDiv.style.position = 'absolute';
-    receiptDiv.style.left = '-9999px';
+    receiptDiv.style.position = 'relative';
     receiptDiv.style.background = 'white';
-    receiptDiv.style.width = '280px';
+    receiptDiv.style.width = '100%';
+    receiptDiv.style.maxWidth = '280px';
+    receiptDiv.style.margin = '0 auto';
     receiptDiv.style.padding = '15px';
     receiptDiv.style.fontFamily = 'Courier, monospace';
     receiptDiv.style.fontSize = '11px';
     receiptDiv.style.lineHeight = '1.3';
     receiptDiv.style.color = 'rgb(0, 0, 0)';
-    receiptDiv.style.printColorAdjust = 'exact';
     receiptDiv.style.printColorAdjust = 'exact';
 
     const qrCodeUrl = await QRCode.toDataURL(
@@ -438,6 +438,7 @@ export async function generateReceiptPDF(
     throw new Error('Failed to generate PDF receipt');
   }
 }
+
 export async function generateUserReceipt(
   order: Order,
   t: (key: string) => string,
