@@ -131,7 +131,7 @@ export function MenuManagement() {
       setIsLoadingMore(false);
     }
   };
-
+  //lorenzo
   const performSearch = async () => {
     if (!searchTerm.trim()) return;
 
@@ -181,7 +181,6 @@ export function MenuManagement() {
       setSearchTerm('');
       setIsSearching(false);
     }
-
   };
 
   const handleSave = async (item: Omit<MenuItem, 'id'>) => {

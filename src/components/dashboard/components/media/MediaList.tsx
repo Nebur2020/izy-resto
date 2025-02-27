@@ -7,8 +7,8 @@ import {
   formatDate,
   localeDateMatch,
 } from '../../../../utils/format';
-import i18n from '../../../../translations/i18n';
 import { Language } from '../../../../types';
+import { useTranslation } from 'react-i18next';
 
 interface MediaListProps {
   files: MediaFile[];
@@ -19,14 +19,18 @@ interface MediaListProps {
   onToggleSelect: (fileId: string) => void;
 }
 
-export function MediaList({
-  files,
-  isLoading,
-  onDelete,
-  onSelect,
-  selectedFiles,
-  onToggleSelect,
-}: MediaListProps) {
+export function MediaList(props: MediaListProps) {
+  const {
+    files,
+    isLoading,
+    onDelete,
+    onSelect,
+    selectedFiles,
+    onToggleSelect,
+  } = props;
+
+  const { t, i18n } = useTranslation();
+
   if (isLoading) {
     return (
       <div className="space-y-3">
@@ -47,10 +51,10 @@ export function MediaList({
           <ExternalLink className="w-8 h-8 text-gray-400" />
         </div>
         <p className="text-lg font-medium text-gray-900 dark:text-white">
-          Aucun fichier
+          {t('common:media-empty')}
         </p>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          Commencez par ajouter des fichiers
+          {t('common:media-empty-desc')}
         </p>
       </div>
     );
@@ -59,7 +63,8 @@ export function MediaList({
   return (
     <div className="space-y-3">
       <AnimatePresence mode="popLayout">
-        {files.map(file => (
+        {
+        files.map(file => (
           <motion.div
             key={file.id}
             layout
@@ -164,7 +169,8 @@ export function MediaList({
               </div>
             </div>
           </motion.div>
-        ))}
+        ))
+        }
       </AnimatePresence>
     </div>
   );

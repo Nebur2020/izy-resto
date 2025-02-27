@@ -297,5 +297,7 @@
   "no-payment-method": "No payment method",
   "no-payment-method-description": "No payment method found. Please add a payment method to continue.",
   "no-transaction": "No transaction",
-  "no-staff-members-found": "No staff members found"
+  "no-staff-members-found": "No staff members found",
+  "media-empty": "No media found",
+  "empty-file-desc": "Drag and drop multiple files here, or"
 }
