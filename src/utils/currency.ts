@@ -1,50 +1,51 @@
 import { Currency } from '../types';
 
 export const formatNumberByLanguage = (number: number, lang: 'fr-FR') => {
-  return new Intl.NumberFormat('fr-FR').format(Number(number));
+  return new Intl.NumberFormat(lang)
+    .format(Number(number))
+    .replace(/\u202F/g, ' ');
 };
 
 export function formatCurrency(
   amount: number | string | null | undefined,
   currency?: Currency
 ): string {
-  // Handle null/undefined
   if (amount === null || amount === undefined) {
     return '0';
   }
 
-  // Convert string to number if needed
   const numericAmount =
     typeof amount === 'string' ? parseFloat(amount) : amount;
 
-  // Validate the amount is a number
   if (isNaN(numericAmount)) {
     console.error('Invalid amount provided to formatCurrency:', amount);
     return '0';
   }
 
-  const formatNumber = formatNumberByLanguage(
+  const formattedNumber = formatNumberByLanguage(
     Number(numericAmount.toFixed(2)),
     'fr-FR'
   );
 
   switch (currency) {
     case 'EUR':
-      if (numericAmount < 0) return `-€${formatNumber.replace('-', '')}`;
-      return `€${formatNumber}`;
+      return numericAmount < 0
+        ? `-€${formattedNumber.replace('-', '')}`
+        : `€${formattedNumber}`;
     case 'CAD':
     case 'USD':
-      if (numericAmount < 0) return `-$${formatNumber.replace('-', '')}`;
-      return `$${formatNumber}`;
+      return numericAmount < 0
+        ? `-$${formattedNumber.replace('-', '')}`
+        : `$${formattedNumber}`;
     case 'XOF':
     case 'XAF':
-      return `${formatNumber} FCFA`;
+      return `${formattedNumber} FCFA`;
     case 'MAD':
-      return `${formatNumber} DH`;
+      return `${formattedNumber} DH`;
     case 'UM':
-      return `${formatNumber} MRU`;
+      return `${formattedNumber} MRU`;
     default:
-      return currency ? `${formatNumber} ${currency}` : `${formatNumber}`;
+      return currency ? `${formattedNumber} ${currency}` : formattedNumber;
   }
 }
 
