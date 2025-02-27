@@ -198,7 +198,20 @@
   "staff-names": {
     "admin": "Admin",
     "staff": "Staff",
-    "Le gérant": "Manager"
+    "Le gérant": "Manager",
+    "LIVREUR": "Deliver",
+    "Le serveur": "Waiter",
+    "Le chef": "The chef",
+    "Le caissier": "The cashier",
+    "Le barman": "The bartender",
+    "Le commis": "The clerk",
+    "Le plongeur": "The dishwasher",
+    "Le cuisinier": "The cook",
+    "Le pâtissier": "The pastry chef",
+    "Le boulanger": "The baker",
+    "Le sommelier": "The sommelier",
+    "Le maître d'hôtel": "The head waiter",
+    "Le réceptionniste": "The receptionist"
   },
   "financial-statement": "Financial Statements",
   "period": "Period:",
