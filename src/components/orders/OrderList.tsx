@@ -27,7 +27,6 @@ export function OrderList(props: IOrderListProps) {
   const { t } = useTranslation('order');
   const observerTarget = useRef<HTMLDivElement>(null);
 
-  // Set up intersection observer for infinite scrolling
   useEffect(() => {
     if (!hasMore || !onLoadMore) return;
 
@@ -38,7 +37,7 @@ export function OrderList(props: IOrderListProps) {
         }
       },
       {
-        rootMargin: '200px', // Start loading before user reaches the end
+        rootMargin: '200px',
         threshold: 0.1,
       }
     );
@@ -58,25 +57,35 @@ export function OrderList(props: IOrderListProps) {
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <AnimatePresence mode="popLayout">
-          {orders.map(order => (
+          {orders.length > 0 ? (
+            orders.map(order => (
+              <motion.div
+                key={order.id}
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{
+                  layout: { duration: 0.3 },
+                  opacity: { duration: 0.2 },
+                }}
+              >
+                <OrderCard
+                  order={order}
+                  onStatusChange={onStatusChange}
+                  onCancel={onCancel}
+                />
+              </motion.div>
+            ))
+          ) : (
             <motion.div
-              key={order.id}
-              layout
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{
-                layout: { duration: 0.3 },
-                opacity: { duration: 0.2 },
-              }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="col-span-full flex items-center justify-center py-12 text-gray-500 dark:text-gray-400"
             >
-              <OrderCard
-                order={order}
-                onStatusChange={onStatusChange}
-                onCancel={onCancel}
-              />
+              <p className="text-lg">{t('no-order-found')}</p>
             </motion.div>
-          ))}
+          )}
         </AnimatePresence>
 
         {isLoading && orders.length === 0 && (
@@ -103,7 +112,6 @@ export function OrderList(props: IOrderListProps) {
         )}
       </div>
 
-      {/* Invisible element to trigger infinite loading */}
       {hasMore && onLoadMore && (
         <div ref={observerTarget} className="h-10 w-full" aria-hidden="true" />
       )}

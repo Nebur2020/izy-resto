@@ -290,32 +290,38 @@ export function TrafficAnalytics() {
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
             <h2 className="text-xl font-semibold mb-6">{t('best-selling')}</h2>
             <div className="space-y-4">
-              {stats.bestSellers.map((item, index) => (
-                <motion.div
-                  key={item.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 flex items-center justify-center bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg font-medium">
-                      #{index + 1}
+              {stats.bestSellers.length > 0 ? (
+                stats.bestSellers.map((item, index) => (
+                  <motion.div
+                    key={item.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-8 h-8 flex items-center justify-center bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg font-medium">
+                        #{index + 1}
+                      </div>
+                      <div>
+                        <h3 className="font-medium">{item.name}</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          {item.quantity} {t('sell')}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-medium">{item.name}</h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {item.quantity} {t('sell')}
+                    <div className="text-right">
+                      <p className="font-medium text-green-600 dark:text-green-400">
+                        {formatCurrency(item.revenue, settings?.currency)}
                       </p>
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-medium text-green-600 dark:text-green-400">
-                      {formatCurrency(item.revenue, settings?.currency)}
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))
+              ) : (
+                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                  {t('common:no-data-available')}
+                </div>
+              )}
 
               {stats.bestSellers.length === 0 && (
                 <div className="text-center py-8 text-gray-500 dark:text-gray-400">

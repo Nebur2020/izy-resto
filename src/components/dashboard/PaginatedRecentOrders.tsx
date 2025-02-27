@@ -39,37 +39,45 @@ export function PaginatedRecentOrders({
   return (
     <>
       <div className="space-y-4">
-        {paginatedOrders.map((order, index) => (
-          <motion.button
-            key={order.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.1 }}
-            onClick={() => setSelectedOrder(order)}
-            className="w-full flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600/50 transition-colors text-left"
-          >
-            <div>
-              <h4 className="font-medium text-gray-900 dark:text-white">
-                {t('order-number')} {order.id.slice(0, 8)}
-              </h4>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {formatFirestoreTimestamp(order.createdAt, lng)}
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="font-medium text-gray-900 dark:text-white">
-                {formatCurrency(order.total, settings?.currency)}
-              </p>
-              <span
-                className={`inline-block px-2 py-1 text-xs rounded-full ${
-                  statusColors[order.status]
-                }`}
-              >
-                {t(`order-status-${order.status}`)}
-              </span>
-            </div>
-          </motion.button>
-        ))}
+        {paginatedOrders.length > 0 ? (
+          paginatedOrders.map((order, index) => (
+            <motion.button
+              key={order.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.1 }}
+              onClick={() => setSelectedOrder(order)}
+              className="w-full flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600/50 transition-colors text-left"
+            >
+              <div>
+                <h4 className="font-medium text-gray-900 dark:text-white">
+                  {t('order-number')} {order.id.slice(0, 8)}
+                </h4>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {formatFirestoreTimestamp(order.createdAt, lng)}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="font-medium text-gray-900 dark:text-white">
+                  {formatCurrency(order.total, settings?.currency)}
+                </p>
+                <span
+                  className={`inline-block px-2 py-1 text-xs rounded-full ${
+                    statusColors[order.status]
+                  }`}
+                >
+                  {t(`order-status-${order.status}`)}
+                </span>
+              </div>
+            </motion.button>
+          ))
+        ) : (
+          <div className="text-center bg-gray-50 dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
+              {t('no-orders-found')}
+            </h2>
+          </div>
+        )}
 
         {totalPages > 1 && (
           <Pagination

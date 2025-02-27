@@ -168,23 +168,19 @@ export const AccountingTaxesManagement = () => {
         endDate: dateRange.to,
       });
 
-      // Filter orders with taxes
       const ordersWithTaxes = response.filter(
         order => order?.taxes?.length > 0
       );
 
-      // Sort by date descending
       const sortedOrders = ordersWithTaxes.sort((a, b) => {
         return b.createdAt - a.createdAt;
       });
 
       setAllOrders(sortedOrders);
 
-      // Initialize with first batch
       const initialBatch = sortedOrders.slice(0, ITEMS_PER_PAGE);
       setDisplayedOrders(initialBatch);
 
-      // Set hasMore if there are more orders than the initial batch
       setHasMore(sortedOrders.length > ITEMS_PER_PAGE);
     } catch (error) {
       console.error('Error fetching orders:', error);
@@ -217,7 +213,6 @@ export const AccountingTaxesManagement = () => {
   const handleDownload = async () => {
     try {
       setIsDownloading(true);
-      // Use all filtered orders for CSV export
       const ordersWithTaxes = allOrders.filter(
         order => order?.taxes?.length > 0
       );
@@ -233,7 +228,6 @@ export const AccountingTaxesManagement = () => {
     fetchOrders();
   }, [dateRange]);
 
-  // Calculate total taxes for displayed orders
   const totalTaxes = allOrders.reduce((acc, curr) => {
     return acc + (curr.taxTotal || 0);
   }, 0);
@@ -306,50 +300,58 @@ export const AccountingTaxesManagement = () => {
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               <AnimatePresence mode="wait" initial={false}>
-                {displayedOrders.map((order, index) => (
-                  <motion.tr
-                    key={order.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    transition={{
-                      duration: 0.2,
-                      delay: Math.min(index * 0.05, 0.3),
-                    }}
-                    className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-                  >
-                    <td className="px-6 py-4 text-sm whitespace-nowrap">
-                      {formatDate(order.createdAt, false, lng)}
-                    </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap">
-                      #{order.id}
-                    </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap">
-                      {order.taxes.map((tax, idx) => (
-                        <div key={idx}>
-                          <p>
-                            {tax.name} ({tax.rate}%) :{' '}
-                            {formatCurrency(tax.amount, settings?.currency)}
-                          </p>
-                        </div>
-                      ))}
-                    </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap">
-                      {formatCurrency(order.taxTotal, settings?.currency)}
-                    </td>
+                {displayedOrders.length > 0 ? (
+                  displayedOrders.map((order, index) => (
+                    <motion.tr
+                      key={order.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{
+                        duration: 0.2,
+                        delay: Math.min(index * 0.05, 0.3),
+                      }}
+                      className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                    >
+                      <td className="px-6 py-4 text-sm whitespace-nowrap">
+                        {formatDate(order.createdAt, false, lng)}
+                      </td>
+                      <td className="px-6 py-4 text-sm whitespace-nowrap">
+                        #{order.id}
+                      </td>
+                      <td className="px-6 py-4 text-sm whitespace-nowrap">
+                        {order.taxes.map((tax, idx) => (
+                          <div key={idx}>
+                            <p>
+                              {tax.name} ({tax.rate}%) :{' '}
+                              {formatCurrency(tax.amount, settings?.currency)}
+                            </p>
+                          </div>
+                        ))}
+                      </td>
+                      <td className="px-6 py-4 text-sm whitespace-nowrap">
+                        {formatCurrency(order.taxTotal, settings?.currency)}
+                      </td>
 
-                    <td className="px-6 py-4 text-sm whitespace-nowrap">
-                      {formatCurrency(order.subtotal, settings?.currency)}
-                    </td>
+                      <td className="px-6 py-4 text-sm whitespace-nowrap">
+                        {formatCurrency(order.subtotal, settings?.currency)}
+                      </td>
 
-                    <td className="px-6 py-4 text-sm whitespace-nowrap">
-                      {formatCurrency(
-                        order.subtotal + order.taxTotal,
-                        settings?.currency
-                      )}
+                      <td className="px-6 py-4 text-sm whitespace-nowrap">
+                        {formatCurrency(
+                          order.subtotal + order.taxTotal,
+                          settings?.currency
+                        )}
+                      </td>
+                    </motion.tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={6} className="text-center py-6">
+                      {t('comptability:no-tax-found')}
                     </td>
-                  </motion.tr>
-                ))}
+                  </tr>
+                )}
               </AnimatePresence>
             </tbody>
           </table>

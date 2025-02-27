@@ -13,14 +13,16 @@ interface MediaGridProps {
   onToggleSelect?: (fileId: string) => void;
 }
 
-export function MediaGrid({
-  files,
-  isLoading,
-  onDelete,
-  onSelect,
-  selectedFiles = new Set(), // Provide default empty Set
-  onToggleSelect,
-}: MediaGridProps) {
+export function MediaGrid(props: MediaGridProps) {
+  const {
+    files,
+    isLoading,
+    onDelete,
+    onSelect,
+    selectedFiles = new Set(),
+    onToggleSelect,
+  } = props;
+
   if (isLoading) {
     return (
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">

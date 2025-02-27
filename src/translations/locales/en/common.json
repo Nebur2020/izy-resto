@@ -291,5 +291,11 @@
   "stable": "Stable",
   "try-different-date-range": "Try different date range",
   "menu-product": "menu product",
-  "inventory-product": "inventory product"
+  "inventory-product": "inventory product",
+  "no-customers-found": "No customers found",
+  "no-variants-found": "No variants found",
+  "no-payment-method": "No payment method",
+  "no-payment-method-description": "No payment method found. Please add a payment method to continue.",
+  "no-transaction": "No transaction",
+  "no-staff-members-found": "No staff members found"
 }

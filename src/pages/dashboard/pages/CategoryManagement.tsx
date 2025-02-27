@@ -291,7 +291,6 @@ export function CategoryManagement() {
         )}
       </div>
 
-      {/* Load More Button */}
       {showLoadMore && (
         <div className="flex justify-center mt-6">
           <Button onClick={loadMoreCategories} className="px-4 py-2">
@@ -301,7 +300,6 @@ export function CategoryManagement() {
         </div>
       )}
 
-      {/* Loading Indicator for Load More */}
       {!isSearching && isLoading && categories.length > 0 && (
         <div className="flex justify-center mt-6">
           <div className="animate-spin">

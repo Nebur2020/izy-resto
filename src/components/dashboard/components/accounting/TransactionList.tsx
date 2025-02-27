@@ -28,17 +28,18 @@ export const sourceText: Record<string, string> = {
   inventory: 'Inventaire',
 };
 
-export function TransactionList({
-  transactions,
-  isLoading,
-  isLoadingMore = false,
-  onUpdate,
-  onDelete,
-  hasMore = false,
-  onLoadMore,
-  displayedCount = 0,
-  totalCount = 0,
-}: TransactionListProps) {
+export function TransactionList(props: TransactionListProps) {
+  const {
+    transactions,
+    isLoading,
+    isLoadingMore,
+    onUpdate,
+    onDelete,
+    hasMore,
+    onLoadMore,
+    displayedCount = 0,
+    totalCount = 0,
+  } = props;
   const { t, i18n } = useTranslation();
   const lng = i18n.language as Language;
   const { settings } = useSettings();
@@ -59,6 +60,21 @@ export function TransactionList({
             className="h-16 animate-pulse bg-gray-100 dark:bg-gray-800 rounded-lg"
           />
         ))}
+      </div>
+    );
+  }
+
+  if (transactions.length === 0) {
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-8">
+        <div className="text-center">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+            {t('common:no-transaction')}
+          </h3>
+          <p className="text-gray-500 dark:text-gray-400 mb-6">
+            {t('common:no-transaction-description')}
+          </p>
+        </div>
       </div>
     );
   }
