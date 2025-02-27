@@ -300,5 +300,6 @@
   "no-transaction": "Aucune transaction trouvée",
   "no-staff-members-found": "Aucun membre du personnel trouvé",
   "media-empty": "Aucun fichier trouvé",
-  "empty-file-desc": "Commencez par ajouter des fichiers"
+  "empty-file-desc": "Commencez par ajouter des fichiers",
+  "no-transaction-description": "Les transactions apparaîtront ici"
 }

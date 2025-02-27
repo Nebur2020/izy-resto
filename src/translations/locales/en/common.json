@@ -299,5 +299,6 @@
   "no-transaction": "No transaction",
   "no-staff-members-found": "No staff members found",
   "media-empty": "No media found",
-  "empty-file-desc": "Drag and drop multiple files here, or"
+  "empty-file-desc": "Drag and drop multiple files here, or",
+  "no-transaction-description": "Transactions will appear here."
 }

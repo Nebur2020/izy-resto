@@ -57,35 +57,25 @@ export function OrderList(props: IOrderListProps) {
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <AnimatePresence mode="popLayout">
-          {orders.length > 0 ? (
-            orders.map(order => (
-              <motion.div
-                key={order.id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{
-                  layout: { duration: 0.3 },
-                  opacity: { duration: 0.2 },
-                }}
-              >
-                <OrderCard
-                  order={order}
-                  onStatusChange={onStatusChange}
-                  onCancel={onCancel}
-                />
-              </motion.div>
-            ))
-          ) : (
+          {orders.map(order => (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="col-span-full flex items-center justify-center py-12 text-gray-500 dark:text-gray-400"
+              key={order.id}
+              layout
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{
+                layout: { duration: 0.3 },
+                opacity: { duration: 0.2 },
+              }}
             >
-              <p className="text-lg">{t('no-order-found')}</p>
+              <OrderCard
+                order={order}
+                onStatusChange={onStatusChange}
+                onCancel={onCancel}
+              />
             </motion.div>
-          )}
+          ))}
         </AnimatePresence>
 
         {isLoading && orders.length === 0 && (
