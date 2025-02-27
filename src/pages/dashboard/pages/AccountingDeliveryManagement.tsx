@@ -135,12 +135,10 @@ export const AccountingDeliveryManagement = () => {
         endDate: dateRange.to,
       });
 
-      // Filter orders with delivery fees
       const ordersWithDelivery = response.filter(
         order => !!order.delivery && Number(order.delivery?.price || 0) !== 0
       );
 
-      // Sort by date descending
       const sortedOrders = ordersWithDelivery.sort((a, b) => {
         return (
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -149,11 +147,9 @@ export const AccountingDeliveryManagement = () => {
 
       setAllOrders(sortedOrders);
 
-      // Initialize with first batch
       const initialBatch = sortedOrders.slice(0, ITEMS_PER_PAGE);
       setDisplayedOrders(initialBatch);
 
-      // Set hasMore if there are more orders than initial batch
       setHasMore(sortedOrders.length > ITEMS_PER_PAGE);
     } catch (error) {
       console.error('Error fetching orders:', error);
@@ -186,7 +182,6 @@ export const AccountingDeliveryManagement = () => {
     fetchOrders();
   }, [dateRange]);
 
-  // Calculate total delivery fees
   const totalDelivery = allOrders.reduce(
     (acc, curr) => acc + Number(curr.delivery?.price || 0),
     0
@@ -258,38 +253,49 @@ export const AccountingDeliveryManagement = () => {
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               <AnimatePresence mode="wait" initial={false}>
-                {displayedOrders.map((order, index) => (
-                  <motion.tr
-                    key={order.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    transition={{
-                      duration: 0.2,
-                      delay: Math.min(index * 0.05, 0.3),
-                    }}
-                    className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-                  >
-                    <td className="px-6 py-4 text-sm whitespace-nowrap">
-                      {formatDate(order.createdAt, false, lng)}
+                {displayedOrders.length > 0 ? (
+                  displayedOrders.map((order, index) => (
+                    <motion.tr
+                      key={order.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{
+                        duration: 0.2,
+                        delay: Math.min(index * 0.05, 0.3),
+                      }}
+                      className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                    >
+                      <td className="px-6 py-4 text-sm whitespace-nowrap">
+                        {formatDate(order.createdAt, false, lng)}
+                      </td>
+                      <td className="px-6 py-4 text-sm whitespace-nowrap">
+                        #{order.id}
+                      </td>
+                      <td className="px-6 py-4 text-sm whitespace-nowrap">
+                        {formatCurrency(
+                          Number(order.delivery?.price || 0),
+                          settings?.currency
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-sm whitespace-nowrap">
+                        {order.customerName || order.customerPhone || '-'}
+                      </td>
+                      <td className="px-6 py-4 text-sm whitespace-nowrap">
+                        {order.delivery?.name || '-'}
+                      </td>
+                    </motion.tr>
+                  ))
+                ) : (
+                  <tr className="text-center">
+                    <td
+                      colSpan={5}
+                      className="py-8 text-gray-500 dark:text-gray-400"
+                    >
+                      {t('comptability:no-delivery-found')}
                     </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap">
-                      #{order.id}
-                    </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap">
-                      {formatCurrency(
-                        Number(order.delivery?.price || 0),
-                        settings?.currency
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap">
-                      {order.customerName || order.customerPhone || '-'}
-                    </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap">
-                      {order.delivery?.name || '-'}
-                    </td>
-                  </motion.tr>
-                ))}
+                  </tr>
+                )}
               </AnimatePresence>
             </tbody>
           </table>

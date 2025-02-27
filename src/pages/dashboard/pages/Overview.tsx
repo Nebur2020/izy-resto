@@ -22,12 +22,10 @@ export function Overview() {
   const { orders, isLoading, error } = useOrdersRealtime();
   const { t } = useTranslation('dashboard');
 
-  // Safe check for orders before filtering
   const filteredOrders = useMemo(() => {
     if (!orders || orders.length === 0) return [];
 
     return orders.filter(order => {
-      // Safely handle missing or malformed createdAt
       if (!order.createdAt || !order.createdAt.seconds) {
         return false;
       }
@@ -74,7 +72,6 @@ export function Overview() {
     };
   }, [deliveredOrders, dateRange]);
 
-  // Loading state
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -88,7 +85,6 @@ export function Overview() {
     );
   }
 
-  // Error state
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-screen">

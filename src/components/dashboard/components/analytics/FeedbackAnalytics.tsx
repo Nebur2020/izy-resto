@@ -170,54 +170,63 @@ export function FeedbackAnalytics(props: FeedbackAnalyticsProps) {
           <h3 className="text-lg font-semibold">{t('analyse:client-note')}</h3>
         </div>
         <div className="divide-y dark:divide-gray-700">
-          {paginatedOrders.map(order => (
-            <div key={order.id} className="p-6">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <h4 className="font-medium">{order.customerName}</h4>
-                    <span className="text-sm text-gray-500">
-                      • {t('order:order')} #{order.id.slice(0, 8)}
-                    </span>
-                  </div>
-                  {order.customerPhone && (
-                    <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-2">
-                      <Phone className="w-4 h-4" />
-                      {order.customerPhone}
+          {paginatedOrders.length > 0 ? (
+            paginatedOrders.map(order => (
+              <div key={order.id} className="p-6">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h4 className="font-medium">{order.customerName}</h4>
+                      <span className="text-sm text-gray-500">
+                        • {t('order:order')} #{order.id.slice(0, 8)}
+                      </span>
                     </div>
-                  )}
-                  <div className="flex items-center gap-2">
-                    {[1, 2, 3, 4, 5].map(star => (
-                      <Star
-                        key={star}
-                        className={`w-4 h-4 ${
-                          star <= (order.rating?.rating || 0)
-                            ? 'text-yellow-400 fill-yellow-400'
-                            : 'text-gray-300 dark:text-gray-600'
-                        }`}
-                      />
-                    ))}
+                    {order.customerPhone && (
+                      <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-2">
+                        <Phone className="w-4 h-4" />
+                        {order.customerPhone}
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2">
+                      {[1, 2, 3, 4, 5].map(star => (
+                        <Star
+                          key={star}
+                          className={`w-4 h-4 ${
+                            star <= (order.rating?.rating || 0)
+                              ? 'text-yellow-400 fill-yellow-400'
+                              : 'text-gray-300 dark:text-gray-600'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-gray-500">
+                      {formatFirestoreTimestamp(
+                        order.rating?.createdAt || order.createdAt,
+                        lng
+                      )}
+                    </p>
+                    <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                      {formatCurrency(order.total, settings?.currency)}
+                    </p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm text-gray-500">
-                    {formatFirestoreTimestamp(
-                      order.rating?.createdAt || order.createdAt,
-                      lng
-                    )}
+                {order.rating?.feedback && (
+                  <p className="text-gray-600 dark:text-gray-400 mt-2">
+                    {order.rating.feedback}
                   </p>
-                  <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                    {formatCurrency(order.total, settings?.currency)}
-                  </p>
-                </div>
+                )}
               </div>
-              {order.rating?.feedback && (
-                <p className="text-gray-600 dark:text-gray-400 mt-2">
-                  {order.rating.feedback}
-                </p>
-              )}
+            ))
+          ) : (
+            <div className="p-12 text-center">
+              <MessageSquare className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+              <p className="text-gray-500 dark:text-gray-400">
+                {t('analyse:no-client-feedback')}
+              </p>
             </div>
-          ))}
+          )}
 
           {ratedOrders.length === 0 && (
             <div className="p-12 text-center">
