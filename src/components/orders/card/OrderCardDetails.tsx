@@ -40,7 +40,12 @@ export function OrderCardDetails({ order }: OrderCardDetailsProps) {
             {t('common:payment-method')}
           </h4>
           <div className="text-sm opacity-75">
-            <p>{t(`order:payment-method-names.${order.paymentMethod.name}`)}</p>
+            <p>
+              {t(`order:payment-method-names.${order.paymentMethod.name}`) ===
+              `payment-method-names.${order.paymentMethod.name}`
+                ? order.paymentMethod.name
+                : t(`order:payment-method-names.${order.paymentMethod.name}`)}
+            </p>
           </div>
         </div>
       )}

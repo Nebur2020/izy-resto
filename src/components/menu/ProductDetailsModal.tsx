@@ -71,7 +71,7 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
 
   const getVariantId = useCallback(() => {
     if (!selectedVariants.length) return item.id;
-    return `${item.id}-${selectedVariants.sort().join('-')}`;
+    return `${item.id}-${selectedVariants.join('-')}`;
   }, [item.id, selectedVariants]);
 
   const getVariantImage = useCallback(() => {

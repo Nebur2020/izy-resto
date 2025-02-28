@@ -13,9 +13,19 @@ export const PaymentMethodStats = ({ orders }: { orders: Order[] }) => {
   const paymentStats = useMemo(() => {
     // Group payments by method
     const paymentTotals = orders.reduce((acc, order) => {
-      const methodName = t(
+      const methodName =
+        t(
+          `order:payment-method-names.${
+            order?.paymentMethod?.name || 'dine-in'
+          }`
+        ) ===
         `order:payment-method-names.${order?.paymentMethod?.name || 'dine-in'}`
-      );
+          ? order?.paymentMethod?.name || 'dine-in'
+          : t(
+              `order:payment-method-names.${
+                order?.paymentMethod?.name || 'dine-in'
+              }`
+            );
       acc[methodName] =
         (acc[methodName] || 0) + Number(order.amountPaid || order.total || 0);
       return acc;
