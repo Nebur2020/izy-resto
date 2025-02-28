@@ -85,6 +85,9 @@ import enMedia from './locales/en/media.json';
 import frLoging from './locales/fr/login.json';
 import enLoging from './locales/en/login.json';
 
+import frPizzatheme from './locales/fr/pizza-theme.json';
+import enPizzatheme from './locales/en/pizza-theme.json';
+
 i18n.use(initReactI18next).init({
   resources: {
     en: {
@@ -116,6 +119,7 @@ i18n.use(initReactI18next).init({
       personal: enPersonal,
       media: enMedia,
       login: enLoging,
+      pizzatheme: enPizzatheme,
     },
     fr: {
       cart: frCart,
@@ -146,6 +150,7 @@ i18n.use(initReactI18next).init({
       personal: frPersonal,
       media: frMedia,
       login: frLoging,
+      pizzatheme: frPizzatheme,
     },
   },
   fallbackLng: 'fr',
