@@ -109,47 +109,45 @@ export function OrderManagement() {
       endDate.setHours(23, 59, 59, 999);
     }
 
-    return (
-      ordersToFilter
-        .filter(order => {
-          if (statusFilter === 'all' && !fromDate && !toDate) {
-            return true;
-          }
+    return ordersToFilter
+      .filter(order => {
+        if (statusFilter === 'all' && !fromDate && !toDate) {
+          return true;
+        }
 
-          if (statusFilter !== 'all' && order.status !== statusFilter) {
+        if (statusFilter !== 'all' && order.status !== statusFilter) {
+          return false;
+        }
+
+        if (fromDate || endDate) {
+          const orderTimestamp =
+            order.createdAt?.seconds ||
+            (order.createdAt instanceof Date
+              ? order.createdAt.getTime() / 1000
+              : new Date(order.createdAt).getTime() / 1000);
+
+          const orderDate = new Date(orderTimestamp * 1000);
+
+          if (fromDate && orderDate < fromDate) {
             return false;
           }
-
-          if (fromDate || endDate) {
-            const orderTimestamp =
-              order.createdAt?.seconds ||
-              (order.createdAt instanceof Date
-                ? order.createdAt.getTime() / 1000
-                : new Date(order.createdAt).getTime() / 1000);
-
-            const orderDate = new Date(orderTimestamp * 1000);
-
-            if (fromDate && orderDate < fromDate) {
-              return false;
-            }
-            if (endDate && orderDate > endDate) {
-              return false;
-            }
+          if (endDate && orderDate > endDate) {
+            return false;
           }
+        }
 
-          return true;
-        })
-        .sort((a, b) => {
-          const getTimestamp = (order: Order) => {
-            if (order.createdAt?.seconds) return order.createdAt.seconds;
-            if (order.createdAt instanceof Date)
-              return order.createdAt.getTime() / 1000;
-            return new Date(order.createdAt).getTime() / 1000;
-          };
+        return true;
+      })
+      .sort((a, b) => {
+        const getTimestamp = (order: Order) => {
+          if (order.createdAt?.seconds) return order.createdAt.seconds;
+          if (order.createdAt instanceof Date)
+            return order.createdAt.getTime() / 1000;
+          return new Date(order.createdAt).getTime() / 1000;
+        };
 
-          return getTimestamp(b) - getTimestamp(a);
-        })
-    );
+        return getTimestamp(b) - getTimestamp(a);
+      });
   }, [orders, searchResults, isSearching, statusFilter, dateRange]);
 
   const stats = useMemo(

@@ -31,7 +31,6 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
     priceStyle = 'text-base sm:text-lg font-bold text-blue-600 dark:text-blue-400',
   } = props;
 
-  // Basic state
   const [fullPrice, setFullPrice] = useState(item?.price || 0);
   const [quantity, setQuantity] = useState(1);
   const [selectedVariants, setSelectedVariants] = useState<string[]>([]);
@@ -44,7 +43,6 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
   const [isLoadingPrice, setIsLoadingPrice] = useState(false);
   const [categoryVariants, setCategoryVariants] = useState<Variant[]>([]);
 
-  // Refs and hooks
   const modalRef = useRef<HTMLDivElement>(null);
   const { addToCart, cart } = useCart();
   const { settings } = useSettings();
@@ -56,7 +54,6 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
   const isOutOfStock = item.stockQuantity === 0;
   const itemWithVariants = item as MenuItemWithVariants;
 
-  // Memoized values
   const variantTypes = useMemo(() => {
     return (
       itemWithVariants.variantPrices?.reduce((acc, vp) => {
@@ -72,7 +69,6 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
     );
   }, [itemWithVariants.variantPrices]);
 
-  // Memoized functions
   const getVariantId = useCallback(() => {
     if (!selectedVariants.length) return item.id;
     return `${item.id}-${selectedVariants.sort().join('-')}`;
@@ -97,19 +93,10 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
       .join(' ');
   }, [selectedVariants]);
 
-  const isVariantRequired = useCallback(
-    (type: string) => {
-      return !!variants.find(v => v.name.toLowerCase() === type.toLowerCase())
-        ?.isRequired;
-    },
-    [variants]
-  );
   const areAllRequiredVariantsSelected = useCallback(() => {
-    // Check each required variant from categoryVariants
     return categoryVariants
       .filter(variant => variant.isRequired)
       .every(variant => {
-        // Check if any value for this variant type is selected
         return selectedVariants.some(selected =>
           selected.startsWith(`${variant.name}: `)
         );
@@ -121,7 +108,6 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
     return cart.find(item => item.id === variantId);
   }, [cart, getVariantId]);
 
-  // Load category variants once
   useEffect(() => {
     if (item && item.categoryId) {
       const loadCategoryVariants = async () => {
@@ -139,7 +125,6 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
     }
   }, [item?.categoryId]);
 
-  // Handle clicks outside modal and escape key
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -165,7 +150,6 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
     };
   }, [onClose]);
 
-  // Update price whenever selected variants change
   useEffect(() => {
     const updatePrice = async () => {
       if (!selectedVariants.length) {
@@ -177,14 +161,12 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
       try {
         setIsLoadingPrice(true);
 
-        // First check if we have predefined variant prices
         if (item.variantPrices && item.variantPrices.length > 0) {
           const sorted = selectedVariants.sort();
           const filtered = item.variantPrices.filter(
             vp => vp.variantCombination.length === sorted.length
           );
 
-          // Check if the exact combination exists
           const exists = filtered.find(
             vp =>
               JSON.stringify(vp.variantCombination) === JSON.stringify(sorted)
@@ -197,23 +179,17 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
           }
         }
 
-        // If no predefined price or no match found, calculate using categoryVariants
         if (categoryVariants.length > 0) {
-          // Parse selected variant values
           const selectedVariantMap = selectedVariants.reduce((acc, curr) => {
             const [name, value] = curr.split(': ');
             acc[name] = value;
             return acc;
           }, {} as Record<string, string>);
 
-          // console.log('selectedVariantMap', selectedVariantMap);
-
           let calculatedPrice = item.price;
 
-          // Calculate price from each selected variant
           categoryVariants.forEach(variant => {
             const selectedValue = selectedVariantMap[variant.name];
-            // console.log('selectedValue', selectedValue);
             if (selectedValue && variant.prices) {
               const valueIndex = variant.values.findIndex(
                 v => v === selectedValue
@@ -224,11 +200,6 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
                 !isNaN(variant.prices[valueIndex]) &&
                 typeof variant.prices[valueIndex] === 'number'
               ) {
-                // console.log(
-                //   'valueIndex',
-                //   valueIndex,
-                //   variant.prices[valueIndex]
-                // );
                 calculatedPrice += variant.prices[valueIndex];
               }
             }
@@ -236,12 +207,11 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
 
           setFullPrice(calculatedPrice);
         } else {
-          // Fallback to base price if no variants data available
           setFullPrice(item.price);
         }
       } catch (error) {
         console.error('Error updating price:', error);
-        setFullPrice(item.price); // Fallback to base price on error
+        setFullPrice(item.price);
       } finally {
         setIsLoadingPrice(false);
       }
@@ -259,14 +229,12 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
       setIsLoadingPrice(true);
 
       setSelectedVariants(prev => {
-        // If already selected, deselect it
         if (prev.includes(variant)) {
           const updatedSelection = prev.filter(v => v !== variant);
           const hasOtherOfSameType = updatedSelection.some(v =>
             v.startsWith(`${type}: `)
           );
 
-          // Update selection tracking
           setSelectedVariantTypes(current => ({
             ...current,
             [type]: hasOtherOfSameType,
@@ -275,17 +243,14 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
           return updatedSelection;
         }
 
-        // Replace any existing variant of same type
         const filtered = prev.filter(v => !v.startsWith(`${type}: `));
         const updatedSelection = [...filtered, variant];
 
-        // Track that this variant type has been selected
         setSelectedVariantTypes(current => ({
           ...current,
           [type]: true,
         }));
 
-        // Always accept the selection - don't validate combinations
         return updatedSelection;
       });
     },
@@ -298,7 +263,6 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
     setIsLoadingPrice(true);
     setUnselectedRequiredVariantType([]);
 
-    // Check for required variants that haven't been selected
     const requiredVariantTypes = variants
       .filter(v =>
         Object.keys(variantTypes)
@@ -421,7 +385,6 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
               </span>
             </div>
 
-            {/* Variant Selection UI using categoryVariants */}
             {categoryVariants
               .sort((a, b) => {
                 if (a.name < b.name) {
@@ -447,7 +410,6 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
                         {variant.name}
                       </h3>
 
-                      {/* Selection status indicator */}
                       {isRequired && (
                         <div className="ml-2">
                           {isSelected ? (
