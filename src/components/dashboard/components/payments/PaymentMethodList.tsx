@@ -72,7 +72,7 @@ export function PaymentMethodList(props: IPaymentMethodListProps) {
 
               <div>
                 <h3 className="font-medium text-lg">
-                  {`order:payment-method-names.${method.name}` ===
+                  {t(`order:payment-method-names.${method.name}`) ===
                   `order:payment-method-names.${method.name}`
                     ? t(`order:payment-method-names.${method.name}`)
                     : method.name}

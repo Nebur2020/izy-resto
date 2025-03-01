@@ -25,7 +25,7 @@ export const secretKeys = {
 
 export const apiConfig = {
   baseUri: `${
-    window.location.hostname.includes('localhost')
+    !window.location.hostname.includes('localhost')
       ? 'http://localhost:3000'
       : 'https://restaurants-project-backend-solitary-brook-2574.fly.dev'
   }/api/v1`,
