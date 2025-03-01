@@ -68,7 +68,6 @@ export function MediaLibraryModal(props: IMediaLibraryModalProps) {
           </button>
         </div>
 
-        {/* Search and View Toggle */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
@@ -88,17 +87,9 @@ export function MediaLibraryModal(props: IMediaLibraryModalProps) {
             >
               <Grid className="h-4 w-4" />
             </Button>
-            {/* <Button
-              variant={!isGridView ? 'primary' : 'secondary'}
-              size="sm"
-              onClick={() => setIsGridView(false)}
-            >
-              <List className="h-4 w-4" />
-            </Button> */}
           </div>
         </div>
 
-        {/* Content */}
         <div className="flex-1 overflow-y-auto">
           <MediaGrid
             files={paginatedFiles}
@@ -108,7 +99,6 @@ export function MediaLibraryModal(props: IMediaLibraryModalProps) {
           />
         </div>
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="mt-6 pt-6 border-t dark:border-gray-700">
             <Pagination
@@ -119,7 +109,6 @@ export function MediaLibraryModal(props: IMediaLibraryModalProps) {
           </div>
         )}
 
-        {/* Upload Modal */}
         {isUploadModalOpen && (
           <MediaUploader
             onClose={() => setIsUploadModalOpen(false)}

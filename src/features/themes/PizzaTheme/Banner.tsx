@@ -1,12 +1,14 @@
 import { ShoppingCart, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 export default function Banner() {
+  const { t } = useTranslation('pizzatheme');
   return (
     <section className="bg-[#f4ecdf] flex flex-col-reverse lg:flex-row justify-between items-center h-auto lg:h-screen px-6 lg:px-20 py-10">
       <div className="w-full lg:w-[40%] text-center lg:text-left lg:ml-10">
         <span className="text-white bg-red-600 px-4 py-2 mb-3 inline-block rounded-md text-sm lg:text-base">
-          Free Home delivery 24 Hours
+          {t('free-home-delivery')}
         </span>
         <motion.h1
           className="my-5 text-4xl lg:text-7xl font-extrabold leading-tight"
@@ -14,7 +16,7 @@ export default function Banner() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
         >
-          ENJOY YOUR PIZZA IN TOWN
+          {t('best-pizza-in-town')}
         </motion.h1>
         <ul className="py-5 space-y-2">
           <motion.li
@@ -25,7 +27,7 @@ export default function Banner() {
           >
             <CheckCircle color="#f00" />
             <span className="ml-2 font-semibold text-sm lg:text-lg">
-              lorem ipsum indolor
+              {t('theme-description-one')}
             </span>
           </motion.li>
           <motion.li
@@ -36,7 +38,7 @@ export default function Banner() {
           >
             <CheckCircle color="#f00" />
             <span className="ml-2 font-semibold text-sm lg:text-lg">
-              Sit amet consectetur adpiscine
+              {t('theme-description-two')}
             </span>
           </motion.li>
           <motion.li
@@ -47,7 +49,7 @@ export default function Banner() {
           >
             <CheckCircle color="#f00" />
             <span className="ml-2 font-semibold text-sm lg:text-lg">
-              Eliteytellus luctus nec
+              {t('theme-description-three')}
             </span>
           </motion.li>
         </ul>
@@ -58,7 +60,7 @@ export default function Banner() {
           transition={{ delay: 0.8, duration: 0.5 }}
         >
           <ShoppingCart color="#fff" />
-          <span className="text-white ml-2">VOIR LE MENU</span>
+          <span className="text-white ml-2">{t('hero:view-menu')}</span>
         </motion.button>
       </div>
       <div className="w-full lg:w-[50%] mt-10 lg:mt-0 flex justify-center relative mb-11">

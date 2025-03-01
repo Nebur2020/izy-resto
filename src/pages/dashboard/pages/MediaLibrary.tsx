@@ -1,16 +1,16 @@
 import { useState } from 'react';
-import { Search, Grid, List } from 'lucide-react';
+import { Search, Grid, List, RefreshCw } from 'lucide-react';
 import { MediaGrid } from '../../../components/dashboard/components/media/MediaGrid';
 import { MediaList } from '../../../components/dashboard/components/media/MediaList';
 import { BulkUploader } from '../../../components/dashboard/components/media/BulkUploader';
 import { BulkActions } from '../../../components/dashboard/components/media/BulkActions';
 import { useMediaGallery } from '../../../hooks/useMediaGallery';
-import { Pagination } from '../../../components/ui/Pagination';
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { Button } from '../../../components/ui/Button';
 
-const ITEMS_PER_PAGE = 12;
+const ITEMS_PER_LOAD = 12;
 
 export function MediaLibrary() {
   const { t } = useTranslation();
@@ -23,17 +23,17 @@ export function MediaLibrary() {
     isBulk: boolean;
     fileIds?: string[];
   }>({ isOpen: false, isBulk: false });
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const {
     files,
     totalFiles,
-    currentPage,
-    totalPages,
-    setCurrentPage,
     isLoading,
     uploadFiles,
     deleteFiles,
-  } = useMediaGallery(ITEMS_PER_PAGE);
+    loadMoreFiles,
+    hasMore,
+  } = useMediaGallery(ITEMS_PER_LOAD);
 
   const filteredFiles = files.filter(file =>
     file.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -74,6 +74,20 @@ export function MediaLibrary() {
       newSelection.add(fileId);
     }
     setSelectedFiles(newSelection);
+  };
+
+  const handleLoadMore = async () => {
+    if (!hasMore || isLoadingMore) return;
+
+    setIsLoadingMore(true);
+    try {
+      await loadMoreFiles();
+    } catch (error) {
+      console.error('Error loading more files:', error);
+      toast.error(t('common:error-loading-more-files'));
+    } finally {
+      setIsLoadingMore(false);
+    }
   };
 
   return (
@@ -165,13 +179,20 @@ export function MediaLibrary() {
             onToggleSelect={toggleFileSelection}
           />
         )}
-        {totalPages > 1 && (
-          <div className="mt-6 pt-6 border-t dark:border-gray-700">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
+        {hasMore && (
+          <div className="flex justify-center mt-6">
+            <Button
+              onClick={handleLoadMore}
+              disabled={isLoadingMore}
+              className="px-6 py-2"
+            >
+              {isLoadingMore ? (
+                <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <RefreshCw className="w-4 h-4 mr-2" />
+              )}
+              {t('common:load-more')}
+            </Button>
           </div>
         )}
       </div>

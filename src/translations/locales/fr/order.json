@@ -72,7 +72,7 @@
   "error-phone-number-format": "Format international invalide (+XXX...)",
   "error-phone-number-only-digits": "Le numéro doit contenir uniquement des chiffres",
   "order-success-dine-in": "✨ Order placed successfully! Please wait at your table.",
-  "order-success-delivery": "🚚 Order placed successfully! We will deliver shortly.",
+  "order-success-delivery": "🚚 Commande passée avec succès ! Nous livrerons sous peu.",
   "error-order-failed": "Échec de la commande. Veuillez réessayer.",
   "order-status-pending": "En attente",
   "order-status-in-cooking": "En préparation",

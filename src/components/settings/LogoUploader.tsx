@@ -126,6 +126,7 @@ export function LogoUploader(props: ILogoUploaderProps) {
                     border border-red-100 dark:border-red-900/40
                     transition-all duration-300 
                     group"
+                    spanClassName='text-white'
                 >
                   <X className="h-5 w-5 transition-transform group-hover:rotate-6" />
                   {t('common:remove-image')}

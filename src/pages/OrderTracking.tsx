@@ -106,6 +106,8 @@ export default function OrderTracking() {
     try {
       setIsSubmitting(true);
       await orderService.updateOrderRating(orderId, rating, feedback);
+
+      // The order will update automatically via the real-time listener
       toast.success(t('common:thank-you-for-your-opinion'));
     } catch (error: any) {
       console.error('Error submitting rating:', error);

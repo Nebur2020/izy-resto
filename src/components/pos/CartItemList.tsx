@@ -91,9 +91,9 @@ export function CartItemList() {
               variant="danger"
               size="sm"
               onClick={() => removeFromCart(item.id)}
-              className="h-8 w-8 p-0 rounded-full ml-2"
+              className="h-8 w-8 p-0 rounded-full ml-2 text-white"
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="w-4 h-4 text-white" />
             </Button>
           </div>
         </motion.div>

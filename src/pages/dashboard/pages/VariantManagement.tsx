@@ -101,7 +101,6 @@ export function VariantManagement() {
       await deleteVariant(deleteConfirmation.variantId);
       setDeleteConfirmation({ isOpen: false, variantId: null });
 
-      // If user was searching, refresh search results
       if (isSearching && searchTerm.trim() !== '') {
         performSearch(searchTerm);
       }
@@ -114,7 +113,6 @@ export function VariantManagement() {
     }
   };
 
-  // Determine which variants to display
   const displayedVariants = isSearching ? searchResults : variants;
   const showLoadMore = !isSearching && hasMore && !isLoading;
   const currentLoading = isSearching ? searchLoading : isLoading;
@@ -134,7 +132,6 @@ export function VariantManagement() {
         </Button>
       </div>
 
-      {/* Search Bar */}
       <div className="relative">
         <div className="relative max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -178,7 +175,6 @@ export function VariantManagement() {
         onDelete={id => setDeleteConfirmation({ isOpen: true, variantId: id })}
       />
 
-      {/* No Results Message */}
       {isSearching && !searchLoading && searchResults.length === 0 && (
         <div className="text-center py-10">
           <p className="text-gray-500 dark:text-gray-400">

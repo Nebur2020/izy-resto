@@ -87,6 +87,13 @@ export function AppearanceSettings() {
       }
     }
   }, []);
+  
+  useEffect(() => {
+    if (versions.length > 0) {
+      const vers = versions.find(v => v.value === packageJson.version);
+      setSelectedVersion(vers || null);
+    }
+  }, [versions]);
 
   useEffect(() => {
     if (versions.length > 0) {

@@ -6,10 +6,7 @@ import { Button } from '../../../ui/Button';
 import { useSettings } from '../../../../hooks/useSettings';
 import { formatCurrency } from '../../../../utils/currency';
 import { ProductDetailsModal } from '../../../menu/ProductDetailsModal';
-import { Pagination } from '../../../ui/Pagination';
 import { useTranslation } from 'react-i18next';
-
-const ITEMS_PER_PAGE = 8;
 
 interface POSMenuGridProps {
   items: MenuItem[];
@@ -47,38 +44,47 @@ export function POSMenuGrid(props: POSMenuGridProps) {
         </Button>
       </div>
 
-      {/* Menu Grid */}
       <div className="flex-1 overflow-y-auto p-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           <AnimatePresence mode="popLayout">
-            {items.map(item => (
+            {items.length > 0 ? (
+              items.map(item => (
+                <motion.div
+                  key={item.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  onClick={() => setSelectedItem(item)}
+                  className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                >
+                  <div className="aspect-video mb-3 rounded-lg overflow-hidden">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <h3 className="font-medium mb-1">{item.name}</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 line-clamp-2">
+                    {item.description}
+                  </p>
+                  <div className="flex justify-between items-center">
+                    <span className="font-bold text-blue-600 dark:text-blue-400">
+                      {formatCurrency(item.price, settings?.currency)}
+                    </span>
+                  </div>
+                </motion.div>
+              ))
+            ) : (
               <motion.div
-                key={item.id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                onClick={() => setSelectedItem(item)}
-                className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="col-span-full flex items-center justify-center py-12 text-gray-500 dark:text-gray-400"
               >
-                <div className="aspect-video mb-3 rounded-lg overflow-hidden">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <h3 className="font-medium mb-1">{item.name}</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 line-clamp-2">
-                  {item.description}
-                </p>
-                <div className="flex justify-between items-center">
-                  <span className="font-bold text-blue-600 dark:text-blue-400">
-                    {formatCurrency(item.price, settings?.currency)}
-                  </span>
-                </div>
+                <p className="text-lg">{t('menu:no-items-found')}</p>
               </motion.div>
-            ))}
+            )}
           </AnimatePresence>
         </div>
       </div>

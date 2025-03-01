@@ -74,7 +74,7 @@
   "note": "Note",
   "amount-received": "Montant reçu",
   "amount-due": "MONNAIE RENDUE",
-  "payment-on-site": "PAIEMENT SUR PLACE",
+  "payment-on-site": "Paiment sur place",
   "payment-receive": "PAIEMENT REÇU",
   "serve-by": "Vous avez été servi par",
   "payment-on-delivery": "Paiement à la livraison",
@@ -200,7 +200,20 @@
   "staff-names": {
     "admin": "Admin",
     "staff": "Staff",
-    "Le gérant": "Le gérant"
+    "Le gérant": "Le gérant",
+    "LIVREUR": "Livreur",
+    "Le serveur": "Le serveur",
+    "Le chef": "Le chef",
+    "Le caissier": "Le caissier",
+    "Le barman": "Le barman",
+    "Le commis": "Le commis",
+    "Le plongeur": "Le plongeur",
+    "Le cuisinier": "Le cuisinier",
+    "Le pâtissier": "Le pâtissier",
+    "Le boulanger": "Le boulanger",
+    "Le sommelier": "Le sommelier",
+    "Le maître d'hôtel": "Le maître d'hôtel",
+    "Le réceptionniste": "Le réceptionniste"
   },
   "financial-statement": "États Financiers",
   "period": "Période:",
@@ -279,5 +292,15 @@
   "stable": "Stable",
   "try-different-date-range": "Essayez une plage de dates différente",
   "menu-product": "produit du menu",
-  "inventory-product": "produit d'inventaire"
+  "inventory-product": "produit d'inventaire",
+  "no-customers-found": "Aucun client trouvé",
+  "no-variants-found": "Aucune variante trouvée",
+  "no-payment-method": "Aucun mode de paiement",
+  "no-payment-method-description": "Veuillez ajouter un mode de paiement pour continuer",
+  "no-transaction": "Aucune transaction trouvée",
+  "no-staff-members-found": "Aucun membre du personnel trouvé",
+  "media-empty": "Aucun fichier trouvé",
+  "empty-file-desc": "Commencez par ajouter des fichiers",
+  "no-transaction-description": "Les transactions apparaîtront ici",
+  "product-list-no-items": "Aucun produit trouvé"
 }

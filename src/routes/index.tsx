@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect } from 'react';
+import React, { Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { LoginPage } from '../pages/auth/LoginPage';
 import OrderTracking from '../pages/OrderTracking';
@@ -8,8 +8,8 @@ import { AuthGuard } from '../components/auth/AuthGuard';
 import PaymentFailure from '../pages/paytech/FailedPage';
 import PaymentSuccess from '../pages/paytech/SuccessPage';
 import { TermsOfService } from '../pages/TermsOfService';
-import { Home } from '../pages/home';
 import PendingTransaction from '../pages/payments/pending';
+import { Home } from '../pages/home';
 
 const Dashboard = React.lazy(() =>
   import('../pages/dashboard/Dashboard')

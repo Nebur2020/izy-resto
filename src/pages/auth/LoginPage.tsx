@@ -4,8 +4,10 @@ import { Utensils, Lock, ArrowLeft, Mail, AlertCircle } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export function LoginPage() {
+  const { t } = useTranslation();
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,19 +23,22 @@ export function LoginPage() {
     e.preventDefault();
     setError(null);
 
-    // Validate inputs
     if (!email.trim() || !password.trim()) {
-      setError('Veuillez remplir tous les champs');
+      setError(t('login:fields-required'));
       return;
     }
 
     if (!validateEmail(email)) {
-      setError('Adresse email invalide');
+      setError(t('login:invalid-email'));
       return;
     }
 
     if (password.length < 6) {
-      setError('Le mot de passe doit contenir au moins 6 caractères');
+      setError(
+        t('login:password-length', {
+          length: 6,
+        })
+      );
       return;
     }
 
@@ -43,28 +48,27 @@ export function LoginPage() {
       setIsLoading(true);
       await login(email, password);
     } catch (error: any) {
-      let errorMessage = 'Merci de vérifier vos identifiants';
+      let errorMessage = t('login:unknown-error');
 
-      // Map Firebase error codes to user-friendly messages
       switch (error.code) {
         case 'auth/invalid-email':
-          errorMessage = 'Adresse email invalide';
+          errorMessage = t('login:invalid-email');
           break;
         case 'auth/user-disabled':
-          errorMessage = 'Ce compte a été désactivé';
+          errorMessage = t('login:user-disabled');
           break;
         case 'auth/user-not-found':
-          errorMessage = 'Aucun compte trouvé avec cet email';
+          errorMessage = t('login:user-not-found');
           break;
         case 'auth/wrong-password':
-          errorMessage = 'Mot de passe incorrect';
+          errorMessage = t('login:wrong-password');
           break;
         case 'auth/too-many-requests':
-          errorMessage = 'Trop de tentatives. Veuillez réessayer plus tard.';
+          errorMessage = t('login:too-many-requests');
           break;
         case 'auth/network-request-failed':
           errorMessage =
-            'Erreur de connexion. Vérifiez votre connexion internet.';
+            t('login:network-request-failed');
           break;
       }
 
@@ -75,12 +79,11 @@ export function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      {/* Back Button */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md mb-8">
         <Link to="/">
           <Button variant="ghost" size="sm" className="ml-4">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Retour au Restaurant
+            {t('login:back-to-restaurants')}
           </Button>
         </Link>
       </div>
@@ -104,7 +107,7 @@ export function LoginPage() {
           </motion.div>
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
-          Accès réservé au personnel
+          {t('login:personal-account')}
         </h2>
       </motion.div>
 
@@ -132,7 +135,7 @@ export function LoginPage() {
                 htmlFor="email"
                 className="block text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                Email
+                {t('login:email')}
               </label>
               <div className="mt-1 relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -155,7 +158,7 @@ export function LoginPage() {
                 htmlFor="password"
                 className="block text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                Mot de passe
+                {t('login:password')}
               </label>
               <div className="mt-1 relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -185,7 +188,7 @@ export function LoginPage() {
                 ) : (
                   <>
                     <Lock className="w-4 h-4 mr-2" />
-                    Se connecter
+                    {t('login:login')}
                   </>
                 )}
               </Button>

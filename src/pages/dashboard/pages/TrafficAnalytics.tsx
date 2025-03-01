@@ -28,7 +28,7 @@ export function TrafficAnalytics() {
   const { settings } = useSettings();
   const [activeTab, setActiveTab] = useState('overview');
   const [dateRange, setDateRange] = useState({
-    start: new Date(new Date().setHours(0, 0, 0, 0)), // First day of current month
+    start: new Date(new Date().setHours(0, 0, 0, 0)),
     end: new Date(),
   });
   const [currentPage, setCurrentPage] = useState(1);
@@ -40,29 +40,30 @@ export function TrafficAnalytics() {
     { id: 'feedback', label: t('client-note') },
   ];
 
-  const metrics = useMemo(() => {
-    const filteredOrders = orders.filter(order => {
+  const filteredOrders = useMemo(() => {
+    return orders.filter(order => {
       const orderDate = new Date(order.createdAt.seconds * 1000);
-      return (
-        order.status === 'delivered' &&
-        orderDate >= dateRange.start &&
-        orderDate <= dateRange.end
-      );
+      return orderDate >= dateRange.start && orderDate <= dateRange.end;
     });
+  }, [orders, dateRange]);
 
-    const totalRevenue = filteredOrders.reduce(
-      (sum, order) =>
-        order.status === 'delivered' ? sum + Number(order.subtotal) : sum,
+  const metrics = useMemo(() => {
+    const deliveredOrders = filteredOrders.filter(
+      order => order.status === 'delivered'
+    );
+
+    const totalRevenue = deliveredOrders.reduce(
+      (sum, order) => sum + Number(order.subtotal),
       0
     );
 
     const averageOrderValue =
-      filteredOrders.length > 0 ? totalRevenue / filteredOrders.length : 0;
+      deliveredOrders.length > 0 ? totalRevenue / deliveredOrders.length : 0;
 
-    const canceledOrders = orders.filter(o => o.status === 'cancelled');
+    const canceledOrders = filteredOrders.filter(o => o.status === 'cancelled');
     const cancelRate =
       filteredOrders.length > 0
-        ? (canceledOrders.length / orders.length) * 100
+        ? (canceledOrders.length / filteredOrders.length) * 100
         : 0;
 
     const dineInOrders = filteredOrders.filter(
@@ -90,7 +91,7 @@ export function TrafficAnalytics() {
       dineInRate,
       uniqueCustomers,
     };
-  }, [orders, dateRange]);
+  }, [filteredOrders]);
 
   const handleDateChange = (start: Date, end: Date) => {
     setDateRange({ start, end });
@@ -327,7 +328,7 @@ export function TrafficAnalytics() {
         </>
       ) : (
         <FeedbackAnalytics
-          orders={orders}
+          orders={filteredOrders}
           currentPage={currentPage}
           onPageChange={setCurrentPage}
         />

@@ -27,7 +27,6 @@ export function OrderList(props: IOrderListProps) {
   const { t } = useTranslation('order');
   const observerTarget = useRef<HTMLDivElement>(null);
 
-  // Set up intersection observer for infinite scrolling
   useEffect(() => {
     if (!hasMore || !onLoadMore) return;
 
@@ -38,7 +37,7 @@ export function OrderList(props: IOrderListProps) {
         }
       },
       {
-        rootMargin: '200px', // Start loading before user reaches the end
+        rootMargin: '200px',
         threshold: 0.1,
       }
     );
@@ -103,7 +102,6 @@ export function OrderList(props: IOrderListProps) {
         )}
       </div>
 
-      {/* Invisible element to trigger infinite loading */}
       {hasMore && onLoadMore && (
         <div ref={observerTarget} className="h-10 w-full" aria-hidden="true" />
       )}

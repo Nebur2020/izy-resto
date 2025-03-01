@@ -33,7 +33,6 @@ export function OrderManagement() {
   const [isSearching, setIsSearching] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
 
-  // Track seen order IDs to detect new orders
   const seenOrderIdsRef = useRef<Set<string>>(new Set());
   const isFirstLoadRef = useRef(true);
 
@@ -41,12 +40,9 @@ export function OrderManagement() {
     refreshOrders();
   }, []);
 
-  // Detect new orders using order IDs
   useEffect(() => {
-    // Skip detection during initial load or when searching
     if (isLoading || isSearching || orders.length === 0) return;
 
-    // On first successful load, just record all current orders without notification
     if (isFirstLoadRef.current) {
       orders.forEach(order => {
         seenOrderIdsRef.current.add(order.id);
@@ -55,26 +51,17 @@ export function OrderManagement() {
       return;
     }
 
-    // Find new orders that we haven't seen before
     const newOrders = orders.filter(
       order => !seenOrderIdsRef.current.has(order.id)
     );
 
-    // If there are any new orders
     if (newOrders.length > 0) {
-      // Only play sound for new pending orders
-      const newPendingOrders = newOrders.filter(
-        order => order.status === 'pending'
-      );
-
-      // Update seen orders reference with all new orders
       newOrders.forEach(order => {
         seenOrderIdsRef.current.add(order.id);
       });
     }
   }, [orders, isLoading, isSearching]);
 
-  // Handle search with debounce
   useEffect(() => {
     const delaySearch = setTimeout(() => {
       if (searchTerm.trim() !== '') {
@@ -83,7 +70,7 @@ export function OrderManagement() {
         setIsSearching(false);
         setSearchResults([]);
       }
-    }, 500); // Debounce search for 500ms
+    }, 500);
 
     return () => clearTimeout(delaySearch);
   }, [searchTerm]);
@@ -110,12 +97,9 @@ export function OrderManagement() {
     setSearchResults([]);
   };
 
-  // Memoize the filtered orders to prevent unnecessary recalculations
   const displayedOrders = useMemo(() => {
-    // Determine which data source to use
     const ordersToFilter = isSearching ? searchResults : orders;
 
-    // Cache date objects for better performance
     const fromDate = dateRange.from;
     const toDate = dateRange.to;
     let endDate: Date | undefined;
@@ -125,55 +109,47 @@ export function OrderManagement() {
       endDate.setHours(23, 59, 59, 999);
     }
 
-    return (
-      ordersToFilter
-        .filter(order => {
-          // Skip processing completely if no filters are applied
-          if (statusFilter === 'all' && !fromDate && !toDate) {
-            return true;
-          }
+    return ordersToFilter
+      .filter(order => {
+        if (statusFilter === 'all' && !fromDate && !toDate) {
+          return true;
+        }
 
-          // Status filter
-          if (statusFilter !== 'all' && order.status !== statusFilter) {
+        if (statusFilter !== 'all' && order.status !== statusFilter) {
+          return false;
+        }
+
+        if (fromDate || endDate) {
+          const orderTimestamp =
+            order.createdAt?.seconds ||
+            (order.createdAt instanceof Date
+              ? order.createdAt.getTime() / 1000
+              : new Date(order.createdAt).getTime() / 1000);
+
+          const orderDate = new Date(orderTimestamp * 1000);
+
+          if (fromDate && orderDate < fromDate) {
             return false;
           }
-
-          // Date filter - only process if date filters exist
-          if (fromDate || endDate) {
-            // Extract timestamp only once
-            const orderTimestamp =
-              order.createdAt?.seconds ||
-              (order.createdAt instanceof Date
-                ? order.createdAt.getTime() / 1000
-                : new Date(order.createdAt).getTime() / 1000);
-
-            const orderDate = new Date(orderTimestamp * 1000);
-
-            if (fromDate && orderDate < fromDate) {
-              return false;
-            }
-            if (endDate && orderDate > endDate) {
-              return false;
-            }
+          if (endDate && orderDate > endDate) {
+            return false;
           }
+        }
 
-          return true;
-        })
-        // Optimize sorting - use timestamp when available
-        .sort((a, b) => {
-          const getTimestamp = (order: Order) => {
-            if (order.createdAt?.seconds) return order.createdAt.seconds;
-            if (order.createdAt instanceof Date)
-              return order.createdAt.getTime() / 1000;
-            return new Date(order.createdAt).getTime() / 1000;
-          };
+        return true;
+      })
+      .sort((a, b) => {
+        const getTimestamp = (order: Order) => {
+          if (order.createdAt?.seconds) return order.createdAt.seconds;
+          if (order.createdAt instanceof Date)
+            return order.createdAt.getTime() / 1000;
+          return new Date(order.createdAt).getTime() / 1000;
+        };
 
-          return getTimestamp(b) - getTimestamp(a);
-        })
-    );
+        return getTimestamp(b) - getTimestamp(a);
+      });
   }, [orders, searchResults, isSearching, statusFilter, dateRange]);
 
-  // Memoize stats calculation
   const stats = useMemo(
     () => ({
       total: displayedOrders.length,
@@ -189,7 +165,6 @@ export function OrderManagement() {
     try {
       await updateOrderStatus(orderId, status);
 
-      // If searching, refresh search results
       if (isSearching && searchTerm) {
         performSearch(searchTerm);
       }
@@ -205,7 +180,6 @@ export function OrderManagement() {
       await updateOrderStatus(cancelConfirmation.orderId, 'cancelled');
       setCancelConfirmation({ isOpen: false });
 
-      // If searching, refresh search results
       if (isSearching && searchTerm) {
         performSearch(searchTerm);
       }
@@ -258,9 +232,8 @@ export function OrderManagement() {
           <button
             onClick={() => {
               refreshOrders();
-              // Test sound only in development mode
               if (process.env.NODE_ENV === 'development') {
-                testNotification();
+                setTimeout(playNotificationSound, 500);
               }
             }}
             className="flex items-center gap-2 p-2 text-blue-600 hover:bg-blue-50 rounded-full"
@@ -294,7 +267,6 @@ export function OrderManagement() {
         isLoading={(isLoading || searchLoading) && displayedOrders.length === 0}
       />
 
-      {/* Load More Button */}
       {!isSearching && hasMore && !isLoading && !isLoadingMore && (
         <div className="flex justify-center mt-6">
           <button
@@ -308,7 +280,6 @@ export function OrderManagement() {
         </div>
       )}
 
-      {/* Loading Indicator for Load More */}
       {!isSearching && isLoadingMore && (
         <div className="flex justify-center mt-6">
           <div className="animate-spin text-blue-500">
