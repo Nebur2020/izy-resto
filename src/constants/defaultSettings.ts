@@ -110,6 +110,11 @@ export const DEFAULT_SETTINGS: RestaurantSettings = {
     zones: [],
   },
   language: 'fr',
+  country: {
+    dialCode: '+221',
+    name: 'Senegal',
+    countryCode: 'sn',
+  },
 };
 
 const defaultCurrencyInfo =

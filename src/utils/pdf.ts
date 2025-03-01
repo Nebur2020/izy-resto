@@ -370,7 +370,12 @@ export async function generateReceiptPDF(
             order.servedBy
               ? `<div style="margin-top: 8px; ${baseStyles}">${
                   translations.servedByLabel
-                } ${t(`common:staff-names.${order.servedBy}`)}</div>`
+                } ${
+                  t(`common:staff-names.${order.servedBy}`) ===
+                  `staff-names.${order.servedBy}`
+                    ? order.servedBy
+                    : t(`common:staff-names.${order.servedBy}`)
+                }</div>`
               : ''
           }
         </div>

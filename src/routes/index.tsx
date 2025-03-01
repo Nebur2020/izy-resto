@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect } from 'react';
+import React, { Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { LoginPage } from '../pages/auth/LoginPage';
 import OrderTracking from '../pages/OrderTracking';
@@ -24,7 +24,7 @@ const Dashboard = React.lazy(() =>
 export function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<PizzaTheme />} />
+      <Route path="/" element={<Home />} />
       <Route path="/order/:orderId" element={<OrderTracking />} />
       <Route path="/receipt" element={<OrderReceipt />} />
       <Route path="/paytech/success" element={<PaymentSuccess />} />

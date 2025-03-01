@@ -300,5 +300,6 @@
   "no-staff-members-found": "No staff members found",
   "media-empty": "No media found",
   "empty-file-desc": "Drag and drop multiple files here, or",
-  "no-transaction-description": "Transactions will appear here."
+  "no-transaction-description": "Transactions will appear here.",
+  "product-list-no-items": "No items found"
 }

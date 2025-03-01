@@ -34,13 +34,27 @@ export function OrderConfirmationModal(props: IOrderConfirmationModalProps) {
         order,
         {
           ...translations,
-          paymentMethodName: t(
+          paymentMethodName:
+            t(
+              `payment-method-names.${
+                order.diningOption === 'dine-in'
+                  ? 'dine-in'
+                  : order.paymentMethod?.name ?? 'default'
+              }`
+            ) ===
             `payment-method-names.${
               order.diningOption === 'dine-in'
                 ? 'dine-in'
-                : order.paymentMethod?.name
+                : order.paymentMethod?.name ?? 'default'
             }`
-          ),
+              ? order.paymentMethod?.name ?? 'default'
+              : t(
+                  `payment-method-names.${
+                    order.diningOption === 'dine-in'
+                      ? 'dine-in'
+                      : order.paymentMethod?.name ?? 'default'
+                  }`
+                ),
         },
         t,
         lng,

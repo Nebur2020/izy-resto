@@ -54,7 +54,12 @@ export function OrderTrackingHeader({ order }: OrderTrackingHeaderProps) {
         {order.paymentMethod && (
           <div className="flex items-center space-x-2 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-4 py-2 rounded-full">
             <CreditCard className="h-5 w-5" />
-            <span>{t(`payment-method-names.${order.paymentMethod.name}`)}</span>
+            <span>
+              {t(`payment-method-names.${order.paymentMethod.name}`) ===
+              `payment-method-names.${order.paymentMethod.name}`
+                ? order.paymentMethod.name
+                : t(`payment-method-names.${order.paymentMethod.name}`)}
+            </span>
           </div>
         )}
       </div>

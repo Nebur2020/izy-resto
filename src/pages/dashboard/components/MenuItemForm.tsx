@@ -54,8 +54,8 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
   ): number => {
     const variant = variants.find(v => v.name === variantName);
     if (!variant) return 0;
-
     const variantValue = variant.values.find(v => v === value);
+    if (!variantValue) return 0;
     const priceModifier =
       variant.prices?.[variant.values.indexOf(variantValue)] || 0;
     return priceModifier;

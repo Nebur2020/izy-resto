@@ -75,7 +75,10 @@ const PaymentTypeSelect = ({
         'Autres',
       ].map((type, index) => (
         <option key={index} value={type}>
-          {t(`order:payment-method-names.${type}`)}
+          {t(`order:payment-method-names.${type}`) ===
+          `order:payment-method-names.${type}`
+            ? type
+            : t(`order:payment-method-names.${type}`)}
         </option>
       ))}
     </select>

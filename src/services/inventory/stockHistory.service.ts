@@ -217,7 +217,7 @@ class StockHistoryService {
         yPos
       );
       pdf.text(
-        `${t('common:total-cost')}: ${formatCurrency(totalCost)}`,
+        `${t('common:total-cost')}: ${formatCurrency(totalCost, currency)}`,
         pageWidth - 60,
         yPos
       );
