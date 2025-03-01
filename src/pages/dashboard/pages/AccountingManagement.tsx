@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Tabs } from '../../../components/ui/Tabs';
 import { AccountingOverview } from '../../../components/dashboard/components/accounting/AccountingOverview';
 import { TransactionList } from '../../../components/dashboard/components/accounting/TransactionList';
@@ -18,6 +18,8 @@ import { AccountingTaxesManagement } from './AccountingTaxesManagement';
 import { AccountingTipsManagement } from './AccountingTipsManagement';
 import { AccountingDeliveryManagement } from './AccountingDeliveryManagement';
 import { useTranslation } from 'react-i18next';
+import { downloadCsv } from '../../../utils/export';
+import { convertToCsv } from '../../../utils/export';
 
 export function AccountingManagement() {
   const { t } = useTranslation();
@@ -29,6 +31,7 @@ export function AccountingManagement() {
     endDate: new Date(),
   });
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isExportCsv, setIsExportCsv] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [exportData, setExportData] = useState<any[]>([]);
   const statementRef = useRef<HTMLDivElement>(null);
@@ -104,7 +107,6 @@ export function AccountingManagement() {
     try {
       setIsDownloading(true);
 
-      // Fetch all transactions for export
       const allTransactions = await fetchAllTransactions();
       setExportData(allTransactions);
 
@@ -139,6 +141,26 @@ export function AccountingManagement() {
       toast.error(t('comptability:export-error'));
     } finally {
       setIsDownloading(false);
+    }
+  };
+
+  const handleExportCsv = async () => {
+    if (!settings) return;
+
+    try {
+      setIsExportCsv(true);
+
+      const allTransactions = await fetchAllTransactions();
+
+      const csvContent = convertToCsv(allTransactions);
+      downloadCsv(csvContent, 'transactions.csv');
+
+      toast.success(t('comptability:financial-statements-successfully-export'));
+    } catch (error) {
+      console.error('Error exporting statement:', error);
+      toast.error(t('comptability:export-error'));
+    } finally {
+      setIsExportCsv(false);
     }
   };
 
@@ -178,7 +200,17 @@ export function AccountingManagement() {
                   <Download className="w-4 h-4 mr-2" />
                   {isDownloading
                     ? t('common:downloading')
-                    : t('comptability:download-financial-assments')}
+                    : t('comptability:download-financial-assments-pdf')}
+                </Button>
+                <Button
+                  disabled={(settingsLoading && !settings) || isExportCsv}
+                  variant="secondary"
+                  onClick={handleExportCsv}
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  {isExportCsv
+                    ? t('common:downloading')
+                    : t('comptability:download-financial-assments-csv')}
                 </Button>
               </div>
             </div>
