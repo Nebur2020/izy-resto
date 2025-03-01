@@ -66,8 +66,8 @@ export function CheckoutForm(props: ICheckoutFormProps) {
     countryCode: string;
     dialCode: string;
   }>({
-    countryCode: 'sn',
-    dialCode: '+221',
+    countryCode: settings?.country.countryCode || 'sn',
+    dialCode: `+${settings?.country.dialCode || '221'}`,
   });
 
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
@@ -165,7 +165,14 @@ export function CheckoutForm(props: ICheckoutFormProps) {
     }
   }, [settings]);
 
-  useEffect(() => {}, [settings]);
+  useEffect(() => {
+    if (settings?.country) {
+      setSelectedCode({
+        countryCode: settings.country.countryCode || 'sn',
+        dialCode: `+${settings.country.dialCode || '221'}`,
+      });
+    }
+  }, [settings]);
 
   if (diningOption === null) {
     return null;
@@ -267,15 +274,11 @@ export function CheckoutForm(props: ICheckoutFormProps) {
               <PhoneInput
                 country={selectedCode.countryCode}
                 value={selectedCode.dialCode}
-                onChange={(value, country) => {
-                  if (
-                    country &&
-                    (country as CountryData).countryCode &&
-                    (country as CountryData).dialCode
-                  ) {
+                onChange={(_, country: CountryData) => {
+                  if (country && country.countryCode && country.dialCode) {
                     setSelectedCode({
-                      countryCode: (country as CountryData).countryCode,
-                      dialCode: `+${(country as CountryData).dialCode}`,
+                      countryCode: country.countryCode,
+                      dialCode: `+${country.dialCode}`,
                     });
                   }
                 }}

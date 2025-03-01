@@ -112,4 +112,9 @@ export interface RestaurantSettings {
   staffPermissions: string[];
   delivery: DeliverySettings;
   language: Language;
+  country: {
+    dialCode: string;
+    countryCode: string;
+    name: string;
+  };
 }
