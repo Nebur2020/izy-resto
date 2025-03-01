@@ -70,7 +70,7 @@ export function OpeningHoursModal({ isOpen, onClose }: OpeningHoursModalProps) {
             <div className="space-y-4">
               {openingHours.map(([day, hours]) => (
                 <div key={day} className="flex justify-between items-center">
-                  <span className="font-medium">{t(day)}</span>
+                  <span className="font-medium">{t(`common:days.${day}`)}</span>
                   <span
                     className={`text-gray-600 dark:text-gray-400 ${
                       hours.closed ? 'text-red-500 dark:text-red-400' : ''

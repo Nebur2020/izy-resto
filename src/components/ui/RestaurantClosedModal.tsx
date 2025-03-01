@@ -5,6 +5,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useSettings } from '../../hooks/useSettings';
 import { Button } from './Button';
 import { useRestaurantStatus } from '../../hooks/useRestaurantStatus';
+import { useTranslation } from 'react-i18next';
 
 const DAYS = [
   'monday',
@@ -34,6 +35,7 @@ export function RestaurantClosedModal() {
 
   const { isOpen: isRestaurantOpen, isHoliday } = useRestaurantStatus();
 
+  const { t } = useTranslation();
   // Check if we're on a protected route
   const isProtectedRoute =
     location.pathname.startsWith('/dashboard') ||
@@ -75,7 +77,9 @@ export function RestaurantClosedModal() {
                 const hours = settings?.openingHours?.[day];
                 return (
                   <div key={day} className="flex justify-between">
-                    <span className="capitalize">{FRENCH_DAYS[day]}</span>
+                    <span className="capitalize">
+                      {t(`common:days.${day}`)}
+                    </span>
                     <span>
                       {hours?.closed
                         ? 'Fermé'
