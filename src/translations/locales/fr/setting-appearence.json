@@ -25,5 +25,8 @@
   "re-deploy": "Mettre à jour le site",
   "light-mode": "Mode Clair",
   "light-mode-description": "Interface lumineuse avec un contraste optimal",
-  "select-version": "Selectionner une version"
+  "select-version": "Selectionner une version",
+  "theme": "Thème",
+  "theme-name": "PizzaTheme",
+  "theme-description": "PizzaTheme is a stylish and intuitive theme for pizza lovers and restaurants, offering a smooth and immersive online experience."
 }

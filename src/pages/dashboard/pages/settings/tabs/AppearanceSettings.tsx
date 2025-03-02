@@ -10,6 +10,7 @@ import {
   Columns,
   LayoutDashboard,
   LayoutList,
+  Store,
 } from 'lucide-react';
 import { useTheme } from '../../../../../context/ThemeContext';
 import { RestaurantSettings } from '../../../../../types/settings';
@@ -87,7 +88,7 @@ export function AppearanceSettings() {
       }
     }
   }, []);
-  
+
   useEffect(() => {
     if (versions.length > 0) {
       const vers = versions.find(v => v.value === packageJson.version);
@@ -183,6 +184,16 @@ export function AppearanceSettings() {
       toggleTheme();
     }
   };
+
+  const themeData = [
+    {
+      ImgUrl:
+        'https://res.cloudinary.com/dp8d8jxxd/image/upload/v1740908360/izirestau/uc9uptbzyrsuoy4grdes.png',
+      themeName: t('settingAppearence:theme-name'),
+      themeDescription: t('settingAppearence:theme-description'),
+      value: 'pizzaTheme',
+    },
+  ];
 
   return (
     <div className="space-y-8">
@@ -294,6 +305,33 @@ export function AppearanceSettings() {
             register={register}
             imageUrl="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=500&q=60"
           />
+        </div>
+      </section>
+
+      <section className="space-y-6">
+        <div className="flex items-center gap-3">
+          <Store className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <h2 className="text-xl font-semibold">
+            {t('settingAppearence:theme')}
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {themeData.map((theme, index) => (
+            <TemplateOption
+              key={index}
+              icon={Sun}
+              title={theme.themeName}
+              description={theme.themeDescription}
+              value={theme.value}
+              selected={watch('activeLanding') === 'pizzaTheme'}
+              onChange={value =>
+                setValue('activeLanding', value, { shouldDirty: true })
+              }
+              register={register}
+              imageUrl={theme.ImgUrl}
+            />
+          ))}
         </div>
       </section>
 
