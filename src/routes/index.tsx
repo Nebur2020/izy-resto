@@ -10,6 +10,7 @@ import PaymentSuccess from '../pages/paytech/SuccessPage';
 import { TermsOfService } from '../pages/TermsOfService';
 import PendingTransaction from '../pages/payments/pending';
 import { Home } from '../pages/home';
+import PizzaTheme from '../features/themes/PizzaTheme/PizzaTheme';
 
 const Dashboard = React.lazy(() =>
   import('../pages/dashboard/Dashboard')
@@ -23,7 +24,7 @@ const Dashboard = React.lazy(() =>
 export function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<PizzaTheme />} />
       <Route path="/order/:orderId" element={<OrderTracking />} />
       <Route path="/receipt" element={<OrderReceipt />} />
       <Route path="/paytech/success" element={<PaymentSuccess />} />

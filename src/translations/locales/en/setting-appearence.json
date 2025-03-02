@@ -24,5 +24,8 @@
   "re-deploy": "Re-deploy",
   "light-mode": "Light Mode",
   "light-mode-description": "Light interface with optimal contrast",
-  "select-version": "Select a version"
+  "select-version": "Select a version",
+  "theme": "Theme",
+  "theme-name": "PizzaTheme",
+  "theme-description": "PizzaTheme est un thème élégant et intuitif pour les amateurs de pizza et les restaurants, offrant une expérience fluide et immersive."
 }
