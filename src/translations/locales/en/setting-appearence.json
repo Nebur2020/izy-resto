@@ -25,7 +25,10 @@
   "light-mode": "Light Mode",
   "light-mode-description": "Light interface with optimal contrast",
   "select-version": "Select a version",
-  "theme": "Theme",
+  "display-mode": "Mode d'affichage",
   "theme-name": "PizzaTheme",
-  "theme-description": "PizzaTheme est un thème élégant et intuitif pour les amateurs de pizza et les restaurants, offrant une expérience fluide et immersive."
+  "theme-description": "PizzaTheme est un thème élégant et intuitif pour les amateurs de pizza et les restaurants, offrant une expérience fluide et immersive.",
+  "premium-theme-title": "Premium Theme",
+  "activate-theme": "Activate Theme",
+  "activate-theme-key": "Activation Key"
 }
