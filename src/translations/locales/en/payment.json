@@ -23,10 +23,10 @@
   "site-id": "SITE ID",
   "api-key": "API KEY",
   "failed-to-load-methods": "Failed to load payment methods",
-  "method-added-successfully": "Payment method added successfully",
+  "method-added-successfully": "Payment method successfully added",
   "failed-to-add-method": "Failed to add payment method",
-  "method-updated-successfully": "Payment method updated successfully",
+  "method-updated-successfully": "Payment method successfully updated",
   "failed-to-update-method": "Failed to update payment method",
-  "method-deleted-successfully": "Payment method deleted successfully",
+  "method-deleted-successfully": "Payment method successfully deleted",
   "failed-to-delete-method": "Failed to delete payment method"
 }

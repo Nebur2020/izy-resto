@@ -24,7 +24,7 @@ const Dashboard = React.lazy(() =>
 export function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<PizzaTheme />} />
+      <Route path="/" element={<Home />} />
       <Route path="/order/:orderId" element={<OrderTracking />} />
       <Route path="/receipt" element={<OrderReceipt />} />
       <Route path="/paytech/success" element={<PaymentSuccess />} />
