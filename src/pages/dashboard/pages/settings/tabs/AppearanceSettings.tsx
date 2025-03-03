@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   LayoutList,
   Store,
+  X,
 } from 'lucide-react';
 import { useTheme } from '../../../../../context/ThemeContext';
 import { RestaurantSettings } from '../../../../../types/settings';
@@ -69,6 +70,7 @@ export function AppearanceSettings() {
   const { t } = useTranslation();
   const { register, watch, setValue } = useFormContext<RestaurantSettings>();
   const { theme, toggleTheme } = useTheme();
+  const [showModal, setShowModal] = useState(false);
 
   const { version, loading, errorLoading, versions } = useAppVersion();
   const { redeploy, isDeploying, error } = useDeployment();
@@ -201,7 +203,7 @@ export function AppearanceSettings() {
         <div className="flex items-center gap-3 mb-6">
           <Layout className="h-5 w-5 text-blue-600 dark:text-blue-400" />
           <h2 className="text-xl font-semibold">
-            {t('settingAppearence:theme')}
+            {t('settingAppearence:display-mode')}
           </h2>
         </div>
 
@@ -312,7 +314,7 @@ export function AppearanceSettings() {
         <div className="flex items-center gap-3">
           <Store className="h-5 w-5 text-blue-600 dark:text-blue-400" />
           <h2 className="text-xl font-semibold">
-            {t('settingAppearence:theme')}
+            {t('settingAppearence:premium-theme-title')}
           </h2>
         </div>
 
@@ -330,6 +332,7 @@ export function AppearanceSettings() {
               }
               register={register}
               imageUrl={theme.ImgUrl}
+              setShowModal={setShowModal}
             />
           ))}
         </div>
@@ -442,6 +445,41 @@ export function AppearanceSettings() {
           </button>
         </div>
       </section>
+
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm !mt-0">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
+            <span className="flex justify-end">
+              <X
+                className="cursor-pointer text-black"
+                onClick={() => setShowModal(false)}
+                role="button"
+              />
+            </span>
+
+            <h3 className="text-xl font-semibold">
+              {t('settingAppearence:activate-theme')}
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              {t('settingAppearence:activate-theme-key')}
+            </p>
+            <input
+              type="text"
+              placeholder={t('settingAppearence:activate-theme-key')}
+              className="w-full rounded-lg border p-2 dark:bg-gray-700 mb-4"
+            />
+            <div className="flex gap-4">
+              <button
+                type="button"
+                className="rounded-lg bg-blue-500 text-white px-4 py-2 w-full"
+                onClick={() => setShowModal(false)}
+              >
+                {t('common:confirm')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

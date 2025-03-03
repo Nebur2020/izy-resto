@@ -301,5 +301,6 @@
   "media-empty": "No media found",
   "empty-file-desc": "Drag and drop multiple files here, or",
   "no-transaction-description": "Transactions will appear here.",
-  "product-list-no-items": "No items found"
+  "product-list-no-items": "No items found",
+  "confirm": "Confirm"
 }

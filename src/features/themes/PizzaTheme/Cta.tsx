@@ -7,7 +7,7 @@ export default function Cta() {
     <section className="w-full px-6 sm:px-12 lg:px-44 mt-16 sm:mt-24 lg:mt-36">
       <div className="flex flex-col lg:flex-row items-center justify-center lg:justify-around px-6 sm:px-11 relative bg-[url('https://radiustheme.com/demo/wordpress/themes/panpie/wp-content/uploads/2021/03/section_bg9.png')] bg-cover bg-center py-9 rounded-lg">
         <div className="absolute inset-0 bg-red-600 opacity-90 rounded-lg lg:rounded-bl-[100px] lg:rounded-tr-[100px]"></div>
-        <div className="relative w-[80%] sm:w-[60%] md:w-[50%] lg:w-auto before:absolute before:top-[150px] before:right-[270px] before:w-[100px] before:h-[81px] before:bg-[url('https://radiustheme.com/demo/wordpress/themes/panpie/wp-content/themes/panpie/assets/element/smoke.png')] before:bg-no-repeat before:bg-cover before:z-0 before:hidden lg:before:block z-10 animate-move-horizontal">
+        <div className="relative w-[80%] sm:w-[60%] md:w-[50%] lg:w-auto before:absolute before:top-[140px] before:right-[240px] before:w-[100px] before:h-[81px] before:bg-[url('https://radiustheme.com/demo/wordpress/themes/panpie/wp-content/themes/panpie/assets/element/smoke.png')] before:bg-no-repeat before:bg-cover before:z-0 before:hidden lg:before:block z-10 animate-move-horizontal">
           <img
             src="https://radiustheme.com/demo/wordpress/themes/panpie/wp-content/uploads/2020/09/bike.png"
             alt="call to action image"
