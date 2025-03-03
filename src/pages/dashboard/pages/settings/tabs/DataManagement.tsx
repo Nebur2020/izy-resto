@@ -15,12 +15,12 @@ import { cloudinaryService } from '../../../../../services/cloudinary/cloudinary
 import { db } from '../../../../../lib/firebase/config';
 import { collection, getDocs, writeBatch } from 'firebase/firestore';
 import toast from 'react-hot-toast';
-
 import { useTranslation } from 'react-i18next';
 
 interface CollectionData {
   name: string;
   count: number;
+  realName: string;
 }
 
 export function DataManagement() {
@@ -36,6 +36,20 @@ export function DataManagement() {
   }>({ isOpen: false });
   const [resetConfirmation, setResetConfirmation] = useState(false);
 
+  const collectionsMapping: { [key: string]: string } = {
+    'settingData:categories': 'categories',
+    'settingData:menu-items': 'menu_items',
+    'settingData:orders': 'orders',
+    'settingData:inventory': 'inventory',
+    'settingData:stock-history': 'stock_history',
+    'settingData:media': 'media',
+    'settingData:variants': 'variants',
+    'settingData:transactions': 'transactions',
+    'settingData:payment-methods': 'payment_methods',
+    'settingData:staff': 'staff',
+    'settingData:settings': 'settings',
+  };
+
   useEffect(() => {
     loadCollections();
   }, []);
@@ -43,26 +57,16 @@ export function DataManagement() {
   const loadCollections = async () => {
     try {
       setIsLoading(true);
-      const collectionsToCheck = [
-        t('settingData:categories'),
-        t('settingData:menu-items'),
-        t('settingData:orders'),
-        t('settingData:inventory'),
-        t('settingData:stock-history'),
-        t('settingData:media'),
-        t('settingData:variants'),
-        t('settingData:transactions'),
-        t('settingData:payment-methods'),
-        t('settingData:staff'),
-        t('settingData:settings'),
-      ];
+      const collectionsToCheck = Object.keys(collectionsMapping);
 
       const collectionsData = await Promise.all(
-        collectionsToCheck.map(async name => {
-          const snapshot = await getDocs(collection(db, name));
+        collectionsToCheck.map(async key => {
+          const realName = collectionsMapping[key];
+          const snapshot = await getDocs(collection(db, realName));
           return {
-            name,
+            name: t(key),
             count: snapshot.size,
+            realName,
           };
         })
       );
@@ -120,12 +124,11 @@ export function DataManagement() {
   const handleResetWebsite = async () => {
     try {
       setIsResetting(true);
-      for (const { name } of collections) {
-        if (name === 'settings') continue;
+      for (const { realName } of collections) {
+        if (realName === 'settings') continue;
+        if (realName === 'payment_methods') continue;
 
-        if (name === 'payment_methods') continue;
-
-        if (name === 'media') {
+        if (realName === 'media') {
           const snapshot = await getDocs(collection(db, 'media'));
           const mediaFiles = snapshot.docs.map(doc => doc.data());
 
@@ -141,7 +144,7 @@ export function DataManagement() {
           }
         }
 
-        const snapshot = await getDocs(collection(db, name));
+        const snapshot = await getDocs(collection(db, realName));
         const batch = writeBatch(db);
         snapshot.docs.forEach(doc => {
           batch.delete(doc.ref);
@@ -192,10 +195,10 @@ export function DataManagement() {
 
         <div className="grid gap-4 sm:grid-cols-2">
           {collections
-            .filter(({ name }) => name !== 'payment_methods')
-            .map(({ name, count }) => (
+            .filter(({ realName }) => realName !== 'payment_methods')
+            .map(({ name, count, realName }) => (
               <motion.div
-                key={name}
+                key={realName}
                 layout
                 className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
               >
@@ -211,7 +214,7 @@ export function DataManagement() {
                   </div>
                 </div>
 
-                {name !== 'settings' && (
+                {realName !== 'settings' && (
                   <Button
                     type="button"
                     variant="danger"
@@ -219,14 +222,14 @@ export function DataManagement() {
                     onClick={() =>
                       setDeleteConfirmation({
                         isOpen: true,
-                        collection: name,
+                        collection: realName,
                         itemCount: count,
                       })
                     }
-                    disabled={isDeleting === name}
+                    disabled={isDeleting === realName}
                     className="flex-shrink-0"
                   >
-                    {isDeleting === name ? (
+                    {isDeleting === realName ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
                     ) : (
                       <Trash2 className="w-4 h-4 text-white" />
@@ -257,7 +260,7 @@ export function DataManagement() {
             onClick={() => setResetConfirmation(true)}
             disabled={isResetting}
             className="w-full sm:w-auto"
-            spanClassName='text-white'
+            spanClassName="text-white"
           >
             {isResetting ? (
               <>
