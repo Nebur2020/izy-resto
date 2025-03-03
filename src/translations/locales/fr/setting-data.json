@@ -1,9 +1,9 @@
 {
   "categories": "categories",
-  "menu-items": "menu_items",
+  "menu-items": "Items du menu",
   "orders": "commandes",
   "inventory": "inventaire",
-  "stock-history": "stock_history",
+  "stock-history": "Historique des Stocks",
   "media": "média",
   "variants": "variants",
   "transactions": "transactions",
