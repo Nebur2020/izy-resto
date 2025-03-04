@@ -26,5 +26,5 @@ jobs:
         env:
           CSV_FILE: github_accounts.csv
         run: |
-          chmod +x scripts/trigger_workflows.sh
-          ./scripts/trigger_workflows.sh
+          chmod +x scripts/trigger_multi_workflows.sh
+          ./scripts/trigger_multi_workflows.sh
