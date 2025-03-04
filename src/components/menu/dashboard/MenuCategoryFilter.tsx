@@ -9,7 +9,7 @@ interface IMenuCategoryFilterProps {
 export function MenuCategoryFilter(props: IMenuCategoryFilterProps) {
   const { selectedCategory, onCategoryChange } = props;
   const { t } = useTranslation();
-  const { categories } = useCategories();
+  const { allCategories } = useCategories();
 
   return (
     <div className="relative w-48">
@@ -19,13 +19,11 @@ export function MenuCategoryFilter(props: IMenuCategoryFilterProps) {
       <select
         id="category-select"
         value={selectedCategory}
-        onChange={(e) => onCategoryChange(e.target.value)}
+        onChange={e => onCategoryChange(e.target.value)}
         className="block appearance-none w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 py-2 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200 ease-in-out"
       >
-        <option value="all">
-          {t('common:product')}
-        </option>
-        {categories.map((category) => (
+        <option value="all">{t('common:product')}</option>
+        {allCategories.map(category => (
           <option key={category.id} value={category.id}>
             {category.name}
           </option>
