@@ -1,0 +1,30 @@
+name: Trigger Workflows from CSV
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run mode (just print the workflows to trigger)'
+        required: false
+        default: 'false'
+
+jobs:
+  trigger-workflows:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Read and process CSV from secrets
+        env:
+          CSV_DATA: ${{ secrets.CSV_DATA }}
+        run: |
+          echo "$CSV_DATA" > github_accounts.csv
+          cat github_accounts.csv
+
+      - name: Execute workflow trigger script
+        env:
+          CSV_FILE: github_accounts.csv
+        run: |
+          chmod +x trigger_workflows.sh
+          ./trigger_workflows.sh
