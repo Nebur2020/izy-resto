@@ -11,7 +11,7 @@
   "settings": "settings",
   "collection-deleted": "Collection {{collectionName}} successfully deleted",
   "error-deleting-collection": "Error deleting",
-  "website-reset": "Website successfully reset",
+  "website-reset": "Website successfully reseted",
   "error-resetting-website": "Error resetting",
   "manage-data": "Firebase Collections",
   "danger-zone": "Use with caution",

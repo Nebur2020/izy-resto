@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HeaderWrapper } from '../layout/HeaderWrapper';
 import { GridHero } from './grid/GridHero';

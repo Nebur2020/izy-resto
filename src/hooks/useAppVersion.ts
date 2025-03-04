@@ -19,7 +19,7 @@ export const useAppVersion = () => {
 
       if (lastestVersion) setVersion(lastestVersion);
       setVersions([
-        ...versionSettings.filter((_, i) => i < 4).filter(v => !v.isStable),
+        ...versionSettings.filter((_, i) => i < 3).filter(v => !v.isStable),
         ...versionSettings.filter(v => v.isStable),
       ]);
     } catch (error: any) {

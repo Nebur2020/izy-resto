@@ -179,7 +179,7 @@ export default function OrderTracking() {
                 <div>
                   <h1 className="text-2xl font-bold mb-1">
                     {order.status === 'cancelled'
-                      ? t('order:order-cancelled')
+                      ? t('order-canceled')
                       : t('order-confirmed')}
                   </h1>
                   <p className="text-white/80">

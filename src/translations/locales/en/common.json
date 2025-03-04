@@ -187,7 +187,7 @@
   "reason": "Reason",
   "export": "Export",
   "downloading-in-progress": "Downloading in progress...",
-  "export-success": "Export success",
+  "export-success": "Successfully exported",
   "export-error": "Export error",
   "payment-method-default": "Default Payment method",
   "downloading": "Downloading...",
@@ -301,5 +301,6 @@
   "media-empty": "No media found",
   "empty-file-desc": "Drag and drop multiple files here, or",
   "no-transaction-description": "Transactions will appear here.",
-  "product-list-no-items": "No items found"
+  "product-list-no-items": "No items found",
+  "confirm": "Confirm"
 }

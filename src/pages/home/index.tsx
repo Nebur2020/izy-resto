@@ -5,6 +5,7 @@ import {
   LandingMinimal,
   LandingModern,
 } from '../../components/landing';
+import PizzaTheme from '../../features/themes/PizzaTheme/PizzaTheme';
 
 export const Home = () => {
   const { settings } = useSettings();
@@ -14,6 +15,8 @@ export const Home = () => {
         return <LandingMinimal />;
       case 'grid':
         return <LandingGrid />;
+      case 'pizzaTheme':
+        return <PizzaTheme />;
       default:
         return <LandingModern />;
     }

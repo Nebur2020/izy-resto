@@ -302,5 +302,6 @@
   "media-empty": "Aucun fichier trouvé",
   "empty-file-desc": "Commencez par ajouter des fichiers",
   "no-transaction-description": "Les transactions apparaîtront ici",
-  "product-list-no-items": "Aucun produit trouvé"
+  "product-list-no-items": "Aucun produit trouvé",
+  "confirm": "Confirmer"
 }

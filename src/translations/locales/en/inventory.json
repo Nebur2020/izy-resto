@@ -46,10 +46,10 @@
   "qte-minmale": "Minimal Quantity",
   "quantity": "Quantity",
   "failed-to-load-items": "Failed to load items",
-  "item-added-successfully": "Item added successfully",
+  "item-added-successfully": "Item successfully added",
   "failed-to-add-item": "Failed to add item",
-  "item-updated-successfully": "Item updated successfully",
+  "item-updated-successfully": "Item successfully updated",
   "failed-to-update-item": "Failed to update item",
-  "item-deleted-successfully": "Item deleted successfully",
+  "item-deleted-successfully": "Item successfully deleted",
   "failed-to-delete-item": "Failed to delete item"
 }
