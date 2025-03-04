@@ -4,33 +4,34 @@ import { Bell, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '../../ui/Button';
 import { useNotifications } from '../../../hooks/useNotifications';
 import { OrderNotification } from './OrderNotification';
+import { useTranslation } from 'react-i18next';
 
 const MAX_NOTIFICATIONS = 5;
 
 export function NotificationBell() {
+  const { t } = useTranslation();
   const { notifications, clearNotification, hasUnread } = useNotifications();
   const [isOpen, setIsOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Sort notifications by date, newest first
   const sortedNotifications = [...notifications].sort((a, b) => {
-    return new Date(b.order.createdAt).getTime() - new Date(a.order.createdAt).getTime();
+    return (
+      new Date(b.order.createdAt).getTime() -
+      new Date(a.order.createdAt).getTime()
+    );
   });
 
-  // Calculate pagination values
   const totalPages = Math.ceil(sortedNotifications.length / MAX_NOTIFICATIONS);
   const startIndex = (currentPage - 1) * MAX_NOTIFICATIONS;
   const endIndex = startIndex + MAX_NOTIFICATIONS;
   const currentNotifications = sortedNotifications.slice(startIndex, endIndex);
 
-  // Reset to first page when opening
   useEffect(() => {
     if (isOpen) {
       setCurrentPage(1);
     }
   }, [isOpen]);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (isOpen && !event.defaultPrevented) {
@@ -43,7 +44,6 @@ export function NotificationBell() {
     };
   }, [isOpen]);
 
-  // Handle page navigation
   const handlePreviousPage = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (currentPage > 1) {
@@ -63,7 +63,7 @@ export function NotificationBell() {
       <Button
         variant="ghost"
         size="sm"
-        onClick={(e) => {
+        onClick={e => {
           e.stopPropagation();
           setIsOpen(!isOpen);
         }}
@@ -94,16 +94,15 @@ export function NotificationBell() {
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
               transition={{ duration: 0.2 }}
               className="absolute right-0 z-50 mt-2 w-80 rounded-lg bg-white p-4 shadow-xl dark:bg-gray-800"
-              onClick={(e) => e.stopPropagation()}
+              onClick={e => e.stopPropagation()}
             >
               {notifications.length > 0 ? (
                 <>
-                  {/* Header with total count */}
                   <div className="mb-3 text-sm text-gray-500 dark:text-gray-400">
-                    {notifications.length} notification{notifications.length > 1 ? 's' : ''}
+                    {notifications.length} notification
+                    {notifications.length > 1 ? 's' : ''}
                   </div>
 
-                  {/* Notifications */}
                   <div className="space-y-2">
                     <AnimatePresence mode="wait">
                       {currentNotifications.map(notification => (
@@ -112,7 +111,10 @@ export function NotificationBell() {
                           order={notification.order}
                           onClose={() => {
                             clearNotification(notification.id);
-                            if (currentNotifications.length === 1 && currentPage > 1) {
+                            if (
+                              currentNotifications.length === 1 &&
+                              currentPage > 1
+                            ) {
                               setCurrentPage(prev => prev - 1);
                             }
                           }}
@@ -121,7 +123,6 @@ export function NotificationBell() {
                     </AnimatePresence>
                   </div>
 
-                  {/* Pagination controls */}
                   {totalPages > 1 && (
                     <div className="mt-4 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 pt-3">
                       <Button
@@ -134,7 +135,7 @@ export function NotificationBell() {
                         <ChevronLeft className="h-4 w-4" />
                       </Button>
                       <span className="text-sm text-gray-500 dark:text-gray-400">
-                        Page {currentPage} sur {totalPages}
+                        {t('notification:page-indicator', { currentPage, totalPages })}
                       </span>
                       <Button
                         variant="ghost"
@@ -150,7 +151,7 @@ export function NotificationBell() {
                 </>
               ) : (
                 <p className="text-center text-sm text-gray-500 dark:text-gray-400 py-4">
-                  Aucune notification
+                  {t('notification:no-notifications')}
                 </p>
               )}
             </motion.div>

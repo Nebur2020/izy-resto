@@ -310,7 +310,7 @@ export function AppearanceSettings() {
         </div>
       </section>
 
-      {/* <section className="space-y-6">
+      <section className="space-y-6">
         <div className="flex items-center gap-3">
           <Store className="h-5 w-5 text-blue-600 dark:text-blue-400" />
           <h2 className="text-xl font-semibold">
@@ -336,7 +336,7 @@ export function AppearanceSettings() {
             />
           ))}
         </div>
-      </section> */}
+      </section>
 
       <section className="space-y-6">
         <div className="flex items-center gap-3">

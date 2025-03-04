@@ -1,9 +1,10 @@
 import { motion } from 'framer-motion';
 import { ShoppingBag } from 'lucide-react';
-import { Order } from '../../../types';
+import { Language, Order } from '../../../types';
 import { formatCurrency } from '../../../utils/currency';
 import { useSettings } from '../../../hooks/useSettings';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface OrderNotificationProps {
   order: Order;
@@ -16,46 +17,48 @@ interface FirestoreTimestamp {
 }
 
 function isFirestoreTimestamp(value: any): value is FirestoreTimestamp {
-  return value && typeof value.seconds === 'number' && typeof value.nanoseconds === 'number';
+  return (
+    value &&
+    typeof value.seconds === 'number' &&
+    typeof value.nanoseconds === 'number'
+  );
 }
 
-function formatElapsedTime(timestamp: FirestoreTimestamp | undefined): string {
+function formatElapsedTime(
+  timestamp: FirestoreTimestamp | undefined,
+  lng: string
+): string {
+  const { t } = useTranslation();
+
   if (!timestamp || !isFirestoreTimestamp(timestamp)) {
     return '';
   }
-  
+
   try {
     const now = new Date();
-    const orderDate = new Date(timestamp.seconds * 1000); // Convert seconds to milliseconds
+    const orderDate = new Date(timestamp.seconds * 1000);
 
-    const diffInSeconds = Math.floor((now.getTime() - orderDate.getTime()) / 1000);
+    const diffInSeconds = Math.floor(
+      (now.getTime() - orderDate.getTime()) / 1000
+    );
 
-    // Less than a minute
     if (diffInSeconds < 60) {
-      return `à l'instant`;
-    }
-    // Less than an hour
-    else if (diffInSeconds < 3600) {
+      return t('notification:just-now');
+    } else if (diffInSeconds < 3600) {
       const minutes = Math.floor(diffInSeconds / 60);
-      return `il y a ${minutes} minute${minutes > 1 ? 's' : ''}`;
-    }
-    // Less than a day
-    else if (diffInSeconds < 86400) {
+      return t('notification:minutes-ago', { count: minutes });
+    } else if (diffInSeconds < 86400) {
       const hours = Math.floor(diffInSeconds / 3600);
-      return `il y a ${hours} heure${hours > 1 ? 's' : ''}`;
-    }
-    // Less than a week
-    else if (diffInSeconds < 604800) {
+      return t('notification:hours-ago', { count: hours });
+    } else if (diffInSeconds < 604800) {
       const days = Math.floor(diffInSeconds / 86400);
-      return `il y a ${days} jour${days > 1 ? 's' : ''}`;
-    }
-    // Format as date
-    else {
-      return new Intl.DateTimeFormat('fr-FR', {
+      return t('notification:days-ago', { count: days });
+    } else {
+      return new Intl.DateTimeFormat(lng, {
         day: 'numeric',
         month: 'long',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
       }).format(orderDate);
     }
   } catch (error) {
@@ -65,6 +68,8 @@ function formatElapsedTime(timestamp: FirestoreTimestamp | undefined): string {
 }
 
 export function OrderNotification({ order, onClose }: OrderNotificationProps) {
+  const { t, i18n } = useTranslation();
+  const lng = i18n.language as Language;
   const navigate = useNavigate();
   const { settings } = useSettings();
 
@@ -73,8 +78,10 @@ export function OrderNotification({ order, onClose }: OrderNotificationProps) {
     onClose();
   };
 
-  // Format the elapsed time
-  const elapsedTime = formatElapsedTime(order.createdAt as FirestoreTimestamp);
+  const elapsedTime = formatElapsedTime(
+    order.createdAt as FirestoreTimestamp,
+    lng
+  );
 
   return (
     <motion.div
@@ -90,14 +97,15 @@ export function OrderNotification({ order, onClose }: OrderNotificationProps) {
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-medium text-gray-900 dark:text-white">
-            Nouvelle commande #{order.id.slice(0, 8)}
+            {t('notification:new-order')} #{order.id.slice(0, 8)}
           </h3>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-            {order.customerName} • {formatCurrency(order.total, settings?.currency)}
+            {order.customerName} •{' '}
+            {formatCurrency(order.total, settings?.currency)}
           </p>
           {elapsedTime && (
             <p className="text-xs text-gray-400 dark:text-gray-500">
-              Commande reçue {elapsedTime}
+              {t('notification:order-receive')} {elapsedTime}
             </p>
           )}
         </div>
