@@ -31,8 +31,19 @@ interface ICheckoutFormProps {
   onCancel: () => void;
   onSuccess?: () => void;
   deliveryTitleStyle?: string;
+  deliveryHoverStyle?: string;
+  dinInOptionStyle?: string;
+  dinInHoverOptionStyle?: string;
+  dinInUstensilsStyle?: string;
+  dinInHoverUstensilsStyle?: string;
   truckStyle?: string;
   nextButtonStyle?: string;
+  totalPriceStyle?: string;
+  selectedPyamentMethod?: string;
+  selectedHoverPaymentMethod?: string;
+  selectRoundedDiv?: string;
+  selectRoundedDivHover?: string;
+  confirmOrderButtonStyle?: string;
 }
 
 type DiningOption = 'dine-in' | 'delivery';
@@ -44,10 +55,22 @@ export function CheckoutForm(props: ICheckoutFormProps) {
     onCancel,
     onSuccess,
     deliveryTitleStyle = 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/20',
+    deliveryHoverStyle = 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600',
+    dinInOptionStyle = 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/20',
+    dinInHoverOptionStyle = 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600',
     truckStyle = 'text-blue-500 dark:text-blue-400',
+    dinInUstensilsStyle = 'text-blue-500 dark:text-blue-400',
+    dinInHoverUstensilsStyle = 'text-gray-500 dark:text-gray-400',
     nextButtonStyle = 'px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700',
+    totalPriceStyle,
+    selectedPyamentMethod,
+    selectedHoverPaymentMethod,
+    selectRoundedDiv,
+    selectRoundedDivHover,
+    confirmOrderButtonStyle
   } = props;
   const navigate = useNavigate();
+
   const {
     cart,
     total,
@@ -192,6 +215,12 @@ export function CheckoutForm(props: ICheckoutFormProps) {
         onBack={() => setStep('form')}
         showPaymentMethods={diningOption === 'delivery'}
         setSelectedPaymentMethod={setSelectedPaymentMethod}
+        totalPriceStyle={totalPriceStyle}
+        selectedPyamentMethod={selectedPyamentMethod}
+        selectedHoverPaymentMethod={selectedHoverPaymentMethod}
+        selectRoundedDiv={selectRoundedDiv}
+        selectRoundedDivHover={selectRoundedDivHover}
+        confirmOrderButtonStyle={confirmOrderButtonStyle}
       />
     );
   }
@@ -209,7 +238,7 @@ export function CheckoutForm(props: ICheckoutFormProps) {
            ${
              diningOption === 'delivery'
                ? deliveryTitleStyle
-               : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600'
+               : deliveryHoverStyle
            }
          `}
           >
@@ -236,8 +265,8 @@ export function CheckoutForm(props: ICheckoutFormProps) {
              flex flex-col items-center gap-2 relative overflow-hidden
              ${
                diningOption === 'dine-in'
-                 ? 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/20'
-                 : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600'
+                 ? dinInOptionStyle
+                 : dinInHoverOptionStyle
              }
            `}
           >
@@ -247,8 +276,8 @@ export function CheckoutForm(props: ICheckoutFormProps) {
             <Utensils
               className={`w-6 h-6 ${
                 diningOption === 'dine-in'
-                  ? 'text-blue-500 dark:text-blue-400'
-                  : 'text-gray-500 dark:text-gray-400'
+                  ? dinInUstensilsStyle
+                  : dinInHoverUstensilsStyle
               }`}
             />
             <span className="font-medium text-sm">{t('on-site')}</span>
@@ -430,6 +459,7 @@ export function CheckoutForm(props: ICheckoutFormProps) {
             {t('common:back')}
           </Button>
           <Button
+            variant="custom"
             disabled={
               !deliveryZone &&
               diningOption === 'delivery' &&

@@ -4,15 +4,20 @@ import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-interface MinimalMenuCategoriesProps {
+interface IMinimalMenuCategoriesProps {
   activeCategory: string;
   onCategoryChange: (category: string) => void;
+  menuFilterDefaultStyle?: string;
+  activeCategoryStyles?: string;
 }
 
-export function MinimalMenuCategories({
-  activeCategory,
-  onCategoryChange,
-}: MinimalMenuCategoriesProps) {
+export function MinimalMenuCategories(props: IMinimalMenuCategoriesProps) {
+  const {
+    activeCategory,
+    onCategoryChange,
+    menuFilterDefaultStyle = 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg',
+    activeCategoryStyles = 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg',
+  } = props;
   const { categories, isLoading } = useCategories();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftScroll, setShowLeftScroll] = useState(false);
@@ -83,7 +88,7 @@ export function MinimalMenuCategories({
                 transition-all duration-200 hover:scale-105
                 ${
                   activeCategory === 'all'
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
+                    ? menuFilterDefaultStyle
                     : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
                 }
               `}
@@ -102,7 +107,7 @@ export function MinimalMenuCategories({
                   transition-all duration-200 hover:scale-105
                   ${
                     activeCategory === category.id
-                      ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
+                      ? activeCategoryStyles
                       : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
                   }
                 `}

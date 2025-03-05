@@ -58,6 +58,11 @@ export default function Banner() {
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 0.5 }}
+          onClick={() => {
+            document
+              .getElementById('product-list')
+              ?.scrollIntoView({ behavior: 'smooth' });
+          }}
         >
           <ShoppingCart color="#fff" />
           <span className="text-white ml-2">{t('hero:view-menu')}</span>

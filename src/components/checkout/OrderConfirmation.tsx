@@ -39,6 +39,12 @@ interface IOrderConfirmationProps {
     diningOption: 'delivery' | 'dine-in';
     selectedCode?: string;
   };
+  totalPriceStyle?: string;
+  selectedPyamentMethod?: string;
+  selectedHoverPaymentMethod?: string;
+  selectRoundedDiv?: string;
+  selectRoundedDivHover?: string;
+  confirmOrderButtonStyle?: string;
   onConfirm: () => void | Promise<void>;
   onBack: () => void;
   showPaymentMethods?: boolean;
@@ -56,7 +62,14 @@ export function OrderConfirmation(props: IOrderConfirmationProps) {
     onBack,
     showPaymentMethods,
     setSelectedPaymentMethod,
+    totalPriceStyle = 'text-blue-600 dark:text-blue-400',
+    selectedPyamentMethod = 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/20',
+    selectedHoverPaymentMethod = 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600',
+    selectRoundedDiv = 'border-blue-500 bg-blue-500 dark:border-blue-400 dark:bg-blue-400',
+    selectRoundedDivHover = 'border-gray-300 dark:border-gray-600',
+    confirmOrderButtonStyle = 'flex items-center bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed'
   } = props;
+
   const { settings } = useSettings();
   const { subtotal, taxes, tip, total, cart, setTipPercentage, deliveryZone } =
     useCart();
@@ -325,7 +338,7 @@ export function OrderConfirmation(props: IOrderConfirmationProps) {
             )}
             <div className="flex justify-between text-lg font-semibold border-t dark:border-gray-700 pt-2">
               <span>{t('total')}</span>
-              <span className="text-blue-600 dark:text-blue-400">
+              <span className={totalPriceStyle}>
                 {formatCurrency(total, settings?.currency)}
               </span>
             </div>
@@ -385,8 +398,8 @@ export function OrderConfirmation(props: IOrderConfirmationProps) {
                   relative flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all
                   ${
                     selectedPayment === method.id
-                      ? 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/20'
-                      : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600'
+                      ? selectedPyamentMethod
+                      : selectedHoverPaymentMethod
                   }
                 `}
                 >
@@ -426,8 +439,8 @@ export function OrderConfirmation(props: IOrderConfirmationProps) {
                     className={`w-6 h-6 rounded-full border-2 flex items-center justify-center
                     transition-colors duration-200 ${
                       selectedPayment === method.id
-                        ? 'border-blue-500 bg-blue-500 dark:border-blue-400 dark:bg-blue-400'
-                        : 'border-gray-300 dark:border-gray-600'
+                        ? selectRoundedDiv
+                        : selectRoundedDivHover
                     }`}
                   >
                     <AnimatePresence>
@@ -484,11 +497,7 @@ export function OrderConfirmation(props: IOrderConfirmationProps) {
                 !selectedPayment) ||
               isConfirmingOrder
             }
-            className={`
-            flex items-center bg-gradient-to-r from-blue-600 to-indigo-600
-            hover:from-blue-700 hover:to-indigo-700
-            disabled:opacity-50 disabled:cursor-not-allowed
-          `}
+            className={confirmOrderButtonStyle}
             spanClassName="text-white"
           >
             <span className="text-white">{renderPaymentButton()}</span>

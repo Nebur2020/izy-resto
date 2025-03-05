@@ -13,7 +13,19 @@ interface ICartProps {
   orderBgColor?: string;
   totalCartAmount?: string;
   deliveryTitleStyle?: string;
+  deliveryHoverStyle?: string;
+  dinInOptionStyle?: string;
+  dinInHoverOptionStyle?: string;
   truckStyle?: string;
+  dinInUstensilsStyle?: string;
+  dinInHoverUstensilsStyle?: string;
+  nextButtonStyle?: string;
+  totalPriceStyle?: string;
+  selectedPyamentMethod?: string;
+  selectedHoverPaymentMethod?: string;
+  selectRoundedDiv?: string;
+  selectRoundedDivHover?: string;
+  confirmOrderButtonStyle?: string;
 }
 
 export function Cart(props: ICartProps) {
@@ -23,7 +35,19 @@ export function Cart(props: ICartProps) {
     orderBgColor = 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500',
     totalCartAmount = 'text-blue-600',
     deliveryTitleStyle,
+    deliveryHoverStyle,
+    dinInOptionStyle,
+    dinInHoverOptionStyle,
     truckStyle,
+    dinInUstensilsStyle,
+    dinInHoverUstensilsStyle,
+    nextButtonStyle,
+    totalPriceStyle,
+    selectedPyamentMethod,
+    selectedHoverPaymentMethod,
+    selectRoundedDiv,
+    selectRoundedDivHover,
+    confirmOrderButtonStyle
   } = props;
   const { cart, total, taxes, subtotal } = useCart();
   const { settings } = useSettings();
@@ -78,7 +102,19 @@ export function Cart(props: ICartProps) {
                   }}
                   onCancel={() => setIsCheckingOut(false)}
                   deliveryTitleStyle={deliveryTitleStyle}
+                  deliveryHoverStyle={deliveryHoverStyle}
+                  dinInOptionStyle={dinInOptionStyle}
+                  dinInHoverOptionStyle={dinInHoverOptionStyle}
                   truckStyle={truckStyle}
+                  dinInUstensilsStyle={dinInUstensilsStyle}
+                  dinInHoverUstensilsStyle={dinInHoverUstensilsStyle}
+                  nextButtonStyle={nextButtonStyle}
+                  totalPriceStyle={totalPriceStyle}
+                  selectedPyamentMethod={selectedPyamentMethod}
+                  selectedHoverPaymentMethod={selectedHoverPaymentMethod}
+                  selectRoundedDiv={selectRoundedDiv}
+                  selectRoundedDivHover={selectRoundedDivHover}
+                  confirmOrderButtonStyle={confirmOrderButtonStyle}
                 />
               ) : (
                 cart.map(item => <CartItem key={item.id} item={item} />)

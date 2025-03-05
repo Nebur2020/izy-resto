@@ -15,10 +15,16 @@ export default function ProductList() {
       activeCategory === 'all' || item.categoryId === activeCategory;
     return matchesCategory;
   });
-  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsToShow, setItemsToShow] = useState(6);
+
+  const loadMore = () => {
+    setItemsToShow(prevItemsToShow => prevItemsToShow + 6);
+  };
+
+  console.table(items);
 
   return (
-    <section>
+    <section id="product-list">
       <div className="flex flex-col items-center my-20 text-center">
         <span className="text-red-600 font-bold text-sm sm:text-base">
           {t('product-list-title')}
@@ -32,8 +38,10 @@ export default function ProductList() {
           activeCategory={activeCategory}
           onCategoryChange={category => {
             setActiveCategory(category);
-            setCurrentPage(1);
+            setItemsToShow(6);
           }}
+          menuFilterDefaultStyle="bg-[#fcb302] text-white"
+          activeCategoryStyles="bg-[#fcb302] text-white"
         />
         {filteredItems.length === 0 && (
           <div className="text-center py-12">
@@ -45,17 +53,19 @@ export default function ProductList() {
         <div className="flex flex-wrap justify-center mt-20">
           {filteredItems.length > 0 &&
             filteredItems
-              .slice((currentPage - 1) * 6, currentPage * 6)
-              .map(item => (
-                <ItemCard
-                  title={item.name}
-                  imageUrl={item.image}
-                  shortDescription={item.description}
-                  price={item.price}
-                  size={'small'}
-                />
-              ))}
+              .slice(0, itemsToShow)
+              .map(item => <ItemCard item={item} />)}
         </div>
+        {itemsToShow < filteredItems.length && (
+          <div className="text-center mt-8">
+            <button
+              onClick={loadMore}
+              className="bg-[#fcb302] text-white px-6 py-2 rounded-full hover:bg-[#e0a000] transition-colors"
+            >
+              {t('common:load-more')}
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );

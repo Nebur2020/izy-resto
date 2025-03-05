@@ -23,7 +23,6 @@ export const useAppVersion = () => {
         ...versionSettings.filter(v => v.isStable),
       ]);
     } catch (error: any) {
-      console.log(error);
       setErrorLoading(error.message || 'Une erreur est survenue...');
     } finally {
       setLoading(false);
