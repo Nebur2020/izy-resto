@@ -1,0 +1,13 @@
+{
+  "no-notifications": "Aucune notification",
+  "new-order": "Nouvelle commande",
+  "order-receive": "Commande reçue",
+  "just-now": "à l'instant",
+  "minutes-ago_one": "il y a {{count}} minute",
+  "minutes-ago_other": "il y a {{count}} minutes",
+  "hours-ago_one": "il y a {{count}} heure",
+  "hours-ago_other": "il y a {{count}} heures",
+  "days-ago_one": "il y a {{count}} jour",
+  "days-ago_other": "il y a {{count}} jours",
+  "page-indicator": "Page {{currentPage}} sur {{totalPages}}"
+}

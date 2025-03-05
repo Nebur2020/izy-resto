@@ -82,7 +82,7 @@ export function POSMenuGrid(props: POSMenuGridProps) {
                 animate={{ opacity: 1 }}
                 className="col-span-full flex items-center justify-center py-12 text-gray-500 dark:text-gray-400"
               >
-                <p className="text-lg">{t('menu:no-items-found')}</p>
+                <p className="text-lg">{t('common:no-items-found')}</p>
               </motion.div>
             )}
           </AnimatePresence>

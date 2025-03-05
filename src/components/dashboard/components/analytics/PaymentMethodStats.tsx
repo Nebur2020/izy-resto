@@ -26,8 +26,7 @@ export const PaymentMethodStats = ({ orders }: { orders: Order[] }) => {
                 order?.paymentMethod?.name || 'dine-in'
               }`
             );
-      acc[methodName] =
-        (acc[methodName] || 0) + Number(order.amountPaid || order.total || 0);
+      acc[methodName] = (acc[methodName] || 0) + Number(order.total || 0);
       return acc;
     }, {} as Record<string, number>);
 
@@ -38,11 +37,7 @@ export const PaymentMethodStats = ({ orders }: { orders: Order[] }) => {
         total: Number(total).toFixed(2),
         percentage: (
           (total /
-            orders.reduce(
-              (sum, order) =>
-                sum + Number(order.amountPaid || order.total || 0),
-              0
-            )) *
+            orders.reduce((sum, order) => sum + Number(order.total || 0), 0)) *
           100
         ).toFixed(1),
       }))
@@ -51,10 +46,7 @@ export const PaymentMethodStats = ({ orders }: { orders: Order[] }) => {
 
   const totalPayments = useMemo(() => {
     return orders
-      .reduce(
-        (sum, order) => sum + Number(order.amountPaid || order.total || 0),
-        0
-      )
+      .reduce((sum, order) => sum + Number(order.total || 0), 0)
       .toFixed(2);
   }, [orders]);
 

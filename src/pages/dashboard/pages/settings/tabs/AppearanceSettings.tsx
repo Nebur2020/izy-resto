@@ -10,7 +10,6 @@ import {
   Columns,
   LayoutDashboard,
   LayoutList,
-  Store,
   X,
 } from 'lucide-react';
 import { useTheme } from '../../../../../context/ThemeContext';

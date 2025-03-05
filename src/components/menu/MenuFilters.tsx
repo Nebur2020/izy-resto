@@ -13,7 +13,7 @@ export function MenuFilters({
   activeCategory,
   onCategoryChange,
 }: MenuFiltersProps) {
-  const { categories, isLoading } = useCategories();
+  const { allCategories, isLoading } = useCategories();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftScroll, setShowLeftScroll] = useState(false);
   const [showRightScroll, setShowRightScroll] = useState(false);
@@ -34,7 +34,7 @@ export function MenuFilters({
     checkScroll();
     window.addEventListener('resize', checkScroll);
     return () => window.removeEventListener('resize', checkScroll);
-  }, [categories]);
+  }, [allCategories]);
 
   const scroll = (direction: 'left' | 'right') => {
     const container = scrollContainerRef.current;
@@ -93,7 +93,7 @@ export function MenuFilters({
               {t('principal-menu')}
             </motion.button>
 
-            {categories.map(category => (
+            {allCategories.map(category => (
               <motion.button
                 key={category.id}
                 onClick={() => onCategoryChange(category.id)}
