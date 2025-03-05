@@ -38,7 +38,7 @@ export function MenuFilters(props: IMenuFiltersProps) {
     checkScroll();
     window.addEventListener('resize', checkScroll);
     return () => window.removeEventListener('resize', checkScroll);
-  }, [allCategories]);
+  }, [categories]);
 
   const scroll = (direction: 'left' | 'right') => {
     const container = scrollContainerRef.current;
@@ -97,7 +97,7 @@ export function MenuFilters(props: IMenuFiltersProps) {
               {t('principal-menu')}
             </motion.button>
 
-            {allCategories.map(category => (
+            {categories.map(category => (
               <motion.button
                 key={category.id}
                 onClick={() => onCategoryChange(category.id)}
