@@ -1,7 +1,7 @@
 {
   "name": "restaurant",
   "private": true,
-  "version": "1.21.1",
+  "version": "1.22.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -14,7 +14,8 @@
     "prerelease:minor": "chmod +x ./scripts/minor.sh",
     "release:minor": "./scripts/minor.sh",
     "prerelease:major": "chmod +x ./scripts/major.sh",
-    "release:major": "./scripts/major.sh"
+    "release:major": "./scripts/major.sh",
+    "sync-repo": "cd scripts && ./trigger_multi_workflows.sh github-accounts-csv"
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^3.1.1",
