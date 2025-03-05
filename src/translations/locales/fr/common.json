@@ -306,5 +306,6 @@
   "confirm": "Confirmer",
   "back-home": "Retour à l'accueil",
   "terms-and-conditions": "Conditions Générales d'Utilisation",
-  "no-items-found": "Aucun élément trouvé"
+  "no-items-found": "Aucun élément trouvé",
+  "theme-configuration": "Thème configuration"
 }

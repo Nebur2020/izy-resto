@@ -22,7 +22,6 @@ export function MinimalMenuSection() {
 
   const { t } = useTranslation('menu');
 
-  // Reset visible items count when category or search changes
   useEffect(() => {
     setVisibleItemsCount(INITIAL_ITEMS_COUNT);
   }, [activeCategory, searchTerm]);
@@ -38,16 +37,13 @@ export function MinimalMenuSection() {
     return matchesCategory && matchesSearch;
   });
 
-  // Get only the visible items based on current count
   const visibleItems = filteredItems.slice(0, visibleItemsCount);
 
-  // Check if there are more items to load
   const hasMoreItems = visibleItemsCount < filteredItems.length;
 
   const handleLoadMore = () => {
     setIsLoadingMore(true);
 
-    // Simulate loading delay for better UX
     setTimeout(() => {
       setVisibleItemsCount(prevCount => prevCount + LOAD_MORE_COUNT);
       setIsLoadingMore(false);

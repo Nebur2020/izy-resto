@@ -1,8 +1,11 @@
 import { Phone } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../../../hooks/useSettings';
 
 export default function Cta() {
   const { t } = useTranslation('pizzatheme');
+  const { settings } = useSettings();
+
   return (
     <section className="w-full px-6 sm:px-12 lg:px-44 mt-16 sm:mt-24 lg:mt-36">
       <div className="flex flex-col lg:flex-row items-center justify-center lg:justify-around px-6 sm:px-11 relative bg-[url('https://radiustheme.com/demo/wordpress/themes/panpie/wp-content/uploads/2021/03/section_bg9.png')] bg-cover bg-center py-9 rounded-lg">
@@ -15,15 +18,27 @@ export default function Cta() {
           />
         </div>
         <div className="relative z-10 text-center lg:text-left max-w-xl mt-8 lg:mt-0 px-4">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-white ">
-            {t('cta-title')}
-          </h1>
-          <p className="text-lg mb-6 text-white ">{t('cta-description')}</p>
+          {settings && settings.freeDeliveryTitle ? (
+            <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-white ">
+              {settings.freeDeliveryTitle}
+            </h1>
+          ) : (
+            <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-white ">
+              {t('cta-title')}
+            </h1>
+          )}
+          {settings && settings.freeDeliveryDescription ? (
+            <p className="text-lg mb-6 text-white ">
+              {settings.freeDeliveryDescription}
+            </p>
+          ) : (
+            <p className="text-lg mb-6 text-white ">{t('cta-description')}</p>
+          )}
         </div>
         <div className="relative z-10 mt-6 lg:mt-0">
           <button className="flex items-center justify-center bg-[#fcb302] text-white py-3 rounded-full w-[180px] sm:w-[250px] text-lg">
             <Phone className="mr-2 w-5 h-5" />
-            {t('call-us')}: +123666604
+            {t('call-us')}: {settings && settings.phone}
           </button>
         </div>
       </div>
