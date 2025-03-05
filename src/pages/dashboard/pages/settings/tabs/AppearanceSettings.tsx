@@ -340,34 +340,6 @@ export function AppearanceSettings() {
 
       <section className="space-y-6">
         <div className="flex items-center gap-3">
-          <Store className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-          <h2 className="text-xl font-semibold">
-            {t('settingAppearence:premium-theme-title')}
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {themeData.map((theme, index) => (
-            <TemplateOption
-              key={index}
-              icon={Sun}
-              title={theme.themeName}
-              description={theme.themeDescription}
-              value={theme.value}
-              selected={watch('activeLanding') === 'pizzaTheme'}
-              onChange={value =>
-                setValue('activeLanding', value, { shouldDirty: true })
-              }
-              register={register}
-              imageUrl={theme.ImgUrl}
-              setShowModal={setShowModal}
-            />
-          ))}
-        </div>
-      </section>
-
-      <section className="space-y-6">
-        <div className="flex items-center gap-3">
           <Layout className="h-5 w-5 text-blue-600 dark:text-blue-400" />
           <h2 className="text-xl font-semibold">
             {t('settingAppearence:deployment')}

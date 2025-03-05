@@ -303,5 +303,8 @@
   "empty-file-desc": "Commencez par ajouter des fichiers",
   "no-transaction-description": "Les transactions apparaîtront ici",
   "product-list-no-items": "Aucun produit trouvé",
-  "confirm": "Confirmer"
+  "confirm": "Confirmer",
+  "back-home": "Retour à l'accueil",
+  "terms-and-conditions": "Conditions Générales d'Utilisation",
+  "no-items-found": "Aucun élément trouvé"
 }
