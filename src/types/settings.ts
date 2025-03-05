@@ -117,4 +117,12 @@ export interface RestaurantSettings {
     countryCode: string;
     name: string;
   };
+  restaurantCharacteristics: string[];
+  freeHomeDelivery: string;
+  productListTitle: string;
+  productListDescription: string;
+  footerBannerTitle: string;
+  productDiscount: number;
+  freeDeliveryTitle: string;
+  freeDeliveryDescription: string;
 }

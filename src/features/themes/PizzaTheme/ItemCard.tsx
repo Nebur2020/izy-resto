@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion'; // Importez motion
+import { motion } from 'framer-motion';
 import { ProductDetailsModal } from '../../../components/menu/ProductDetailsModal';
 import { useTranslation } from 'react-i18next';
 import { MenuItemWithVariants } from '../../../types';
@@ -15,9 +15,7 @@ export default function ItemCard(props: IitemCradProps) {
 
   const isOutOfStock = item.stockQuantity === 0;
 
-  console.log('item: ', item);
 
-  // Définissez des animations
   const cardVariants = {
     hidden: { opacity: 0, scale: 0.8 },
     visible: { opacity: 1, scale: 1, transition: { duration: 0.5 } },
@@ -62,7 +60,7 @@ export default function ItemCard(props: IitemCradProps) {
           {!isOutOfStock && (
             <div className="mt-4 w-full flex justify-between items-center">
               <span className="text-xl font-semibold text-[#fcb302]">
-                {item.price} €
+                {item.price} FCFA
               </span>
               <span className="text-sm text-gray-500 bg-[#f4ecdf] px-3 py-1 rounded-full">
                 {item.stockQuantity} {t('common:in-stock')}

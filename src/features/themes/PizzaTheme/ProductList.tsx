@@ -3,6 +3,7 @@ import { MinimalMenuCategories } from '../../../components/menu/minimal/MinimalM
 import { useMenu } from '../../../hooks';
 import ItemCard from './ItemCard';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../../../hooks/useSettings';
 
 export default function ProductList() {
   const { t } = useTranslation('pizzatheme');
@@ -21,17 +22,21 @@ export default function ProductList() {
     setItemsToShow(prevItemsToShow => prevItemsToShow + 6);
   };
 
-  console.table(items);
+  const { settings } = useSettings();
 
   return (
     <section id="product-list">
       <div className="flex flex-col items-center my-20 text-center">
-        <span className="text-red-600 font-bold text-sm sm:text-base">
-          {t('product-list-title')}
-        </span>
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold max-w-[90%] sm:max-w-[70%] lg:max-w-[50%]">
-          {t('product-list-subtitle')}
-        </h1>
+        {settings && settings.freeHomeDelivery && (
+          <span className="text-red-600 font-bold text-sm sm:text-base">
+            {settings.productListTitle}
+          </span>
+        )}
+        {settings && settings.productListDescription && (
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold max-w-[90%] sm:max-w-[70%] lg:max-w-[50%]">
+            {settings.productListDescription}
+          </h1>
+        )}
       </div>
       <div>
         <MinimalMenuCategories
