@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'custom';
   size?: 'sm' | 'md' | 'lg';
   translationKey?: string;
   spanClassName?: string;
@@ -61,6 +61,7 @@ export function Button({
    hover:bg-gray-100 dark:hover:bg-gray-800
    focus:ring-gray-500/50 text-white !text-white 
  `,
+    custom: '',
   };
 
   const sizes = {

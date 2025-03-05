@@ -87,8 +87,6 @@ export const usePaytech = ({
       setPaymentSucceeded(true);
       setPaymentResponse(response.data);
     } catch (error: any) {
-      console.log(error);
-
       if (error instanceof AxiosError) {
         setPaymentError(
           error.response?.data?.error?.length > 0

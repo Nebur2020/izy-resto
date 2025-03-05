@@ -106,7 +106,6 @@ export function HolidayClosureModal() {
             <div className="flex flex-col gap-3 mt-4">
               <div className="space-y-1 text-sm px-10">
                 {DAYS.map(day => {
-                  console.log('day :', day);
                   const hours = settings?.openingHours?.[day];
                   return (
                     <div key={day} className="flex justify-between">

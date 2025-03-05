@@ -7,7 +7,6 @@ const PendingTransaction = () => {
   //     message:
   //       'Votre transaction a été traitée avec succès. Un email de confirmation vous sera envoyé dans quelques minutes.',
   //     buttonText: 'Retourner à la page précédente',
-  //     onButtonClick: () => console.log('Button clicked'),
   //   };
 
   //   const errorProps: PaymentReturnProps = {
@@ -16,7 +15,6 @@ const PendingTransaction = () => {
   //     message:
   //       'Une erreur est survenue lors du traitement de votre paiement. Veuillez réessayer ou contacter le support.',
   //     buttonText: 'Réessayer',
-  //     onButtonClick: () => console.log('Retry clicked'),
   //   };
 
   const pendingProps: PaymentReturnProps = {

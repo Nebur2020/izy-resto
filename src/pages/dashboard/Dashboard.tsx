@@ -21,23 +21,19 @@ export default function Dashboard() {
 
   const playNotificationSound = useCallback(() => {
     if (!audioRef.current) {
-      console.log('[Audio] Audio ref not initialized');
       return;
     }
 
     const now = Date.now();
     if (now - lastPlayedRef.current < 1000) {
-      console.log('[Audio] Debouncing sound, too soon since last play');
       return;
     }
 
     if (isPlayingRef.current) {
-      console.log('[Audio] Already playing, skipping');
       return;
     }
 
     try {
-      console.log('[Audio] Starting playback');
       isPlayingRef.current = true;
       audioRef.current.currentTime = 0;
 
@@ -46,14 +42,12 @@ export default function Dashboard() {
       if (playPromise !== undefined) {
         playPromise
           .then(() => {
-            console.log('[Audio] Playback started successfully');
             lastPlayedRef.current = now;
 
             // Reset playing state after the sound finishes
             audioRef.current?.addEventListener(
               'ended',
               () => {
-                console.log('[Audio] Playback ended');
                 isPlayingRef.current = false;
               },
               { once: true }
@@ -71,13 +65,11 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    console.log('[Init] Setting up audio and subscription');
     audioRef.current = new Audio('/notification.mp3');
     audioRef.current.volume = 0.7;
 
     subscriptionRef.current = orderService.subscribeToRecentOrders(
-      newOrder => {
-        console.log('[Order] New order received:', newOrder.id);
+      () => {
         playNotificationSound();
       },
       error => {
@@ -86,7 +78,6 @@ export default function Dashboard() {
     );
 
     return () => {
-      console.log('[Cleanup] Removing subscription and audio');
       if (subscriptionRef.current) {
         subscriptionRef.current();
       }

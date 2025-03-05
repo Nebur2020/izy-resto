@@ -124,7 +124,6 @@ export default function PaymentReturn({
 //     message:
 //       'Votre transaction a été traitée avec succès. Un email de confirmation vous sera envoyé dans quelques minutes.',
 //     buttonText: 'Retourner à la page précédente',
-//     onButtonClick: () => console.log('Button clicked'),
 //   };
 
 //   const errorProps: PaymentReturnProps = {
@@ -133,7 +132,6 @@ export default function PaymentReturn({
 //     message:
 //       'Une erreur est survenue lors du traitement de votre paiement. Veuillez réessayer ou contacter le support.',
 //     buttonText: 'Réessayer',
-//     onButtonClick: () => console.log('Retry clicked'),
 //   };
 
 //   const pendingProps: PaymentReturnProps = {
@@ -142,7 +140,6 @@ export default function PaymentReturn({
 //     message:
 //       'Votre paiement est en cours de traitement. Veuillez ne pas fermer cette fenêtre.',
 //     buttonText: 'Actualiser la page',
-//     onButtonClick: () => console.log('Refresh clicked'),
 //   };
 
 //   return <PaymentReturn {...successProps} />;

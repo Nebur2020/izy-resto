@@ -4,15 +4,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-interface MenuFiltersProps {
+interface IMenuFiltersProps {
   activeCategory: string;
   onCategoryChange: (category: string) => void;
+  menuFilterDefaultStyle?: string;
 }
 
-export function MenuFilters({
-  activeCategory,
-  onCategoryChange,
-}: MenuFiltersProps) {
+export function MenuFilters(props: IMenuFiltersProps) {
+  const {
+    activeCategory,
+    onCategoryChange,
+    menuFilterDefaultStyle = 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg',
+  } = props;
   const { categories, isLoading } = useCategories();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftScroll, setShowLeftScroll] = useState(false);
@@ -83,7 +86,7 @@ export function MenuFilters({
                 transition-all duration-200 hover:scale-105
                 ${
                   activeCategory === 'all'
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
+                    ? menuFilterDefaultStyle
                     : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
                 }
               `}

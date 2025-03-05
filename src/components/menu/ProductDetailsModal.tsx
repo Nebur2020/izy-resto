@@ -19,6 +19,8 @@ interface IProductDetailsModalProps {
   addProductToCartBgColor?: string;
   stockAvailableBgColor?: string;
   priceStyle?: string;
+  addToCartButtonStyle?: string;
+  variantSelectStyles?: string;
 }
 
 export function ProductDetailsModal(props: IProductDetailsModalProps) {
@@ -29,7 +31,11 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
     addProductToCartBgColor = 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-300',
     stockAvailableBgColor = 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
     priceStyle = 'text-base sm:text-lg font-bold text-blue-600 dark:text-blue-400',
+    addToCartButtonStyle = `${addProductToCartBgColor} w-full rounded-full py-2 sm:py-3 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 ease-in-out disabled:bg-gray-300 disabled:cursor-not-allowed dark:bg-blue-500 dark:hover:bg-blue-600 dark:disabled:bg-gray-700`,
+    variantSelectStyles = 'bg-blue-600 text-white scale-105 shadow-md',
   } = props;
+
+  console.table(item);
 
   const [fullPrice, setFullPrice] = useState(item?.price || 0);
   const [quantity, setQuantity] = useState(1);
@@ -102,6 +108,11 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
         );
       });
   }, [categoryVariants, selectedVariants]);
+
+  console.log(
+    'areAllRequiredVariantsSelected: ',
+    areAllRequiredVariantsSelected()
+  );
 
   const getCartItem = useCallback(() => {
     const variantId = getVariantId();
@@ -339,7 +350,10 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
         className="relative w-full max-w-md rounded-2xl bg-white dark:bg-gray-900 shadow-2xl max-h-[90vh] overflow-hidden flex flex-col"
       >
         <button
-          onClick={onClose}
+          onClick={e => {
+            e.stopPropagation();
+            onClose();
+          }}
           className="absolute right-4 top-4 z-10 rounded-full bg-gray-100 dark:bg-gray-800 p-2 text-gray-600 dark:text-gray-300 transition-all hover:bg-gray-200 dark:hover:bg-gray-700"
         >
           <X className="h-5 w-5" />
@@ -444,7 +458,7 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
                             transition-all duration-300 ease-in-out
                             ${
                               isSelected
-                                ? 'bg-blue-600 text-white scale-105 shadow-md'
+                                ? variantSelectStyles
                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 hover:scale-105'
                             }
                             disabled:opacity-50 disabled:cursor-not-allowed
@@ -512,13 +526,14 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
           )}
 
           <Button
+            variant="custom"
             onClick={handleAddToCart}
             disabled={
               isOutOfStock ||
               isLoadingPrice ||
               !areAllRequiredVariantsSelected()
             }
-            className={`${addProductToCartBgColor} w-full rounded-full py-2 sm:py-3 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 ease-in-out disabled:bg-gray-300 disabled:cursor-not-allowed dark:bg-blue-500 dark:hover:bg-blue-600 dark:disabled:bg-gray-700`}
+            className={addToCartButtonStyle}
           >
             {isLoadingPrice ? (
               <Loader className="h-5 w-5 animate-spin mr-1" />
