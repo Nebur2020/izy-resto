@@ -27,6 +27,7 @@ export function TemplateOption(props: TemplateOptionProps) {
     imageUrl,
     setShowModal,
   } = props;
+
   return (
     <div
       className={`
@@ -54,7 +55,7 @@ export function TemplateOption(props: TemplateOptionProps) {
       </div>
       <h3 className="font-medium mb-1">{title}</h3>
       <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
-      {title !== 'Modern' && title !== 'Minimal' && title !== 'Grid' && (
+      {title !== 'Modern' && title !== 'Minimal' && title !== 'grid' && (
         <div className="w-full mt-4">
           <button
             type="button"
