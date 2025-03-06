@@ -62,7 +62,7 @@ export default function ItemCard(props: IitemCradProps) {
               <span className="text-xl font-semibold text-[#fcb302]">
                 {item.price} FCFA
               </span>
-              <span className="text-sm text-gray-500 bg-[#f4ecdf] px-3 py-1 rounded-full">
+              <span className="text-sm text-gray-500 bg-[#f4ecdf] px-3 py-1 rounded-full dark:text-gray-950">
                 {item.stockQuantity} {t('common:in-stock')}
               </span>
             </div>

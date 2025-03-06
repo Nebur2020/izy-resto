@@ -13,7 +13,6 @@ const truncateText = (text: string, maxLength: number) => {
 export default function Banner() {
   const { t } = useTranslation('pizzatheme');
   const { settings } = useSettings();
-  console.log('settings: ', settings);
   const maxLength = 40;
 
   return (
@@ -25,7 +24,7 @@ export default function Banner() {
           </span>
         )}
         <motion.h1
-          className="my-5 text-4xl lg:text-7xl font-extrabold leading-tight"
+          className="my-5 text-4xl lg:text-7xl font-extrabold leading-tight dark:text-slate-950"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
@@ -46,7 +45,7 @@ export default function Banner() {
                 transition={{ delay: 0.2, duration: 0.5 }}
               >
                 <CheckCircle color="#f00" />
-                <span className="ml-2 font-semibold text-sm lg:text-lg">
+                <span className="ml-2 font-semibold text-sm lg:text-lg dark:text-slate-950">
                   {characteristic}
                 </span>
               </motion.li>
@@ -64,7 +63,7 @@ export default function Banner() {
           }}
         >
           <ShoppingCart color="#fff" />
-          <span className="text-white ml-2">{t('hero:view-menu')}</span>
+          <span className="text-white ml-2 dark:text-white">{t('hero:view-menu')}</span>
         </motion.button>
       </div>
       <div className="w-full lg:w-[50%] mt-10 lg:mt-0 flex justify-center relative mb-11">
