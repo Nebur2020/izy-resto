@@ -1,7 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
+import { menuItemApi } from './services/menu.service';
 
 export const store = configureStore({
-  reducer: {},
+  reducer: {
+    [menuItemApi.reducerPath]: menuItemApi.reducer,
+  },
+  middleware: getDefaultMiddleware => {
+    return getDefaultMiddleware().concat(menuItemApi.middleware);
+  },
 });
 
 export type RootState = ReturnType<typeof store.getState>;
