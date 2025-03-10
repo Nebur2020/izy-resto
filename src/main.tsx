@@ -5,6 +5,9 @@ import App from './App.tsx';
 import './index.css';
 import { settingsService } from './services/settings/settings.service';
 
+import { store } from './redux/store.ts';
+import { Provider } from 'react-redux';
+
 // Initialize theme before rendering
 const initializeTheme = async () => {
   try {
@@ -20,7 +23,7 @@ const initializeTheme = async () => {
     // If no localStorage theme, get from settings
     const settings = await settingsService.getSettings();
     const theme = settings?.defaultTheme || 'dark';
-    
+
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
     }
@@ -34,10 +37,12 @@ const initializeTheme = async () => {
 // Initialize theme then render app
 initializeTheme().then(() => {
   createRoot(document.getElementById('root')!).render(
-    <StrictMode>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </StrictMode>
+    <Provider store={store}>
+      <StrictMode>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </StrictMode>
+    </Provider>
   );
 });

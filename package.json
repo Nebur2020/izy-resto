@@ -18,6 +18,7 @@
     "sync-repo": "cd scripts && ./trigger_multi_workflows.sh github-accounts-csv"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.6.1",
     "@stripe/react-stripe-js": "^3.1.1",
     "@stripe/stripe-js": "^5.4.0",
     "@tailwindcss/line-clamp": "^0.4.4",
@@ -42,7 +43,9 @@
     "react-hot-toast": "^2.4.1",
     "react-i18next": "^15.4.0",
     "react-phone-input-2": "^2.15.1",
+    "react-redux": "^9.2.0",
     "react-router-dom": "^6.21.0",
+    "redux": "^5.0.1",
     "uuid": "^11.0.3"
   },
   "devDependencies": {
