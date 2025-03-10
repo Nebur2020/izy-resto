@@ -1,3 +1,4 @@
+import { PizzaThemeConfig } from '../pages/dashboard/pages/settings/theme/editor/pizza';
 import { HeaderStyle, LandingTemplate } from './theme';
 
 export interface TaxRate {
@@ -125,4 +126,13 @@ export interface RestaurantSettings {
   productDiscount: number;
   freeDeliveryTitle: string;
   freeDeliveryDescription: string;
+  activeTheme:
+    | {
+        key: 'pizza';
+        configuration: PizzaThemeConfig;
+      }
+    | {
+        key: string;
+        configuration: Record<string, unknown>;
+      };
 }

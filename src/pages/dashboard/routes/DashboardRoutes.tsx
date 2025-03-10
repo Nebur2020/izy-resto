@@ -19,6 +19,8 @@ import { TrafficAnalytics } from '../pages/TrafficAnalytics';
 import { ProtectedRoute } from './ProtectedRoute';
 import { StaffMember } from '../../../types/staff';
 import { RestaurantSettings } from '../../../types';
+import ThemeCustomizerPage from '../pages/settings/EditTheme';
+import ThemePage from '../pages/settings/theme';
 
 interface DashboardRoutesProps {
   isStaff: boolean;
@@ -265,6 +267,23 @@ export function DashboardRoutes({
             element={
               <DashboardPageWrapper>
                 <Settings />
+              </DashboardPageWrapper>
+            }
+            isStaff={isStaff}
+            staffData={staffData}
+          />
+        }
+      />
+
+      <Route
+        path="/settings/theme/:theme"
+        element={
+          <ProtectedRoute
+            settings={settings}
+            route="settings/theme"
+            element={
+              <DashboardPageWrapper>
+                <ThemePage />
               </DashboardPageWrapper>
             }
             isStaff={isStaff}

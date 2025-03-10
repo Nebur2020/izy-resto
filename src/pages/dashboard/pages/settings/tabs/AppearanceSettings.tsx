@@ -23,6 +23,8 @@ import { useDeployment } from '../../../../../hooks/useDeployment';
 import packageJson from '../../../../../../package.json';
 import { useTranslation } from 'react-i18next';
 import { Version } from '../../../../../services/version/version.service';
+import { useAppThemes } from '../hooks/useThemes';
+import { useNavigate } from 'react-router-dom';
 
 const COOLDOWN_DURATION = 6 * 60;
 const DEPLOY_STORAGE_KEY = 'deploymentCooldown';
@@ -77,6 +79,10 @@ export function AppearanceSettings() {
 
   const [cooldownTime, setCooldownTime] = useState(0);
   const [selectedVersion, setSelectedVersion] = useState<Version | null>(null);
+
+  const themes = useAppThemes();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedCooldown = getStoredCooldown();
@@ -187,16 +193,6 @@ export function AppearanceSettings() {
     }
   };
 
-  const themeData = [
-    {
-      ImgUrl:
-        'https://res.cloudinary.com/dp8d8jxxd/image/upload/v1740908360/izirestau/uc9uptbzyrsuoy4grdes.png',
-      themeName: t('settingAppearence:theme-name'),
-      themeDescription: t('settingAppearence:theme-description'),
-      value: 'pizzaTheme',
-    },
-  ];
-
   return (
     <div className="space-y-8">
       <section className="space-y-6">
@@ -269,44 +265,21 @@ export function AppearanceSettings() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <TemplateOption
-            icon={Rows}
-            title={t('settingAppearence:modern')}
-            description={t('settingAppearence:modern-description')}
-            value="modern"
-            selected={watch('activeLanding') === 'modern'}
-            onChange={value =>
-              setValue('activeLanding', value, { shouldDirty: true })
-            }
-            register={register}
-            imageUrl="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=500&q=60"
-          />
-
-          <TemplateOption
-            icon={Columns}
-            title={t('settingAppearence:minimal')}
-            description={t('settingAppearence:minimal-description')}
-            value="minimal"
-            selected={watch('activeLanding') === 'minimal'}
-            onChange={value =>
-              setValue('activeLanding', value, { shouldDirty: true })
-            }
-            register={register}
-            imageUrl="https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=500&q=60"
-          />
-
-          <TemplateOption
-            icon={LayoutGrid}
-            title={t('settingAppearence:grid')}
-            description={t('settingAppearence:grid-description')}
-            value="grid"
-            selected={watch('activeLanding') === 'grid'}
-            onChange={value =>
-              setValue('activeLanding', value, { shouldDirty: true })
-            }
-            register={register}
-            imageUrl="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=500&q=60"
-          />
+          {themes.default.map(theme => (
+            <TemplateOption
+              key={theme.id}
+              icon={theme.icon}
+              title={theme.title}
+              description={theme.description}
+              value={theme.value}
+              selected={watch('activeLanding') === theme.value}
+              onChange={value =>
+                setValue('activeLanding', value, { shouldDirty: true })
+              }
+              register={register}
+              imageUrl={theme.imageUrl}
+            />
+          ))}
         </div>
       </section>
 
@@ -319,20 +292,21 @@ export function AppearanceSettings() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {themeData.map((theme, index) => (
+          {themes.premium.map(theme => (
             <TemplateOption
-              key={index}
-              icon={Sun}
-              title={theme.themeName}
-              description={theme.themeDescription}
+              key={theme.id}
+              icon={theme.icon}
+              title={theme.title}
+              description={theme.description}
               value={theme.value}
-              selected={watch('activeLanding') === 'pizzaTheme'}
+              selected={watch('activeLanding') === 'pizza'}
               onChange={value =>
                 setValue('activeLanding', value, { shouldDirty: true })
               }
               register={register}
-              imageUrl={theme.ImgUrl}
+              imageUrl={theme.imageUrl}
               setShowModal={setShowModal}
+              onCustomize={() => navigate(`theme/${theme.value}`)}
             />
           ))}
         </div>

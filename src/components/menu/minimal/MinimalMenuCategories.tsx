@@ -3,27 +3,54 @@ import { useCategories } from '../../../hooks/useCategories';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { useSettings } from '../../../hooks';
 
 interface IMinimalMenuCategoriesProps {
   activeCategory: string;
   onCategoryChange: (category: string) => void;
   menuFilterDefaultStyle?: string;
   activeCategoryStyles?: string;
+  primaryColor?: string;
 }
 
 export function MinimalMenuCategories(props: IMinimalMenuCategoriesProps) {
   const {
     activeCategory,
     onCategoryChange,
-    menuFilterDefaultStyle = 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg',
-    activeCategoryStyles = 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg',
+    menuFilterDefaultStyle,
+    activeCategoryStyles,
+    primaryColor,
   } = props;
+
   const { categories, isLoading } = useCategories();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftScroll, setShowLeftScroll] = useState(false);
   const [showRightScroll, setShowRightScroll] = useState(false);
-
   const { t } = useTranslation('menu');
+  const { settings } = useSettings();
+
+  // Use provided primary color or fall back to theme context
+  const themeColor = primaryColor || '#fcb302';
+  const isDarkMode = settings?.defaultTheme === 'dark';
+
+  // Get the background color from theme config for inactive buttons
+  const backgroundColor = '#fff';
+  // Generate the styles based on theme colors
+  const defaultButtonStyle =
+    menuFilterDefaultStyle || isDarkMode
+      ? 'bg-gray-800 text-gray-300 border border-gray-700'
+      : 'bg-white text-gray-700 border border-gray-200';
+
+  const activeButtonStyle =
+    activeCategoryStyles || 'text-white shadow-md border border-transparent';
+
+  const scrollButtonStyle = isDarkMode
+    ? 'bg-gray-800 border-gray-700 hover:bg-gray-700/50'
+    : 'bg-white border-gray-200 hover:bg-gray-50';
+
+  const scrollIconStyle = isDarkMode ? 'text-gray-400' : 'text-gray-600';
+
+  const loadingStyle = isDarkMode ? 'bg-gray-800' : 'bg-gray-100';
 
   const checkScroll = () => {
     const container = scrollContainerRef.current;
@@ -51,12 +78,14 @@ export function MinimalMenuCategories(props: IMinimalMenuCategoriesProps) {
 
   if (isLoading) {
     return (
-      <div className="w-full h-12 bg-gray-100 dark:bg-gray-800 animate-pulse rounded-full" />
+      <div
+        className={`w-full h-12 ${loadingStyle} animate-pulse rounded-full`}
+      />
     );
   }
 
   return (
-    <div className="w-full flex justify-center">
+    <div className={`w-full flex justify-center`}>
       <div className="w-full max-w-3xl flex items-center gap-2 px-4">
         <AnimatePresence>
           {showLeftScroll && (
@@ -65,11 +94,10 @@ export function MinimalMenuCategories(props: IMinimalMenuCategoriesProps) {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -10 }}
               onClick={() => scroll('left')}
-              className="flex-none p-2 bg-white dark:bg-gray-800 rounded-full shadow-lg
-                       border border-gray-200 dark:border-gray-700 hover:bg-gray-50 
-                       dark:hover:bg-gray-700/50 transition-colors"
+              className={`flex-none p-2 rounded-full shadow-lg
+                       border transition-colors ${scrollButtonStyle}`}
             >
-              <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              <ChevronLeft className={`w-5 h-5 ${scrollIconStyle}`} />
             </motion.button>
           )}
         </AnimatePresence>
@@ -88,10 +116,17 @@ export function MinimalMenuCategories(props: IMinimalMenuCategoriesProps) {
                 transition-all duration-200 hover:scale-105
                 ${
                   activeCategory === 'all'
-                    ? menuFilterDefaultStyle
-                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                    ? activeButtonStyle
+                    : defaultButtonStyle
                 }
               `}
+              style={
+                activeCategory === 'all'
+                  ? { backgroundColor: themeColor }
+                  : isDarkMode
+                  ? undefined
+                  : { backgroundColor: backgroundColor }
+              }
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -107,10 +142,17 @@ export function MinimalMenuCategories(props: IMinimalMenuCategoriesProps) {
                   transition-all duration-200 hover:scale-105
                   ${
                     activeCategory === category.id
-                      ? activeCategoryStyles
-                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                      ? activeButtonStyle
+                      : defaultButtonStyle
                   }
                 `}
+                style={
+                  activeCategory === category.id
+                    ? { backgroundColor: themeColor }
+                    : isDarkMode
+                    ? undefined
+                    : { backgroundColor: backgroundColor }
+                }
                 whileHover={{ y: -2 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -127,11 +169,10 @@ export function MinimalMenuCategories(props: IMinimalMenuCategoriesProps) {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 10 }}
               onClick={() => scroll('right')}
-              className="flex-none p-2 bg-white dark:bg-gray-800 rounded-full shadow-lg
-                       border border-gray-200 dark:border-gray-700 hover:bg-gray-50 
-                       dark:hover:bg-gray-700/50 transition-colors"
+              className={`flex-none p-2 rounded-full shadow-lg
+                       border transition-colors ${scrollButtonStyle}`}
             >
-              <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              <ChevronRight className={`w-5 h-5 ${scrollIconStyle}`} />
             </motion.button>
           )}
         </AnimatePresence>

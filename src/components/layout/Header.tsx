@@ -10,6 +10,8 @@ import { Logo } from './Logo';
 interface IHeaderProps {
   defaultHeaderStyle?: string;
   scrollHeaderStyle?: string;
+  logo?: string;
+  siteName?: string;
 }
 
 export function Header(props: IHeaderProps) {
@@ -44,7 +46,7 @@ export function Header(props: IHeaderProps) {
       className={`
         fixed left-0 right-0 top-0 z-50 
         transition-all duration-300 
-        ${isScrolled ? scrollHeaderStyle : defaultHeaderStyle}
+        ${isScrolled ? 'backdrop-blur-md shadow-lg ' : ''}
       `}
     >
       <Container>
@@ -68,7 +70,11 @@ export function Header(props: IHeaderProps) {
           </div>
 
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            <Logo isScrolled={isScrolled} />
+            <Logo
+              isScrolled={isScrolled}
+              logo={props.logo}
+              name={props.siteName}
+            />
           </div>
 
           <div className="ml-auto flex items-center">

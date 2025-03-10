@@ -12,29 +12,30 @@ export function useLayoutMount(): UseLayoutMountReturn {
   const { settings, isLoading: isSettingsLoading } = useSettings();
 
   useEffect(() => {
-    let timeout: NodeJS.Timeout;
-    let loadingTimeout: NodeJS.Timeout;
+    // let timeout: NodeJS.Timeout;
+    // let loadingTimeout: NodeJS.Timeout;
 
     if (!isSettingsLoading && settings) {
-      // First mount the layout
-      timeout = setTimeout(() => {
-        setIsLayoutMounted(true);
-        
-        // Then wait 2 seconds before completing loading
-        loadingTimeout = setTimeout(() => {
-          setIsLoadingComplete(true);
-        }, 1500);
-      }, 100);
+      setIsLayoutMounted(true);
+      setIsLoadingComplete(true);
+      // // First mount the layout
+      // timeout = setTimeout(() => {
+      //   setIsLayoutMounted(true);
+      //   // Then wait 2 seconds before completing loading
+      //   loadingTimeout = setTimeout(() => {
+      //     setIsLoadingComplete(true);
+      //   }, 1500);
+      // }, 100);
     }
 
-    return () => {
-      if (timeout) clearTimeout(timeout);
-      if (loadingTimeout) clearTimeout(loadingTimeout);
-    };
+    // return () => {
+    //   if (timeout) clearTimeout(timeout);
+    //   if (loadingTimeout) clearTimeout(loadingTimeout);
+    // };
   }, [isSettingsLoading, settings]);
 
   return {
     isLayoutMounted,
-    isLoading: isSettingsLoading || !isLoadingComplete
+    isLoading: isSettingsLoading || !isLoadingComplete,
   };
 }

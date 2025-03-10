@@ -1,3 +1,4 @@
+import { defaultConfig as pizzaDefaultTheme } from '../pages/dashboard/pages/settings/theme/editor/pizza';
 import { RestaurantSettings } from '../types/settings';
 
 export const API_URI = window.location.hostname.includes('localhost')
@@ -114,6 +115,10 @@ export const DEFAULT_SETTINGS: RestaurantSettings = {
     dialCode: '+221',
     name: 'Senegal',
     countryCode: 'sn',
+  },
+  activeTheme: {
+    key: 'pizza',
+    configuration: pizzaDefaultTheme,
   },
 };
 
