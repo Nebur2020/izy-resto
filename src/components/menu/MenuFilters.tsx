@@ -4,21 +4,42 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-interface MenuFiltersProps {
+interface IMenuFiltersProps {
   activeCategory: string;
   onCategoryChange: (category: string) => void;
+  menuFilterDefaultStyle?: string;
+  palette?: {
+    primary: string;
+    secondary: string;
+  };
+  isDarkMode: boolean;
 }
 
-export function MenuFilters({
-  activeCategory,
-  onCategoryChange,
-}: MenuFiltersProps) {
+export function MenuFilters(props: IMenuFiltersProps) {
+  const {
+    activeCategory,
+    onCategoryChange,
+    palette = {
+      primary: '#2563EB',
+      secondary: '#4D48E5',
+    },
+  } = props;
+
   const { allCategories, isLoading } = useCategories();
+
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftScroll, setShowLeftScroll] = useState(false);
   const [showRightScroll, setShowRightScroll] = useState(false);
 
   const { t } = useTranslation('menu');
+
+  // Create gradient style using the palette
+  const activeGradientStyle = {
+    background: `linear-gradient(to right, ${palette.primary}, ${palette.secondary})`,
+    color: 'white',
+    boxShadow:
+      '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+  };
 
   const checkScroll = () => {
     const container = scrollContainerRef.current;
@@ -82,11 +103,12 @@ export function MenuFilters({
                 flex-none px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap
                 transition-all duration-200 hover:scale-105
                 ${
-                  activeCategory === 'all'
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
-                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                  activeCategory !== 'all'
+                    ? 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                    : ''
                 }
               `}
+              style={activeCategory === 'all' ? activeGradientStyle : {}}
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -101,11 +123,14 @@ export function MenuFilters({
                   flex-none px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap
                   transition-all duration-200 hover:scale-105
                   ${
-                    activeCategory === category.id
-                      ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
-                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                    activeCategory !== category.id
+                      ? 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                      : ''
                   }
                 `}
+                style={
+                  activeCategory === category.id ? activeGradientStyle : {}
+                }
                 whileHover={{ y: -2 }}
                 whileTap={{ scale: 0.95 }}
               >

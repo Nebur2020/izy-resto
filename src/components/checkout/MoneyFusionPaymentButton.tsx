@@ -57,7 +57,18 @@ interface MoneyFusionPaymentButtonProps {
     email?: string;
   };
   onConfirm: () => void;
+  primaryColor?: string;
+  backgroundColor?: string;
+  isDarkMode?: boolean;
 }
+
+// Helper function to get lighter/darker variations of a color
+const getLighterColor = (hexColor: string, opacity = 0.1) => {
+  // For simplicity using opacity, but could be improved with actual color manipulation
+  return `${hexColor}${Math.round(opacity * 255)
+    .toString(16)
+    .padStart(2, '0')}`;
+};
 
 export const MoneyFusionPaymentButton = ({
   total,
@@ -65,6 +76,9 @@ export const MoneyFusionPaymentButton = ({
   paymentMethod,
   customerData,
   onConfirm,
+  primaryColor = '#3b82f6',
+  backgroundColor = '#f3f4f6',
+  isDarkMode = false,
 }: MoneyFusionPaymentButtonProps) => {
   const [isPaying, setIsPaying] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
@@ -88,6 +102,24 @@ export const MoneyFusionPaymentButton = ({
       }
     }
     setIsClosed(false);
+  };
+
+  // Function to get dynamic button style
+  const getButtonStyle = () => {
+    return {
+      className: 'disabled:opacity-50 disabled:cursor-not-allowed',
+      style: {
+        background: `linear-gradient(to right, ${primaryColor}, ${
+          isDarkMode ? '#4B5563' : getLighterColor(primaryColor, 0.8)
+        })`,
+        ':hover': {
+          background: `linear-gradient(to right, ${getLighterColor(
+            primaryColor,
+            0.9
+          )}, ${isDarkMode ? '#6B7280' : getLighterColor(primaryColor, 0.7)})`,
+        },
+      },
+    };
   };
 
   const requestPayment = async () => {
@@ -166,9 +198,10 @@ export const MoneyFusionPaymentButton = ({
       <Button
         disabled={isPaying}
         onClick={paymentResponse ? () => setIsClosed(true) : requestPayment}
-        className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        className={getButtonStyle().className}
+        style={getButtonStyle().style}
       >
-        Payer avec MoneyFusion
+        <span className="text-white">Payer avec MoneyFusion</span>
       </Button>
     </>
   );

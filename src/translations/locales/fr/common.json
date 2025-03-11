@@ -30,7 +30,7 @@
   "canceled-error": "Erreur lors de l'annulation",
   "invoice-downloaded": "Facture téléchargée",
   "printing-error": "Erreur lors de l'impression",
-  "printing": "'Impression...'",
+  "printing": "Impression...",
   "items": "Articles",
   "all-orders": "Toutes les commandes",
   "pending": "En attente",
@@ -306,5 +306,7 @@
   "confirm": "Confirmer",
   "back-home": "Retour à l'accueil",
   "terms-and-conditions": "Conditions Générales d'Utilisation",
-  "no-items-found": "Aucun élément trouvé"
+  "no-items-found": "Aucun élément trouvé",
+  "theme-configuration": "Thème configuration",
+  "discard": "Annuler"
 }

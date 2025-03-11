@@ -10,7 +10,7 @@ import PaymentSuccess from '../pages/paytech/SuccessPage';
 import { TermsOfService } from '../pages/TermsOfService';
 import PendingTransaction from '../pages/payments/pending';
 import { Home } from '../pages/home';
-import PizzaTheme from '../features/themes/PizzaTheme/PizzaTheme';
+// import PizzaTheme from '../features/themes/PizzaTheme/PizzaTheme';
 
 const Dashboard = React.lazy(() =>
   import('../pages/dashboard/Dashboard')

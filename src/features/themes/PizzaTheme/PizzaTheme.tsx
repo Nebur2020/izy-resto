@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Header } from '../../../components/layout';
 import Banner from './Banner';
 import FooterBanner from './FooterBanner';
@@ -8,34 +9,172 @@ import Footer from './Footer';
 import ProductList from './ProductList';
 import { LoadingScreen } from '../../../components/ui/LoadingScreen';
 import { AnimatePresence } from 'framer-motion';
-import { useLayoutMount } from '../../../hooks/useLayoutMount';
 import { Cart } from '../../../components/cart/Cart';
+import { useTheme } from '../../../context/ThemeContext';
+import { useSettings } from '../../../hooks/useSettings';
+import {
+  PizzaThemeConfig,
+  defaultConfig,
+} from '../../../pages/dashboard/pages/settings/theme/editor/pizza';
+import { PizzaThemeProvider } from './context/PizzaThemeContext';
+import { useLayoutMount } from '../../../hooks/useLayoutMount';
 
 export default function PizzaTheme() {
-  const { isLoading } = useLayoutMount();
+  const [themeConfig, setThemeConfig] =
+    useState<PizzaThemeConfig>(defaultConfig);
+  const { theme } = useTheme();
+  const { settings } = useSettings();
+  const { isLoading, isLayoutMounted } = useLayoutMount();
+
+  // Sync theme with settings and configuration
+  useEffect(() => {
+    if (settings) {
+      setThemeConfig(settings.activeTheme.configuration as PizzaThemeConfig);
+    }
+  }, [settings]);
+
+  // if (!settings || isLoading) return null;
+
+  const primaryColor = settings?.palette.primary;
+  const secondaryColor = settings?.palette.secondary;
+  const backgroundColor = settings?.palette.background;
+
+  // Derive CSS variables for dynamic styling
+  const themeColors = {
+    '--primary-color': primaryColor,
+    '--secondary-color': secondaryColor,
+    '--background-color': backgroundColor,
+    // Add dark mode variables
+    '--dark-background': '#1a1a1a',
+    '--dark-surface': '#2d2d2d',
+    '--dark-text': '#ffffff',
+    '--dark-text-secondary': '#cccccc',
+  };
+
+  // Determine if current theme is dark
+  const isDarkMode = theme === 'dark';
+
   return (
     <>
       <AnimatePresence>
-        {isLoading && <LoadingScreen isLoading={true} />}
+        {isLoading && !settings && <LoadingScreen isLoading={true} />}
       </AnimatePresence>
-      <Header
-        defaultHeaderStyle="border-b border-[#eddfc6]"
-        scrollHeaderStyle="bg-[#f4ecdf]"
-      />
-      <Banner />
-      <ProductList />
-      <FooterBanner />
-      <OrderNow />
-      <Cta />
-      <Partner />
-      <Footer />
-      <Cart
-        cartBgColor="bg-[#fcb302] hover:bg-[#fcb302]"
-        orderBgColor="bg-[#fcb302] hover:bg-[#fcb302]"
-        totalCartAmount="text-[#fcb302]"
-        deliveryTitleStyle="border-[#fcb302] bg-[#f4ecdf]"
-        truckStyle="text-[#fcb302]"
-      />
+
+      <PizzaThemeProvider value={{ ...themeConfig }}>
+        {isLayoutMounted && settings && (
+          <div
+            className={`pizza-theme ${isDarkMode ? 'dark' : ''}`}
+            style={themeColors as React.CSSProperties}
+          >
+            <AnimatePresence>
+              {isLoading && <LoadingScreen isLoading={true} />}
+            </AnimatePresence>
+
+            <Header
+              logo={settings.logo}
+              siteName={settings.name}
+              defaultHeaderStyle={`border-b ${
+                isDarkMode ? 'border-gray-800' : 'border-[#eddfc6]'
+              }`}
+              scrollHeaderStyle={
+                isDarkMode ? 'bg-gray-900/90' : `bg-[${backgroundColor}]`
+              }
+            />
+
+            <Banner
+              deliveryText={themeConfig.header.deliveryText}
+              mainHeading={themeConfig.header.mainHeading}
+              taglines={themeConfig.header.taglines}
+              buttonText={themeConfig.header.buttonText}
+              image={themeConfig.header.image}
+              isDarkMode={isDarkMode}
+              primaryColor={primaryColor}
+              backgroundColor={backgroundColor}
+              secondaryColor={secondaryColor}
+            />
+
+            <ProductList
+              tagline={themeConfig.menuSection.tagline}
+              title={themeConfig.menuSection.title}
+              primaryColor={primaryColor}
+              isDarkMode={isDarkMode}
+            />
+
+            {themeConfig.features.general?.display && (
+              <FooterBanner
+                showExcellentQuality={themeConfig.features.showExcellentQuality}
+                discountPercentage={themeConfig.features.discountPercentage}
+                excellentQualityHeading={
+                  themeConfig.features.excellentQualityHeading
+                }
+                image={themeConfig.features.image}
+                backgroundImage={themeConfig.features.backgroundImage}
+                isDarkMode={isDarkMode}
+                primaryColor={primaryColor}
+              />
+            )}
+
+            {
+              // Display the special item section if enabled
+              themeConfig.specialItem?.general?.display && (
+                <OrderNow
+                  title={themeConfig.specialItem.title}
+                  description={themeConfig.specialItem.description}
+                  price={themeConfig.specialItem.price}
+                  priceText={themeConfig.specialItem.priceText}
+                  image={themeConfig.specialItem.image}
+                  buttonText={themeConfig.specialItem.buttonText}
+                  backgroundImage={themeConfig.specialItem.backgroundImage}
+                  isDarkMode={isDarkMode}
+                  primaryColor={primaryColor}
+                />
+              )
+            }
+            {
+              // Display the call to action section if enabled
+              themeConfig.delivery?.general?.display && (
+                <Cta
+                  title={themeConfig.delivery.title}
+                  description={themeConfig.delivery.description}
+                  showPhoneNumber={themeConfig.delivery.showPhoneNumber}
+                  phoneNumber={themeConfig.delivery.phoneNumber}
+                  isDarkMode={isDarkMode}
+                  primaryColor={primaryColor}
+                  secondaryColor={secondaryColor}
+                />
+              )
+            }
+
+            {themeConfig?.footer.general.display && (
+              <>
+                {themeConfig.footer.logoPartners.length > 0 && (
+                  <Partner
+                    logoPartners={themeConfig.footer.logoPartners}
+                    isDarkMode={isDarkMode}
+                  />
+                )}
+
+                <Footer
+                  logo={settings.logo}
+                  siteName={settings.name}
+                  location={themeConfig.footer.location}
+                  copyrightText={themeConfig.footer.copyrightText}
+                  showOpeningHours={themeConfig.footer.showOpeningHours}
+                  backgroundImage={themeConfig.footer.backgroundImage}
+                  isDarkMode={isDarkMode}
+                  primaryColor={primaryColor}
+                />
+              </>
+            )}
+
+            <Cart
+              primaryColor={primaryColor}
+              backgroundColor={backgroundColor}
+              isDarkMode={isDarkMode}
+            />
+          </div>
+        )}
+      </PizzaThemeProvider>
     </>
   );
 }

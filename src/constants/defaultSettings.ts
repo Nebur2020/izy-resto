@@ -1,3 +1,4 @@
+import { defaultConfig as pizzaDefaultTheme } from '../pages/dashboard/pages/settings/theme/editor/pizza';
 import { RestaurantSettings } from '../types/settings';
 
 export const API_URI = window.location.hostname.includes('localhost')
@@ -115,6 +116,16 @@ export const DEFAULT_SETTINGS: RestaurantSettings = {
     name: 'Senegal',
     countryCode: 'sn',
   },
+  activeTheme: {
+    key: 'modern',
+    configuration: {},
+  },
+  palette: {
+    primary: '#177d30',
+    secondary: '#072a50',
+    background: '#f4ecdf',
+  },
+  themes: {},
 };
 
 const defaultCurrencyInfo =

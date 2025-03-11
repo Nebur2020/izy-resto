@@ -1,6 +1,5 @@
 import React from 'react';
 import { UseFormRegister, UseFormWatch } from 'react-hook-form';
-import { Clock, Globe, Upload } from 'lucide-react';
 import { Button } from '../../../../components/ui/Button';
 import { RestaurantSettings } from '../../../../types';
 

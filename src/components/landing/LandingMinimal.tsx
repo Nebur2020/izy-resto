@@ -6,14 +6,20 @@ import { Cart } from '../cart/Cart';
 import { Footer } from '../layout/Footer';
 import { LoadingScreen } from '../ui/LoadingScreen';
 import { useLayoutMount } from '../../hooks/useLayoutMount';
+import { useSettings } from '../../hooks';
+import { useTheme } from '../../context/ThemeContext';
 
 export function LandingMinimal() {
   const { isLoading, isLayoutMounted } = useLayoutMount();
+  const { settings } = useSettings();
+  const { theme } = useTheme();
+
+  const isDarkMode = theme === 'dark';
 
   return (
     <>
       <AnimatePresence>
-        {isLoading && <LoadingScreen isLoading={true} />}
+        {isLoading && !settings && <LoadingScreen isLoading={true} />}
       </AnimatePresence>
 
       <AnimatePresence>
@@ -28,12 +34,15 @@ export function LandingMinimal() {
             <main className="bg-white dark:bg-gray-900 transition-colors">
               <Container>
                 <section id="menu" className="py-32">
-                  <MinimalMenuSection />
+                  <MinimalMenuSection
+                    palette={settings?.palette}
+                    isDarkMode={isDarkMode}
+                  />
                 </section>
               </Container>
             </main>
-            <Footer />
-            <Cart />
+            <Footer palette={settings?.palette} />
+            <Cart primaryColor={settings?.palette.primary} />
           </motion.div>
         )}
       </AnimatePresence>

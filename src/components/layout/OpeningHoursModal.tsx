@@ -13,6 +13,10 @@ interface OpeningHoursModalProps {
 export function OpeningHoursModal({ isOpen, onClose }: OpeningHoursModalProps) {
   const { settings } = useSettings();
   const { t } = useTranslation('common');
+  const palette = settings?.palette || {
+    primary: '#3B82F6',
+    secondary: '#60A5FA',
+  };
 
   // Filter out days with no hours set
   const openingHours = React.useMemo(() => {
@@ -36,6 +40,13 @@ export function OpeningHoursModal({ isOpen, onClose }: OpeningHoursModalProps) {
 
   if (!isOpen) return null;
 
+  // Create custom button styles based on primary color
+  const primaryColor = palette.primary;
+  const customButtonStyle = {
+    '--custom-from': primaryColor,
+    '--custom-to': primaryColor,
+  } as React.CSSProperties;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       <motion.div
@@ -47,8 +58,13 @@ export function OpeningHoursModal({ isOpen, onClose }: OpeningHoursModalProps) {
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b dark:border-gray-700">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-              <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <div
+              style={{
+                backgroundColor: `${primaryColor}15`,
+              }}
+              className="p-2 rounded-lg dark:bg-opacity-20"
+            >
+              <Clock style={{ color: primaryColor }} className="w-5 h-5" />
             </div>
             <h2 className="text-xl font-semibold">
               {t('opening-hours-modal-title')}
@@ -60,7 +76,7 @@ export function OpeningHoursModal({ isOpen, onClose }: OpeningHoursModalProps) {
             onClick={onClose}
             className="rounded-full p-2"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5" style={{ color: primaryColor }} />
           </Button>
         </div>
 
@@ -90,7 +106,16 @@ export function OpeningHoursModal({ isOpen, onClose }: OpeningHoursModalProps) {
 
         {/* Footer */}
         <div className="border-t dark:border-gray-700 p-4">
-          <Button onClick={onClose} className="w-full">
+          <Button
+            onClick={onClose}
+            className="w-full"
+            variant="custom"
+            style={{
+              background: `linear-gradient(to right, ${primaryColor}, ${primaryColor})`,
+              color: '#ffffff',
+            }}
+            spanStyle={{ color: '#ffffff' }}
+          >
             {t('close')}
           </Button>
         </div>

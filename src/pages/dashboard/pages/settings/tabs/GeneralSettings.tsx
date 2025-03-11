@@ -203,7 +203,7 @@ export function GeneralSettings() {
 
           <div>
             <label className="block text-sm font-medium mb-1">
-              {t('common:phone-number')}
+              {t('common:phone-number')} skjd
             </label>
 
             <PhoneInput

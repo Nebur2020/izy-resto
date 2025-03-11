@@ -49,11 +49,21 @@ const CinetPayPaymentModal = ({
   );
 };
 
+// Helper function to get lighter/darker variations of a color
+const getLighterColor = (hexColor: string, opacity = 0.1) => {
+  // For simplicity using opacity, but could be improved with actual color manipulation
+  return `${hexColor}${Math.round(opacity * 255)
+    .toString(16)
+    .padStart(2, '0')}`;
+};
+
 export const CinetPayPayment = ({
   paymentMethod: { apiKey, apiSecret },
   settings,
   amount,
   onConfirm,
+  primaryColor = '#3b82f6',
+  isDarkMode = false,
 }: {
   paymentMethod: {
     apiKey: string;
@@ -62,12 +72,43 @@ export const CinetPayPayment = ({
   settings: RestaurantSettings;
   amount: number;
   onConfirm: () => void;
+  primaryColor?: string;
+  backgroundColor?: string;
+  isDarkMode?: boolean;
 }) => {
   const { t } = useTranslation('common');
   const [isClosed, setIsClosed] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [url, setUrl] = useState('');
   const [error, setError] = useState('');
+
+  // Function to get dynamic button style
+  const getButtonStyle = () => {
+    return {
+      className: 'w-full disabled:opacity-50 disabled:cursor-not-allowed',
+      style: {
+        background: `linear-gradient(to right, ${primaryColor}, ${
+          isDarkMode ? '#4B5563' : getLighterColor(primaryColor, 0.8)
+        })`,
+        color: 'white',
+      },
+    };
+  };
+
+  // Function to get error alert style
+  const getErrorAlertStyle = () => {
+    return {
+      className: 'rounded-lg border border-red-200 p-4',
+      style: {
+        backgroundColor: isDarkMode
+          ? 'rgba(220, 38, 38, 0.1)'
+          : 'rgba(254, 226, 226, 1)',
+        borderColor: isDarkMode
+          ? 'rgba(185, 28, 28, 0.3)'
+          : 'rgba(248, 113, 113, 0.5)',
+      },
+    };
+  };
 
   const handleClose = async () => {
     onConfirm();
@@ -128,7 +169,10 @@ export const CinetPayPayment = ({
         )}
       </AnimatePresence>
       {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-900/20">
+        <div
+          className={getErrorAlertStyle().className}
+          style={getErrorAlertStyle().style}
+        >
           <div className="flex items-center gap-3">
             <AlertCircle className="h-5 w-5 text-red-500" />
             <p className="text-red-800 dark:text-red-400">{error}</p>
@@ -138,7 +182,8 @@ export const CinetPayPayment = ({
       <Button
         disabled={isLoading}
         onClick={handleClick}
-        className="w-full"
+        className={getButtonStyle().className}
+        style={getButtonStyle().style}
         type="submit"
       >
         {isLoading ? t('loading-in-progress') : t('pay-with-cinetpay')}

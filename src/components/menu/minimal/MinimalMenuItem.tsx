@@ -9,9 +9,21 @@ import { useTranslation } from 'react-i18next';
 
 interface MinimalMenuItemProps {
   item: MenuItem;
+  palette?: {
+    primary: string;
+    secondary: string;
+  };
+  isDarkMode?: boolean;
 }
 
-export function MinimalMenuItem({ item }: MinimalMenuItemProps) {
+export function MinimalMenuItem({
+  item,
+  palette = {
+    primary: '#2563EB',
+    secondary: '#4D48E5',
+  },
+  isDarkMode = false,
+}: MinimalMenuItemProps) {
   const { settings } = useSettings();
   const [showModal, setShowModal] = useState(false);
   const itemWithVariants = item as MenuItemWithVariants;
@@ -58,7 +70,7 @@ export function MinimalMenuItem({ item }: MinimalMenuItemProps) {
             {t(item.description)}
           </p>
           <div className="flex items-center justify-between">
-            <span className="font-bold text-blue-600 dark:text-blue-400">
+            <span className="font-bold" style={{ color: palette.primary }}>
               {isMobile && formatCurrency(item.price, settings?.currency)}
               {!isMobile &&
                 (hasVariants ? (
@@ -97,7 +109,12 @@ export function MinimalMenuItem({ item }: MinimalMenuItemProps) {
       </motion.div>
 
       {showModal && (
-        <ProductDetailsModal item={item} onClose={() => setShowModal(false)} />
+        <ProductDetailsModal
+          item={item}
+          onClose={() => setShowModal(false)}
+          primaryColor={palette.primary}
+          isDarkMode={isDarkMode}
+        />
       )}
     </>
   );

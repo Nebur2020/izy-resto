@@ -89,7 +89,7 @@ export async function generateReceiptPDF(
     receiptDiv.style.maxWidth = '280px';
     receiptDiv.style.margin = '0 auto';
     receiptDiv.style.padding = '15px';
-    receiptDiv.style.fontFamily = 'Courier, monospace';
+    receiptDiv.style.fontFamily = 'Arial, sans-serif, Courier monospace';
     receiptDiv.style.fontSize = '11px';
     receiptDiv.style.lineHeight = '1.3';
     receiptDiv.style.color = 'rgb(0, 0, 0)';

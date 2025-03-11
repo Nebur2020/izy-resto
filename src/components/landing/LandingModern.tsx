@@ -7,20 +7,24 @@ import { Cart } from '../cart/Cart';
 import { LoadingScreen } from '../ui/LoadingScreen';
 import { useLayoutMount } from '../../hooks/useLayoutMount';
 import { Footer } from '../layout/Footer';
+import { useSettings } from '../../hooks';
+import { useTheme } from '../../context/ThemeContext';
 
 export function LandingModern() {
   const { isLoading, isLayoutMounted } = useLayoutMount();
-  
+  const { settings } = useSettings();
+  const { theme } = useTheme();
+
+  const isDarkMode = theme === 'dark';
+
   return (
     <>
       <AnimatePresence>
-        {isLoading && (
-          <LoadingScreen isLoading={true} />
-        )}
+        {isLoading && !settings && <LoadingScreen isLoading={true} />}
       </AnimatePresence>
 
       <AnimatePresence>
-        {isLayoutMounted && (
+        {isLayoutMounted && settings && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -28,16 +32,22 @@ export function LandingModern() {
             className="min-h-screen bg-gray-50 dark:bg-gray-900"
           >
             <HeaderWrapper />
-            <Hero />
+            <Hero palette={settings.palette} isDarkMode={isDarkMode} />
             <main className="pt-10">
               <Container>
                 <section id="menu" className="py-5">
-                  <MenuSection />
+                  <MenuSection
+                    palette={settings.palette}
+                    isDarkMode={isDarkMode}
+                  />
                 </section>
               </Container>
             </main>
-            <Footer />
-            <Cart />
+            <Footer palette={settings.palette} />
+            <Cart
+              primaryColor={settings.palette.primary}
+              isDarkMode={isDarkMode}
+            />
           </motion.div>
         )}
       </AnimatePresence>

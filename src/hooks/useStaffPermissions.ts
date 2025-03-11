@@ -14,7 +14,6 @@ export function useStaffPermissions() {
   // const loadStaffPermissions = async () => {
   //   try {
   //     const settings = await settingsService.getSettings();
-  //     console.log(settings);
   //     setAllowedRoutes(settings.staffPermissions || []);
   //   } catch (error) {
   //     console.error('Error loading staff permissions:', error);
