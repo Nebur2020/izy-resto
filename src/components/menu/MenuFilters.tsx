@@ -25,7 +25,7 @@ export function MenuFilters(props: IMenuFiltersProps) {
     },
   } = props;
 
-  const { categories, isLoading } = useCategories();
+  const { allCategories, isLoading } = useCategories();
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftScroll, setShowLeftScroll] = useState(false);
@@ -55,7 +55,7 @@ export function MenuFilters(props: IMenuFiltersProps) {
     checkScroll();
     window.addEventListener('resize', checkScroll);
     return () => window.removeEventListener('resize', checkScroll);
-  }, [categories]);
+  }, [allCategories]);
 
   const scroll = (direction: 'left' | 'right') => {
     const container = scrollContainerRef.current;
@@ -115,7 +115,7 @@ export function MenuFilters(props: IMenuFiltersProps) {
               {t('principal-menu')}
             </motion.button>
 
-            {categories.map(category => (
+            {allCategories.map(category => (
               <motion.button
                 key={category.id}
                 onClick={() => onCategoryChange(category.id)}
