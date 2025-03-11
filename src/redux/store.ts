@@ -6,6 +6,7 @@ import { inventoryApi } from './services/inventory.service';
 import { variantApi } from './services/variant.service';
 import { staffApi } from './services/staff.service';
 import { mediaApi } from './services/media.service';
+import { orderApi } from './services/order.service';
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     [variantApi.reducerPath]: variantApi.reducer,
     [staffApi.reducerPath]: staffApi.reducer,
     [mediaApi.reducerPath]: mediaApi.reducer,
+    [orderApi.reducerPath]: orderApi.reducer,
   },
   middleware: getDefaultMiddleware => {
     return getDefaultMiddleware()
@@ -25,7 +27,8 @@ export const store = configureStore({
       .concat(inventoryApi.middleware)
       .concat(variantApi.middleware)
       .concat(staffApi.middleware)
-      .concat(mediaApi.middleware);
+      .concat(mediaApi.middleware)
+      .concat(orderApi.middleware);
   },
 });
 
