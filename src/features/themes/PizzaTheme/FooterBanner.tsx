@@ -9,6 +9,7 @@ interface FooterBannerProps {
   image?: string;
   backgroundImage?: string;
   isDarkMode?: boolean;
+  primaryColor?: string;
 }
 
 export default function FooterBanner({
@@ -18,6 +19,7 @@ export default function FooterBanner({
   image,
   backgroundImage,
   isDarkMode,
+  primaryColor,
 }: FooterBannerProps) {
   const { t, i18n } = useTranslation('pizzatheme');
   const lng = i18n.language as Language;
@@ -44,36 +46,56 @@ export default function FooterBanner({
   }
 
   // Add a dark overlay for dark mode
-  const darkModeOverlay = isDarkModeActive
-    ? 'before:absolute before:inset-0 before:bg-black before:opacity-50 before:z-[1]'
-    : '';
+  // const darkModeOverlay = isDarkModeActive
+  //   ? 'before:absolute before:inset-0 before:bg-black before:opacity-50 before:z-[1]'
+  //   : '';
 
   return (
     <section
-      className={`flex flex-col-reverse lg:flex-row items-center justify-between px-6 sm:px-12 lg:px-44 pt-12 py-16 sm:py-16 lg:py-16 relative text-center lg:text-left bg-cover bg-center bg-fixed ${darkModeOverlay} after:absolute after:top-[50px] after:left-[600px] after:w-[245px] after:h-[230px] after:bg-[url('https://radiustheme.com/demo/wordpress/themes/panpie/wp-content/uploads/2021/03/shape21.png')] after:bg-no-repeat after:bg-cover after:z-0 z-10 after:hidden lg:after:block`}
+      className={` md:px-5 lg:px-10 py-16 text-center lg:text-left bg-cover bg-center bg-fixed`}
       style={{ backgroundImage: `url(${bannerBgImage})` }}
     >
-      <p
-        className="absolute top-[100px] left-[670px] text-[40px] font-bold z-10 hidden lg:block"
-        style={{ color: themeConfig.general.primaryColor }}
-      >
-        {discount}%
-        <p className={`text-black pt-0 mt-0 ${lng === 'fr' && 'text-xl'}`}>
-          {t('discount')}
-        </p>
-      </p>
-      <div className="w-full lg:w-1/2 space-y-6 max-w-2xl z-[2]">
-        <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white leading-tight">
-          {heading}
-        </h1>
-      </div>
-      <div className="w-full lg:w-1/2 relative flex justify-center lg:justify-end z-[2]">
-        <div className="banner-footer-container">
-          <img
-            src={discountImage}
-            alt="Discount Offer"
-            className="object-cover w-[80%] sm:w-[60%] md:w-full max-w-sm sm:max-w-md lg:max-w-xl relative rounded-full"
-          />
+      <div className="container mx-auto">
+        <div className="flex flex-col-reverse lg:flex-row items-center justify-between">
+          <div className="w-full lg:w-1/2 space-y-6 max-w-2xl z-[2] relative">
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white leading-tight">
+              {heading}
+            </h1>
+
+            <div className="absolute top-0 right-0 lg:flex justify-center hidden">
+              <div className="relative">
+                <div className="absolute -top-40 -right-8 z-50">
+                  <p className="text-4xl relative font-bold z-20 hidden md:flex md:flex-col">
+                    <span style={{ color: primaryColor }}>{discount}%</span>
+                    <span
+                      className={`text-black pt-0 mt-0 ${
+                        lng === 'fr' && 'text-xl'
+                      }`}
+                    >
+                      {t('discount')}
+                    </span>
+                  </p>
+                </div>
+
+                <div className="absolute -top-52 -right-24  w-[200px] z-40">
+                  <img
+                    className=""
+                    src="https://radiustheme.com/demo/wordpress/themes/panpie/wp-content/uploads/2021/03/shape21.png"
+                    alt=""
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="w-full lg:w-1/2 relative flex justify-center lg:justify-end z-[2]">
+            <div className="banner-footer-container flex justify-center lg:justify-end">
+              <img
+                src={discountImage}
+                alt="Discount Offer"
+                className="object-cover w-[80%] sm:w-[60%] md:w-full max-w-sm sm:max-w-md lg:max-w-xl relative rounded-full"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </section>

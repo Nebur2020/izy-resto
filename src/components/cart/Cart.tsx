@@ -9,46 +9,17 @@ import { formatTaxRate } from '../../utils/tax';
 import { useTranslation } from 'react-i18next';
 
 interface ICartProps {
-  cartBgColor?: string;
-  orderBgColor?: string;
-  totalCartAmount?: string;
-  deliveryTitleStyle?: string;
-  deliveryHoverStyle?: string;
-  dinInOptionStyle?: string;
-  dinInHoverOptionStyle?: string;
-  truckStyle?: string;
-  dinInUstensilsStyle?: string;
-  dinInHoverUstensilsStyle?: string;
-  nextButtonStyle?: string;
-  totalPriceStyle?: string;
-  selectedPyamentMethod?: string;
-  selectedHoverPaymentMethod?: string;
-  selectRoundedDiv?: string;
-  selectRoundedDivHover?: string;
-  confirmOrderButtonStyle?: string;
+  primaryColor?: string;
+  backgroundColor?: string;
+  isDarkMode?: boolean;
 }
 
-export function Cart(props: ICartProps) {
+export function Cart({
+  primaryColor = '#3b82f6',
+  backgroundColor = '#f3f4f6',
+  isDarkMode = false,
+}: ICartProps) {
   const { t } = useTranslation('cart');
-  const {
-    cartBgColor = 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700',
-    orderBgColor = 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500',
-    totalCartAmount = 'text-blue-600',
-    deliveryTitleStyle,
-    deliveryHoverStyle,
-    dinInOptionStyle,
-    dinInHoverOptionStyle,
-    truckStyle,
-    dinInUstensilsStyle,
-    dinInHoverUstensilsStyle,
-    nextButtonStyle,
-    totalPriceStyle,
-    selectedPyamentMethod,
-    selectedHoverPaymentMethod,
-    selectRoundedDiv,
-    selectRoundedDivHover,
-    confirmOrderButtonStyle
-  } = props;
   const { cart, total, taxes, subtotal } = useCart();
   const { settings } = useSettings();
   const [isOpen, setIsOpen] = useState(false);
@@ -58,11 +29,37 @@ export function Cart(props: ICartProps) {
     return null;
   }
 
+  // Styles with inline color properties to handle dynamic colors
+  const getStyleForElement = (element: string) => {
+    switch (element) {
+      case 'cartButton':
+        return {
+          className:
+            'fixed bottom-6 right-6 text-white p-4 rounded-full shadow-lg transition-all z-50 hover:scale-105 active:scale-95 hover:opacity-90',
+          style: { backgroundColor: primaryColor },
+        };
+      case 'orderButton':
+        return {
+          className:
+            'w-full text-white font-medium px-6 py-3 rounded-xl shadow-md hover:opacity-90',
+          style: { backgroundColor: primaryColor },
+        };
+      case 'totalCartAmount':
+        return {
+          className: 'dark:text-blue-400 text-xl font-bold',
+          style: { color: primaryColor },
+        };
+      default:
+        return {};
+    }
+  };
+
   return (
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className={`${cartBgColor} fixed bottom-6 right-6  text-white p-4 rounded-full shadow-lg transition-all z-50 hover:scale-105 active:scale-95`}
+        className={getStyleForElement('cartButton').className}
+        style={getStyleForElement('cartButton').style}
       >
         <ShoppingCart className="w-6 h-6" />
         <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-medium rounded-full w-6 h-6 flex items-center justify-center">
@@ -101,20 +98,9 @@ export function Cart(props: ICartProps) {
                     setIsOpen(false);
                   }}
                   onCancel={() => setIsCheckingOut(false)}
-                  deliveryTitleStyle={deliveryTitleStyle}
-                  deliveryHoverStyle={deliveryHoverStyle}
-                  dinInOptionStyle={dinInOptionStyle}
-                  dinInHoverOptionStyle={dinInHoverOptionStyle}
-                  truckStyle={truckStyle}
-                  dinInUstensilsStyle={dinInUstensilsStyle}
-                  dinInHoverUstensilsStyle={dinInHoverUstensilsStyle}
-                  nextButtonStyle={nextButtonStyle}
-                  totalPriceStyle={totalPriceStyle}
-                  selectedPyamentMethod={selectedPyamentMethod}
-                  selectedHoverPaymentMethod={selectedHoverPaymentMethod}
-                  selectRoundedDiv={selectRoundedDiv}
-                  selectRoundedDivHover={selectRoundedDivHover}
-                  confirmOrderButtonStyle={confirmOrderButtonStyle}
+                  primaryColor={primaryColor}
+                  backgroundColor={backgroundColor}
+                  isDarkMode={isDarkMode}
                 />
               ) : (
                 cart.map(item => <CartItem key={item.id} item={item} />)
@@ -149,14 +135,18 @@ export function Cart(props: ICartProps) {
                         {t('total-cart')}
                       </span>
                       <span
-                        className={`${totalCartAmount} dark:text-blue-400 text-xl font-bold`}
+                        className={
+                          getStyleForElement('totalCartAmount').className
+                        }
+                        style={getStyleForElement('totalCartAmount').style}
                       >
                         {formatCurrency(total, settings?.currency)}
                       </span>
                     </div>
                     <button
                       onClick={() => setIsCheckingOut(true)}
-                      className={`${orderBgColor} w-full text-white font-medium px-6 py-3 rounded-xl shadow-md`}
+                      className={getStyleForElement('orderButton').className}
+                      style={getStyleForElement('orderButton').style}
                     >
                       {t('make-order')}
                     </button>

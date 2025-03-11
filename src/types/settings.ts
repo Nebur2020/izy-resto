@@ -70,6 +70,7 @@ export interface RestaurantSettings {
   currency: Currency;
   defaultTheme: 'light' | 'dark'; // Add defaultTheme
   hasOpeningHours: boolean;
+
   openingHours: {
     timezone: string; // Required timezone
   } & {
@@ -132,7 +133,19 @@ export interface RestaurantSettings {
         configuration: PizzaThemeConfig;
       }
     | {
+        key: 'modern';
+        configuration: PizzaThemeConfig;
+      }
+    | {
         key: string;
         configuration: Record<string, unknown>;
       };
+  palette: {
+    primary: string;
+    secondary: string;
+    background: string;
+  };
+  themes: {
+    pizza?: PizzaThemeConfig;
+  };
 }

@@ -30,7 +30,7 @@ export default function ProductList({
       activeCategory === 'all' || item.categoryId === activeCategory;
     return matchesCategory;
   });
-  const [itemsToShow, setItemsToShow] = useState(6);
+  const [itemsToShow, setItemsToShow] = useState(8);
 
   // Default to theme context isDarkMode if not provided as prop
   const isDarkModeActive = isDarkMode;
@@ -42,7 +42,7 @@ export default function ProductList({
   // Use props if provided, otherwise fall back to theme context values
   const sectionTagline = tagline || themeConfig.menuSection.tagline;
   const sectionTitle = title || themeConfig.menuSection.title;
-  const buttonColor = primaryColor || themeConfig.general.primaryColor;
+  const buttonColor = primaryColor;
 
   return (
     <section
@@ -54,7 +54,7 @@ export default function ProductList({
           {sectionTagline && (
             <span
               className="font-bold text-sm sm:text-base mb-3"
-              style={{ color: themeConfig.general.primaryColor }}
+              style={{ color: primaryColor }}
             >
               {sectionTagline}
             </span>
@@ -71,7 +71,7 @@ export default function ProductList({
         </div>
         <div>
           <MinimalMenuCategories
-            primaryColor={themeConfig.general.primaryColor}
+            primaryColor={primaryColor}
             activeCategory={activeCategory}
             onCategoryChange={category => {
               setActiveCategory(category);
@@ -80,7 +80,7 @@ export default function ProductList({
             menuFilterDefaultStyle={
               isDarkModeActive
                 ? 'bg-gray-800 text-gray-200'
-                : `bg-[${themeConfig.general.backgroundColor}] text-black`
+                : `bg-[${primaryColor}] text-black`
             }
             activeCategoryStyles={`bg-[${buttonColor}] text-white`}
           />
@@ -93,7 +93,7 @@ export default function ProductList({
               </p>
             </div>
           )}
-          <div className="grid grid-cols-4 mt-20 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 mt-20 gap-4 px-0 lg:px-20">
             {filteredItems.length > 0 &&
               filteredItems
                 .slice(0, itemsToShow)

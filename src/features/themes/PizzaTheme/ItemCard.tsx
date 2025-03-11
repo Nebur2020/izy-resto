@@ -25,23 +25,20 @@ export default function ItemCard({
 
   // Use provided primary color or fall back to theme context
   const cardPrimaryColor = primaryColor || '#fcb302';
-  const cardBgColor = '#f4ecdf';
 
   // Generate style classes based on dark mode setting
   const cardClassName = isDarkMode
-    ? 'bg-[#1A1A1A]  text-white'
+    ? 'bg-[#1A1A1A] text-white'
     : 'bg-black text-white';
 
   const titleClassName = isDarkMode ? 'text-gray-100' : 'text-white';
 
   const descriptionClassName = isDarkMode ? 'text-gray-300' : 'text-white';
 
-  const stockCountClassName = isDarkMode ? 'text-gray-300' : 'text-gray-500';
-
   const cardVariants = {
     hidden: { opacity: 0, scale: 0.8 },
     visible: { opacity: 1, scale: 1, transition: { duration: 0.5 } },
-    hover: { scale: 1.05, transition: { duration: 0.2 } },
+    // hover: { scale: 1.05, transition: { duration: 0.2 } },
   };
 
   const imageVariants = {
@@ -51,7 +48,7 @@ export default function ItemCard({
   return (
     <>
       <motion.div
-        className={`flex flex-col items-center w-full  rounded-xl mx-3 overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 relative ${
+        className={`flex flex-col items-center w-full rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 relative ${
           isOutOfStock ? 'cursor-not-allowed' : 'cursor-pointer'
         } ${cardClassName}`}
         role="button"
@@ -61,7 +58,10 @@ export default function ItemCard({
         animate="visible"
         whileHover="hover"
       >
-        <motion.div className="relative w-full h-[400px]" whileHover="hover">
+        <motion.div
+          className="relative w-full h-[300px] lg:h-[300px]"
+          whileHover="hover"
+        >
           <motion.img
             src={item.image}
             alt={item.name}
@@ -82,7 +82,7 @@ export default function ItemCard({
               </span>
             </div>
           )}
-          <div className="absolute bottom-0 left-0 p-6 text-white  w-full ">
+          <div className="absolute bottom-0 left-0 p-6 text-white w-full">
             <h1 className={`text-2xl font-bold ${titleClassName}`}>
               {item.name}
             </h1>
@@ -101,13 +101,11 @@ export default function ItemCard({
         </motion.div>
         {isOutOfStock && (
           <div
-            className="absolute inset-0 bg-opacity-60 flex items-center justify-center rounded-xl"
-            style={{ backgroundColor: cardPrimaryColor }}
+            className={`absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center rounded-xl`}
           >
             <span
-              className={`text-lg font-bold ${
-                isDarkMode ? 'text-gray-100' : 'text-red-500'
-              }`}
+              className="px-4 py-2 rounded-md text-lg font-bold bg-opacity-80 bg-white dark:bg-[#1A1A1A]"
+              style={{ color: cardPrimaryColor }}
             >
               {t('menu:out-of-stock')}
             </span>
@@ -117,27 +115,10 @@ export default function ItemCard({
 
       {showModal && (
         <ProductDetailsModal
-          addProductToCartBgColor={
-            isDarkMode
-              ? 'bg-gray-700 text-white'
-              : `bg-[${cardPrimaryColor}] text-white`
-          }
-          stockAvailableBgColor={
-            isDarkMode
-              ? 'bg-gray-800 text-gray-300'
-              : `bg-[${cardBgColor}] text-gray-700`
-          }
-          priceStyle={`text-[${cardPrimaryColor}]`}
+          primaryColor={cardPrimaryColor}
+          isDarkMode={isDarkMode}
           item={item}
           onClose={() => setShowModal(false)}
-          addToCartButtonStyle={`${
-            isDarkMode ? 'bg-gray-700' : `!bg-[${cardPrimaryColor}]`
-          } w-full rounded-full sm:py-2 text-xs sm:text-sm font-semibold flex items-center justify-center transition-all duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed`}
-          variantSelectStyles={
-            isDarkMode
-              ? 'bg-gray-800 text-gray-200'
-              : `!bg-[${cardPrimaryColor}] text-white`
-          }
         />
       )}
     </>

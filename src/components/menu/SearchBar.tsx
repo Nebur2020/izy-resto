@@ -5,9 +5,21 @@ import { useTranslation } from 'react-i18next';
 
 interface SearchBarProps {
   onSearch: (term: string) => void;
+  palette?: {
+    primary: string;
+    secondary: string;
+  };
+  isDarkMode: boolean;
 }
 
-export function SearchBar({ onSearch }: SearchBarProps) {
+export function SearchBar({
+  onSearch,
+  palette = {
+    primary: '#2563EB',
+    secondary: '#4D48E5',
+  },
+  isDarkMode,
+}: SearchBarProps) {
   const [searchTerm, setSearchTerm] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,10 +35,16 @@ export function SearchBar({ onSearch }: SearchBarProps) {
 
   const { t } = useTranslation('menu');
 
+  // Use primary color for focus ring and icon
+  const primaryColor = palette.primary;
+
   return (
     <div className="relative max-w-xl mx-auto">
       <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+        <Search
+          className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5"
+          style={{ color: primaryColor }}
+        />
         <input
           type="text"
           value={searchTerm}
@@ -34,8 +52,13 @@ export function SearchBar({ onSearch }: SearchBarProps) {
           placeholder={t('search-items')}
           className="w-full pl-12 pr-10 py-3 rounded-full border border-gray-200 dark:border-gray-700 
                    bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm
-                   focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400
+                   focus:outline-none focus:ring-2
                    shadow-sm hover:shadow-md transition-shadow"
+          style={
+            {
+              '--tw-ring-color': primaryColor,
+            } as React.CSSProperties
+          }
         />
         <AnimatePresence>
           {searchTerm && (

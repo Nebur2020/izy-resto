@@ -18,6 +18,21 @@ import 'react-phone-input-2/lib/style.css';
 import { CountryCode, isValidPhoneNumber } from 'libphonenumber-js';
 import './check-form.css';
 
+// Add this style to check-form.css or inline as shown here
+const FocusStyle = ({ primaryColor }: { primaryColor: string }) => (
+  <style>{`
+    .primary-focus-ring:focus {
+      outline: none !important;
+      box-shadow: 0 0 0 2px ${primaryColor} !important;
+      border-color: transparent !important;
+    }
+    .phone-container-focus:focus-within {
+      box-shadow: 0 0 0 2px ${primaryColor} !important;
+      border-color: transparent !important;
+    }
+  `}</style>
+);
+
 interface CheckoutFormData {
   name?: string;
   phone: string;
@@ -30,45 +45,30 @@ interface CheckoutFormData {
 interface ICheckoutFormProps {
   onCancel: () => void;
   onSuccess?: () => void;
-  deliveryTitleStyle?: string;
-  deliveryHoverStyle?: string;
-  dinInOptionStyle?: string;
-  dinInHoverOptionStyle?: string;
-  dinInUstensilsStyle?: string;
-  dinInHoverUstensilsStyle?: string;
-  truckStyle?: string;
-  nextButtonStyle?: string;
-  totalPriceStyle?: string;
-  selectedPyamentMethod?: string;
-  selectedHoverPaymentMethod?: string;
-  selectRoundedDiv?: string;
-  selectRoundedDivHover?: string;
-  confirmOrderButtonStyle?: string;
+  primaryColor?: string;
+  backgroundColor?: string;
+  isDarkMode?: boolean;
 }
 
 type DiningOption = 'dine-in' | 'delivery';
 type CheckoutStep = 'form' | 'confirmation';
 
-export function CheckoutForm(props: ICheckoutFormProps) {
+// Helper function to get lighter/darker variations of a color
+const getLighterColor = (hexColor: string, opacity = 0.1) => {
+  // For simplicity using opacity, but could be improved with actual color manipulation
+  return `${hexColor}${Math.round(opacity * 255)
+    .toString(16)
+    .padStart(2, '0')}`;
+};
+
+export function CheckoutForm({
+  onCancel,
+  onSuccess,
+  primaryColor = '#3b82f6',
+  backgroundColor = '#f3f4f6',
+  isDarkMode = false,
+}: ICheckoutFormProps) {
   const { t } = useTranslation('order');
-  const {
-    onCancel,
-    onSuccess,
-    deliveryTitleStyle = 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/20',
-    deliveryHoverStyle = 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600',
-    dinInOptionStyle = 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/20',
-    dinInHoverOptionStyle = 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600',
-    truckStyle = 'text-blue-500 dark:text-blue-400',
-    dinInUstensilsStyle = 'text-blue-500 dark:text-blue-400',
-    dinInHoverUstensilsStyle = 'text-gray-500 dark:text-gray-400',
-    nextButtonStyle = 'px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700',
-    totalPriceStyle,
-    selectedPyamentMethod,
-    selectedHoverPaymentMethod,
-    selectRoundedDiv,
-    selectRoundedDivHover,
-    confirmOrderButtonStyle
-  } = props;
   const navigate = useNavigate();
 
   const {
@@ -111,6 +111,94 @@ export function CheckoutForm(props: ICheckoutFormProps) {
       tableNumber: '',
     },
   });
+
+  // Function to get styles with dynamic colors
+  const getStyle = (element: string, isSelected: boolean = false) => {
+    switch (element) {
+      case 'delivery':
+        return {
+          className: `p-4 rounded-xl border-2 transition-all duration-200 flex flex-col items-center gap-2 relative overflow-hidden ${
+            isSelected
+              ? 'bg-opacity-5 dark:bg-opacity-10'
+              : 'hover:border-opacity-60'
+          }`,
+          style: {
+            borderColor: isSelected
+              ? primaryColor
+              : isDarkMode
+              ? '#374151'
+              : '#e5e7eb', // gray-200 or gray-700
+            backgroundColor: isSelected
+              ? getLighterColor(primaryColor, 0.05)
+              : 'transparent',
+          },
+        };
+      case 'dineIn':
+        return {
+          className: `p-4 rounded-xl border-2 transition-all duration-200 flex flex-col items-center gap-2 relative overflow-hidden ${
+            isSelected
+              ? 'bg-opacity-5 dark:bg-opacity-10'
+              : 'hover:border-opacity-60'
+          }`,
+          style: {
+            borderColor: isSelected
+              ? primaryColor
+              : isDarkMode
+              ? '#374151'
+              : '#e5e7eb', // gray-200 or gray-700
+            backgroundColor: isSelected
+              ? getLighterColor(primaryColor, 0.05)
+              : 'transparent',
+          },
+        };
+      case 'icon':
+        return {
+          className: isSelected ? '' : 'text-gray-500 dark:text-gray-400',
+          style: isSelected ? { color: primaryColor } : {},
+        };
+      case 'nextButton':
+        return {
+          className: 'px-6 text-white',
+          style: {
+            background: `linear-gradient(to right, ${primaryColor}, ${getLighterColor(
+              primaryColor,
+              0.8
+            )})`,
+          },
+        };
+      case 'deliveryFees':
+        return {
+          className: 'p-3 rounded-lg mb-2',
+          style: {
+            backgroundColor: isDarkMode
+              ? `${primaryColor}20` // 20 is hex for 12% opacity
+              : `${primaryColor}10`, // 10 is hex for 6% opacity
+          },
+        };
+      case 'deliveryFeesText':
+        return {
+          className: 'text-sm flex justify-between',
+          style: { color: primaryColor },
+        };
+      case 'input':
+        return {
+          className:
+            'w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-2.5 transition-shadow primary-focus-ring',
+        };
+      case 'textarea':
+        return {
+          className:
+            'w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-2.5 transition-shadow resize-none primary-focus-ring',
+        };
+      case 'phoneContainer':
+        return {
+          className:
+            'relative flex items-center border rounded-lg w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 phone-container-focus',
+        };
+      default:
+        return {};
+    }
+  };
 
   const validatePhone = (value: string) => {
     if (diningOption === 'dine-in' && !value) return true;
@@ -215,42 +303,33 @@ export function CheckoutForm(props: ICheckoutFormProps) {
         onBack={() => setStep('form')}
         showPaymentMethods={diningOption === 'delivery'}
         setSelectedPaymentMethod={setSelectedPaymentMethod}
-        totalPriceStyle={totalPriceStyle}
-        selectedPyamentMethod={selectedPyamentMethod}
-        selectedHoverPaymentMethod={selectedHoverPaymentMethod}
-        selectRoundedDiv={selectRoundedDiv}
-        selectRoundedDivHover={selectRoundedDivHover}
-        confirmOrderButtonStyle={confirmOrderButtonStyle}
+        primaryColor={primaryColor}
+        backgroundColor={backgroundColor}
+        isDarkMode={isDarkMode}
       />
     );
   }
 
   return (
     <div className="space-y-6">
+      {/* Inject our custom focus styles */}
+      <FocusStyle primaryColor={primaryColor} />
+
       <div className="grid grid-cols-2 gap-3">
         {settings?.canDeliver && (
           <button
             type="button"
             onClick={() => setDiningOption('delivery')}
-            className={`
-           p-4 rounded-xl border-2 transition-all duration-200
-           flex flex-col items-center gap-2 relative overflow-hidden
-           ${
-             diningOption === 'delivery'
-               ? deliveryTitleStyle
-               : deliveryHoverStyle
-           }
-         `}
+            className={
+              getStyle('delivery', diningOption === 'delivery').className
+            }
+            style={getStyle('delivery', diningOption === 'delivery').style}
           >
-            {diningOption === 'delivery' && (
-              <div className="absolute inset-0 bg-blue-500/5 dark:bg-blue-400/10" />
-            )}
             <Truck
-              className={`w-6 h-6 ${
-                diningOption === 'delivery'
-                  ? truckStyle
-                  : 'text-gray-500 dark:text-gray-400'
-              }`}
+              className={
+                getStyle('icon', diningOption === 'delivery').className
+              }
+              style={getStyle('icon', diningOption === 'delivery').style}
             />
             <span className="font-medium text-sm">{t('delivery')}</span>
           </button>
@@ -260,25 +339,12 @@ export function CheckoutForm(props: ICheckoutFormProps) {
           <button
             type="button"
             onClick={() => setDiningOption('dine-in')}
-            className={`
-             p-4 rounded-xl border-2 transition-all duration-200
-             flex flex-col items-center gap-2 relative overflow-hidden
-             ${
-               diningOption === 'dine-in'
-                 ? dinInOptionStyle
-                 : dinInHoverOptionStyle
-             }
-           `}
+            className={getStyle('dineIn', diningOption === 'dine-in').className}
+            style={getStyle('dineIn', diningOption === 'dine-in').style}
           >
-            {diningOption === 'dine-in' && (
-              <div className="absolute inset-0 bg-blue-500/5 dark:bg-blue-400/10" />
-            )}
             <Utensils
-              className={`w-6 h-6 ${
-                diningOption === 'dine-in'
-                  ? dinInUstensilsStyle
-                  : dinInHoverUstensilsStyle
-              }`}
+              className={getStyle('icon', diningOption === 'dine-in').className}
+              style={getStyle('icon', diningOption === 'dine-in').style}
             />
             <span className="font-medium text-sm">{t('on-site')}</span>
           </button>
@@ -294,12 +360,12 @@ export function CheckoutForm(props: ICheckoutFormProps) {
             <input
               type="text"
               {...register('name')}
-              className="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-2.5 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-shadow"
+              className={getStyle('input').className}
               placeholder={t('order-customer-placeholder')}
             />
           </div>
           <div className="relative w-full">
-            <div className="relative flex items-center border rounded-lg w-full focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-400border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
+            <div className={getStyle('phoneContainer').className}>
               <PhoneInput
                 country={selectedCode.countryCode}
                 value={selectedCode.dialCode}
@@ -355,13 +421,9 @@ export function CheckoutForm(props: ICheckoutFormProps) {
                 {...register('tableNumber', {
                   required: t('table-number-required'),
                 })}
-                className={`w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-2.5 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-shadow
-                 ${
-                   errors.tableNumber
-                     ? 'border-red-500 dark:border-red-500'
-                     : ''
-                 }
-               `}
+                className={`${getStyle('input').className} ${
+                  errors.tableNumber ? 'border-red-500 dark:border-red-500' : ''
+                }`}
                 placeholder="Mettez 0 s'il n'y a pas des tables numérotées"
               />
               {errors.tableNumber && (
@@ -378,10 +440,19 @@ export function CheckoutForm(props: ICheckoutFormProps) {
                     selectedZone={deliveryZone}
                     onZoneChange={setDeliveryZone}
                     className="mb-4"
+                    primaryColor={primaryColor}
+                    backgroundColor={backgroundColor}
+                    isDarkMode={isDarkMode}
                   />
                   {deliveryZone && (
-                    <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg mb-2">
-                      <p className="text-sm text-blue-600 dark:text-blue-400 flex justify-between">
+                    <div
+                      className={getStyle('deliveryFees').className}
+                      style={getStyle('deliveryFees').style}
+                    >
+                      <p
+                        className={getStyle('deliveryFeesText').className}
+                        style={getStyle('deliveryFeesText').style}
+                      >
                         <span>{t('delivery-fees')}</span>
                         <span className="font-medium">
                           {formatCurrency(
@@ -403,9 +474,9 @@ export function CheckoutForm(props: ICheckoutFormProps) {
                   required: t('customer-delivery-addres-required'),
                 })}
                 rows={3}
-                className={`w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-2.5 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-shadow resize-none
-                 ${errors.address ? 'border-red-500 dark:border-red-500' : ''}
-               `}
+                className={`${getStyle('textarea').className} ${
+                  errors.address ? 'border-red-500 dark:border-red-500' : ''
+                }`}
                 placeholder={t('customer-delivery-addres-placeholder')}
               />
               {errors.address && (
@@ -424,7 +495,7 @@ export function CheckoutForm(props: ICheckoutFormProps) {
           <textarea
             {...register('preference')}
             rows={3}
-            className={`w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-2.5 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-shadow resize-none `}
+            className={getStyle('textarea').className}
             placeholder={t('customer-indication-placeholder')}
           />
         </div>
@@ -467,7 +538,8 @@ export function CheckoutForm(props: ICheckoutFormProps) {
             }
             type="submit"
             spanClassName="text-white"
-            className={`${nextButtonStyle}`}
+            className={getStyle('nextButton').className}
+            style={getStyle('nextButton').style}
           >
             {t('common:next')}
           </Button>

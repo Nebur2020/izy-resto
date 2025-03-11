@@ -18,8 +18,6 @@ export function Logo({
 }: LogoProps) {
   const { settings } = useSettings();
 
-  console.log('logo', name);
-
   if (logo) {
     return (
       <motion.img

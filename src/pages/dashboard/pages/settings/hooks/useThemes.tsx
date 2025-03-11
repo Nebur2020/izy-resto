@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Sun, LayoutGrid, Rows, Columns, LucideIcon } from 'lucide-react';
+import { defaultConfig } from '../theme/editor/pizza';
 
 export type AppTheme = {
   id: string;
@@ -8,6 +9,7 @@ export type AppTheme = {
   description: string;
   value: string;
   imageUrl: string;
+  config: Record<string, any>;
 };
 
 export const useAppThemes = (): {
@@ -25,6 +27,7 @@ export const useAppThemes = (): {
       description: t('settingAppearence:theme-description'),
       value: 'pizza',
       icon: Sun,
+      config: defaultConfig,
     },
   ];
 
@@ -37,6 +40,7 @@ export const useAppThemes = (): {
       value: 'modern',
       imageUrl:
         'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=500&q=60',
+      config: {},
     },
     {
       id: '2',
@@ -46,6 +50,7 @@ export const useAppThemes = (): {
       value: 'minimal',
       imageUrl:
         'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=500&q=60',
+      config: {},
     },
     {
       id: '3',
@@ -55,6 +60,7 @@ export const useAppThemes = (): {
       value: 'grid',
       imageUrl:
         'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=500&q=60',
+      config: {},
     },
   ];
 

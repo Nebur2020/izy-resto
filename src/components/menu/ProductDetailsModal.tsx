@@ -16,6 +16,8 @@ interface IProductDetailsModalProps {
   item: MenuItemWithVariants | null;
   onClose: () => void;
   onAddToCart?: (item: MenuItem & { quantity: number }) => void;
+  primaryColor?: string;
+  isDarkMode?: boolean;
   addProductToCartBgColor?: string;
   stockAvailableBgColor?: string;
   priceStyle?: string;
@@ -28,14 +30,58 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
     item,
     onClose,
     onAddToCart,
-    addProductToCartBgColor = 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-300',
-    stockAvailableBgColor = 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
-    priceStyle = 'text-base sm:text-lg font-bold text-blue-600 dark:text-blue-400',
-    addToCartButtonStyle = `${addProductToCartBgColor} w-full rounded-full py-2 sm:py-3 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 ease-in-out disabled:bg-gray-300 disabled:cursor-not-allowed dark:bg-blue-500 dark:hover:bg-blue-600 dark:disabled:bg-gray-700`,
-    variantSelectStyles = 'bg-blue-600 text-white scale-105 shadow-md',
+    primaryColor = '#fcb302', // Default primary color
+    isDarkMode = false, // Default dark mode setting
+    addProductToCartBgColor,
+    stockAvailableBgColor,
+    priceStyle,
+    addToCartButtonStyle,
+    variantSelectStyles,
   } = props;
 
-  console.table(item);
+  // Define dynamic inline styles based on primary color
+  const primaryColorStyle = {
+    backgroundColor: primaryColor,
+  };
+
+  const primaryColorWithWhiteTextStyle = {
+    backgroundColor: primaryColor,
+    color: 'white',
+  };
+
+  const primaryColorTextStyle = {
+    color: primaryColor,
+  };
+
+  const primaryColorBgLightStyle = {
+    backgroundColor: `${primaryColor}20`,
+    color: primaryColor,
+  };
+
+  // Generate derived styles based on primary color and dark mode
+  const defaultAddProductBgColor = 'text-white hover:bg-opacity-90';
+
+  const defaultStockBgColor = isDarkMode
+    ? `bg-opacity-20 text-${primaryColor}`
+    : '';
+
+  const defaultPriceStyle = 'text-base sm:text-lg font-bold';
+
+  const defaultAddToCartButtonStyle = `${
+    addProductToCartBgColor || defaultAddProductBgColor
+  } w-full rounded-full py-2 sm:py-3 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed`;
+
+  const defaultVariantSelectStyles = 'text-white scale-105 shadow-md';
+
+  // Use provided styles or fall back to generated defaults
+  const finalAddProductBgColor =
+    addProductToCartBgColor || defaultAddProductBgColor;
+  const finalStockBgColor = stockAvailableBgColor || defaultStockBgColor;
+  const finalPriceStyle = priceStyle || defaultPriceStyle;
+  const finalAddToCartButtonStyle =
+    addToCartButtonStyle || defaultAddToCartButtonStyle;
+  const finalVariantSelectStyles =
+    variantSelectStyles || defaultVariantSelectStyles;
 
   const [fullPrice, setFullPrice] = useState(item?.price || 0);
   const [quantity, setQuantity] = useState(1);
@@ -108,11 +154,6 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
         );
       });
   }, [categoryVariants, selectedVariants]);
-
-  console.log(
-    'areAllRequiredVariantsSelected: ',
-    areAllRequiredVariantsSelected()
-  );
 
   const getCartItem = useCallback(() => {
     const variantId = getVariantId();
@@ -388,8 +429,13 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
                   ? 'bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-400'
                   : item.stockQuantity <= 5
                   ? 'bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400'
-                  : stockAvailableBgColor
+                  : finalStockBgColor
               }`}
+              style={
+                !isOutOfStock && item.stockQuantity > 5
+                  ? primaryColorBgLightStyle
+                  : {}
+              }
             >
               <AlertCircle className="h-5 w-5" />
               <span className="text-[10px] sm:text-xs font-medium">
@@ -428,7 +474,8 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
                         <div className="ml-2">
                           {isSelected ? (
                             <div
-                              className="h-2 w-2 rounded-full bg-green-500"
+                              className="h-2 w-2 rounded-full"
+                              style={primaryColorStyle}
                               title="Selected"
                             />
                           ) : (
@@ -458,11 +505,12 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
                             transition-all duration-300 ease-in-out
                             ${
                               isSelected
-                                ? variantSelectStyles
+                                ? finalVariantSelectStyles
                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 hover:scale-105'
                             }
                             disabled:opacity-50 disabled:cursor-not-allowed
                           `}
+                            style={isSelected ? primaryColorStyle : {}}
                             disabled={isOutOfStock}
                           >
                             {value}
@@ -475,7 +523,10 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
               })}
 
             {getCartItem() && (
-              <div className="bg-blue-50 dark:bg-blue-900/30 p-2 sm:p-2.5 rounded-lg text-blue-600 dark:text-blue-400 text-[10px] sm:text-xs font-medium text-center">
+              <div
+                className="p-2 sm:p-2.5 rounded-lg text-xs font-medium text-center"
+                style={primaryColorBgLightStyle}
+              >
                 {t('already-in-cart')}: {getCartItem()?.quantity}{' '}
                 {(getCartItem()?.quantity || 0) > 1 ? t('units') : t('unit')}
               </div>
@@ -511,7 +562,10 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
               </Button>
             </div>
 
-            <div className={`${priceStyle} flex items-center`}>
+            <div
+              className="text-base sm:text-lg font-bold flex items-center"
+              style={primaryColorTextStyle}
+            >
               {isLoadingPrice ? (
                 <Loader className="h-4 w-4 animate-spin mr-2" />
               ) : null}
@@ -533,7 +587,21 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
               isLoadingPrice ||
               !areAllRequiredVariantsSelected()
             }
-            className={addToCartButtonStyle}
+            className={finalAddToCartButtonStyle}
+            style={
+              !isOutOfStock &&
+              !isLoadingPrice &&
+              areAllRequiredVariantsSelected()
+                ? primaryColorWithWhiteTextStyle
+                : primaryColorBgLightStyle
+            }
+            spanClassName={`${
+              !isOutOfStock &&
+              !isLoadingPrice &&
+              areAllRequiredVariantsSelected()
+                ? 'text-white'
+                : ''
+            }`}
           >
             {isLoadingPrice ? (
               <Loader className="h-5 w-5 animate-spin mr-1" />

@@ -106,7 +106,7 @@ export function MinimalMenuCategories(props: IMinimalMenuCategoriesProps) {
           ref={scrollContainerRef}
           onScroll={checkScroll}
           className="flex-1 flex items-center justify-start gap-2 overflow-x-auto scroll-smooth
-                   [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+                   [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden rounded-full"
         >
           <div className="flex items-center gap-2 px-4 mx-auto">
             <motion.button

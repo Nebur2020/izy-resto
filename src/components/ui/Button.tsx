@@ -5,7 +5,9 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'custom';
   size?: 'sm' | 'md' | 'lg';
   translationKey?: string;
+  style?: React.CSSProperties;
   spanClassName?: string;
+  spanStyle?: React.CSSProperties;
 }
 
 export function Button({
@@ -16,6 +18,8 @@ export function Button({
   translationKey,
   disabled,
   spanClassName = '',
+  spanStyle = {},
+  style = {},
   ...props
 }: ButtonProps) {
   const { t } = useTranslation();
@@ -81,9 +85,13 @@ export function Button({
       className={`group ${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
       disabled={disabled}
       {...props}
+      style={style}
     >
       {hoverOverlay}
-      <span className={`relative flex items-center ${spanClassName}`}>
+      <span
+        className={`relative flex items-center ${spanClassName}`}
+        style={spanStyle}
+      >
         {content}
       </span>
     </button>

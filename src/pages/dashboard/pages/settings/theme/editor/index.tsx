@@ -1,23 +1,14 @@
 import { useSettings } from '../../../../../../hooks';
-import PizzaThemeEditor, { PizzaThemeConfig } from './pizza';
+import PizzaThemeEditor, { defaultConfig, PizzaThemeConfig } from './pizza';
 
 type EditorProps = {
   theme: 'pizza' | 'modern' | 'minimal' | 'grid';
-};
-
-type EditorData = {
-  pizza: PizzaThemeConfig;
 };
 
 const Editor = ({ theme }: EditorProps) => {
   const { settings, updateSettings } = useSettings();
 
   if (!settings) return null;
-
-  console.log(
-    'settings.activeTheme.configuration',
-    settings.activeTheme.configuration
-  );
 
   const onSave = async (data: {
     key: 'pizza';
@@ -29,15 +20,21 @@ const Editor = ({ theme }: EditorProps) => {
         key: data.key,
         configuration: data.configuration,
       },
+      themes: {
+        pizza: data.configuration,
+      },
     });
-    console.log('Saved', data);
   };
 
   switch (theme) {
     case 'pizza':
       return (
         <PizzaThemeEditor
-          config={settings.activeTheme.configuration as PizzaThemeConfig}
+          config={
+            Object.keys(settings.activeTheme?.configuration || {}).length > 0
+              ? (settings.activeTheme.configuration as PizzaThemeConfig)
+              : settings.themes[theme] || defaultConfig
+          }
           onSave={onSave}
         />
       );

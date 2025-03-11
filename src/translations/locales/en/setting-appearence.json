@@ -30,5 +30,13 @@
   "theme-description": "PizzaTheme is a stylish and intuitive theme for pizza lovers and restaurants, offering a smooth and immersive online experience.",
   "premium-theme-title": "Premium Theme",
   "activate-theme": "Activate Theme",
-  "activate-theme-key": "Activation Key"
+  "activate-theme-key": "Activation Key",
+  "color-palette": "Color Palette",
+  "primary-color": "Primary Color",
+  "secondary-color": "Secondary Color",
+  "primary-color-description": "Primary color for buttons and links",
+  "secondary-color-description": "Secondary color for backgrounds and borders",
+  "color-preview": "Color Preview",
+  "primary": "Primary",
+  "secondary": "Secondary"
 }

@@ -26,34 +26,36 @@ export default function Partner({ logoPartners, isDarkMode }: PartnerProps) {
 
   return (
     <section
-      className={`w-full px-6 sm:px-12 lg:px-44 py-20 pb-32 ${
-        isDarkMode ? 'bg-[#1A1A1A]' : ''
-      }`}
+      className={`w-full px-6 py-16 ${isDarkMode ? 'bg-[#1A1A1A]' : ''}`}
     >
-      <h2
-        className={`text-2xl font-bold text-center mb-10 ${
-          isDarkMode ? 'text-white' : ''
-        }`}
-      >
-        {t('our-partners')}
-      </h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 items-center justify-items-center">
-        {logos.map((logo, index) => (
-          <div
-            key={index}
-            className={`p-4 rounded-lg transition-all duration-300 ${
-              isDarkMode
-                ? 'bg-[#1A1A1A] hover:bg-[#1A1A1A] hover:opacity-80'
-                : 'bg-white hover:bg-gray-100'
+      <div className="container mx-auto">
+        <div>
+          <h2
+            className={`text-2xl font-bold text-center mb-10 ${
+              isDarkMode ? 'text-white' : ''
             }`}
           >
-            <img
-              src={logo}
-              alt={`Partner ${index + 1}`}
-              className="max-w-[120px] sm:max-w-[150px] md:max-w-[180px] object-contain transition-transform hover:scale-105"
-            />
+            {themeConfig.footer.partnerTitle}
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 items-center justify-center justify-items-center">
+            {logos.map((logo, index) => (
+              <div
+                key={index}
+                className={`p-4 rounded-lg transition-all duration-300 ${
+                  isDarkMode
+                    ? 'bg-[#1A1A1A] hover:bg-[#1A1A1A] hover:opacity-80'
+                    : 'bg-white hover:bg-gray-100'
+                }`}
+              >
+                <img
+                  src={logo}
+                  alt={`Partner ${index + 1}`}
+                  className="max-w-[120px] sm:max-w-[150px] md:max-w-[180px] object-contain transition-transform hover:scale-105"
+                />
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
     </section>
   );

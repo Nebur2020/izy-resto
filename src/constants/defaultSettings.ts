@@ -117,9 +117,15 @@ export const DEFAULT_SETTINGS: RestaurantSettings = {
     countryCode: 'sn',
   },
   activeTheme: {
-    key: 'pizza',
-    configuration: pizzaDefaultTheme,
+    key: 'modern',
+    configuration: {},
   },
+  palette: {
+    primary: '#177d30',
+    secondary: '#072a50',
+    background: '#f4ecdf',
+  },
+  themes: {},
 };
 
 const defaultCurrencyInfo =

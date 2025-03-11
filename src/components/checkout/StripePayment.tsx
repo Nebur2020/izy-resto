@@ -12,10 +12,23 @@ import {
 import { processPayment } from '../../services/payments/stripe.service';
 import { AxiosError } from 'axios';
 
-const useCardElementStyle = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+// Helper function to get lighter/darker variations of a color
+const getLighterColor = (hexColor: string, opacity = 0.1) => {
+  // For simplicity using opacity, but could be improved with actual color manipulation
+  return `${hexColor}${Math.round(opacity * 255)
+    .toString(16)
+    .padStart(2, '0')}`;
+};
+
+const useCardElementStyle = (isDarkModeFromProps?: boolean) => {
+  const [isDarkMode, setIsDarkMode] = useState(isDarkModeFromProps || false);
 
   useEffect(() => {
+    if (isDarkModeFromProps !== undefined) {
+      setIsDarkMode(isDarkModeFromProps);
+      return;
+    }
+
     // Check initial dark mode
     setIsDarkMode(document.documentElement.classList.contains('dark'));
 
@@ -35,7 +48,7 @@ const useCardElementStyle = () => {
     });
 
     return () => observer.disconnect();
-  }, []);
+  }, [isDarkModeFromProps]);
 
   return {
     style: {
@@ -51,24 +64,79 @@ const useCardElementStyle = () => {
   };
 };
 
+interface PaymentModalProps {
+  onClose: () => void;
+  onConfirm: () => void;
+  amount: number;
+  currency: string;
+  apiSecret: string;
+  primaryColor?: string;
+  backgroundColor?: string;
+  isDarkMode?: boolean;
+}
+
 const PaymentModal = ({
   onClose,
   amount,
   currency,
   onConfirm,
   apiSecret,
-}: {
-  onClose: () => void;
-  onConfirm: () => void;
-  amount: number;
-  currency: string;
-  apiSecret: string;
-}) => {
+  primaryColor = '#3b82f6',
+  backgroundColor = '#f3f4f6',
+  isDarkMode = false,
+}: PaymentModalProps) => {
   const stripe = useStripe();
   const elements = useElements();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const cardElementStyle = useCardElementStyle();
+  const cardElementStyle = useCardElementStyle(isDarkMode);
+
+  // Function to get styles with dynamic colors
+  const getStyle = (element: string) => {
+    switch (element) {
+      case 'header':
+        return {
+          className: 'px-6 py-4 text-white',
+          style: {
+            background: `linear-gradient(to right, ${primaryColor}, ${
+              isDarkMode ? '#4B5563' : getLighterColor(primaryColor, 0.8)
+            })`,
+          },
+        };
+      case 'payButton':
+        return {
+          className:
+            'w-full text-white font-medium py-2.5 disabled:opacity-50 disabled:cursor-not-allowed',
+          style: {
+            background: `linear-gradient(to right, ${primaryColor}, ${
+              isDarkMode ? '#4B5563' : getLighterColor(primaryColor, 0.8)
+            })`,
+          },
+        };
+      case 'errorAlert':
+        return {
+          className: 'rounded-lg border p-4',
+          style: {
+            backgroundColor: isDarkMode
+              ? 'rgba(220, 38, 38, 0.1)'
+              : 'rgba(254, 226, 226, 1)',
+            borderColor: isDarkMode
+              ? 'rgba(185, 28, 28, 0.3)'
+              : 'rgba(248, 113, 113, 0.5)',
+          },
+        };
+      case 'cardInfoBox':
+        return {
+          className: 'rounded-lg p-4 border',
+          style: {
+            backgroundColor: isDarkMode ? '#1f2937' : '#f9fafb', // gray-800 or gray-50
+            borderColor: isDarkMode ? '#374151' : '#e5e7eb', // gray-700 or gray-200
+          },
+        };
+      default:
+        return {};
+    }
+  };
 
   const handleSubmit = async (event: any) => {
     try {
@@ -163,7 +231,10 @@ const PaymentModal = ({
         onClick={e => e.stopPropagation()}
         className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-xl overflow-hidden"
       >
-        <div className="px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+        <div
+          className={getStyle('header').className}
+          style={getStyle('header').style}
+        >
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold">Paiement sécurisé</h2>
             <button
@@ -180,7 +251,10 @@ const PaymentModal = ({
 
         <form onSubmit={handleSubmit} className="p-6">
           <div className="space-y-6">
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+            <div
+              className={getStyle('cardInfoBox').className}
+              style={getStyle('cardInfoBox').style}
+            >
               <div className="flex items-center gap-2 mb-4">
                 <CreditCard className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                 <span className="font-medium text-gray-700 dark:text-gray-300">
@@ -194,7 +268,8 @@ const PaymentModal = ({
               <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900/50 dark:bg-red-900/20"
+                className={getStyle('errorAlert').className}
+                style={getStyle('errorAlert').style}
               >
                 <div className="flex items-center gap-3">
                   <AlertCircle className="h-5 w-5 text-red-500" />
@@ -207,7 +282,8 @@ const PaymentModal = ({
 
             <div>
               <Button
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-2.5"
+                className={getStyle('payButton').className}
+                style={getStyle('payButton').style}
                 type="submit"
                 disabled={!stripe || !elements || loading}
               >
@@ -232,19 +308,27 @@ const PaymentModal = ({
   );
 };
 
+interface StripePaymentProps {
+  amount: number;
+  currency: string;
+  apiSecret: string;
+  apiKey: string;
+  onConfirm: () => void;
+  primaryColor?: string;
+  backgroundColor?: string;
+  isDarkMode?: boolean;
+}
+
 export const StripePayment = ({
   amount,
   currency,
   onConfirm,
   apiKey,
   apiSecret,
-}: {
-  amount: number;
-  currency: string;
-  apiSecret: string;
-  apiKey: string;
-  onConfirm: () => void;
-}) => {
+  primaryColor = '#3b82f6',
+  backgroundColor = '#f3f4f6',
+  isDarkMode = false,
+}: StripePaymentProps) => {
   const [isClosed, setIsClosed] = useState(true);
 
   const handleClose = () => {
@@ -252,6 +336,18 @@ export const StripePayment = ({
   };
 
   const stripePromise = loadStripe(apiKey);
+
+  // Function to get button style
+  const getButtonStyle = () => {
+    return {
+      className: 'text-white font-medium py-2.5',
+      style: {
+        background: `linear-gradient(to right, ${primaryColor}, ${
+          isDarkMode ? '#4B5563' : getLighterColor(primaryColor, 0.8)
+        })`,
+      },
+    };
+  };
 
   return (
     <>
@@ -271,6 +367,9 @@ export const StripePayment = ({
               currency={currency}
               onClose={handleClose}
               onConfirm={onConfirm}
+              primaryColor={primaryColor}
+              backgroundColor={backgroundColor}
+              isDarkMode={isDarkMode}
             />
           </Elements>
         )}
@@ -278,7 +377,8 @@ export const StripePayment = ({
 
       <Button
         onClick={() => setIsClosed(false)}
-        className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-2.5"
+        className={getButtonStyle().className}
+        style={getButtonStyle().style}
       >
         <span className="flex items-center gap-2">
           <CreditCard className="w-4 h-4" />

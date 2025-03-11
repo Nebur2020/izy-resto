@@ -22,19 +22,10 @@ import { Button } from '../../../../../../../components/ui';
 import { LogoUploader } from '../../../../../../../components/settings';
 
 import toast from 'react-hot-toast';
+import { useSettings } from '../../../../../../../hooks';
 
 // Define the theme configuration structure
 export interface PizzaThemeConfig {
-  general: {
-    siteName: string;
-    logo: string;
-    favicon: string;
-    primaryColor: string;
-    secondaryColor: string;
-    backgroundColor: string;
-    darkMode: boolean;
-    fontFamily: string;
-  };
   header: {
     deliveryText: string;
     mainHeading: string;
@@ -94,21 +85,12 @@ export interface PizzaThemeConfig {
     general: {
       display: boolean;
     };
+    partnerTitle: string;
   };
 }
 
 // Default configuration with placeholder values
 export const defaultConfig: PizzaThemeConfig = {
-  general: {
-    siteName: 'Panpie',
-    logo: '/logo.png',
-    favicon: '/favicon.ico',
-    primaryColor: '#e74c3c',
-    secondaryColor: '#f39c12',
-    backgroundColor: '#f5f5f5',
-    darkMode: false,
-    fontFamily: 'Inter, sans-serif',
-  },
   header: {
     deliveryText: 'Free Home delivery 48 Hours',
     mainHeading: 'Lorem Ipsum is simply dummy text of the ...',
@@ -171,6 +153,7 @@ export const defaultConfig: PizzaThemeConfig = {
     showPhoneNumber: true,
   },
   footer: {
+    partnerTitle: 'Our Partners',
     logoPartners: [
       'https://radiustheme.com/demo/wordpress/themes/panpie/wp-content/uploads/2021/01/brand5.png',
       'https://radiustheme.com/demo/wordpress/themes/panpie/wp-content/uploads/2021/01/brand4.png',
@@ -179,7 +162,7 @@ export const defaultConfig: PizzaThemeConfig = {
       'https://radiustheme.com/demo/wordpress/themes/panpie/wp-content/uploads/2021/01/brand1.png',
     ],
     location: 'grand dakar',
-    copyrightText: '© 2025 wilson. All Right Reserved',
+    copyrightText: 'All Right Reserved',
     showOpeningHours: true,
     backgroundImage:
       'https://radiustheme.com/demo/wordpress/themes/panpie/wp-content/themes/panpie/assets/element/footer_shape03.png',
@@ -188,168 +171,6 @@ export const defaultConfig: PizzaThemeConfig = {
     },
   },
 };
-
-// General settings tab component
-function GeneralTab() {
-  const {
-    register,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useFormContext<PizzaThemeConfig>();
-  const { t } = useTranslation();
-
-  const logo = watch('general.logo');
-  const favicon = watch('general.favicon');
-
-  return (
-    <div className="space-y-6">
-      <h3 className="text-lg font-medium border-b pb-2 dark:border-gray-700/80">
-        {t('settings:basic-info')}
-      </h3>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            {t('settings:site-name')}
-          </label>
-          <input
-            type="text"
-            {...register('general.siteName', {
-              required: 'Site name is required',
-            })}
-            className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
-          />
-          {errors.general?.siteName && (
-            <p className="text-sm text-red-500">
-              {errors.general.siteName.message}
-            </p>
-          )}
-        </div>
-
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            {t('settings:font-family')}
-          </label>
-          <input
-            type="text"
-            {...register('general.fontFamily')}
-            className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <LogoUploader
-            value={logo}
-            onChange={(url: string) =>
-              setValue('general.logo', url, { shouldDirty: true })
-            }
-            label={t('settings:logo')}
-            description={t('settings:logo-description')}
-          />
-        </div>
-
-        <div>
-          <LogoUploader
-            value={favicon}
-            onChange={(url: string) =>
-              setValue('general.favicon', url, { shouldDirty: true })
-            }
-            label={t('settings:favicon')}
-            description={t('settings:favicon-description')}
-          />
-        </div>
-      </div>
-
-      <h3 className="text-lg font-medium border-b pb-2 dark:border-gray-700/80">
-        {t('settings:colors')}
-      </h3>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            {t('settings:primary-color')}
-          </label>
-          <div className="flex">
-            <input
-              type="color"
-              {...register('general.primaryColor')}
-              className="w-10 h-10 p-0 border rounded-l-lg"
-              onChange={e => {
-                const color = e.target.value;
-                setValue('general.primaryColor', color, { shouldDirty: true });
-              }}
-            />
-            <input
-              type="text"
-              {...register('general.primaryColor')}
-              className="w-full px-3 py-2 border border-l-0 rounded-r-lg dark:bg-gray-700 dark:border-gray-600"
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            {t('settings:secondary-color')}
-          </label>
-          <div className="flex">
-            <input
-              type="color"
-              {...register('general.secondaryColor')}
-              className="w-10 h-10 p-0 border rounded-l-lg"
-              onChange={e => {
-                const color = e.target.value;
-                setValue('general.secondaryColor', color, {
-                  shouldDirty: true,
-                });
-              }}
-            />
-            <input
-              type="text"
-              {...register('general.secondaryColor')}
-              className="w-full px-3 py-2 border border-l-0 rounded-r-lg dark:bg-gray-700 dark:border-gray-600"
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            {t('settings:background-color')}
-          </label>
-          <div className="flex">
-            <input
-              type="color"
-              {...register('general.backgroundColor')}
-              className="w-10 h-10 p-0 border rounded-l-lg"
-            />
-            <input
-              type="text"
-              {...register('general.backgroundColor')}
-              className="w-full px-3 py-2 border border-l-0 rounded-r-lg dark:bg-gray-700 dark:border-gray-600"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="flex items-center space-x-2">
-        <input
-          type="checkbox"
-          id="darkMode"
-          {...register('general.darkMode')}
-          className="w-4 h-4 rounded"
-        />
-        <label
-          htmlFor="darkMode"
-          className="text-sm font-medium text-gray-700 dark:text-gray-300"
-        >
-          {t('settings:enable-dark-mode')}
-        </label>
-      </div>
-    </div>
-  );
-}
 
 // Header tab component
 function HeaderTab() {
@@ -367,7 +188,7 @@ function HeaderTab() {
     <div className="space-y-6">
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          {t('settings:delivery-text')}
+          {t('setting:delivery-text')}
         </label>
         <input
           type="text"
@@ -378,7 +199,7 @@ function HeaderTab() {
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          {t('settings:main-heading')}
+          {t('setting:main-heading')}
         </label>
         <textarea
           {...register('header.mainHeading')}
@@ -389,7 +210,7 @@ function HeaderTab() {
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          {t('settings:taglines')}
+          {t('setting:taglines')}
         </label>
         <Controller
           control={control}
@@ -407,7 +228,7 @@ function HeaderTab() {
                       onChange(newTaglines);
                     }}
                     className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
-                    placeholder={`${t('settings:tagline')} ${index + 1}`}
+                    placeholder={`${t('setting:tagline')} ${index + 1}`}
                   />
                   <button
                     type="button"
@@ -428,7 +249,7 @@ function HeaderTab() {
                 className="flex items-center text-blue-600 gap-1 text-sm"
               >
                 <Plus className="w-4 h-4" />
-                {t('settings:add-tagline')}
+                {t('setting:add-tagline')}
               </button>
               {error && <p className="text-sm text-red-500">{error.message}</p>}
             </div>
@@ -442,14 +263,14 @@ function HeaderTab() {
           onChange={(url: string) =>
             setValue('header.image', url, { shouldDirty: true })
           }
-          label={t('settings:image')}
-          description={t('settings:logo-description')}
+          label={t('setting:image')}
+          description={t('setting:logo-description')}
         />
       </div>
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          {t('settings:button-text')}
+          {t('setting:button-text')}
         </label>
         <input
           type="text"
@@ -460,7 +281,6 @@ function HeaderTab() {
     </div>
   );
 }
-
 // Menu items tab component
 function MenuItemsTab() {
   const { t } = useTranslation();
@@ -474,12 +294,12 @@ function MenuItemsTab() {
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-medium border-b pb-2 dark:border-gray-700/80">
-        {t('settings:food-menu-items')}
+        {t('setting:food-menu-items')}
       </h3>
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          {t('settings:delivery-text')}
+          {t('setting:tagline')}
         </label>
         <input
           type="text"
@@ -489,7 +309,7 @@ function MenuItemsTab() {
       </div>
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          {t('settings:delivery-text')}
+          {t('setting:title')}
         </label>
         <input
           type="text"
@@ -511,18 +331,19 @@ function FeaturesTab() {
 
   return (
     <div className="space-y-6">
+      {/* Display checkbox */}
       <div className="flex items-center space-x-2">
         <input
           type="checkbox"
-          id="showExcellentQuality"
-          {...register('features.showExcellentQuality')}
+          id="featuresDisplay"
+          {...register('features.general.display')}
           className="w-4 h-4 rounded"
         />
         <label
-          htmlFor="showExcellentQuality"
+          htmlFor="featuresDisplay"
           className="text-sm font-medium text-gray-700 dark:text-gray-300"
         >
-          {t('settings:show-excellent-quality-section')}
+          {t('setting:display-section')}
         </label>
       </div>
 
@@ -530,7 +351,7 @@ function FeaturesTab() {
         <>
           <div className="space-y-2 ml-6">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              {t('settings:excellent-quality-heading')}
+              {t('setting:excellent-quality-heading')}
             </label>
             <input
               type="text"
@@ -541,7 +362,7 @@ function FeaturesTab() {
 
           <div className="space-y-2 ml-6">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              {t('settings:discount-percentage')}
+              {t('setting:discount-percentage')}
             </label>
             <input
               type="text"
@@ -556,8 +377,8 @@ function FeaturesTab() {
               onChange={url =>
                 setValue('features.image', url, { shouldDirty: true })
               }
-              label={t('settings:discount-image')}
-              description={t('settings:discount-image-description')}
+              label={t('setting:discount-image')}
+              description={t('setting:discount-image-description')}
             />
           </div>
 
@@ -567,8 +388,8 @@ function FeaturesTab() {
               onChange={url =>
                 setValue('features.backgroundImage', url, { shouldDirty: true })
               }
-              label={t('settings:background-image')}
-              description={t('settings:feature-background-image-description')}
+              label={t('setting:background-image')}
+              description={t('setting:feature-background-image-description')}
             />
           </div>
         </>
@@ -587,9 +408,25 @@ function SpecialItemTab() {
 
   return (
     <div className="space-y-6">
+      {/* Display checkbox */}
+      <div className="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          id="specialItemDisplay"
+          {...register('specialItem.general.display')}
+          className="w-4 h-4 rounded"
+        />
+        <label
+          htmlFor="specialItemDisplay"
+          className="text-sm font-medium text-gray-700 dark:text-gray-300"
+        >
+          {t('setting:display-section')}
+        </label>
+      </div>
+
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          {t('settings:title')}
+          {t('setting:title')}
         </label>
         <input
           type="text"
@@ -600,7 +437,7 @@ function SpecialItemTab() {
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          {t('settings:description')}
+          {t('setting:description')}
         </label>
         <textarea
           {...register('specialItem.description')}
@@ -612,7 +449,7 @@ function SpecialItemTab() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            {t('settings:price')}
+            {t('setting:price')}
           </label>
           <input
             type="text"
@@ -623,7 +460,7 @@ function SpecialItemTab() {
 
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            {t('settings:price-text')}
+            {t('setting:price-text')}
           </label>
           <input
             type="text"
@@ -639,8 +476,8 @@ function SpecialItemTab() {
           onChange={url =>
             setValue('specialItem.image', url, { shouldDirty: true })
           }
-          label={t('settings:special-item-image')}
-          description={t('settings:special-item-image-description')}
+          label={t('setting:special-item-image')}
+          description={t('setting:special-item-image-description')}
         />
       </div>
 
@@ -650,14 +487,14 @@ function SpecialItemTab() {
           onChange={url =>
             setValue('specialItem.backgroundImage', url, { shouldDirty: true })
           }
-          label={t('settings:special-item-background')}
-          description={t('settings:special-item-background-description')}
+          label={t('setting:special-item-background')}
+          description={t('setting:special-item-background-description')}
         />
       </div>
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          {t('settings:button-text')}
+          {t('setting:button-text')}
         </label>
         <input
           type="text"
@@ -679,12 +516,28 @@ const FooterDeliveryTab = () => {
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-medium border-b pb-2 dark:border-gray-700/80">
-        {t('settings:delivery-settings')}
+        {t('setting:delivery-settings')}
       </h3>
+
+      {/* Display checkbox for delivery */}
+      <div className="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          id="deliveryDisplay"
+          {...register('delivery.general.display')}
+          className="w-4 h-4 rounded"
+        />
+        <label
+          htmlFor="deliveryDisplay"
+          className="text-sm font-medium text-gray-700 dark:text-gray-300"
+        >
+          {t('setting:display-delivery-section')}
+        </label>
+      </div>
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          {t('settings:delivery-title')}
+          {t('setting:delivery-title')}
         </label>
         <input
           type="text"
@@ -695,7 +548,7 @@ const FooterDeliveryTab = () => {
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          {t('settings:delivery-description')}
+          {t('setting:delivery-description')}
         </label>
         <textarea
           {...register('delivery.description')}
@@ -715,14 +568,14 @@ const FooterDeliveryTab = () => {
           htmlFor="showPhoneNumber"
           className="text-sm font-medium text-gray-700 dark:text-gray-300"
         >
-          {t('settings:show-phone-number')}
+          {t('setting:show-phone-number')}
         </label>
       </div>
 
       {showPhoneNumber && (
         <div className="space-y-2 ml-6">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            {t('settings:phone-number')}
+            {t('setting:phone-number')}
           </label>
           <input
             type="text"
@@ -733,12 +586,28 @@ const FooterDeliveryTab = () => {
       )}
 
       <h3 className="text-lg font-medium border-b pb-2 dark:border-gray-700/80">
-        {t('settings:footer-settings')}
+        {t('setting:footer-settings')}
       </h3>
+
+      {/* Display checkbox for footer */}
+      <div className="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          id="footerDisplay"
+          {...register('footer.general.display')}
+          className="w-4 h-4 rounded"
+        />
+        <label
+          htmlFor="footerDisplay"
+          className="text-sm font-medium text-gray-700 dark:text-gray-300"
+        >
+          {t('setting:display-footer-section')}
+        </label>
+      </div>
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          {t('settings:location')}
+          {t('setting:location')}
         </label>
         <input
           type="text"
@@ -749,7 +618,7 @@ const FooterDeliveryTab = () => {
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          {t('settings:copyright-text')}
+          {t('setting:copyright-text')}
         </label>
         <input
           type="text"
@@ -769,7 +638,7 @@ const FooterDeliveryTab = () => {
           htmlFor="showOpeningHours"
           className="text-sm font-medium text-gray-700 dark:text-gray-300"
         >
-          {t('settings:show-opening-hours')}
+          {t('setting:show-opening-hours')}
         </label>
       </div>
 
@@ -779,14 +648,25 @@ const FooterDeliveryTab = () => {
           onChange={url =>
             setValue('footer.backgroundImage', url, { shouldDirty: true })
           }
-          label={t('settings:footer-background')}
-          description={t('settings:footer-background-description')}
+          label={t('setting:footer-background')}
+          description={t('setting:footer-background-description')}
         />
       </div>
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          {t('settings:partner-logos')}
+          {t('setting:partner-title')}
+        </label>
+        <input
+          type="text"
+          {...register('footer.partnerTitle')}
+          className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          {t('setting:partner-logos')}
         </label>
         <Controller
           control={control}
@@ -802,8 +682,8 @@ const FooterDeliveryTab = () => {
                       newLogos[index] = url;
                       onChange(newLogos);
                     }}
-                    label={`${t('settings:partner-logo')} ${index + 1}`}
-                    description={t('settings:partner-logo-description')}
+                    label={`${t('setting:partner-logo')} ${index + 1}`}
+                    description={t('setting:partner-logo-description')}
                   />
                   <button
                     type="button"
@@ -824,7 +704,7 @@ const FooterDeliveryTab = () => {
                 className="flex items-center text-blue-600 gap-1 text-sm"
               >
                 <Plus className="w-4 h-4" />
-                {t('settings:add-partner-logo')}
+                {t('setting:add-partner-logo')}
               </button>
             </div>
           )}
@@ -843,14 +723,11 @@ type PizzaThemeEditorProps = {
 };
 
 export default function PizzaThemeEditor(props: PizzaThemeEditorProps) {
-  console.log('PizzaThemeEditor', props);
-  const [activeTab, setActiveTab] = useState('general');
-  const [jsonOutput, setJsonOutput] = useState<string>('');
-  const [jsonCopied, setJsonCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState('header');
   const [isSaved, setIsSaved] = useState(false);
   const { t } = useTranslation();
   const [isUpdating, setIsUpdating] = useState(false);
-  //   const { isUpdating } = useSettings();
+  const { settings } = useSettings();
 
   //   if (!settings) return null;
 
@@ -867,52 +744,41 @@ export default function PizzaThemeEditor(props: PizzaThemeEditorProps) {
       setIsUpdating(true);
       await props.onSave({ key: 'pizza', configuration: data });
       setIsUpdating(false);
-      toast.success(t('settings:theme-saved'));
+      toast.success(t('setting:theme-saved'));
     } catch (error) {
       console.log('Error saving theme', error);
-      toast.error(t('settings:theme-saved-error'));
+      toast.error(t('setting:theme-saved-error'));
     } finally {
       setIsUpdating(false);
     }
   }, []);
 
-  const copyJsonToClipboard = useCallback(() => {
-    navigator.clipboard.writeText(jsonOutput);
-    setJsonCopied(true);
-    setTimeout(() => setJsonCopied(false), 3000);
-  }, [jsonOutput]);
-
   // Define tabs
   const tabs = useMemo(
     () => [
       {
-        id: 'general',
-        label: t('settings:general'),
-        icon: <Palette className="h-4 w-4" />,
-      },
-      {
         id: 'header',
-        label: t('settings:header'),
+        label: t('setting:header'),
         icon: <Layout className="h-4 w-4" />,
       },
       {
         id: 'menuItems',
-        label: t('settings:menu-items'),
+        label: t('setting:menu-items'),
         icon: <ShoppingBag className="h-4 w-4" />,
       },
       {
         id: 'features',
-        label: t('settings:features'),
+        label: t('setting:features'),
         icon: <Star className="h-4 w-4" />,
       },
       {
         id: 'specialItem',
-        label: t('settings:special-item'),
+        label: t('setting:special-item'),
         icon: <Tag className="h-4 w-4" />,
       },
       {
         id: 'footer',
-        label: t('settings:footer-delivery'),
+        label: t('setting:footer-delivery'),
         icon: <Clock className="h-4 w-4" />,
       },
     ],
@@ -922,8 +788,6 @@ export default function PizzaThemeEditor(props: PizzaThemeEditorProps) {
   // Render tab content based on active tab
   const renderTabContent = useCallback(() => {
     switch (activeTab) {
-      case 'general':
-        return <GeneralTab />;
       case 'header':
         return <HeaderTab />;
       case 'menuItems':
@@ -935,14 +799,14 @@ export default function PizzaThemeEditor(props: PizzaThemeEditorProps) {
       case 'footer':
         return <FooterDeliveryTab />;
       default:
-        return <GeneralTab />;
+        return null;
     }
   }, [activeTab]);
 
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">{t('settings:theme-customizer')}</h1>
+        <h1 className="text-2xl font-bold">{t('setting:theme-customizer')}</h1>
         <div className="flex gap-2">
           {formState.isDirty && (
             <Button
@@ -956,7 +820,7 @@ export default function PizzaThemeEditor(props: PizzaThemeEditorProps) {
           )}
           <Button
             type="submit"
-            disabled={isUpdating || !formState.isDirty}
+            disabled={isUpdating}
             onClick={handleSubmit(onSubmit)}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
           >
@@ -969,7 +833,7 @@ export default function PizzaThemeEditor(props: PizzaThemeEditorProps) {
       {isSaved && (
         <div className="mb-4 p-3 bg-green-50 text-green-800 rounded-md flex items-center gap-2">
           <Check className="w-5 h-5" />
-          {t('settings:theme-saved')}
+          {t('setting:theme-saved')}
         </div>
       )}
 

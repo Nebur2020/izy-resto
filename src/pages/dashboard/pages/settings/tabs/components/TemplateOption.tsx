@@ -58,7 +58,7 @@ export function TemplateOption(props: TemplateOptionProps) {
       <p className="text-sm text-gray-500 dark:text-gray-400 mb-auto">
         {description}
       </p>
-      {onCustomize && (
+      {onCustomize && selected && (
         <Button
           type="button"
           onClick={onCustomize}

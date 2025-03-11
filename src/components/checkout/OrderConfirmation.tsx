@@ -39,41 +39,39 @@ interface IOrderConfirmationProps {
     diningOption: 'delivery' | 'dine-in';
     selectedCode?: string;
   };
-  totalPriceStyle?: string;
-  selectedPyamentMethod?: string;
-  selectedHoverPaymentMethod?: string;
-  selectRoundedDiv?: string;
-  selectRoundedDivHover?: string;
-  confirmOrderButtonStyle?: string;
   onConfirm: () => void | Promise<void>;
   onBack: () => void;
   showPaymentMethods?: boolean;
   setSelectedPaymentMethod: React.Dispatch<
     React.SetStateAction<PaymentMethod | null>
   >;
+  primaryColor?: string;
+  backgroundColor?: string;
+  isDarkMode?: boolean;
 }
 
-export function OrderConfirmation(props: IOrderConfirmationProps) {
+// Helper function to get lighter/darker variations of a color
+const getLighterColor = (hexColor: string, opacity = 0.1) => {
+  // For simplicity using opacity, but could be improved with actual color manipulation
+  return `${hexColor}${Math.round(opacity * 255)
+    .toString(16)
+    .padStart(2, '0')}`;
+};
+
+export function OrderConfirmation({
+  customerData,
+  onConfirm,
+  onBack,
+  showPaymentMethods,
+  setSelectedPaymentMethod,
+  primaryColor = '#3b82f6',
+  backgroundColor = '#f3f4f6',
+  isDarkMode = false,
+}: IOrderConfirmationProps) {
   const { t } = useTranslation('order');
-
-  const {
-    customerData,
-    onConfirm,
-    onBack,
-    showPaymentMethods,
-    setSelectedPaymentMethod,
-    totalPriceStyle = 'text-blue-600 dark:text-blue-400',
-    selectedPyamentMethod = 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/20',
-    selectedHoverPaymentMethod = 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600',
-    selectRoundedDiv = 'border-blue-500 bg-blue-500 dark:border-blue-400 dark:bg-blue-400',
-    selectRoundedDivHover = 'border-gray-300 dark:border-gray-600',
-    confirmOrderButtonStyle = 'flex items-center bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed'
-  } = props;
-
   const { settings } = useSettings();
   const { subtotal, taxes, tip, total, cart, setTipPercentage, deliveryZone } =
     useCart();
-
   const { paymentMethods } = usePayments();
   const [selectedPayment, setSelectedPayment] = useState(
     paymentMethods[0]?.id || ''
@@ -86,6 +84,128 @@ export function OrderConfirmation(props: IOrderConfirmationProps) {
   const selectedPaymentMethod = paymentMethods.find(
     method => method.id === selectedPayment
   );
+
+  // Function to generate dynamic styles with the primary color
+  const getStyle = (element: string, isSelected: boolean = false) => {
+    switch (element) {
+      case 'totalPrice':
+        return {
+          className: 'text-lg font-semibold',
+          style: { color: primaryColor },
+        };
+      case 'paymentMethod':
+        return {
+          className: `relative flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
+            isSelected
+              ? 'bg-opacity-5 dark:bg-opacity-10'
+              : 'hover:border-opacity-60'
+          }`,
+          style: {
+            borderColor: isSelected
+              ? primaryColor
+              : isDarkMode
+              ? '#374151'
+              : '#e5e7eb',
+            backgroundColor: isSelected
+              ? isDarkMode
+                ? `${primaryColor}20`
+                : `${primaryColor}10`
+              : 'transparent',
+          },
+        };
+      case 'selectionDot':
+        return {
+          className:
+            'w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors duration-200',
+          style: {
+            borderColor: isSelected
+              ? primaryColor
+              : isDarkMode
+              ? '#4b5563'
+              : '#d1d5db',
+            backgroundColor: isSelected ? primaryColor : 'transparent',
+          },
+        };
+      case 'dotInner':
+        return {
+          className: 'w-2.5 h-2.5 rounded-full',
+          style: { backgroundColor: 'white' },
+        };
+      case 'confirmButton':
+        return {
+          className:
+            'flex items-center disabled:opacity-50 disabled:cursor-not-allowed',
+          style: {
+            background: `linear-gradient(to right, ${primaryColor}, ${
+              isDarkMode ? '#4B5563' : getLighterColor(primaryColor, 0.8)
+            })`,
+            ':hover': {
+              background: `linear-gradient(to right, ${getLighterColor(
+                primaryColor,
+                0.9
+              )}, ${
+                isDarkMode ? '#6B7280' : getLighterColor(primaryColor, 0.7)
+              })`,
+            },
+          },
+        };
+      case 'tipButton':
+        return {
+          className: `px-3 py-1 text-sm rounded-full transition-colors ${
+            isSelected
+              ? 'text-blue-700 dark:text-blue-300'
+              : 'text-gray-700 dark:text-gray-300'
+          }`,
+          style: {
+            backgroundColor: isSelected
+              ? isDarkMode
+                ? `${primaryColor}30`
+                : `${primaryColor}15`
+              : isDarkMode
+              ? '#374151'
+              : '#f3f4f6',
+          },
+        };
+      case 'shoppingBagIcon':
+        return {
+          className: 'w-6 h-6',
+          style: { color: primaryColor },
+        };
+      case 'paymentError':
+        return {
+          className:
+            'rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900/50 dark:bg-red-900/20',
+          style: {},
+        };
+      case 'paymentConfirmation':
+        return {
+          className: 'mt-4 p-4 rounded-xl border-2',
+          style: {
+            borderColor: isDarkMode ? `${primaryColor}80` : `${primaryColor}30`,
+            backgroundColor: isDarkMode
+              ? `${primaryColor}20`
+              : `${primaryColor}10`,
+          },
+        };
+      case 'paymentInstruction':
+        return {
+          className:
+            'rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-900 dark:bg-amber-900/20',
+          style: {},
+        };
+      case 'paytechButton':
+        return {
+          className: 'disabled:opacity-50 disabled:cursor-not-allowed',
+          style: {
+            background: `linear-gradient(to right, ${primaryColor}, ${
+              isDarkMode ? '#4B5563' : getLighterColor(primaryColor, 0.8)
+            })`,
+          },
+        };
+      default:
+        return {};
+    }
+  };
 
   const getPaymentUrl = () => {
     if (!selectedPaymentMethod?.url) return '';
@@ -219,7 +339,10 @@ export function OrderConfirmation(props: IOrderConfirmationProps) {
     >
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold flex items-center gap-2">
-          <ShoppingBag className="w-6 h-6 text-blue-500" />
+          <ShoppingBag
+            style={getStyle('shoppingBagIcon').style}
+            className={getStyle('shoppingBagIcon').className}
+          />
           {t('confirm-order')}
         </h2>
       </div>
@@ -296,14 +419,14 @@ export function OrderConfirmation(props: IOrderConfirmationProps) {
                       <button
                         key={percentage}
                         onClick={() => setTipPercentage(percentage)}
-                        className={`
-                              px-3 py-1 text-sm rounded-full transition-colors
-                              ${
-                                tip?.percentage === percentage
-                                  ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300'
-                                  : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
-                              }
-                            `}
+                        className={
+                          getStyle('tipButton', tip?.percentage === percentage)
+                            .className
+                        }
+                        style={
+                          getStyle('tipButton', tip?.percentage === percentage)
+                            .style
+                        }
                       >
                         {percentage}%
                       </button>
@@ -338,7 +461,10 @@ export function OrderConfirmation(props: IOrderConfirmationProps) {
             )}
             <div className="flex justify-between text-lg font-semibold border-t dark:border-gray-700 pt-2">
               <span>{t('total')}</span>
-              <span className={totalPriceStyle}>
+              <span
+                className={getStyle('totalPrice').className}
+                style={getStyle('totalPrice').style}
+              >
                 {formatCurrency(total, settings?.currency)}
               </span>
             </div>
@@ -347,7 +473,8 @@ export function OrderConfirmation(props: IOrderConfirmationProps) {
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-900 dark:bg-amber-900/20"
+              className={getStyle('paymentInstruction').className}
+              style={getStyle('paymentInstruction').style}
             >
               <div className="flex items-center gap-3">
                 <p className="text-amber-800 dark:text-amber-400 text-sm">
@@ -394,14 +521,14 @@ export function OrderConfirmation(props: IOrderConfirmationProps) {
               .map(method => (
                 <label
                   key={method.id}
-                  className={`
-                  relative flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all
-                  ${
-                    selectedPayment === method.id
-                      ? selectedPyamentMethod
-                      : selectedHoverPaymentMethod
+                  className={
+                    getStyle('paymentMethod', selectedPayment === method.id)
+                      .className
                   }
-                `}
+                  style={
+                    getStyle('paymentMethod', selectedPayment === method.id)
+                      .style
+                  }
                 >
                   <input
                     type="radio"
@@ -436,12 +563,14 @@ export function OrderConfirmation(props: IOrderConfirmationProps) {
                     </p>
                   </div>
                   <div
-                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center
-                    transition-colors duration-200 ${
-                      selectedPayment === method.id
-                        ? selectRoundedDiv
-                        : selectRoundedDivHover
-                    }`}
+                    className={
+                      getStyle('selectionDot', selectedPayment === method.id)
+                        .className
+                    }
+                    style={
+                      getStyle('selectionDot', selectedPayment === method.id)
+                        .style
+                    }
                   >
                     <AnimatePresence>
                       {selectedPayment === method.id && (
@@ -449,7 +578,8 @@ export function OrderConfirmation(props: IOrderConfirmationProps) {
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
                           exit={{ scale: 0 }}
-                          className="w-2.5 h-2.5 rounded-full bg-white"
+                          className={getStyle('dotInner').className}
+                          style={getStyle('dotInner').style}
                         />
                       )}
                     </AnimatePresence>
@@ -464,7 +594,8 @@ export function OrderConfirmation(props: IOrderConfirmationProps) {
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border-2 border-blue-200 dark:border-blue-800"
+                  className={getStyle('paymentConfirmation').className}
+                  style={getStyle('paymentConfirmation').style}
                 >
                   <div className="flex flex-col items-center gap-3">
                     <p className="text-center text-sm text-gray-600 dark:text-gray-300">
@@ -472,7 +603,8 @@ export function OrderConfirmation(props: IOrderConfirmationProps) {
                     </p>
                     <Button
                       onClick={() => setHasPaid(true)}
-                      className="w-full bg-blue-500 hover:bg-blue-600 text-white transition-colors"
+                      className="w-full text-white transition-colors"
+                      style={{ backgroundColor: primaryColor }}
                     >
                       <Check className="w-4 h-4 mr-2" />
                       {t('i-have-paid')}
@@ -497,7 +629,8 @@ export function OrderConfirmation(props: IOrderConfirmationProps) {
                 !selectedPayment) ||
               isConfirmingOrder
             }
-            className={confirmOrderButtonStyle}
+            className={getStyle('confirmButton').className}
+            style={getStyle('confirmButton').style}
             spanClassName="text-white"
           >
             <span className="text-white">{renderPaymentButton()}</span>
@@ -517,6 +650,8 @@ export function OrderConfirmation(props: IOrderConfirmationProps) {
               }}
               settings={settings as any}
               amount={Math.round(total)}
+              primaryColor={primaryColor}
+              isDarkMode={isDarkMode}
             />
           )}
 
@@ -528,6 +663,8 @@ export function OrderConfirmation(props: IOrderConfirmationProps) {
               amount={total}
               currency={settings.currency.toLowerCase()}
               onConfirm={handleOrderConfirm}
+              primaryColor={primaryColor}
+              isDarkMode={isDarkMode}
             />
           )}
         {selectedPaymentMethod?.name.toLowerCase() === 'paytech' &&
@@ -541,6 +678,8 @@ export function OrderConfirmation(props: IOrderConfirmationProps) {
                 apiSecret: `${selectedPaymentMethod.apiSecret}`,
               }}
               currency={settings.currency}
+              primaryColor={primaryColor}
+              isDarkMode={isDarkMode}
             />
           )}
         {selectedPaymentMethod?.name.toLowerCase() === 'money fusion' &&
@@ -560,6 +699,8 @@ export function OrderConfirmation(props: IOrderConfirmationProps) {
                 phone: customerData.phone,
                 email: customerData.email,
               }}
+              primaryColor={primaryColor}
+              isDarkMode={isDarkMode}
             />
           )}
 
@@ -622,6 +763,8 @@ const PayTechPaymentButton = ({
   cart,
   onConfirm,
   currency,
+  primaryColor = '#3b82f6',
+  isDarkMode = false,
 }: {
   paymentMethod: {
     apiKey: string;
@@ -631,6 +774,8 @@ const PayTechPaymentButton = ({
   cart: CartItem[];
   currency: string;
   onConfirm: () => void;
+  primaryColor?: string;
+  isDarkMode: boolean;
 }) => {
   const { t } = useTranslation('order');
   const {
@@ -660,6 +805,23 @@ const PayTechPaymentButton = ({
     }
 
     setIsClosed(false);
+  };
+
+  const getPaytechButtonStyle = () => {
+    return {
+      className: 'disabled:opacity-50 disabled:cursor-not-allowed',
+      style: {
+        background: `linear-gradient(to right, ${primaryColor}, ${
+          isDarkMode ? '#4B5563' : getLighterColor(primaryColor, 0.8)
+        })`,
+        ':hover': {
+          background: `linear-gradient(to right, ${getLighterColor(
+            primaryColor,
+            0.9
+          )}, ${isDarkMode ? '#6B7280' : getLighterColor(primaryColor, 0.7)})`,
+        },
+      },
+    };
   };
 
   return (
@@ -695,11 +857,8 @@ const PayTechPaymentButton = ({
               }
             : requestPayment
         }
-        className={`
-    bg-gradient-to-r from-blue-600 to-indigo-600
-    hover:from-blue-700 hover:to-indigo-700
-    disabled:opacity-50 disabled:cursor-not-allowed
-  `}
+        className={getPaytechButtonStyle().className}
+        style={getPaytechButtonStyle().style}
       >
         <span className="text-white">{t('pay-with-paytech')}</span>
       </Button>

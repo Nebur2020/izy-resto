@@ -4,13 +4,31 @@ import { Button } from '../../ui/Button';
 import { ArrowDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-export function GridHero() {
+type GridHeroProps = {
+  palette?: {
+    primary: string;
+    secondary: string;
+  };
+  isDarkMode?: boolean;
+};
+
+export function GridHero({
+  palette = {
+    primary: '#2563EB',
+    secondary: '#4D48E5',
+  },
+  isDarkMode = false,
+}: GridHeroProps) {
   const { settings } = useSettings();
   const coverImage =
     settings?.coverImage ||
     'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80';
 
   const { t } = useTranslation('hero');
+
+  const scrollToMenu = () => {
+    document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
     <div className="relative min-h-[80vh] flex items-center justify-center">
@@ -42,15 +60,22 @@ export function GridHero() {
             transition={{ delay: 0.3 }}
           >
             <Button
-              onClick={() =>
-                document
-                  .getElementById('menu')
-                  ?.scrollIntoView({ behavior: 'smooth' })
-              }
-              className="mt-8 px-8 py-4 text-lg rounded-full bg-white text-gray-900 hover:bg-gray-100 transition-colors"
+              onClick={scrollToMenu}
+              className="group relative rounded-full px-8 py-3 text-base font-medium transition-all hover:shadow-lg hover:opacity-90 sm:text-lg
+             bg-gradient-to-r from-gray-200 to-white hover:bg-gradient-to-r hover:from-gray-200 hover:to-gray-300
+             dark:bg-gradient-to-r dark:hover:from-blue-600 dark:hover:to-blue-500"
+              style={{
+                color: isDarkMode ? '#FFFFFF' : palette.primary,
+                background: isDarkMode
+                  ? `linear-gradient(to right, ${palette.primary}, ${palette.secondary})`
+                  : undefined,
+              }}
+              spanStyle={{
+                color: isDarkMode ? '#FFFFFF' : palette.primary,
+              }}
             >
               {t('view-menu')}
-              <ArrowDown className="ml-2 w-5 h-5 animate-bounce" />
+              <ArrowDown className="ml-2 inline-block h-4 w-4 transition-transform group-hover:translate-y-1 group-hover:animate-bounce" />
             </Button>
           </motion.div>
         </motion.div>
