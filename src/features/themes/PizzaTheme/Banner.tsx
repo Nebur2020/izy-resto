@@ -31,7 +31,6 @@ export default function Banner({
   isDarkMode,
   primaryColor,
   backgroundColor,
-  secondaryColor,
 }: BannerProps) {
   const { t } = useTranslation('pizzatheme');
   const themeConfig = usePizzaTheme();
@@ -119,7 +118,7 @@ export default function Banner({
               className={`
           relative 
           max-w-[70%] 
-          rounded-full
+          rounded-lg
           overflow-hidden
           `}
             >

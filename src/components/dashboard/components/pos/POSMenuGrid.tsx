@@ -7,6 +7,7 @@ import { useSettings } from '../../../../hooks/useSettings';
 import { formatCurrency } from '../../../../utils/currency';
 import { ProductDetailsModal } from '../../../menu/ProductDetailsModal';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '../../../../context/ThemeContext';
 
 interface POSMenuGridProps {
   items: MenuItem[];
@@ -22,6 +23,7 @@ export function POSMenuGrid(props: POSMenuGridProps) {
     props;
   const { settings } = useSettings();
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
+  const { theme } = useTheme();
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -92,6 +94,8 @@ export function POSMenuGrid(props: POSMenuGridProps) {
       {/* Product Details Modal */}
       {selectedItem && (
         <ProductDetailsModal
+          primaryColor={settings?.palette.primary}
+          isDarkMode={theme === 'dark'}
           item={selectedItem}
           onClose={() => setSelectedItem(null)}
           onAddToCart={onAddToCart}

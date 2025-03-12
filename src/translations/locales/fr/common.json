@@ -308,5 +308,7 @@
   "terms-and-conditions": "Conditions Générales d'Utilisation",
   "no-items-found": "Aucun élément trouvé",
   "theme-configuration": "Thème configuration",
-  "discard": "Annuler"
+  "discard": "Annuler",
+  "combination-no-items": "Aucune combinaison trouvée",
+  "only-show-what-you-defined": "Seuls les éléments que vous avez définis seront affichés"
 }

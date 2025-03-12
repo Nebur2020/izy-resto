@@ -7,7 +7,6 @@ import {
 } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import {
-  Palette,
   Layout,
   ShoppingBag,
   Star,
@@ -218,7 +217,7 @@ function HeaderTab() {
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <div className="space-y-2">
               {value.map((tagline, index) => (
-                <div key={tagline} className="flex gap-2">
+                <div key={`tagline-${index}`} className="flex gap-2">
                   <input
                     type="text"
                     value={tagline}
@@ -284,12 +283,7 @@ function HeaderTab() {
 // Menu items tab component
 function MenuItemsTab() {
   const { t } = useTranslation();
-  const {
-    register,
-    watch,
-    control,
-    formState: { errors },
-  } = useFormContext<PizzaThemeConfig>();
+  const { register } = useFormContext<PizzaThemeConfig>();
 
   return (
     <div className="space-y-6">

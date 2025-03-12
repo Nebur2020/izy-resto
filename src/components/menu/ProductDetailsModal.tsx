@@ -11,6 +11,7 @@ import UnselectedRequiredVariantType from './UnselectedRequiredVariantType';
 import { useTranslation } from 'react-i18next';
 import { variantService } from '../../services';
 import { Variant } from '../../types';
+import { set } from 'date-fns';
 
 interface IProductDetailsModalProps {
   item: MenuItemWithVariants | null;
@@ -102,6 +103,8 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
   const { t } = useTranslation(['menu', 'cart']);
 
   if (!item) return null;
+
+  // console.log('ProductDetailsModal render', item);
 
   const isOutOfStock = item.stockQuantity === 0;
   const itemWithVariants = item as MenuItemWithVariants;
@@ -281,11 +284,29 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
       setIsLoadingPrice(true);
 
       setSelectedVariants(prev => {
+        //check combination exists
+
         if (prev.includes(variant)) {
           const updatedSelection = prev.filter(v => v !== variant);
           const hasOtherOfSameType = updatedSelection.some(v =>
             v.startsWith(`${type}: `)
           );
+          const combination = updatedSelection.sort();
+          const combinationExists =
+            updatedSelection.length < 2 ||
+            itemWithVariants.variantPrices.some(
+              vp =>
+                JSON.stringify(vp.variantCombination.sort()) ===
+                JSON.stringify(combination)
+            );
+          // console.log('combinationExists', combinationExists);
+          if (item.onlyShowVariantsYouDefine && !combinationExists) {
+            setVariantCombinationError(t('common:combination-no-items'));
+            setIsLoadingPrice(false);
+            return [];
+          } else {
+            setVariantCombinationError('');
+          }
 
           setSelectedVariantTypes(current => ({
             ...current,
@@ -297,6 +318,23 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
 
         const filtered = prev.filter(v => !v.startsWith(`${type}: `));
         const updatedSelection = [...filtered, variant];
+
+        const combination = updatedSelection.sort();
+        const combinationExists =
+          updatedSelection.length < 2 ||
+          itemWithVariants.variantPrices.some(
+            vp =>
+              JSON.stringify(vp.variantCombination.sort()) ===
+              JSON.stringify(combination)
+          );
+
+        if (item.onlyShowVariantsYouDefine && !combinationExists) {
+          setVariantCombinationError('Combination does not exist');
+          setIsLoadingPrice(false);
+          return [];
+        } else {
+          setVariantCombinationError('');
+        }
 
         setSelectedVariantTypes(current => ({
           ...current,
@@ -460,6 +498,18 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
                   return null;
                 }
 
+                if (item.onlyShowVariantsYouDefine) {
+                  const values = variant.values.filter(v =>
+                    item.variantPrices.some(vp =>
+                      vp.variantCombination.includes(`${variant.name}: ${v}`)
+                    )
+                  );
+                  if (values.length === 0) {
+                    return null;
+                  }
+                  variant.values = values;
+                }
+
                 const isRequired = !!variant.isRequired;
                 const isSelected = selectedVariantTypes[variant.name];
 
@@ -529,6 +579,17 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
               >
                 {t('already-in-cart')}: {getCartItem()?.quantity}{' '}
                 {(getCartItem()?.quantity || 0) > 1 ? t('units') : t('unit')}
+              </div>
+            )}
+
+            {variantCombinationError && (
+              <div
+                className={`flex items-center gap-2 p-2 sm:p-3 mb-5 rounded-lg 'bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400'`}
+              >
+                <AlertCircle className="h-5 w-5" />
+                <span className="text-[10px] sm:text-xs font-medium">
+                  {variantCombinationError}
+                </span>
               </div>
             )}
           </div>
