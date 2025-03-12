@@ -6,8 +6,23 @@ import { GridMenuCategories } from './GridMenuCategories';
 import { SearchBar } from '../../menu/SearchBar';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw } from 'lucide-react';
+import { hexToRgb } from '../../../lib/firebase/utils/functions';
 
-export function GridMenuSection() {
+type GridMenuSectionProps = {
+  palette?: {
+    primary: string;
+    secondary: string;
+  };
+  isDarkMode: boolean;
+};
+
+export function GridMenuSection({
+  palette = {
+    primary: '#2563EB',
+    secondary: '#4D48E5',
+  },
+  isDarkMode,
+}: GridMenuSectionProps) {
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [visibleItems, setVisibleItems] = useState(9);
@@ -28,6 +43,17 @@ export function GridMenuSection() {
       item.description.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  // Compute background and text colors based on palette and isDarkMode
+  const buttonBgColor = isDarkMode
+    ? `rgba(${hexToRgb(palette.primary)}, 0.2)`
+    : `rgba(${hexToRgb(palette.primary)}, 0.1)`;
+
+  const buttonHoverBgColor = isDarkMode
+    ? `rgba(${hexToRgb(palette.primary)}, 0.3)`
+    : `rgba(${hexToRgb(palette.primary)}, 0.2)`;
+
+  const buttonTextColor = isDarkMode ? '#d1d5db' : palette.primary;
 
   // Get currently visible items
   const currentItems = filteredItems.slice(0, visibleItems);
@@ -57,11 +83,17 @@ export function GridMenuSection() {
 
   return (
     <div className="space-y-12">
-      <SearchBar onSearch={handleSearch} />
+      <SearchBar
+        onSearch={handleSearch}
+        palette={palette}
+        isDarkMode={isDarkMode}
+      />
 
       <GridMenuCategories
         activeCategory={activeCategory}
         onCategoryChange={handleCategoryChange}
+        palette={palette}
+        isDarkMode={isDarkMode}
       />
 
       <motion.div
@@ -89,7 +121,11 @@ export function GridMenuSection() {
               }}
               className="relative"
             >
-              <GridMenuItem item={item} />
+              <GridMenuItem
+                item={item}
+                palette={palette}
+                isDarkMode={isDarkMode}
+              />
             </motion.div>
           ))}
         </AnimatePresence>
@@ -110,25 +146,22 @@ export function GridMenuSection() {
             transition={{ duration: 0.3 }}
           >
             <button
-              onClick={handleLoadMore}
               disabled={isLoadingMore}
-              className="flex items-center gap-2 px-6 py-3 bg-blue-50 hover:bg-blue-100 
-                        dark:bg-blue-900/20 dark:hover:bg-blue-800/30
-                        text-blue-600 dark:text-blue-400 rounded-lg 
-                        transition-all font-medium disabled:opacity-50
-                        hover:shadow-md"
+              onClick={handleLoadMore}
+              className="flex items-center gap-2 px-6 py-2 rounded-lg transition-colors font-medium"
+              style={{
+                backgroundColor: buttonBgColor,
+                color: buttonTextColor,
+                ':hover': {
+                  backgroundColor: buttonHoverBgColor,
+                },
+              }}
             >
-              {isLoadingMore ? (
-                <>
-                  <RefreshCw className="w-5 h-5 animate-spin" />
-                  {t('loading')}
-                </>
-              ) : (
-                <>
-                  <RefreshCw className="w-5 h-5" />
-                  {t('common:load-more')}
-                </>
-              )}
+              <RefreshCw
+                className="w-4 h-4"
+                style={{ color: buttonTextColor }}
+              />
+              {t('common:load-more')}
             </button>
           </motion.div>
         )

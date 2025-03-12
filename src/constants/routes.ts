@@ -13,6 +13,7 @@ export const ADMIN_ROUTES = [
   'settings',
   'dashboard',
   'traffic',
+  'settings/theme',
 ] as const;
 
 export type PublicRoute = (typeof PUBLIC_ROUTES)[number];

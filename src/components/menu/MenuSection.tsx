@@ -6,11 +6,26 @@ import { MenuFilters } from './MenuFilters';
 import { SearchBar } from './SearchBar';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw } from 'lucide-react';
+import { hexToRgb } from '../../lib/firebase/utils/functions';
 
 const INITIAL_ITEMS_COUNT = 9;
 const LOAD_MORE_COUNT = 9;
 
-export function MenuSection() {
+type MenuSectionProps = {
+  palette?: {
+    primary: string;
+    secondary: string;
+  };
+  isDarkMode: boolean;
+};
+
+export function MenuSection({
+  palette = {
+    primary: '#2563EB',
+    secondary: '#4D48E5',
+  },
+  isDarkMode,
+}: MenuSectionProps) {
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const { items: menuItems, isLoading } = useMenu();
@@ -58,15 +73,32 @@ export function MenuSection() {
     }, 500);
   };
 
+  // Compute background and text colors based on palette and isDarkMode
+  const buttonBgColor = isDarkMode
+    ? `rgba(${hexToRgb(palette.primary)}, 0.2)`
+    : `rgba(${hexToRgb(palette.primary)}, 0.1)`;
+
+  const buttonHoverBgColor = isDarkMode
+    ? `rgba(${hexToRgb(palette.primary)}, 0.3)`
+    : `rgba(${hexToRgb(palette.primary)}, 0.2)`;
+
+  const buttonTextColor = isDarkMode ? '#d1d5db' : palette.primary;
+
   return (
     <div className="space-y-8">
-      <SearchBar onSearch={setSearchTerm} />
+      <SearchBar
+        onSearch={setSearchTerm}
+        palette={palette}
+        isDarkMode={isDarkMode}
+      />
 
       <MenuFilters
         activeCategory={activeCategory}
         onCategoryChange={category => {
           setActiveCategory(category);
         }}
+        palette={palette}
+        isDarkMode={isDarkMode}
       />
 
       <div className="relative min-h-[50vh]">
@@ -107,7 +139,11 @@ export function MenuSection() {
                   }}
                   className="relative"
                 >
-                  <MenuItem item={item} />
+                  <MenuItem
+                    item={item}
+                    palette={palette}
+                    isDarkMode={isDarkMode}
+                  />
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -137,10 +173,16 @@ export function MenuSection() {
           <button
             disabled={isLoadingMore}
             onClick={handleLoadMore}
-            className="flex items-center gap-2 px-6 py-2 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-800/30
-                      text-blue-600 dark:text-blue-400 rounded-lg transition-colors font-medium"
+            className="flex items-center gap-2 px-6 py-2 rounded-lg transition-colors font-medium"
+            style={{
+              backgroundColor: buttonBgColor,
+              color: buttonTextColor,
+              ':hover': {
+                backgroundColor: buttonHoverBgColor,
+              },
+            }}
           >
-            <RefreshCw className="w-4 h-4" />
+            <RefreshCw className="w-4 h-4" style={{ color: buttonTextColor }} />
             {t('common:load-more')}
           </button>
         </motion.div>

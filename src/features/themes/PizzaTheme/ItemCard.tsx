@@ -3,23 +3,39 @@ import { motion } from 'framer-motion';
 import { ProductDetailsModal } from '../../../components/menu/ProductDetailsModal';
 import { useTranslation } from 'react-i18next';
 import { MenuItemWithVariants } from '../../../types';
+import { formatCurrency } from '../../../utils/currency';
+import { useSettings } from '../../../hooks';
 
-interface IitemCradProps {
+interface ItemCardProps {
   item: MenuItemWithVariants;
+  primaryColor?: string;
+  isDarkMode?: boolean;
 }
 
-export default function ItemCard(props: IitemCradProps) {
+export default function ItemCard({
+  item,
+  primaryColor,
+  isDarkMode,
+}: ItemCardProps) {
   const { t } = useTranslation('pizzatheme');
-  const { item } = props;
   const [showModal, setShowModal] = useState(false);
+  const { settings } = useSettings();
 
   const isOutOfStock = item.stockQuantity === 0;
 
+  const cardPrimaryColor = primaryColor || '#fcb302';
+
+  const cardClassName = isDarkMode
+    ? 'bg-[#1A1A1A] text-white'
+    : 'bg-black text-white';
+
+  const titleClassName = isDarkMode ? 'text-gray-100' : 'text-white';
+
+  const descriptionClassName = isDarkMode ? 'text-gray-300' : 'text-white';
 
   const cardVariants = {
     hidden: { opacity: 0, scale: 0.8 },
     visible: { opacity: 1, scale: 1, transition: { duration: 0.5 } },
-    hover: { scale: 1.05, transition: { duration: 0.2 } },
   };
 
   const imageVariants = {
@@ -29,9 +45,9 @@ export default function ItemCard(props: IitemCradProps) {
   return (
     <>
       <motion.div
-        className={`flex flex-col items-center w-full sm:w-[45%] md:w-[30%] lg:w-[20%] min-w-[250px] max-w-sm border border-gray-300 rounded-xl mx-3 mb-5 overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 relative ${
+        className={`flex flex-col items-center w-full rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 relative ${
           isOutOfStock ? 'cursor-not-allowed' : 'cursor-pointer'
-        }`}
+        } ${cardClassName}`}
         role="button"
         onClick={() => !isOutOfStock && setShowModal(true)}
         variants={cardVariants}
@@ -39,52 +55,67 @@ export default function ItemCard(props: IitemCradProps) {
         animate="visible"
         whileHover="hover"
       >
-        <motion.div className="relative w-full h-[250px]" whileHover="hover">
+        <motion.div
+          className="relative w-full h-[300px] lg:h-[300px]"
+          whileHover="hover"
+        >
           <motion.img
             src={item.image}
             alt={item.name}
-            className="w-full h-full object-cover rounded-t-lg"
+            className="w-full h-full object-cover"
             variants={imageVariants}
           />
-        </motion.div>
-        <div className="flex flex-col items-start w-full px-5 py-4">
-          <h1 className="text-lg sm:text-2xl font-bold text-gray-800">
-            {item.name}
-          </h1>
-          <div className="min-h-[200px]">
-            <p className="mt-2 text-sm sm:text-base text-gray-600">
-              {item.description}
-            </p>
-          </div>
-
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
           {!isOutOfStock && (
-            <div className="mt-4 w-full flex justify-between items-center">
-              <span className="text-xl font-semibold text-[#fcb302]">
-                {item.price} FCFA
-              </span>
-              <span className="text-sm text-gray-500 bg-[#f4ecdf] px-3 py-1 rounded-full dark:text-gray-950">
+            <div className="absolute top-4 right-4 z-10">
+              <span
+                className="px-3 py-2 rounded-full text-sm font-semibold"
+                style={{
+                  backgroundColor: cardPrimaryColor,
+                  color: 'white',
+                }}
+              >
                 {item.stockQuantity} {t('common:in-stock')}
               </span>
             </div>
           )}
-          {isOutOfStock && (
-            <div className="absolute inset-0 bg-[#fcb302] bg-opacity-60 flex items-center justify-center rounded-xl">
-              <span className="text-red-500 text-lg font-bold">
-                {t('menu:out-of-stock')}
-              </span>
-            </div>
-          )}
-        </div>
+          <div className="absolute bottom-0 left-0 p-6 text-white w-full">
+            <h1 className={`text-2xl font-bold ${titleClassName}`}>
+              {item.name}
+            </h1>
+            <p
+              className={`mt-2 text-md text-ellipsis truncate ${descriptionClassName}`}
+            >
+              {item.description}
+            </p>
+            <p
+              className={`text-xl font-bold mt-4`}
+              style={{ color: cardPrimaryColor }}
+            >
+              {formatCurrency(item.price, settings?.currency)}
+            </p>
+          </div>
+        </motion.div>
+        {isOutOfStock && (
+          <div
+            className={`absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center rounded-xl`}
+          >
+            <span
+              className="px-4 py-2 rounded-md text-lg font-bold bg-opacity-80 bg-white dark:bg-[#1A1A1A]"
+              style={{ color: cardPrimaryColor }}
+            >
+              {t('menu:out-of-stock')}
+            </span>
+          </div>
+        )}
       </motion.div>
+
       {showModal && (
         <ProductDetailsModal
-          addProductToCartBgColor="bg-yellow-500 text-white"
-          stockAvailableBgColor="bg-[#f4ecdf] text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
-          priceStyle="text-[#fcb302]"
+          primaryColor={cardPrimaryColor}
+          isDarkMode={isDarkMode}
           item={item}
           onClose={() => setShowModal(false)}
-          addToCartButtonStyle="!bg-[#fcb302] w-full rounded-full sm:py-2 text-xs sm:text-sm font-semibold flex items-center justify-center transition-all duration-300 ease-in-out disabled:bg-[#fcb302]disabled:cursor-not-allowed dark:bg-blue-500 dark:hover:bg-blue-600 dark:disabled:bg-gray-700"
-          variantSelectStyles="!bg-[#fcb302] dark:bg-gray-800 dark:text-gray-200"
         />
       )}
     </>

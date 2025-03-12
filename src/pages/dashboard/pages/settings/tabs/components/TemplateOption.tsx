@@ -2,6 +2,7 @@ import { UseFormRegister } from 'react-hook-form';
 import { RestaurantSettings } from '../../../../../../types/settings';
 import { useTranslation } from 'react-i18next';
 import { LucideIcon } from 'lucide-react';
+import { Button } from '../../../../../../components/ui';
 
 interface TemplateOptionProps {
   icon: LucideIcon;
@@ -13,6 +14,7 @@ interface TemplateOptionProps {
   register: UseFormRegister<RestaurantSettings>;
   imageUrl: string;
   setShowModal?: (value: boolean) => void;
+  onCustomize?: () => void;
 }
 
 export function TemplateOption(props: TemplateOptionProps) {
@@ -25,13 +27,13 @@ export function TemplateOption(props: TemplateOptionProps) {
     onChange,
     register,
     imageUrl,
-    setShowModal,
+    onCustomize,
   } = props;
 
   return (
     <div
       className={`
-        relative rounded-lg border-2 p-4 cursor-pointer transition-all
+        relative rounded-lg border-2 p-4 cursor-pointer transition-all flex flex-col h-full
         ${
           selected
             ? 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/20'
@@ -54,17 +56,17 @@ export function TemplateOption(props: TemplateOptionProps) {
         />
       </div>
       <h3 className="font-medium mb-1">{title}</h3>
-      <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
-      {title !== 'Modern' && title !== 'Minimal' && title !== 'grid' && (
-        <div className="w-full mt-4">
-          <button
-            type="button"
-            className="p-1 rounded-full bg-blue-500 text-white w-full"
-            onClick={() => setShowModal && setShowModal(true)}
-          >
-            {t('settingAppearence:activate-theme')}
-          </button>
-        </div>
+      <p className="text-sm text-gray-500 dark:text-gray-400 mb-auto">
+        {description}
+      </p>
+      {onCustomize && selected && (
+        <Button
+          type="button"
+          onClick={onCustomize}
+          className="mt-4 bg-blue-500 w-full text-white rounded-lg px-4 py-2"
+        >
+          {t('settingAppearence:customize')}
+        </Button>
       )}
     </div>
   );

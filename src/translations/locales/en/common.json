@@ -306,5 +306,8 @@
   "back-home": "Back to home",
   "terms-and-conditions": "Terms and conditions",
   "no-items-found": "No items found",
-  "theme-configuration": "Theme configuration"
+  "theme-configuration": "Theme configuration",
+  "discard": "Discard",
+  "combination-no-items": "No combination found",
+  "only-show-what-you-defined": "Only show what you defined"
 }

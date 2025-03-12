@@ -12,6 +12,7 @@ import {
   LayoutList,
   X,
   Store,
+  Palette,
 } from 'lucide-react';
 import { useTheme } from '../../../../../context/ThemeContext';
 import { RestaurantSettings } from '../../../../../types/settings';
@@ -23,6 +24,8 @@ import { useDeployment } from '../../../../../hooks/useDeployment';
 import packageJson from '../../../../../../package.json';
 import { useTranslation } from 'react-i18next';
 import { Version } from '../../../../../services/version/version.service';
+import { useAppThemes } from '../hooks/useThemes';
+import { useNavigate } from 'react-router-dom';
 
 const COOLDOWN_DURATION = 6 * 60;
 const DEPLOY_STORAGE_KEY = 'deploymentCooldown';
@@ -72,11 +75,25 @@ export function AppearanceSettings() {
   const { theme, toggleTheme } = useTheme();
   const [showModal, setShowModal] = useState(false);
 
+  const primaryColor = watch('palette.primary');
+  const secondaryColor = watch('palette.secondary');
+
   const { version, loading, errorLoading, versions } = useAppVersion();
   const { redeploy, isDeploying, error } = useDeployment();
 
   const [cooldownTime, setCooldownTime] = useState(0);
   const [selectedVersion, setSelectedVersion] = useState<Version | null>(null);
+
+  const themes = useAppThemes();
+
+  const navigate = useNavigate();
+
+  const handleColorInputChange = (
+    colorType: 'primary' | 'secondary' | 'background',
+    value: string
+  ) => {
+    setValue(`palette.${colorType}`, value, { shouldDirty: true });
+  };
 
   useEffect(() => {
     const storedCooldown = getStoredCooldown();
@@ -187,15 +204,16 @@ export function AppearanceSettings() {
     }
   };
 
-  const themeData = [
-    {
-      ImgUrl:
-        'https://res.cloudinary.com/dp8d8jxxd/image/upload/v1740908360/izirestau/uc9uptbzyrsuoy4grdes.png',
-      themeName: t('settingAppearence:theme-name'),
-      themeDescription: t('settingAppearence:theme-description'),
-      value: 'pizzaTheme',
-    },
-  ];
+  const handleActiveThemeChange = ({
+    theme,
+    config,
+  }: {
+    theme: string;
+    config: Record<string, any>;
+  }) => {
+    setValue('activeTheme.key', theme, { shouldDirty: true });
+    setValue('activeTheme.configuration', config, { shouldDirty: true });
+  };
 
   return (
     <div className="space-y-8">
@@ -269,44 +287,21 @@ export function AppearanceSettings() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <TemplateOption
-            icon={Rows}
-            title={t('settingAppearence:modern')}
-            description={t('settingAppearence:modern-description')}
-            value="modern"
-            selected={watch('activeLanding') === 'modern'}
-            onChange={value =>
-              setValue('activeLanding', value, { shouldDirty: true })
-            }
-            register={register}
-            imageUrl="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=500&q=60"
-          />
-
-          <TemplateOption
-            icon={Columns}
-            title={t('settingAppearence:minimal')}
-            description={t('settingAppearence:minimal-description')}
-            value="minimal"
-            selected={watch('activeLanding') === 'minimal'}
-            onChange={value =>
-              setValue('activeLanding', value, { shouldDirty: true })
-            }
-            register={register}
-            imageUrl="https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=500&q=60"
-          />
-
-          <TemplateOption
-            icon={LayoutGrid}
-            title={t('settingAppearence:grid')}
-            description={t('settingAppearence:grid-description')}
-            value="grid"
-            selected={watch('activeLanding') === 'grid'}
-            onChange={value =>
-              setValue('activeLanding', value, { shouldDirty: true })
-            }
-            register={register}
-            imageUrl="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=500&q=60"
-          />
+          {themes.default.map(theme => (
+            <TemplateOption
+              key={theme.id}
+              icon={theme.icon}
+              title={theme.title}
+              description={theme.description}
+              value={theme.value}
+              selected={watch('activeTheme.key') === theme.value}
+              onChange={value =>
+                handleActiveThemeChange({ theme: value, config: theme.config })
+              }
+              register={register}
+              imageUrl={theme.imageUrl}
+            />
+          ))}
         </div>
       </section>
 
@@ -319,22 +314,112 @@ export function AppearanceSettings() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {themeData.map((theme, index) => (
+          {themes.premium.map(theme => (
             <TemplateOption
-              key={index}
-              icon={Sun}
-              title={theme.themeName}
-              description={theme.themeDescription}
+              key={theme.id}
+              icon={theme.icon}
+              title={theme.title}
+              description={theme.description}
               value={theme.value}
-              selected={watch('activeLanding') === 'pizzaTheme'}
+              selected={watch('activeTheme.key') === theme.value}
               onChange={value =>
-                setValue('activeLanding', value, { shouldDirty: true })
+                handleActiveThemeChange({ theme: value, config: theme.config })
               }
               register={register}
-              imageUrl={theme.ImgUrl}
+              imageUrl={theme.imageUrl}
               setShowModal={setShowModal}
+              onCustomize={() => navigate(`theme/${theme.value}`)}
             />
           ))}
+        </div>
+      </section>
+
+      <section className="space-y-6">
+        <div className="flex items-center gap-3">
+          <Palette className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <h2 className="text-xl font-semibold">
+            {t('settingAppearence:color-palette')}
+          </h2>
+        </div>
+
+        <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                {t('settingAppearence:primary-color')}
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={primaryColor || '#000000'}
+                  onChange={e =>
+                    handleColorInputChange('primary', e.target.value)
+                  }
+                  className="h-10 w-10 rounded cursor-pointer border border-gray-200 dark:border-gray-700"
+                />
+                <input
+                  type="text"
+                  {...register('palette.primary', {
+                    onChange: e =>
+                      handleColorInputChange('primary', e.target.value),
+                  })}
+                  className="flex-1 rounded-md border border-gray-300 dark:border-gray-600 p-2 text-sm dark:bg-gray-700"
+                  placeholder="#000000"
+                />
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {t('settingAppearence:primary-color-description')}
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                {t('settingAppearence:secondary-color')}
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={secondaryColor || '#000000'}
+                  onChange={e =>
+                    handleColorInputChange('secondary', e.target.value)
+                  }
+                  className="h-10 w-10 rounded cursor-pointer border border-gray-200 dark:border-gray-700"
+                />
+                <input
+                  type="text"
+                  {...register('palette.secondary', {
+                    onChange: e =>
+                      handleColorInputChange('secondary', e.target.value),
+                  })}
+                  className="flex-1 rounded-md border border-gray-300 dark:border-gray-600 p-2 text-sm dark:bg-gray-700"
+                  placeholder="#000000"
+                />
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {t('settingAppearence:secondary-color-description')}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-4 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+            <h3 className="text-md font-medium mb-2">
+              {t('settingAppearence:color-preview')}
+            </h3>
+            <div className="flex flex-wrap gap-4">
+              <div
+                className="w-full h-12 rounded-md flex items-center justify-center text-white"
+                style={{ backgroundColor: primaryColor || '#000000' }}
+              >
+                {t('settingAppearence:primary')}
+              </div>
+              <div
+                className="w-full h-12 rounded-md flex items-center justify-center text-white"
+                style={{ backgroundColor: secondaryColor || '#000000' }}
+              >
+                {t('settingAppearence:secondary')}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

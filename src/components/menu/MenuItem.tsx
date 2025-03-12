@@ -10,10 +10,25 @@ import { useTranslation } from 'react-i18next';
 
 interface MenuItemProps {
   item: MenuItemWithVariants;
+  palette?: {
+    primary: string;
+    secondary: string;
+  };
+  isDarkMode: boolean;
 }
 
 export const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
-  ({ item }, ref) => {
+  (
+    {
+      item,
+      palette = {
+        primary: '#2563EB',
+        secondary: '#4D48E5',
+      },
+      isDarkMode,
+    },
+    ref
+  ) => {
     const { cart } = useCart();
     const { settings } = useSettings();
     const [showModal, setShowModal] = useState(false);
@@ -69,7 +84,6 @@ export const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
               ${!isOutOfStock && 'group-hover:scale-105'}
             `}
             />
-
             {isOutOfStock && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-[2px]">
                 <span className="rounded-full bg-red-500/90 px-3 py-1 text-xs md:text-sm font-medium text-white shadow-lg">
@@ -77,18 +91,25 @@ export const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
                 </span>
               </div>
             )}
-
-\            {!isOutOfStock && item.stockQuantity <= 5 && (
+            \{' '}
+            {!isOutOfStock && item.stockQuantity <= 5 && (
               <Badge
+                // palette={palette}
+                // isDarkMode={isDarkMode}
                 variant="warning"
                 className="absolute left-2 top-2 hidden shadow-lg md:flex md:left-4 md:top-4"
               >
                 {`${t('remain-juste')} ${item.stockQuantity}`}
               </Badge>
             )}
-
             {/* Price Badge */}
-            <div className="absolute right-2 top-2 rounded-full bg-white/95 px-3 py-1 text-sm font-bold text-gray-900 shadow-lg backdrop-blur-sm dark:bg-gray-900/95 dark:text-white md:right-4 md:top-4 md:px-4 md:py-2">
+            <div
+              className="absolute right-2 top-2 rounded-full bg-white/95 px-3 py-1 text-sm font-bold text-gray-900 shadow-lg backdrop-blur-sm dark:bg-gray-900/95 dark:text-white md:right-4 md:top-4 md:px-4 md:py-2"
+              style={{
+                backgroundColor: palette.primary,
+                color: 'white',
+              }}
+            >
               {isMobile && formatCurrency(item.price, settings?.currency)}
 
               {!isMobile &&
@@ -106,7 +127,6 @@ export const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
                   formatCurrency(item.price, settings?.currency)
                 ))}
             </div>
-
             {itemInCart && (
               <Badge
                 variant="success"
@@ -119,8 +139,11 @@ export const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
 
           <div className="flex flex-1 flex-col justify-between p-3 md:p-5">
             <div>
-              <h3 className="mb-1 text-base font-semibold text-gray-900 line-clamp-1 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400 md:text-lg md:mb-2">
-                {t(item.name)}
+              <h3
+                className={`mb-1 text-base font-semibold line-clamp-1 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400 md:text-lg md:mb-2`}
+                style={{ color: palette.primary }}
+              >
+                {item.name}
               </h3>
 
               <p className="text-sm text-gray-600 line-clamp-1  dark:text-gray-300">
@@ -159,6 +182,8 @@ export const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
           <ProductDetailsModal
             item={item}
             onClose={() => setShowModal(false)}
+            primaryColor={palette.primary}
+            isDarkMode={isDarkMode}
           />
         )}
       </>
