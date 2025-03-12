@@ -8,6 +8,7 @@ import { staffApi } from './services/staff.service';
 import { mediaApi } from './services/media.service';
 import { orderApi } from './services/order.service';
 import { settingsApi } from './services/settings.service';
+import { authApi } from './services/auth.service';
 
 export const store = configureStore({
   reducer: {
@@ -20,6 +21,7 @@ export const store = configureStore({
     [mediaApi.reducerPath]: mediaApi.reducer,
     [orderApi.reducerPath]: orderApi.reducer,
     [settingsApi.reducerPath]: settingsApi.reducer,
+    [authApi.reducerPath]: authApi.reducer,
   },
   middleware: getDefaultMiddleware => {
     return getDefaultMiddleware()
@@ -31,7 +33,8 @@ export const store = configureStore({
       .concat(staffApi.middleware)
       .concat(mediaApi.middleware)
       .concat(orderApi.middleware)
-      .concat(settingsApi.middleware);
+      .concat(settingsApi.middleware)
+      .concat(authApi.middleware);
   },
 });
 
