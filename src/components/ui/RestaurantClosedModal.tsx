@@ -39,7 +39,8 @@ export function RestaurantClosedModal() {
   // Check if we're on a protected route
   const isProtectedRoute =
     location.pathname.startsWith('/dashboard') ||
-    location.pathname === '/login';
+    location.pathname === '/login' ||
+    import.meta.env.VITE_APP_UNAVAILABLE === 'true';
 
   // Early return after hooks
   if (isRestaurantOpen || isProtectedRoute || isHoliday) return null;

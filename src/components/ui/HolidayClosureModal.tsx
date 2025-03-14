@@ -36,7 +36,8 @@ export function HolidayClosureModal() {
 
   const isProtectedRoute =
     location.pathname.startsWith('/dashboard') ||
-    location.pathname === '/login';
+    location.pathname === '/login' ||
+    import.meta.env.VITE_APP_UNAVAILABLE === 'true';
 
   if (!isHoliday || isProtectedRoute) return null;
 

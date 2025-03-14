@@ -5,24 +5,7 @@ import { Button } from '../../../ui/Button';
 import { StaffFormData, StaffMember } from '../../../../types/staff';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
-
-// Route definitions
-const PUBLIC_ROUTES = ['pos', 'orders', 'qr-code'];
-const ADMIN_ROUTES = [
-  'categories',
-  'menu',
-  'variants',
-  'inventory',
-  'accounting',
-  'payments',
-  'customers',
-  'staff',
-  'media',
-  'settings',
-  'dashboard',
-  'traffic',
-  'settings/theme',
-];
+import { PUBLIC_ROUTES, ADMIN_ROUTES } from '../../../../constants/routes';
 
 interface StaffFormProps {
   staff?: StaffMember | null;

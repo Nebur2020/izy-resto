@@ -310,5 +310,9 @@
   "discard": "Discard",
   "combination-no-items": "No combination found",
   "only-show-what-you-defined": "Only show what you defined",
-  "invalid-combination": "Invalid combination"
+  "invalid-combination": "Invalid combination",
+  "temporarily-unavailable": "Temporarily unavailable",
+  "temporarily-unavailable-message": "This website is temporarily unavailable. Please try again later.",
+  "if-problem-persists": "If the problem persists, please contact support.",
+  "contact-support": "Contact support"
 }
