@@ -23,20 +23,20 @@ jobs:
         run: |
           git remote add upstream https://github.com/Nebur2020/izy-resto.git
           git fetch upstream --prune
-      # Step 4: Sync all branches from upstream
-      - name: Sync all branches
+      # Step 4: Sync only the release/premium branch
+      - name: Sync release/premium branch
         run: |
-          # Get all upstream branches
-          BRANCHES=$(git branch -r | grep "upstream/" | grep -v "HEAD" | sed 's/upstream\///')
+          # Sync only the release/premium branch from upstream
+          echo "Syncing branch: release/premium"
 
-          # Loop through and sync each branch
-          for BRANCH in $BRANCHES; do
-            echo "Syncing branch: $BRANCH"
-            
+          # Verify the branch exists in upstream
+          if git ls-remote --heads upstream release/premium | grep -q 'release/premium'; then
             # Create or update branch by directly pushing the upstream branch to origin
-            # This ensures GitHub UI shows the branch
-            git push origin refs/remotes/upstream/$BRANCH:refs/heads/$BRANCH --force
-          done
+            git push origin refs/remotes/upstream/release/premium:refs/heads/release/premium --force
+            echo "Successfully synced release/premium branch"
+          else
+            echo "Warning: release/premium branch not found in upstream repository"
+          fi
 
           # Return to main branch
           git checkout main
