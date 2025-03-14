@@ -1,10 +1,8 @@
 name: Sync Fork
-
 on:
   schedule:
-    - cron: '0 0 * * *' # Runs daily at midnight
+    - cron: '0 0 * * *' # Runs daily at midnight (note: fixed cron syntax)
   workflow_dispatch: # Allows manual triggering
-
 jobs:
   sync:
     runs-on: ubuntu-latest
@@ -15,30 +13,48 @@ jobs:
         with:
           fetch-depth: 0 # Fetch all history and tags
           token: ${{ secrets.ACCOUNT_TOKEN }}
-
       # Step 2: Configure Git
       - name: Set up Git
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
       # Step 3: Add upstream remote
       - name: Add upstream remote
         run: |
           git remote add upstream https://github.com/Nebur2020/izy-resto.git
-          git fetch upstream
+          git fetch upstream --prune
+      # Step 4: Sync all branches from upstream
+      - name: Sync all branches
+        run: |
+          # Get all upstream branches
+          BRANCHES=$(git branch -r | grep "upstream/" | grep -v "HEAD" | sed 's/upstream\///')
 
-      # Step 4: Merge upstream changes into the main branch
-      - name: Merge changes
+          # Loop through and sync each branch
+          for BRANCH in $BRANCHES; do
+            echo "Syncing branch: $BRANCH"
+            
+            # Check if branch exists locally
+            if git show-ref --verify --quiet refs/heads/$BRANCH; then
+              # Branch exists, switch to it and update
+              git checkout $BRANCH
+              git merge upstream/$BRANCH --allow-unrelated-histories || true
+            else
+              # Branch doesn't exist, create and track it
+              git checkout -b $BRANCH upstream/$BRANCH
+            fi
+            
+            # Push changes to origin
+            git push origin $BRANCH
+          done
+
+          # Return to main branch
+          git checkout main
+      # Step 5: Merge upstream main changes into the fork's main branch
+      - name: Merge main branch changes
         run: |
           git checkout main
           git merge upstream/main --allow-unrelated-histories || true
-
-      # Step 5: Push changes back to the forked repository
-      - name: Push changes
-        run: |
           git push origin main
-
       # Step 6: Sync tags from upstream
       - name: Fetch and push tags
         env:
@@ -46,7 +62,6 @@ jobs:
         run: |
           git fetch upstream --tags -f
           git push origin --tags
-
       # Step 7: Create release from latest tag
       - name: Get latest tag and create release
         env:
@@ -54,7 +69,6 @@ jobs:
         run: |
           # Get the latest tag
           LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-
           if [ ! -z "$LATEST_TAG" ]; then
             # Check if release exists for latest tag
             if ! gh release view "$LATEST_TAG" &>/dev/null; then
