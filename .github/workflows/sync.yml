@@ -33,18 +33,9 @@ jobs:
           for BRANCH in $BRANCHES; do
             echo "Syncing branch: $BRANCH"
             
-            # Check if branch exists locally
-            if git show-ref --verify --quiet refs/heads/$BRANCH; then
-              # Branch exists, switch to it and update
-              git checkout $BRANCH
-              git merge upstream/$BRANCH --allow-unrelated-histories || true
-            else
-              # Branch doesn't exist, create and track it
-              git checkout -b $BRANCH upstream/$BRANCH
-            fi
-            
-            # Push changes to origin
-            git push origin $BRANCH
+            # Create or update branch by directly pushing the upstream branch to origin
+            # This ensures GitHub UI shows the branch
+            git push origin refs/remotes/upstream/$BRANCH:refs/heads/$BRANCH --force
           done
 
           # Return to main branch
