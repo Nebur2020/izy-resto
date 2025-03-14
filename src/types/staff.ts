@@ -7,6 +7,7 @@ export interface StaffMember {
   permissions: string[]; // Array of allowed dashboard menu item IDs
   createdAt: string;
   updatedAt: string;
+  allowedRoutes?: string[]; // Array of allowed dashboard route paths
 }
 
 export interface StaffFormData {
@@ -15,4 +16,5 @@ export interface StaffFormData {
   name: string;
   role: 'admin' | 'staff';
   permissions: string[];
+  allowedRoutes?: string[]; // Array of allowed dashboard route paths
 }

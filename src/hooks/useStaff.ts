@@ -31,6 +31,7 @@ export function useStaff() {
         createdAt: new Date().toDateString(),
         updatedAt: new Date().toDateString(),
         permissions: [],
+        allowedRoutes: data.allowedRoutes || [],
       });
       await loadStaff(); // Refresh list
     } catch (error) {

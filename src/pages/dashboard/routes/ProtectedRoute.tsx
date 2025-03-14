@@ -20,7 +20,8 @@ export function ProtectedRoute({
   staffData,
   settings,
 }: ProtectedRouteProps) {
-  const allowedRoutes = settings?.staffPermissions || [];
+  const allowedRoutes =
+    staffData?.allowedRoutes || settings?.staffPermissions || [];
 
   // Admin has access to all routes
   if (!isStaff || staffData?.role === 'admin') return element;

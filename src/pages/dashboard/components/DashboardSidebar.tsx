@@ -92,8 +92,11 @@ export function DashboardSidebar({
               if (!staffData?.active) return false;
 
               return (
-                settings?.staffPermissions.includes(item.id) &&
-                item.id !== 'dashboard'
+                (
+                  staffData?.allowedRoutes ||
+                  settings?.staffPermissions ||
+                  []
+                ).includes(item.id) && item.id !== 'dashboard'
               );
             })
             .map(item => (

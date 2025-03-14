@@ -47,6 +47,7 @@ class StaffService extends FirestoreService<StaffMember> {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         permissions: [],
+        allowedRoutes: data.allowedRoutes || [],
       };
 
       const id = await super.create(staffData);
