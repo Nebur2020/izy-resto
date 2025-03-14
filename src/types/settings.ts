@@ -133,11 +133,7 @@ export interface RestaurantSettings {
         configuration: PizzaThemeConfig;
       }
     | {
-        key: 'modern';
-        configuration: PizzaThemeConfig;
-      }
-    | {
-        key: string;
+        key: 'minimal' | 'grid' | 'modern';
         configuration: Record<string, unknown>;
       };
   palette: {

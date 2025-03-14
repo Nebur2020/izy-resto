@@ -310,5 +310,6 @@
   "theme-configuration": "Thème configuration",
   "discard": "Annuler",
   "combination-no-items": "Aucune combinaison trouvée",
-  "only-show-what-you-defined": "Seuls les éléments que vous avez définis seront affichés"
+  "only-show-what-you-defined": "Seuls les éléments que vous avez définis seront affichés",
+  "invalid-combination": "Combinaison invalide"
 }

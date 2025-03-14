@@ -309,5 +309,6 @@
   "theme-configuration": "Theme configuration",
   "discard": "Discard",
   "combination-no-items": "No combination found",
-  "only-show-what-you-defined": "Only show what you defined"
+  "only-show-what-you-defined": "Only show what you defined",
+  "invalid-combination": "Invalid combination"
 }
