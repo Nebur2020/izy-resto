@@ -13,7 +13,7 @@ export function OrderCardDetails({ order }: OrderCardDetailsProps) {
   const { settings } = useSettings();
   const { t } = useTranslation();
 
-  const showTaxesAndTips = order.status !== 'cancelled';
+  const showAdditionalCharges = order.status !== 'cancelled';
 
   const calculateTotal = () => {
     if (order.status === 'cancelled') {
@@ -35,7 +35,7 @@ export function OrderCardDetails({ order }: OrderCardDetailsProps) {
               {t('order:delivery-address')} : {order.customerAddress}
             </p>
           )}
-          {order.delivery && (
+          {showAdditionalCharges && order.delivery && (
             <p className="font-medium">
               {t('order:delivery-to')} {order.delivery.name}
             </p>
@@ -73,8 +73,8 @@ export function OrderCardDetails({ order }: OrderCardDetailsProps) {
           ))}
         </div>
         {(!!order.subtotal ||
-          !!(showTaxesAndTips && order?.taxes) ||
-          !!(showTaxesAndTips && order?.tip?.percentage)) && (
+          !!(showAdditionalCharges && order?.taxes) ||
+          !!(showAdditionalCharges && order?.tip?.percentage)) && (
           <div className="space-y-2  pt-4 mt-4 border-t border-current/10">
             {order.subtotal && (
               <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
@@ -84,7 +84,7 @@ export function OrderCardDetails({ order }: OrderCardDetailsProps) {
                 </span>
               </div>
             )}
-            {showTaxesAndTips &&
+            {showAdditionalCharges &&
               (order?.taxes || []).map(tax => (
                 <div
                   key={tax.id}
@@ -96,7 +96,7 @@ export function OrderCardDetails({ order }: OrderCardDetailsProps) {
                   <span>{formatCurrency(tax.amount, settings?.currency)}</span>
                 </div>
               ))}
-            {showTaxesAndTips && order?.tip?.percentage && (
+            {showAdditionalCharges && order?.tip?.percentage && (
               <div
                 key={order.tip.amount}
                 className="flex justify-between text-sm text-gray-600 dark:text-gray-400"
@@ -109,7 +109,7 @@ export function OrderCardDetails({ order }: OrderCardDetailsProps) {
                 </span>
               </div>
             )}
-            {order?.delivery && (
+            {showAdditionalCharges && order?.delivery && (
               <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
                 <span>{t('delivery')}</span>
                 <span>

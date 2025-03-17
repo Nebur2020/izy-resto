@@ -13,10 +13,13 @@ export function OrderTrackingDetails({ order }: OrderTrackingDetailsProps) {
   const { settings } = useSettings();
   const { t } = useTranslation('order');
 
-  const showTaxesAndTips = order.status !== 'cancelled';
+  // Déterminer si les charges additionnelles doivent être affichées (ne pas afficher si la commande est annulée)
+  const showAdditionalCharges = order.status !== 'cancelled';
 
+  // Calculer le total réel en fonction du statut de la commande
   const calculateTotal = () => {
     if (order.status === 'cancelled') {
+      // Pour une commande annulée, le total est simplement le sous-total
       return order.subtotal || 0;
     }
     return order.total || 0;
@@ -84,8 +87,8 @@ export function OrderTrackingDetails({ order }: OrderTrackingDetailsProps) {
             </div>
           ))}
           {(!!order.subtotal ||
-            !!(showTaxesAndTips && order?.taxes) ||
-            !!(showTaxesAndTips && order?.tip?.percentage)) && (
+            !!(showAdditionalCharges && order?.taxes) ||
+            !!(showAdditionalCharges && order?.tip?.percentage)) && (
             <div className="space-y-2 pt-4 mt-4 border-t border-current/10">
               {order.subtotal && (
                 <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
@@ -96,7 +99,7 @@ export function OrderTrackingDetails({ order }: OrderTrackingDetailsProps) {
                 </div>
               )}
 
-              {showTaxesAndTips &&
+              {showAdditionalCharges &&
                 (order?.taxes || []).map(tax => (
                   <div
                     key={tax.id}
@@ -110,7 +113,7 @@ export function OrderTrackingDetails({ order }: OrderTrackingDetailsProps) {
                     </span>
                   </div>
                 ))}
-              {showTaxesAndTips && order?.tip?.percentage && (
+              {showAdditionalCharges && order?.tip?.percentage && (
                 <div
                   key={order.tip.amount}
                   className="flex justify-between text-sm text-gray-600 dark:text-gray-400"
@@ -123,7 +126,7 @@ export function OrderTrackingDetails({ order }: OrderTrackingDetailsProps) {
                   </span>
                 </div>
               )}
-              {order?.delivery && (
+              {showAdditionalCharges && order?.delivery && (
                 <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
                   <span>
                     {t('delivery-to')} {order.delivery.name}
