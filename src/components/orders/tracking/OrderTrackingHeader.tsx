@@ -15,6 +15,13 @@ export function OrderTrackingHeader({ order }: OrderTrackingHeaderProps) {
 
   const lang = i18n.language as Language;
 
+  const calculateTotal = () => {
+    if (order.status === 'cancelled') {
+      return order.subtotal || 0;
+    }
+    return order.total || 0;
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-b-xl p-6 shadow-sm">
       <div className="flex justify-between items-start mb-4">
@@ -28,7 +35,7 @@ export function OrderTrackingHeader({ order }: OrderTrackingHeaderProps) {
         </div>
         <div className="text-right">
           <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-            {formatCurrency(order.total, settings?.currency)}
+            {formatCurrency(calculateTotal(), settings?.currency)}
           </p>
           <p className="text-gray-600 dark:text-gray-400">
             {order.items.length} {t('common:items')}

@@ -36,14 +36,12 @@ export default function Banner({
   const themeConfig = usePizzaTheme();
   const maxLength = 40;
 
-  // Use props if provided, otherwise fall back to theme context values
   const bannerDeliveryText = deliveryText || themeConfig.header.deliveryText;
   const bannerMainHeading = mainHeading || themeConfig.header.mainHeading;
   const bannerTaglines = taglines || themeConfig.header.taglines;
   const bannerButtonText =
     buttonText || themeConfig.header.buttonText || t('hero:view-menu');
 
-  // Default to theme context isDarkMode if not provided as prop
   const isDarkModeActive = isDarkMode;
 
   return (

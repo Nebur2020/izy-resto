@@ -23,10 +23,8 @@ export default function ItemCard({
 
   const isOutOfStock = item.stockQuantity === 0;
 
-  // Use provided primary color or fall back to theme context
   const cardPrimaryColor = primaryColor || '#fcb302';
 
-  // Generate style classes based on dark mode setting
   const cardClassName = isDarkMode
     ? 'bg-[#1A1A1A] text-white'
     : 'bg-black text-white';
@@ -38,7 +36,6 @@ export default function ItemCard({
   const cardVariants = {
     hidden: { opacity: 0, scale: 0.8 },
     visible: { opacity: 1, scale: 1, transition: { duration: 0.5 } },
-    // hover: { scale: 1.05, transition: { duration: 0.2 } },
   };
 
   const imageVariants = {

@@ -311,10 +311,12 @@
   "discard": "Annuler",
   "combination-no-items": "Aucune combinaison trouvée",
   "only-show-what-you-defined": "Seuls les éléments que vous avez définis seront affichés",
-  "invalid-combination": "Combinaison invalide",
   "temporarily-unavailable": "Temporairement indisponible",
   "temporarily-unavailable-message": "Le site est temporairement indisponible. Veuillez réessayer plus tard.",
   "if-problem-persists": "Si le problème persiste, contactez le support.",
   "contact-support": "Contacter le support",
-  "estimated-completion": "Temps estimé"
+  "estimated-completion": "Temps estimé",
+  "orders-title": "Commandes",
+  "inventory-title": "Inventaire",
+  "invalid-combination": "Combinaison invalide"
 }

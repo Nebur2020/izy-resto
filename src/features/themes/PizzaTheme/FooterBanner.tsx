@@ -25,10 +25,6 @@ export default function FooterBanner({
   const lng = i18n.language as Language;
   const themeConfig = usePizzaTheme();
 
-  // Default to theme context isDarkMode if not provided as prop
-  const isDarkModeActive = isDarkMode;
-
-  // Use props if provided, otherwise fall back to theme context values
   const showSection =
     showExcellentQuality !== undefined
       ? showExcellentQuality
@@ -45,10 +41,6 @@ export default function FooterBanner({
     return null;
   }
 
-  // Add a dark overlay for dark mode
-  // const darkModeOverlay = isDarkModeActive
-  //   ? 'before:absolute before:inset-0 before:bg-black before:opacity-50 before:z-[1]'
-  //   : '';
 
   return (
     <section

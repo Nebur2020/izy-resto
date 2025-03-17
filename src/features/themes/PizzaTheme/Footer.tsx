@@ -237,7 +237,7 @@ export default function Footer({
               to={settings?.termsOfService ? '/terms' : '#'}
               className="text-white dark:text-white flex items-center gap-1"
             >
-              <span className="flex gap-1 items-center ">
+              <span className="flex gap-1 items-center text-white">
                 {' '}
                 <LinkIcon className="w-3 h-3" />
                 {t('footer:cgu')}
