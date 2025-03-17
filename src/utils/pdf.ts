@@ -447,6 +447,7 @@ export async function generateReceiptPDF(
 export async function generateUserReceipt(
   order: Order,
   t: (key: string) => string,
+  lng: Language,
   settings?: RestaurantSettings | null
 ): Promise<jsPDF> {
   try {
@@ -477,7 +478,8 @@ export async function generateUserReceipt(
           </p>
           <p style="color: #000000; font-size: 13px; margin: 0;">${formatDate(
             order.createdAt,
-            true
+            true,
+            lng
           )}</p>
         </div>
 
