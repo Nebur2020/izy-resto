@@ -46,7 +46,7 @@ export default function Cta({
             className="absolute inset-0 opacity-90 rounded-lg lg:rounded-bl-[100px] lg:rounded-tr-[100px]"
             style={{ backgroundColor: primaryColor }}
           ></div>
-          <div className="relative w-[80%] sm:w-[60%] md:w-[50%] lg:w-auto before:absolute before:top-[140px] before:right-[240px] before:w-[100px] before:h-[81px] before:bg-[url('https://radiustheme.com/demo/wordpress/themes/panpie/wp-content/themes/panpie/assets/element/smoke.png')] before:bg-no-repeat before:bg-cover before:z-0 before:hidden lg:before:block z-10 animate-move-horizontal">
+          <div className="relative w-[80%] sm:w-[60%] md:w-[50%] lg:w-auto before:absolute before:top-[210px] before:right-[320px] before:w-[100px] before:h-[81px] before:bg-[url('https://radiustheme.com/demo/wordpress/themes/panpie/wp-content/themes/panpie/assets/element/smoke.png')] before:bg-no-repeat before:bg-cover before:z-0 before:hidden lg:before:block z-10 animate-move-horizontal">
             <img
               src="https://radiustheme.com/demo/wordpress/themes/panpie/wp-content/uploads/2020/09/bike.png"
               alt="call to action image"
