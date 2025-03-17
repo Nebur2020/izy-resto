@@ -11,7 +11,6 @@ import UnselectedRequiredVariantType from './UnselectedRequiredVariantType';
 import { useTranslation } from 'react-i18next';
 import { variantService } from '../../services';
 import { Variant } from '../../types';
-import { set } from 'date-fns';
 
 interface IProductDetailsModalProps {
   item: MenuItemWithVariants | null;
@@ -24,6 +23,8 @@ interface IProductDetailsModalProps {
   priceStyle?: string;
   addToCartButtonStyle?: string;
   variantSelectStyles?: string;
+  setItemsToOrder?: (items: MenuItem[]) => void;
+  itemsToOrder?: MenuItem[];
 }
 
 export function ProductDetailsModal(props: IProductDetailsModalProps) {
@@ -31,16 +32,17 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
     item,
     onClose,
     onAddToCart,
-    primaryColor = '#fcb302', // Default primary color
-    isDarkMode = false, // Default dark mode setting
+    primaryColor = '#fcb302',
+    isDarkMode = false,
     addProductToCartBgColor,
     stockAvailableBgColor,
     priceStyle,
     addToCartButtonStyle,
     variantSelectStyles,
+    setItemsToOrder,
+    itemsToOrder,
   } = props;
 
-  // Define dynamic inline styles based on primary color
   const primaryColorStyle = {
     backgroundColor: primaryColor,
   };
@@ -59,14 +61,11 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
     color: primaryColor,
   };
 
-  // Generate derived styles based on primary color and dark mode
   const defaultAddProductBgColor = 'text-white hover:bg-opacity-90';
 
   const defaultStockBgColor = isDarkMode
     ? `bg-opacity-20 text-${primaryColor}`
     : '';
-
-  const defaultPriceStyle = 'text-base sm:text-lg font-bold';
 
   const defaultAddToCartButtonStyle = `${
     addProductToCartBgColor || defaultAddProductBgColor
@@ -74,11 +73,7 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
 
   const defaultVariantSelectStyles = 'text-white scale-105 shadow-md';
 
-  // Use provided styles or fall back to generated defaults
-  const finalAddProductBgColor =
-    addProductToCartBgColor || defaultAddProductBgColor;
   const finalStockBgColor = stockAvailableBgColor || defaultStockBgColor;
-  const finalPriceStyle = priceStyle || defaultPriceStyle;
   const finalAddToCartButtonStyle =
     addToCartButtonStyle || defaultAddToCartButtonStyle;
   const finalVariantSelectStyles =
@@ -103,8 +98,6 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
   const { t } = useTranslation(['menu', 'cart']);
 
   if (!item) return null;
-
-  // console.log('ProductDetailsModal render', item);
 
   const isOutOfStock = item.stockQuantity === 0;
   const itemWithVariants = item as MenuItemWithVariants;
@@ -392,6 +385,7 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
 
       if (onAddToCart) {
         onAddToCart(cartItem);
+        setItemsToOrder?.([...(itemsToOrder || []), cartItem]);
       } else {
         addToCart(cartItem);
       }

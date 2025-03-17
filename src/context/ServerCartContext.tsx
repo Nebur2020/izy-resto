@@ -34,7 +34,6 @@ export function ServerCartProvider({
   const [tipPercentage, setTipPercentage] = useState<number | null>(null);
   const { settings } = useSettings();
 
-  // Calculate subtotal (pre-tax amount)
   const subtotal = cart.reduce((sum, item) => {
     const itemPrice = settings?.taxes.includedInPrice
       ? calculatePriceWithoutTaxes(item.price, settings.taxes.rates, [
@@ -44,14 +43,12 @@ export function ServerCartProvider({
     return sum + itemPrice * item.quantity;
   }, 0);
 
-  // Calculate taxes
   const { taxes, total: taxTotal } = calculateTaxes(
     subtotal,
     settings?.taxes.rates || [],
     cart.map(item => item.categoryId)
   );
 
-  // Calculate tip
   const tip = tipPercentage
     ? {
         amount: calculateTip(subtotal, tipPercentage),
@@ -59,7 +56,6 @@ export function ServerCartProvider({
       }
     : null;
 
-  // Calculate total
   const total = calculateTotal(subtotal, taxTotal, tip?.amount || 0);
 
   const addToCart = (item: MenuItem & { quantity?: number }) => {
@@ -137,12 +133,6 @@ export function ServerCartProvider({
     setCart([]);
     setTipPercentage(null);
   };
-
-  // useEffect(() => {
-  //   localStorage.setItem(USER_CART, JSON.stringify(cart));
-  // }, [cart]);
-
-  // const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
     <CartContext.Provider

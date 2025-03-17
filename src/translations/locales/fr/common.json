@@ -310,5 +310,9 @@
   "theme-configuration": "Thème configuration",
   "discard": "Annuler",
   "combination-no-items": "Aucune combinaison trouvée",
-  "only-show-what-you-defined": "Seuls les éléments que vous avez définis seront affichés"
+  "only-show-what-you-defined": "Seuls les éléments que vous avez définis seront affichés",
+  "order-list": "Liste des commandes",
+  "product-list": "Liste des produits",
+  "order-updated": "Mettre à jour la commande",
+  "add-more-items": "Ajouter plus d'articles"
 }

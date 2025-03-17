@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, X } from 'lucide-react';
-import { CartItem } from '../../../../types';
+import { CartItem, Order } from '../../../../types';
 import { CartItemList } from '../../../pos/CartItemList';
 import { CustomerInfoForm } from '../../../pos/CustomerInfoForm';
 import { OrderSummary } from '../../../pos/OrderSummary';
@@ -11,6 +11,7 @@ import { useServerCart } from '../../../../context/ServerCartContext';
 import { formatCurrency } from '../../../../utils/currency';
 import { useSettings } from '../../../../hooks';
 import { useTranslation } from 'react-i18next';
+import { orderService } from '../../../../services';
 
 interface IPOSCartSidebarProps {
   onClose?: () => void;
@@ -29,6 +30,9 @@ interface IPOSCartSidebarProps {
   onQuickAmount: (amount: number) => void;
   onCheckout: () => Promise<void>;
   isSubmitting: boolean;
+  order?: Order;
+  itemsToOrder?: CartItem[];
+  setIsAddItemsToOrder?: (value: boolean) => void;
 }
 
 export function POSCartSidebar(props: IPOSCartSidebarProps) {
@@ -44,13 +48,37 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
     onQuickAmount,
     onCheckout,
     isSubmitting,
+    order,
+    itemsToOrder,
+    setIsAddItemsToOrder,
   } = props;
+
   const [error] = useState('');
   const [showExtras, setShowExtras] = useState(false);
   const { settings } = useSettings();
   const { t } = useTranslation('common');
-
   const { total } = useServerCart();
+  const [cartItems, setCartItems] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (order) {
+      setTableNumber(order.tableNumber || '');
+      setCustomerInfo({
+        name: order.customerName || '',
+        phone: order.customerPhone || '',
+      });
+    }
+  }, [order]);
+
+  useEffect(() => {
+    if (order && order?.items.length > 0) {
+      setCartItems(order.items);
+    } else if (cart.length > 0) {
+      setCartItems(cart);
+    } else {
+      setCartItems([]);
+    }
+  }, [order?.items, cart]);
 
   const handleCheckout = async () => {
     try {
@@ -67,6 +95,36 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
         toast.error(error.message);
       } else {
         toast.error(t('order-creation-fail'));
+      }
+    }
+  };
+
+  const handleUpdateOrder = async () => {
+    try {
+      if (!order) {
+        throw new Error('No order to update');
+      }
+
+      // Préparer les données de mise à jour
+      const updateData = {
+        tableNumber,
+        customerName: customerInfo.name,
+        customerPhone: customerInfo.phone,
+        items: cartItems,
+        total,
+        amountPaid,
+        updatedAt: new Date().toISOString(),
+      };
+
+      // Appeler le service pour mettre à jour la commande
+      await orderService.updateOrder(order.id, updateData);
+      toast.success(t('order-successfully-updated'));
+    } catch (error) {
+      console.error('Error updating order:', error);
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error(t('order-update-fail'));
       }
     }
   };
@@ -105,11 +163,14 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
         </div>
 
         <div className="px-4">
-          <CartItemList />
+          <CartItemList
+            items={itemsToOrder}
+            setIsAddItemsToOrder={setIsAddItemsToOrder}
+          />
         </div>
       </div>
 
-      {cart.length > 0 && (
+      {cartItems.length > 0 && (
         <div className="dark:border-gray-700 p-4 space-y-4 bg-white dark:bg-gray-800">
           <div className="flex justify-between items-center text-lg font-semibold border-t dark:border-gray-700 pt-4">
             <span>{t('total')}</span>
@@ -143,13 +204,17 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
           {error && <p className="text-red-500 dark:text-red-400">{error}</p>}
 
           <Button
-            onClick={handleCheckout}
+            onClick={order ? handleUpdateOrder : handleCheckout}
             disabled={cart.length === 0 || isSubmitting}
             className="w-full py-3 text-base font-medium bg-blue-600 hover:bg-blue-700 text-white  rounded-lg
                      transition-colors duration-200 shadow-sm hover:shadow-md
                      disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? t('processing') : t('validated-order')}
+            {isSubmitting
+              ? t('processing')
+              : order
+              ? t('updated-order')
+              : t('validated-order')}
           </Button>
         </div>
       )}
