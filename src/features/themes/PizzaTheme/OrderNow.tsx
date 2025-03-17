@@ -1,6 +1,8 @@
 import { MoveRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { usePizzaTheme } from './context/PizzaThemeContext';
+import { useSettings } from '../../../hooks';
+import { Language } from '../../../types';
 
 interface OrderNowProps {
   title?: string;
@@ -25,8 +27,10 @@ export default function OrderNow({
   isDarkMode,
   primaryColor,
 }: OrderNowProps) {
-  const { t } = useTranslation('pizzatheme');
+  const { t, i18n } = useTranslation('pizzatheme');
+  const lng = i18n.language as Language;
   const themeConfig = usePizzaTheme();
+  const { settings } = useSettings();
 
   const itemTitle = title || themeConfig.specialItem.title;
   const itemDescription = description || themeConfig.specialItem.description;
@@ -64,12 +68,21 @@ export default function OrderNow({
               {itemDescription}
             </p>
             <div className="flex items-center gap-2 mb-4">
-              <span
-                className="text-3xl font-bold"
-                style={{ color: primaryColor }}
-              >
-                ${itemPrice}
-              </span>
+              {lng === 'fr' ? (
+                <span
+                  className="text-3xl font-bold"
+                  style={{ color: primaryColor }}
+                >
+                  {itemPrice} {settings?.currency}
+                </span>
+              ) : (
+                <span
+                  className="text-3xl font-bold"
+                  style={{ color: primaryColor }}
+                >
+                  {settings?.currency} {itemPrice}
+                </span>
+              )}
               <span
                 className={
                   isDarkMode ? 'text-sm text-gray-400' : 'text-sm text-gray-500'
