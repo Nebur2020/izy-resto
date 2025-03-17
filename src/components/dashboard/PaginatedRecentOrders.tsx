@@ -66,7 +66,7 @@ export function PaginatedRecentOrders({
                     statusColors[order.status]
                   }`}
                 >
-                  {t(`order-status-${order.status}`)}
+                  {t(`order-status-${order.status}`)} 
                 </span>
               </div>
             </motion.button>

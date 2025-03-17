@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Order } from '../../../types';
+import { Language, Order } from '../../../types';
 import { OrderTimeline } from '../OrderTimeline';
 import { OrderQRCode } from '../OrderQRCode';
 import { Button } from '../../ui';
@@ -16,7 +16,8 @@ interface OrderTrackingTimelineProps {
 }
 
 export function OrderTrackingTimeline({ order }: OrderTrackingTimelineProps) {
-  const { t } = useTranslation('order');
+  const { t, i18n } = useTranslation('order');
+  const lng = i18n.language as Language;
   const [isDownloading, setIsDownloading] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
 
@@ -44,7 +45,7 @@ export function OrderTrackingTimeline({ order }: OrderTrackingTimelineProps) {
   const handleDownloadReceipt = async () => {
     try {
       setIsDownloading(true);
-      const pdf = await generateUserReceipt(order, t, settings);
+      const pdf = await generateUserReceipt(order, t, lng, settings);
       pdf.save(`commande-${order.id.slice(0, 8)}.pdf`);
       toast.success(t('common:download-success'));
     } catch (error) {
@@ -113,7 +114,7 @@ export function OrderTrackingTimeline({ order }: OrderTrackingTimelineProps) {
                 variant="danger"
                 onClick={handleCancelOrder}
                 className="w-full mt-4"
-                spanClassName='text-white'
+                spanClassName="text-white"
               >
                 {t('cancel-order')}
               </Button>

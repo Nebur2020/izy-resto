@@ -1,6 +1,9 @@
 import { MoveRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { usePizzaTheme } from './context/PizzaThemeContext';
+import { useSettings } from '../../../hooks';
+import { Language } from '../../../types';
+import { formatCurrency } from '../../../utils/currency';
 
 interface OrderNowProps {
   title?: string;
@@ -25,12 +28,11 @@ export default function OrderNow({
   isDarkMode,
   primaryColor,
 }: OrderNowProps) {
-  const { t } = useTranslation('pizzatheme');
+  const { t, i18n } = useTranslation('pizzatheme');
+  const lng = i18n.language as Language;
   const themeConfig = usePizzaTheme();
+  const { settings } = useSettings();
 
-  // Default to theme context isDarkMode if not provided as prop
-
-  // Use props if provided, otherwise fall back to theme context values
   const itemTitle = title || themeConfig.specialItem.title;
   const itemDescription = description || themeConfig.specialItem.description;
   const itemPrice = price || themeConfig.specialItem.price;
@@ -39,11 +41,6 @@ export default function OrderNow({
   const itemButtonText =
     buttonText || themeConfig.specialItem.buttonText || t('order-now');
   const sectionBg = backgroundImage || themeConfig.specialItem.backgroundImage;
-
-  // Create a semi-transparent overlay for dark mode
-  // const darkModeOverlay = isDarkMode
-  //   ? 'after:absolute after:inset-0 after:bg-black after:opacity-60 after:z-0'
-  //   : '';
 
   return (
     <section
@@ -76,7 +73,7 @@ export default function OrderNow({
                 className="text-3xl font-bold"
                 style={{ color: primaryColor }}
               >
-                ${itemPrice}
+                {formatCurrency(itemPrice, settings?.currency)}
               </span>
               <span
                 className={

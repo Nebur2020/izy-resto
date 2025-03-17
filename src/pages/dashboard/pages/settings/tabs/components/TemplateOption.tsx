@@ -29,6 +29,7 @@ export function TemplateOption(props: TemplateOptionProps) {
     imageUrl,
     onCustomize,
   } = props;
+
   return (
     <div
       className={`
