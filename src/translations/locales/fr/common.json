@@ -312,5 +312,6 @@
   "combination-no-items": "Aucune combinaison trouvée",
   "only-show-what-you-defined": "Seuls les éléments que vous avez définis seront affichés",
   "orders-title": "Commandes",
-  "inventory-title": "Inventaire"
+  "inventory-title": "Inventaire",
+  "invalid-combination": "Combinaison invalide"
 }

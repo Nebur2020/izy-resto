@@ -62,10 +62,7 @@ export function VariantManager(props: IVariantManagerProps) {
             {t('variant:variants-combination-description')}
           </p>
         </div>
-        <Button
-          type="button"
-          onClick={handleAddCombination}
-        >
+        <Button type="button" onClick={handleAddCombination}>
           <Plus className="w-4 h-4 mr-2" />
           {t('variant:add-combination')}
         </Button>
