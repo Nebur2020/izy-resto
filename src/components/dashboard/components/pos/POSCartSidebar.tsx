@@ -105,20 +105,20 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
         throw new Error('No order to update');
       }
 
-      // Préparer les données de mise à jour
+      console.log('cartItems: ', cartItems, 'itemsToOrder', itemsToOrder);
+
       const updateData = {
         tableNumber,
         customerName: customerInfo.name,
         customerPhone: customerInfo.phone,
-        items: cartItems,
+        items: itemsToOrder,
         total,
         amountPaid,
         updatedAt: new Date().toISOString(),
       };
 
-      // Appeler le service pour mettre à jour la commande
       await orderService.updateOrder(order.id, updateData);
-      toast.success(t('order-successfully-updated'));
+      toast.success(t('common:order-successfully-updated'));
     } catch (error) {
       console.error('Error updating order:', error);
       if (error instanceof Error) {
@@ -213,7 +213,7 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
             {isSubmitting
               ? t('processing')
               : order
-              ? t('updated-order')
+              ? t('common:updated-order')
               : t('validated-order')}
           </Button>
         </div>

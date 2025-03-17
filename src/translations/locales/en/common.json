@@ -313,5 +313,7 @@
   "order-list": "Order list",
   "product-list": "Product list",
   "order-updated": "Update order",
-  "add-more-items": "Add more items"
+  "add-more-items": "Add more items",
+  "updated-order": "Update Order",
+  "order-successfully-updated": "Order successfully updated"
 }

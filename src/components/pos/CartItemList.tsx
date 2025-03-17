@@ -31,10 +31,6 @@ export function CartItemList(props: CartItemListProps) {
     }
   }, [items, cart]);
 
-  console.group('CartItemList group one');
-  console.table(cartItems);
-  console.groupEnd();
-
   const handleRemoveItem = (id: string) => {
     setCartItems(() => cartItems.filter(item => item.id !== id));
 
