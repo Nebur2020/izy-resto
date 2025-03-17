@@ -13,6 +13,15 @@ export function OrderCardDetails({ order }: OrderCardDetailsProps) {
   const { settings } = useSettings();
   const { t } = useTranslation();
 
+  const showTaxesAndTips = order.status !== 'cancelled';
+
+  const calculateTotal = () => {
+    if (order.status === 'cancelled') {
+      return order.subtotal || 0;
+    }
+    return order.total || 0;
+  };
+
   return (
     <>
       <div>
@@ -63,7 +72,9 @@ export function OrderCardDetails({ order }: OrderCardDetailsProps) {
             </div>
           ))}
         </div>
-        {(!!order.subtotal || !!order?.taxes || !!order?.tip?.percentage) && (
+        {(!!order.subtotal ||
+          !!(showTaxesAndTips && order?.taxes) ||
+          !!(showTaxesAndTips && order?.tip?.percentage)) && (
           <div className="space-y-2  pt-4 mt-4 border-t border-current/10">
             {order.subtotal && (
               <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
@@ -73,18 +84,19 @@ export function OrderCardDetails({ order }: OrderCardDetailsProps) {
                 </span>
               </div>
             )}
-            {(order?.taxes || []).map(tax => (
-              <div
-                key={tax.id}
-                className="flex justify-between text-sm text-gray-800 dark:text-gray-400"
-              >
-                <span>
-                  {tax.name} ({formatTaxRate(tax.rate)})
-                </span>
-                <span>{formatCurrency(tax.amount, settings?.currency)}</span>
-              </div>
-            ))}
-            {order?.tip?.percentage && (
+            {showTaxesAndTips &&
+              (order?.taxes || []).map(tax => (
+                <div
+                  key={tax.id}
+                  className="flex justify-between text-sm text-gray-800 dark:text-gray-400"
+                >
+                  <span>
+                    {tax.name} ({formatTaxRate(tax.rate)})
+                  </span>
+                  <span>{formatCurrency(tax.amount, settings?.currency)}</span>
+                </div>
+              ))}
+            {showTaxesAndTips && order?.tip?.percentage && (
               <div
                 key={order.tip.amount}
                 className="flex justify-between text-sm text-gray-600 dark:text-gray-400"
@@ -110,7 +122,9 @@ export function OrderCardDetails({ order }: OrderCardDetailsProps) {
             )}
             <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
               <span>{t('common:total')}</span>
-              <span>{formatCurrency(order.total, settings?.currency)}</span>
+              <span>
+                {formatCurrency(calculateTotal(), settings?.currency)}
+              </span>
             </div>
           </div>
         )}

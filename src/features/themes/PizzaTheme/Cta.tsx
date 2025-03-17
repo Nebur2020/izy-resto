@@ -24,8 +24,6 @@ export default function Cta({
   const { t } = useTranslation('pizzatheme');
   const themeConfig = usePizzaTheme();
 
-  // Default to theme context isDarkMode if not provided as prop
-  // Use props if provided, otherwise fall back to theme context values
   const ctaTitle = title || themeConfig.delivery.title;
   const ctaDescription = description || themeConfig.delivery.description;
   const showPhone =

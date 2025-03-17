@@ -13,6 +13,15 @@ export function OrderTrackingDetails({ order }: OrderTrackingDetailsProps) {
   const { settings } = useSettings();
   const { t } = useTranslation('order');
 
+  const showTaxesAndTips = order.status !== 'cancelled';
+
+  const calculateTotal = () => {
+    if (order.status === 'cancelled') {
+      return order.subtotal || 0;
+    }
+    return order.total || 0;
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
@@ -74,8 +83,10 @@ export function OrderTrackingDetails({ order }: OrderTrackingDetailsProps) {
               </p>
             </div>
           ))}
-          {(!!order.subtotal || !!order?.taxes || !!order?.tip?.percentage) && (
-            <div className="space-y-2  pt-4 mt-4 border-t border-current/10">
+          {(!!order.subtotal ||
+            !!(showTaxesAndTips && order?.taxes) ||
+            !!(showTaxesAndTips && order?.tip?.percentage)) && (
+            <div className="space-y-2 pt-4 mt-4 border-t border-current/10">
               {order.subtotal && (
                 <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
                   <span>{t('cart:sub-total')}</span>
@@ -85,18 +96,21 @@ export function OrderTrackingDetails({ order }: OrderTrackingDetailsProps) {
                 </div>
               )}
 
-              {(order?.taxes || []).map(tax => (
-                <div
-                  key={tax.id}
-                  className="flex justify-between text-sm text-gray-800 dark:text-gray-400"
-                >
-                  <span>
-                    {tax.name} ({formatTaxRate(tax.rate)})
-                  </span>
-                  <span>{formatCurrency(tax.amount, settings?.currency)}</span>
-                </div>
-              ))}
-              {order?.tip?.percentage && (
+              {showTaxesAndTips &&
+                (order?.taxes || []).map(tax => (
+                  <div
+                    key={tax.id}
+                    className="flex justify-between text-sm text-gray-800 dark:text-gray-400"
+                  >
+                    <span>
+                      {tax.name} ({formatTaxRate(tax.rate)})
+                    </span>
+                    <span>
+                      {formatCurrency(tax.amount, settings?.currency)}
+                    </span>
+                  </div>
+                ))}
+              {showTaxesAndTips && order?.tip?.percentage && (
                 <div
                   key={order.tip.amount}
                   className="flex justify-between text-sm text-gray-600 dark:text-gray-400"
@@ -125,7 +139,9 @@ export function OrderTrackingDetails({ order }: OrderTrackingDetailsProps) {
 
               <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
                 <span>{t('total')}</span>
-                <span>{formatCurrency(order.total, settings?.currency)}</span>
+                <span>
+                  {formatCurrency(calculateTotal(), settings?.currency)}
+                </span>
               </div>
             </div>
           )}

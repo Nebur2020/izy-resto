@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { usePizzaTheme } from './context/PizzaThemeContext';
 import { useSettings } from '../../../hooks';
 import { Language } from '../../../types';
+import { formatCurrency } from '../../../utils/currency';
 
 interface OrderNowProps {
   title?: string;
@@ -68,21 +69,12 @@ export default function OrderNow({
               {itemDescription}
             </p>
             <div className="flex items-center gap-2 mb-4">
-              {lng === 'fr' ? (
-                <span
-                  className="text-3xl font-bold"
-                  style={{ color: primaryColor }}
-                >
-                  {itemPrice} {settings?.currency}
-                </span>
-              ) : (
-                <span
-                  className="text-3xl font-bold"
-                  style={{ color: primaryColor }}
-                >
-                  {settings?.currency} {itemPrice}
-                </span>
-              )}
+              <span
+                className="text-3xl font-bold"
+                style={{ color: primaryColor }}
+              >
+                {formatCurrency(itemPrice, settings?.currency)}
+              </span>
               <span
                 className={
                   isDarkMode ? 'text-sm text-gray-400' : 'text-sm text-gray-500'
