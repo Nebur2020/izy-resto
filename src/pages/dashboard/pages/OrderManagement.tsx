@@ -230,12 +230,7 @@ export function OrderManagement() {
         </div>
         <div>
           <button
-            onClick={() => {
-              refreshOrders();
-              if (process.env.NODE_ENV === 'development') {
-                setTimeout(playNotificationSound, 500);
-              }
-            }}
+            onClick={refreshOrders}
             className="flex items-center gap-2 p-2 text-blue-600 hover:bg-blue-50 rounded-full"
             title={t('common:refresh')}
           >

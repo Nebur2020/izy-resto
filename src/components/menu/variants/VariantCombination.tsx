@@ -35,12 +35,20 @@ export function VariantCombination(props: IVariantCombinationProps) {
     onImageChange(url);
   };
 
-  const getVariantValue2 = (variant: Variant, combination: string[]) => {
+  // Improved function to get variant value - more reliable string matching
+  const getVariantValue = (variant: Variant, combination: string[]) => {
     const currCombination = combination
       .filter(Boolean)
-      .find(comb => comb.includes(variant.name));
+      .find(comb => comb.startsWith(`${variant.name}:`));
     if (!currCombination) return '';
     return currCombination.split(': ')[1] || '';
+  };
+
+  // Find the existing index of a variant's combination in the array
+  const findVariantIndex = (variantName: string, combinations: string[]) => {
+    return combinations.findIndex(
+      comb => comb && comb.startsWith(`${variantName}:`)
+    );
   };
 
   return (
@@ -49,23 +57,44 @@ export function VariantCombination(props: IVariantCombinationProps) {
         <div className="flex-1 space-y-4">
           <div className="grid gap-4">
             {variants.map((variant, idx) => (
-              <div key={variant.id} className="grid grid-cols-2 gap-4">
+              <div
+                key={`${variant.id}-${idx}`}
+                className="grid grid-cols-2 gap-4"
+              >
                 <div>
                   <label className="block text-sm font-medium mb-1">
                     {variant.name}
                   </label>
                   <select
                     className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
-                    value={getVariantValue2(variant, combination)}
+                    value={getVariantValue(variant, combination)}
                     onChange={e => {
                       const newCombination = [...combination];
-                      newCombination[
-                        idx
-                      ] = `${variant.name}: ${e.target.value}`;
+
+                      // Find if this variant already exists in the combination
+                      const existingIndex = findVariantIndex(
+                        variant.name,
+                        newCombination
+                      );
+
+                      // If the value is null or empty, remove it from the combination
+                      if (e.target.value === 'null' || e.target.value === '') {
+                        if (existingIndex !== -1) {
+                          newCombination.splice(existingIndex, 1);
+                        }
+                      } else {
+                        // Either update at existing index or add new entry
+                        const newEntry = `${variant.name}: ${e.target.value}`;
+                        if (existingIndex !== -1) {
+                          newCombination[existingIndex] = newEntry;
+                        } else {
+                          newCombination.push(newEntry);
+                        }
+                      }
                       onCombinationChange(newCombination);
                     }}
                   >
-                    <option value="null">
+                    <option value="">
                       {t('variant:select-variant-value')}
                     </option>
                     {variant.values.map(value => (

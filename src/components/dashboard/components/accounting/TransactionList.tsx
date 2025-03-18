@@ -23,11 +23,6 @@ interface TransactionListProps {
   totalCount?: number;
 }
 
-export const sourceText: Record<string, string> = {
-  orders: 'commandes',
-  inventory: 'Inventaire',
-};
-
 export function TransactionList(props: TransactionListProps) {
   const {
     transactions,
@@ -43,6 +38,11 @@ export function TransactionList(props: TransactionListProps) {
   const { t, i18n } = useTranslation();
   const lng = i18n.language as Language;
   const { settings } = useSettings();
+
+  const sourceText: Record<string, string> = {
+    orders: t('common:orders-title'),
+    inventory: t('common:inventory-title'),
+  };
 
   const [editingTransaction, setEditingTransaction] =
     useState<Transaction | null>(null);

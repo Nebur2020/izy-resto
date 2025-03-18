@@ -13,6 +13,18 @@ export function OrderTrackingDetails({ order }: OrderTrackingDetailsProps) {
   const { settings } = useSettings();
   const { t } = useTranslation('order');
 
+  // Déterminer si les charges additionnelles doivent être affichées (ne pas afficher si la commande est annulée)
+  const showAdditionalCharges = order.status !== 'cancelled';
+
+  // Calculer le total réel en fonction du statut de la commande
+  const calculateTotal = () => {
+    if (order.status === 'cancelled') {
+      // Pour une commande annulée, le total est simplement le sous-total
+      return order.subtotal || 0;
+    }
+    return order.total || 0;
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
@@ -74,8 +86,10 @@ export function OrderTrackingDetails({ order }: OrderTrackingDetailsProps) {
               </p>
             </div>
           ))}
-          {(!!order.subtotal || !!order?.taxes || !!order?.tip?.percentage) && (
-            <div className="space-y-2  pt-4 mt-4 border-t border-current/10">
+          {(!!order.subtotal ||
+            !!(showAdditionalCharges && order?.taxes) ||
+            !!(showAdditionalCharges && order?.tip?.percentage)) && (
+            <div className="space-y-2 pt-4 mt-4 border-t border-current/10">
               {order.subtotal && (
                 <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
                   <span>{t('cart:sub-total')}</span>
@@ -85,18 +99,21 @@ export function OrderTrackingDetails({ order }: OrderTrackingDetailsProps) {
                 </div>
               )}
 
-              {(order?.taxes || []).map(tax => (
-                <div
-                  key={tax.id}
-                  className="flex justify-between text-sm text-gray-800 dark:text-gray-400"
-                >
-                  <span>
-                    {tax.name} ({formatTaxRate(tax.rate)})
-                  </span>
-                  <span>{formatCurrency(tax.amount, settings?.currency)}</span>
-                </div>
-              ))}
-              {order?.tip?.percentage && (
+              {showAdditionalCharges &&
+                (order?.taxes || []).map(tax => (
+                  <div
+                    key={tax.id}
+                    className="flex justify-between text-sm text-gray-800 dark:text-gray-400"
+                  >
+                    <span>
+                      {tax.name} ({formatTaxRate(tax.rate)})
+                    </span>
+                    <span>
+                      {formatCurrency(tax.amount, settings?.currency)}
+                    </span>
+                  </div>
+                ))}
+              {showAdditionalCharges && order?.tip?.percentage && (
                 <div
                   key={order.tip.amount}
                   className="flex justify-between text-sm text-gray-600 dark:text-gray-400"
@@ -109,7 +126,7 @@ export function OrderTrackingDetails({ order }: OrderTrackingDetailsProps) {
                   </span>
                 </div>
               )}
-              {order?.delivery && (
+              {showAdditionalCharges && order?.delivery && (
                 <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
                   <span>
                     {t('delivery-to')} {order.delivery.name}
@@ -125,7 +142,9 @@ export function OrderTrackingDetails({ order }: OrderTrackingDetailsProps) {
 
               <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
                 <span>{t('total')}</span>
-                <span>{formatCurrency(order.total, settings?.currency)}</span>
+                <span>
+                  {formatCurrency(calculateTotal(), settings?.currency)}
+                </span>
               </div>
             </div>
           )}

@@ -316,5 +316,10 @@
   "order-updated": "Mettre à jour la commande",
   "add-more-items": "Ajouter plus d'articles",
   "confirm-updated-order": "Confirmer la mise à jour de la commande",
-  "order-successfully-updated": "Commande mise à jour avec succès"
+  "order-successfully-updated": "Commande mise à jour avec succès",
+  "inventory-title": "Inventaire",
+  "invalid-combination": "Combinaison invalide",
+  "is-cloed": "est fermé",
+  "re-open-title": "Réouverture aux horaires habituels"
+
 }

@@ -85,6 +85,8 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
     useState<string[]>([]);
   const [isLoadingPrice, setIsLoadingPrice] = useState(false);
   const [categoryVariants, setCategoryVariants] = useState<Variant[]>([]);
+  // Add a new state to track if the current selection is a valid combination
+  const [isValidCombination, setIsValidCombination] = useState(true);
 
   const modalRef = useRef<HTMLDivElement>(null);
   const { addToCart, cart } = useCart();
@@ -146,6 +148,49 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
       });
   }, [categoryVariants, selectedVariants]);
 
+  // New function to check if the current selection is a valid combination
+  const checkValidCombination = useCallback(() => {
+    // If onlyShowVariantsYouDefine is not set, all combinations are valid
+    if (!item.onlyShowVariantsYouDefine) {
+      setIsValidCombination(true);
+      return true;
+    }
+
+    // If no variant prices defined, all combinations are valid
+    if (
+      !itemWithVariants.variantPrices ||
+      itemWithVariants.variantPrices.length === 0
+    ) {
+      setIsValidCombination(true);
+      return true;
+    }
+
+    // If no variants selected, base product is valid
+    if (selectedVariants.length === 0) {
+      setIsValidCombination(true);
+      return true;
+    }
+
+    // Sort both arrays for consistent comparison
+    const sortedSelectedVariants = [...selectedVariants].sort();
+
+    // Check if the exact combination exists in variantPrices
+    const exactMatch = itemWithVariants.variantPrices.some(vp => {
+      const sortedCombination = [...vp.variantCombination].sort();
+      return (
+        JSON.stringify(sortedCombination) ===
+        JSON.stringify(sortedSelectedVariants)
+      );
+    });
+
+    setIsValidCombination(exactMatch);
+    return exactMatch;
+  }, [
+    item.onlyShowVariantsYouDefine,
+    itemWithVariants.variantPrices,
+    selectedVariants,
+  ]);
+
   const getCartItem = useCallback(() => {
     const variantId = getVariantId();
     return cart.find(item => item.id === variantId);
@@ -192,6 +237,11 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
       document.removeEventListener('keydown', handleEscapeKey);
     };
   }, [onClose]);
+
+  // Check for valid combinations whenever selectedVariants changes
+  useEffect(() => {
+    checkValidCombination();
+  }, [selectedVariants, checkValidCombination]);
 
   useEffect(() => {
     const updatePrice = async () => {
@@ -263,77 +313,41 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
     updatePrice();
   }, [selectedVariants, item.price, item.variantPrices, categoryVariants]);
 
-  const handleVariantSelect = useCallback(
-    (variant: string) => {
-      const [type, value] = variant.split(': ');
+  const handleVariantSelect = useCallback((variant: string) => {
+    const [type, value] = variant.split(': ');
 
-      setUnselectedRequiredVariantType([]);
-      setVariantCombinationError('');
-      setIsLoadingPrice(true);
+    setUnselectedRequiredVariantType([]);
+    setVariantCombinationError('');
+    setIsLoadingPrice(true);
 
-      setSelectedVariants(prev => {
-        //check combination exists
+    setSelectedVariants(prev => {
+      let updatedSelection;
 
-        if (prev.includes(variant)) {
-          const updatedSelection = prev.filter(v => v !== variant);
-          const hasOtherOfSameType = updatedSelection.some(v =>
-            v.startsWith(`${type}: `)
-          );
-          const combination = updatedSelection.sort();
-          const combinationExists =
-            updatedSelection.length < 2 ||
-            itemWithVariants.variantPrices.some(
-              vp =>
-                JSON.stringify(vp.variantCombination.sort()) ===
-                JSON.stringify(combination)
-            );
-          // console.log('combinationExists', combinationExists);
-          if (item.onlyShowVariantsYouDefine && !combinationExists) {
-            setVariantCombinationError(t('common:combination-no-items'));
-            setIsLoadingPrice(false);
-            return [];
-          } else {
-            setVariantCombinationError('');
-          }
+      if (prev.includes(variant)) {
+        // Removing a variant
+        updatedSelection = prev.filter(v => v !== variant);
+        const hasOtherOfSameType = updatedSelection.some(v =>
+          v.startsWith(`${type}: `)
+        );
 
-          setSelectedVariantTypes(current => ({
-            ...current,
-            [type]: hasOtherOfSameType,
-          }));
-
-          return updatedSelection;
-        }
-
+        setSelectedVariantTypes(current => ({
+          ...current,
+          [type]: hasOtherOfSameType,
+        }));
+      } else {
+        // Adding a variant or replacing one of the same type
         const filtered = prev.filter(v => !v.startsWith(`${type}: `));
-        const updatedSelection = [...filtered, variant];
-
-        const combination = updatedSelection.sort();
-        const combinationExists =
-          updatedSelection.length < 2 ||
-          itemWithVariants.variantPrices.some(
-            vp =>
-              JSON.stringify(vp.variantCombination.sort()) ===
-              JSON.stringify(combination)
-          );
-
-        if (item.onlyShowVariantsYouDefine && !combinationExists) {
-          setVariantCombinationError('Combination does not exist');
-          setIsLoadingPrice(false);
-          return [];
-        } else {
-          setVariantCombinationError('');
-        }
+        updatedSelection = [...filtered, variant];
 
         setSelectedVariantTypes(current => ({
           ...current,
           [type]: true,
         }));
+      }
 
-        return updatedSelection;
-      });
-    },
-    [itemWithVariants.variantPrices]
-  );
+      return updatedSelection;
+    });
+  }, []);
 
   const handleAddToCart = useCallback(async () => {
     if (isOutOfStock) return;
@@ -570,10 +584,18 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
               </div>
             )}
 
+            {/* Show error message when combination is invalid */}
+            {selectedVariants.length > 0 && !isValidCombination && (
+              <div className="flex items-center gap-2 p-2 sm:p-3 rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400">
+                <AlertCircle className="h-5 w-5" />
+                <span className="text-[10px] sm:text-xs font-medium">
+                  {t('common:combination-no-items')}
+                </span>
+              </div>
+            )}
+
             {variantCombinationError && (
-              <div
-                className={`flex items-center gap-2 p-2 sm:p-3 mb-5 rounded-lg 'bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400'`}
-              >
+              <div className="flex items-center gap-2 p-2 sm:p-3 mb-5 rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400">
                 <AlertCircle className="h-5 w-5" />
                 <span className="text-[10px] sm:text-xs font-medium">
                   {variantCombinationError}
@@ -634,20 +656,23 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
             disabled={
               isOutOfStock ||
               isLoadingPrice ||
-              !areAllRequiredVariantsSelected()
+              !areAllRequiredVariantsSelected() ||
+              (selectedVariants.length > 0 && !isValidCombination) // Add condition for invalid combinations
             }
             className={finalAddToCartButtonStyle}
             style={
               !isOutOfStock &&
               !isLoadingPrice &&
-              areAllRequiredVariantsSelected()
+              areAllRequiredVariantsSelected() &&
+              (selectedVariants.length === 0 || isValidCombination) // Consider combination validity
                 ? primaryColorWithWhiteTextStyle
                 : primaryColorBgLightStyle
             }
             spanClassName={`${
               !isOutOfStock &&
               !isLoadingPrice &&
-              areAllRequiredVariantsSelected()
+              areAllRequiredVariantsSelected() &&
+              (selectedVariants.length === 0 || isValidCombination) // Consider combination validity
                 ? 'text-white'
                 : ''
             }`}
@@ -663,6 +688,8 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
               ? t('loading')
               : !areAllRequiredVariantsSelected()
               ? t('select-required-variants')
+              : selectedVariants.length > 0 && !isValidCombination
+              ? t('common:invalid-combination') // Message for invalid combinations
               : t('add-to-cart')}
           </Button>
         </div>

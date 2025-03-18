@@ -185,7 +185,7 @@ export default function OrderTracking() {
                   <p className="text-white/80">
                     {order.status === 'cancelled'
                       ? t('this-order-is-canceled')
-                      : t('order-successfully-saved')}
+                      : t('order-successfully-saved')} hjadgsa
                   </p>
                 </div>
               </div>

@@ -315,5 +315,10 @@
   "order-updated": "Update order",
   "add-more-items": "Add more items",
   "confirm-updated-order": "Confirm Update Order",
-  "order-successfully-updated": "Order successfully updated"
+  "order-successfully-updated": "Order successfully updated",
+  "inventory-title": "Inventory",
+  "invalid-combination": "Invalid combination",
+  "is-cloed": "is closed",
+  "re-open-title": "Reopening at regular hours"
+
 }
