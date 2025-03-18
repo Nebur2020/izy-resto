@@ -313,5 +313,7 @@
   "only-show-what-you-defined": "Seuls les éléments que vous avez définis seront affichés",
   "orders-title": "Commandes",
   "inventory-title": "Inventaire",
-  "invalid-combination": "Combinaison invalide"
+  "invalid-combination": "Combinaison invalide",
+  "is-cloed": "est fermé",
+  "re-open-title": "Réouverture aux horaires habituels"
 }
