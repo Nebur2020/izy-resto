@@ -52,7 +52,6 @@ export function POS() {
   const [searchLoading, setSearchLoading] = useState(false);
   const [isUpdatedOrder] = useState<boolean>(true);
   const [order, setOrder] = useState<any>(null);
-  const [itemsToOrder, setItemsToOrder] = useState<any[]>([]);
   const [isAddItemsToOrder, setIsAddItemsToOrder] = useState<any>(false);
   const [isItemOrderFromOrder, setIsItemOrderFromOrder] = useState<any>(false);
 
@@ -94,18 +93,11 @@ export function POS() {
   }, [searchTerm]);
 
   useEffect(() => {
-    if (order) {
-      setItemsToOrder(order.items);
-    }
-  }, [order]);
-
-  useEffect(() => {
     if (activeTab === 'products') {
       clearCart();
       setCustomerInfo({});
       setTableNumber('');
       setOrder(null);
-      setItemsToOrder([]);
       setAmountPaid(0);
     }
   }, [activeTab]);
@@ -345,7 +337,6 @@ export function POS() {
                 setCustomerInfo({});
                 setTableNumber('');
                 setOrder(null);
-                setItemsToOrder([]);
                 setAmountPaid(0);
                 setActiveTab('products');
               }}
@@ -363,7 +354,6 @@ export function POS() {
                 setCustomerInfo({});
                 setTableNumber('');
                 setOrder(null);
-                setItemsToOrder([]);
                 setActiveTab('orders');
                 setIsItemOrderFromOrder(true);
               }}
@@ -530,7 +520,6 @@ export function POS() {
                   onCheckout={handleCheckout}
                   isSubmitting={isSubmitting}
                   order={order}
-                  itemsToOrder={itemsToOrder}
                   setIsAddItemsToOrder={setIsAddItemsToOrder}
                   isItemOrderFromOrder={isItemOrderFromOrder}
                 />
@@ -554,7 +543,6 @@ export function POS() {
             onCheckout={handleCheckout}
             isSubmitting={isSubmitting}
             order={order}
-            itemsToOrder={itemsToOrder}
             setIsAddItemsToOrder={setIsAddItemsToOrder}
             isItemOrderFromOrder={isItemOrderFromOrder}
           />
@@ -580,8 +568,6 @@ export function POS() {
             onSearchChange={setSearchTerm}
             onToggleCart={() => setIsSidebarOpen(true)}
             isLoading={isLoading}
-            setItemsToOrder={setItemsToOrder}
-            itemsToOrder={itemsToOrder}
             isItemOrderFromOrder={isItemOrderFromOrder}
           />
 

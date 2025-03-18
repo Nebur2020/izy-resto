@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Minus, Trash2, ShoppingBag, ImageIcon } from 'lucide-react';
 import { Button } from '../ui/Button';
@@ -8,61 +8,17 @@ import { useServerCart } from '../../context/ServerCartContext';
 import { useTranslation } from 'react-i18next';
 
 interface CartItemListProps {
-  items?: any[];
   setIsAddItemsToOrder?: (value: boolean) => void;
-  onItemRemoved?: (itemId: string) => void;
-  onUpdateQuantity?: (itemId: string, newQuantity: number) => void;
   isItemOrderFromOrder?: boolean;
 }
 
 export function CartItemList(props: CartItemListProps) {
-  const {
-    items,
-    setIsAddItemsToOrder,
-    onItemRemoved,
-    onUpdateQuantity,
-    isItemOrderFromOrder,
-  } = props;
+  const { setIsAddItemsToOrder, isItemOrderFromOrder } = props;
   const { settings } = useSettings();
   const { t } = useTranslation('common');
-  const {
-    cart,
-    updateQuantity: updateCartQuantity,
-    removeFromCart: removeItemFromCart,
-  } = useServerCart();
+  const { cart, updateQuantity, removeFromCart } = useServerCart();
 
-  const handleRemoveItem = useCallback(
-    (id: string) => {
-      if (onItemRemoved) {
-        onItemRemoved(id);
-        return;
-      }
-
-      removeItemFromCart(id);
-    },
-    [onItemRemoved, removeItemFromCart]
-  );
-
-  const handleUpdateQuantity = useCallback(
-    (id: string, newQuantity: number) => {
-      if (newQuantity <= 0) {
-        handleRemoveItem(id);
-        return;
-      }
-
-      if (onUpdateQuantity) {
-        onUpdateQuantity(id, newQuantity);
-        return;
-      }
-
-      updateCartQuantity(id, newQuantity);
-    },
-    [handleRemoveItem, onUpdateQuantity, updateCartQuantity]
-  );
-
-  const displayedItems = items && items.length > 0 ? items : cart;
-
-  if (!displayedItems || displayedItems.length === 0) {
+  if (!cart || cart.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
         <ShoppingBag className="w-12 h-12 mb-2 opacity-50" />
@@ -74,7 +30,7 @@ export function CartItemList(props: CartItemListProps) {
   return (
     <div>
       <AnimatePresence mode="popLayout">
-        {displayedItems.map(item => (
+        {cart.map(item => (
           <motion.div
             key={item.id}
             layout
@@ -137,7 +93,7 @@ export function CartItemList(props: CartItemListProps) {
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+                onClick={() => updateQuantity(item.id, item.quantity - 1)}
                 className="h-8 w-8 p-0 rounded-full"
               >
                 <Minus className="w-4 h-4" />
@@ -150,7 +106,7 @@ export function CartItemList(props: CartItemListProps) {
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+                onClick={() => updateQuantity(item.id, item.quantity + 1)}
                 className="h-8 w-8 p-0 rounded-full"
                 disabled={Boolean(
                   item.stockQuantity && item.quantity >= item.stockQuantity
@@ -162,7 +118,7 @@ export function CartItemList(props: CartItemListProps) {
               <Button
                 variant="danger"
                 size="sm"
-                onClick={() => handleRemoveItem(item.id)}
+                onClick={() => removeFromCart(item.id)}
                 className="h-8 w-8 p-0 rounded-full ml-2 text-white"
               >
                 <Trash2 className="w-4 h-4 text-white" />

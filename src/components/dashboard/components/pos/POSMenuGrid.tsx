@@ -15,8 +15,6 @@ interface POSMenuGridProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
   onToggleCart: () => void;
-  setItemsToOrder?: (items: MenuItem[]) => void;
-  itemsToOrder?: MenuItem[];
   isItemOrderFromOrder?: boolean;
 }
 
@@ -110,8 +108,6 @@ export function POSMenuGrid(props: POSMenuGridProps) {
           item={selectedItem}
           onClose={() => setSelectedItem(null)}
           onAddToCart={onAddToCart}
-          setItemsToOrder={props.setItemsToOrder}
-          itemsToOrder={props.itemsToOrder}
         />
       )}
     </div>

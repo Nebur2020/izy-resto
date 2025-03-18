@@ -23,8 +23,6 @@ interface IProductDetailsModalProps {
   priceStyle?: string;
   addToCartButtonStyle?: string;
   variantSelectStyles?: string;
-  setItemsToOrder?: (items: MenuItem[]) => void;
-  itemsToOrder?: MenuItem[];
 }
 
 export function ProductDetailsModal(props: IProductDetailsModalProps) {
@@ -38,8 +36,6 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
     stockAvailableBgColor,
     addToCartButtonStyle,
     variantSelectStyles,
-    setItemsToOrder,
-    itemsToOrder,
   } = props;
 
   const primaryColorStyle = {
@@ -383,9 +379,7 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
       };
 
       if (onAddToCart) {
-        console.log('cartItem', cartItem);
         onAddToCart(cartItem);
-        setItemsToOrder?.([...(itemsToOrder || []), cartItem]);
       } else {
         addToCart(cartItem);
       }

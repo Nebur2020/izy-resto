@@ -31,7 +31,6 @@ interface IPOSCartSidebarProps {
   onCheckout: () => Promise<void>;
   isSubmitting: boolean;
   order?: Order;
-  itemsToOrder?: CartItem[];
   setIsAddItemsToOrder?: (value: boolean) => void;
   isItemOrderFromOrder?: boolean;
 }
@@ -50,7 +49,6 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
     onCheckout,
     isSubmitting,
     order,
-    itemsToOrder,
     setIsAddItemsToOrder,
     isItemOrderFromOrder,
   } = props;
@@ -59,23 +57,19 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
   const [showExtras, setShowExtras] = useState(false);
   const { settings } = useSettings();
   const { t } = useTranslation('common');
-  const { total, addToCart, clearCart } = useServerCart();
+  const { total, addToCart, clearCart, setCart } = useServerCart();
 
   const cartItems = useMemo(() => {
-    if (order && order.items && order.items.length > 0) {
-      return order.items;
-    } else if (itemsToOrder && itemsToOrder.length > 0) {
-      return itemsToOrder;
-    } else if (cart && cart.length > 0) {
+    if (cart && cart.length > 0) {
       return cart;
     } else {
       return [];
     }
-  }, [order, itemsToOrder, cart]);
+  }, [order, cart]);
 
   const orderTotal = useMemo(() => {
     return total;
-  }, [order, itemsToOrder, total]);
+  }, [order, total]);
 
   useEffect(() => {
     if (order) {
@@ -84,6 +78,7 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
         name: order.customerName || '',
         phone: order.customerPhone || '',
       });
+      setCart(order.items || []);
 
       if (
         setIsAddItemsToOrder &&
@@ -101,34 +96,6 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
       }
     }
   }, [order?.id]);
-
-  const handleItemRemoved = (itemId: string) => {
-    if (itemsToOrder && setIsAddItemsToOrder) {
-      const updatedItems = itemsToOrder.filter(item => item.id !== itemId);
-
-      if (setIsAddItemsToOrder) {
-        const parentComponent = setIsAddItemsToOrder as any;
-        if (parentComponent.setItemsToOrder) {
-          parentComponent.setItemsToOrder(updatedItems);
-        }
-      }
-    }
-  };
-
-  const handleUpdateQuantity = (itemId: string, newQuantity: number) => {
-    if (itemsToOrder && setIsAddItemsToOrder) {
-      const updatedItems = itemsToOrder.map(item =>
-        item.id === itemId ? { ...item, quantity: newQuantity } : item
-      );
-
-      if (setIsAddItemsToOrder) {
-        const parentComponent = setIsAddItemsToOrder as any;
-        if (parentComponent.setItemsToOrder) {
-          parentComponent.setItemsToOrder(updatedItems);
-        }
-      }
-    }
-  };
 
   const handleCheckout = async () => {
     try {
@@ -160,10 +127,7 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
       }
 
       const subtotal =
-        itemsToOrder?.reduce(
-          (sum, item) => sum + item.price * item.quantity,
-          0
-        ) || 0;
+        cart?.reduce((sum, item) => sum + item.price * item.quantity, 0) || 0;
 
       const total =
         subtotal +
@@ -175,7 +139,7 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
         tableNumber,
         customerName: customerInfo.name,
         customerPhone: customerInfo.phone,
-        items: itemsToOrder || [],
+        items: cart || [],
         subtotal,
         total,
         amountPaid,
@@ -235,10 +199,7 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
 
         <div className="px-4">
           <CartItemList
-            items={itemsToOrder}
             setIsAddItemsToOrder={setIsAddItemsToOrder}
-            onItemRemoved={handleItemRemoved}
-            onUpdateQuantity={handleUpdateQuantity}
             isItemOrderFromOrder={isItemOrderFromOrder}
           />
         </div>

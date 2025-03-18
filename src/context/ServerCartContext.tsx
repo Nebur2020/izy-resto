@@ -21,6 +21,7 @@ interface CartContextType {
   tip: { amount: number; percentage?: number } | null;
   setTipPercentage: (percentage: number | null) => void;
   total: number;
+  setCart: React.Dispatch<React.SetStateAction<CartItem[]>>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -142,6 +143,7 @@ export function ServerCartProvider({
         taxTotal,
         tip,
         setTipPercentage,
+        setCart,
       }}
     >
       {children}
