@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { OrderList } from '../../../components/orders/OrderList';
 import { useOrders } from '../../../context/OrderContext';
 import { Modal } from '../../../components/ui/Modal';
+import { useOrdersRealtime } from '../../../hooks/useOrdersRealtime';
 
 export function POS() {
   const { t } = useTranslation();
@@ -32,10 +33,9 @@ export function POS() {
     phone?: string;
     email?: string;
   }>({});
+  const { orders } = useOrdersRealtime();
 
   const {
-    orders,
-    filteredOrders,
     isLoading: isLoadingOrders,
     isLoadingMore: isLoadingMoreOrders,
     hasMore: hasMoreOrders,
@@ -54,6 +54,7 @@ export function POS() {
   const [order, setOrder] = useState<any>(null);
   const [itemsToOrder, setItemsToOrder] = useState<any[]>([]);
   const [isAddItemsToOrder, setIsAddItemsToOrder] = useState<any>(false);
+  const [isItemOrderFromOrder, setIsItemOrderFromOrder] = useState<any>(false);
 
   const [menuItems, setMenuItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -97,6 +98,17 @@ export function POS() {
       setItemsToOrder(order.items);
     }
   }, [order]);
+
+  useEffect(() => {
+    if (activeTab === 'products') {
+      clearCart();
+      setCustomerInfo({});
+      setTableNumber('');
+      setOrder(null);
+      setItemsToOrder([]);
+      setAmountPaid(0);
+    }
+  }, [activeTab]);
 
   const loadInitialItems = async () => {
     try {
@@ -328,7 +340,15 @@ export function POS() {
                   ? 'border-b-2 border-blue-600 text-blue-600'
                   : 'text-gray-600 dark:text-gray-400'
               }`}
-              onClick={() => setActiveTab('products')}
+              onClick={() => {
+                clearCart();
+                setCustomerInfo({});
+                setTableNumber('');
+                setOrder(null);
+                setItemsToOrder([]);
+                setAmountPaid(0);
+                setActiveTab('products');
+              }}
             >
               {t('common:product-list')}
             </button>
@@ -338,7 +358,15 @@ export function POS() {
                   ? 'border-b-2 border-blue-600 text-blue-600'
                   : 'text-gray-600 dark:text-gray-400'
               }`}
-              onClick={() => setActiveTab('orders')}
+              onClick={() => {
+                clearCart();
+                setCustomerInfo({});
+                setTableNumber('');
+                setOrder(null);
+                setItemsToOrder([]);
+                setActiveTab('orders');
+                setIsItemOrderFromOrder(true);
+              }}
             >
               {t('common:order-list')}
             </button>
@@ -431,7 +459,12 @@ export function POS() {
                 <div className=" overflow-scroll h-[calc(100vh-6rem)]">
                   <OrderList
                     orders={
-                      isSearching ? searchResults : filteredOrders('pending')
+                      isSearching
+                        ? searchResults
+                        : orders.filter(
+                            o =>
+                              o.status === 'pending' || o.status === 'preparing'
+                          )
                     }
                     isLoading={
                       (isLoading || isLoadingOrders) && orders.length === 0
@@ -499,6 +532,7 @@ export function POS() {
                   order={order}
                   itemsToOrder={itemsToOrder}
                   setIsAddItemsToOrder={setIsAddItemsToOrder}
+                  isItemOrderFromOrder={isItemOrderFromOrder}
                 />
               </motion.div>
             </>
@@ -522,6 +556,7 @@ export function POS() {
             order={order}
             itemsToOrder={itemsToOrder}
             setIsAddItemsToOrder={setIsAddItemsToOrder}
+            isItemOrderFromOrder={isItemOrderFromOrder}
           />
         </div>
       </div>
@@ -547,6 +582,7 @@ export function POS() {
             isLoading={isLoading}
             setItemsToOrder={setItemsToOrder}
             itemsToOrder={itemsToOrder}
+            isItemOrderFromOrder={isItemOrderFromOrder}
           />
 
           {!isLoading && hasMore && !searchTerm && (

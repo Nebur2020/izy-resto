@@ -116,7 +116,6 @@ export const OrderCard = React.forwardRef<HTMLDivElement, OrderCardProps>(
             <button
               className="flex-1 bg-blue-600 hover:bg-blue-600 text-current w-full py-2 rounded text-white"
               onClick={() => {
-                console.log('on setting order: ', order);
                 setOrder?.(order);
               }}
             >

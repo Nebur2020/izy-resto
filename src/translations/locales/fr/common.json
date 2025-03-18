@@ -315,6 +315,6 @@
   "product-list": "Liste des produits",
   "order-updated": "Mettre à jour la commande",
   "add-more-items": "Ajouter plus d'articles",
-  "updated-order": "Mettre à jour la commande",
+  "confirm-updated-order": "Confirmer la mise à jour de la commande",
   "order-successfully-updated": "Commande mise à jour avec succès"
 }

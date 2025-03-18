@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { ChevronDown, ChevronUp, X } from 'lucide-react';
 import { CartItem, Order } from '../../../../types';
 import { CartItemList } from '../../../pos/CartItemList';
@@ -33,6 +33,7 @@ interface IPOSCartSidebarProps {
   order?: Order;
   itemsToOrder?: CartItem[];
   setIsAddItemsToOrder?: (value: boolean) => void;
+  isItemOrderFromOrder?: boolean;
 }
 
 export function POSCartSidebar(props: IPOSCartSidebarProps) {
@@ -51,14 +52,30 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
     order,
     itemsToOrder,
     setIsAddItemsToOrder,
+    isItemOrderFromOrder,
   } = props;
 
-  const [error] = useState('');
+  const [error, setError] = useState('');
   const [showExtras, setShowExtras] = useState(false);
   const { settings } = useSettings();
   const { t } = useTranslation('common');
-  const { total } = useServerCart();
-  const [cartItems, setCartItems] = useState<any[]>([]);
+  const { total, addToCart, clearCart } = useServerCart();
+
+  const cartItems = useMemo(() => {
+    if (order && order.items && order.items.length > 0) {
+      return order.items;
+    } else if (itemsToOrder && itemsToOrder.length > 0) {
+      return itemsToOrder;
+    } else if (cart && cart.length > 0) {
+      return cart;
+    } else {
+      return [];
+    }
+  }, [order, itemsToOrder, cart]);
+
+  const orderTotal = useMemo(() => {
+    return total;
+  }, [order, itemsToOrder, total]);
 
   useEffect(() => {
     if (order) {
@@ -67,34 +84,71 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
         name: order.customerName || '',
         phone: order.customerPhone || '',
       });
-    }
-  }, [order]);
 
-  useEffect(() => {
-    if (order && order?.items.length > 0) {
-      setCartItems(order.items);
-    } else if (cart.length > 0) {
-      setCartItems(cart);
-    } else {
-      setCartItems([]);
+      if (
+        setIsAddItemsToOrder &&
+        order.items &&
+        order.items.length > 0 &&
+        cart.length === 0
+      ) {
+        clearCart();
+
+        order.items.forEach(item => {
+          addToCart({
+            ...item,
+          });
+        });
+      }
     }
-  }, [order?.items, cart]);
+  }, [order?.id]);
+
+  const handleItemRemoved = (itemId: string) => {
+    if (itemsToOrder && setIsAddItemsToOrder) {
+      const updatedItems = itemsToOrder.filter(item => item.id !== itemId);
+
+      if (setIsAddItemsToOrder) {
+        const parentComponent = setIsAddItemsToOrder as any;
+        if (parentComponent.setItemsToOrder) {
+          parentComponent.setItemsToOrder(updatedItems);
+        }
+      }
+    }
+  };
+
+  const handleUpdateQuantity = (itemId: string, newQuantity: number) => {
+    if (itemsToOrder && setIsAddItemsToOrder) {
+      const updatedItems = itemsToOrder.map(item =>
+        item.id === itemId ? { ...item, quantity: newQuantity } : item
+      );
+
+      if (setIsAddItemsToOrder) {
+        const parentComponent = setIsAddItemsToOrder as any;
+        if (parentComponent.setItemsToOrder) {
+          parentComponent.setItemsToOrder(updatedItems);
+        }
+      }
+    }
+  };
 
   const handleCheckout = async () => {
     try {
-      if (amountPaid < 0 || (amountPaid !== 0 && amountPaid < total)) {
+      if (amountPaid < 0 || (amountPaid !== 0 && amountPaid < orderTotal)) {
         toast.error(t('amount-condition'));
+        setError(t('amount-condition'));
         return;
       }
 
+      setError('');
       await onCheckout();
       toast.success(t('order-successfully-created'));
     } catch (error) {
       console.error('Error creating order:', error);
       if (error instanceof Error) {
         toast.error(error.message);
+        setError(error.message);
       } else {
         toast.error(t('order-creation-fail'));
+        setError(t('order-creation-fail'));
       }
     }
   };
@@ -105,13 +159,24 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
         throw new Error('No order to update');
       }
 
-      console.log('cartItems: ', cartItems, 'itemsToOrder', itemsToOrder);
+      const subtotal =
+        itemsToOrder?.reduce(
+          (sum, item) => sum + item.price * item.quantity,
+          0
+        ) || 0;
+
+      const total =
+        subtotal +
+        (order.taxTotal || 0) +
+        (typeof order.tip?.amount === 'number' ? order.tip.amount : 0) +
+        ((order.delivery && order.delivery.price) || 0);
 
       const updateData = {
         tableNumber,
         customerName: customerInfo.name,
         customerPhone: customerInfo.phone,
-        items: itemsToOrder,
+        items: itemsToOrder || [],
+        subtotal,
         total,
         amountPaid,
         updatedAt: new Date().toISOString(),
@@ -119,12 +184,18 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
 
       await orderService.updateOrder(order.id, updateData);
       toast.success(t('common:order-successfully-updated'));
+
+      if (onClose) {
+        onClose();
+      }
     } catch (error) {
       console.error('Error updating order:', error);
       if (error instanceof Error) {
         toast.error(error.message);
+        setError(error.message);
       } else {
         toast.error(t('order-update-fail'));
+        setError(t('order-update-fail'));
       }
     }
   };
@@ -166,6 +237,9 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
           <CartItemList
             items={itemsToOrder}
             setIsAddItemsToOrder={setIsAddItemsToOrder}
+            onItemRemoved={handleItemRemoved}
+            onUpdateQuantity={handleUpdateQuantity}
+            isItemOrderFromOrder={isItemOrderFromOrder}
           />
         </div>
       </div>
@@ -175,7 +249,7 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
           <div className="flex justify-between items-center text-lg font-semibold border-t dark:border-gray-700 pt-4">
             <span>{t('total')}</span>
             <span className="text-blue-600 dark:text-blue-400">
-              {formatCurrency(total, settings?.currency)}
+              {formatCurrency(orderTotal, settings?.currency)}
             </span>
           </div>
 
@@ -191,11 +265,13 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
                 <ChevronDown className="w-4 h-4" />
               )}
             </button>
-            {showExtras && <OrderSummary items={cart} total={total} />}
+            {showExtras && (
+              <OrderSummary items={cartItems} total={orderTotal} />
+            )}
           </div>
 
           <PaymentSection
-            total={total}
+            total={orderTotal}
             amountPaid={amountPaid}
             onAmountPaidChange={setAmountPaid}
             onQuickAmount={onQuickAmount}
@@ -205,15 +281,15 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
 
           <Button
             onClick={order ? handleUpdateOrder : handleCheckout}
-            disabled={cart.length === 0 || isSubmitting}
-            className="w-full py-3 text-base font-medium bg-blue-600 hover:bg-blue-700 text-white  rounded-lg
+            disabled={cartItems.length === 0 || isSubmitting}
+            className="w-full py-3 text-base font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-lg
                      transition-colors duration-200 shadow-sm hover:shadow-md
                      disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             {isSubmitting
               ? t('processing')
               : order
-              ? t('common:updated-order')
+              ? t('common:confirm-updated-order')
               : t('validated-order')}
           </Button>
         </div>

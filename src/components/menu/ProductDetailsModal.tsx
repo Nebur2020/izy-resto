@@ -36,7 +36,6 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
     isDarkMode = false,
     addProductToCartBgColor,
     stockAvailableBgColor,
-    priceStyle,
     addToCartButtonStyle,
     variantSelectStyles,
     setItemsToOrder,
@@ -384,6 +383,7 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
       };
 
       if (onAddToCart) {
+        console.log('cartItem', cartItem);
         onAddToCart(cartItem);
         setItemsToOrder?.([...(itemsToOrder || []), cartItem]);
       } else {
