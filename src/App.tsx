@@ -10,6 +10,7 @@ import { CookieBanner } from './components/ui/CookieBanner';
 import { HolidayClosureModal } from './components/ui/HolidayClosureModal';
 import { ServerCartProvider } from './context/ServerCartContext';
 import { Toast } from './components/ui';
+import './lib/firebase/config'
 import './translations/i18n';
 
 export default function App() {

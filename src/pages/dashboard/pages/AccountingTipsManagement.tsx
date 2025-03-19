@@ -120,8 +120,7 @@ export const AccountingTipsManagement = () => {
   const handleExport = async () => {
     try {
       setIsDownloading(true);
-      const ordersWithTips = allOrders.filter(order => !!order?.tip);
-      exportTipsToCSV(ordersWithTips, settings, dateRange, t, lng);
+      exportTipsToCSV(allOrders, settings, dateRange, t, lng);
     } catch (error) {
       console.error('Error exporting tips:', error);
     } finally {
@@ -137,7 +136,7 @@ export const AccountingTipsManagement = () => {
         endDate: dateRange.to,
       });
 
-      const ordersWithTips = response.filter(order => !!order?.tip);
+      const ordersWithTips = response.filter(order => !!order?.tip).filter(order => order.status === 'delivered');
 
       const sortedOrders = ordersWithTips.sort((a, b) => {
         return b.createdAt - a.createdAt;

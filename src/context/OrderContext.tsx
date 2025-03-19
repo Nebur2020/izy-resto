@@ -61,6 +61,9 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     loadInitialOrders();
+  }, []);
+
+  useEffect(() => {
 
     const unsubscribe = orderService.subscribeToRecentOrders(
       newOrder => {

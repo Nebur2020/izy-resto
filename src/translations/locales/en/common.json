@@ -319,6 +319,13 @@
   "inventory-title": "Inventory",
   "invalid-combination": "Invalid combination",
   "is-cloed": "is closed",
-  "re-open-title": "Reopening at regular hours"
-
+  "re-open-title": "Reopening at regular hours",
+  "status": {
+    "open": "Open",
+    "closed": "Closed",
+    "pending": "Pending",
+    "in-progress": "In Progress",
+    "completed": "Completed",
+    "canceled": "Canceled"
+  }
 }

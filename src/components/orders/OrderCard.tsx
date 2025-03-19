@@ -69,10 +69,9 @@ export const OrderCard = React.forwardRef<HTMLDivElement, OrderCardProps>(
           {
             ...translations,
             paymentMethodName: t(
-              `payment-method-names.${
-                order.diningOption === 'dine-in'
-                  ? 'dine-in'
-                  : order.paymentMethod?.name
+              `payment-method-names.${order.diningOption === 'dine-in'
+                ? 'dine-in'
+                : order.paymentMethod?.name
               }`
             ),
           },
@@ -98,9 +97,8 @@ export const OrderCard = React.forwardRef<HTMLDivElement, OrderCardProps>(
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
-        className={`rounded-lg shadow-sm p-6 ${statusStyles[order.status]} ${
-          order.status === 'cancelled' ? 'opacity-75 cursor-not-allowed' : ''
-        }`}
+        className={`rounded-lg shadow-sm p-6 ${statusStyles[order.status]} ${order.status === 'cancelled' ? 'opacity-75 cursor-not-allowed' : ''
+          }`}
       >
         <div className="space-y-6">
           <OrderCardHeader order={order} />
@@ -113,14 +111,14 @@ export const OrderCard = React.forwardRef<HTMLDivElement, OrderCardProps>(
           />
           <OrderCardDetails order={order} />
           {isUpdatedOrder && (
-            <button
-              className="flex-1 bg-blue-600 hover:bg-blue-600 text-current w-full py-2 rounded text-white"
+            <Button
+              className='w-full'
               onClick={() => {
                 setOrder?.(order);
               }}
             >
               {t('common:order-updated')}
-            </button>
+            </Button>
           )}
           {!isUpdatedOrder && (
             <>

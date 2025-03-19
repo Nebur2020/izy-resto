@@ -320,6 +320,14 @@
   "inventory-title": "Inventaire",
   "invalid-combination": "Combinaison invalide",
   "is-cloed": "est fermé",
-  "re-open-title": "Réouverture aux horaires habituels"
+  "re-open-title": "Réouverture aux horaires habituels",
+  "status": {
+    "open": "Ouvert",
+    "closed": "Fermé",
+    "pending": "En attente",
+    "in-cooking": "En préparation",
+    "delivered": "Livré",
+    "canceled": "Annulé"
+  }
 
 }
