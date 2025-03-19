@@ -7,11 +7,13 @@ import { useTranslation } from 'react-i18next';
 
 interface IOrderListProps {
   orders: Order[];
-  onStatusChange: (orderId: string, status: OrderStatus) => void;
+  onStatusChange?: (orderId: string, status: OrderStatus) => void;
   onCancel?: (orderId: string) => void;
   isLoading?: boolean;
   hasMore?: boolean;
+  isUpdatedOrder?: boolean;
   onLoadMore?: () => void;
+  setOrder?: (order: Order) => void;
 }
 
 export function OrderList(props: IOrderListProps) {
@@ -22,6 +24,7 @@ export function OrderList(props: IOrderListProps) {
     isLoading = false,
     hasMore = false,
     onLoadMore,
+    setOrder,
   } = props;
 
   const { t } = useTranslation('order');
@@ -73,6 +76,8 @@ export function OrderList(props: IOrderListProps) {
                 order={order}
                 onStatusChange={onStatusChange}
                 onCancel={onCancel}
+                isUpdatedOrder={props.isUpdatedOrder}
+                setOrder={setOrder}
               />
             </motion.div>
           ))}

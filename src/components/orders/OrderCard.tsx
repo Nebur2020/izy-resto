@@ -19,10 +19,12 @@ interface OrderCardProps {
   order: Order;
   onStatusChange: (orderId: string, status: string) => Promise<void>;
   onCancel?: (orderId: string) => void;
+  isUpdatedOrder?: boolean;
+  setOrder?: (order: Order) => void;
 }
 
 export const OrderCard = React.forwardRef<HTMLDivElement, OrderCardProps>(
-  ({ order, onStatusChange, onCancel }, ref) => {
+  ({ order, onStatusChange, onCancel, isUpdatedOrder, setOrder }, ref) => {
     const { settings } = useSettings();
     const { t, i18n } = useTranslation('order');
     const lng = i18n.language as Language;
@@ -110,53 +112,68 @@ export const OrderCard = React.forwardRef<HTMLDivElement, OrderCardProps>(
             updatedAt={order.updatedAt}
           />
           <OrderCardDetails order={order} />
-          <div className="flex justify-between items-center gap-4 pt-4 border-t border-current/10">
-            {order.status !== 'cancelled' && order.status !== 'delivered' && (
+          {isUpdatedOrder && (
+            <button
+              className="flex-1 bg-blue-600 hover:bg-blue-600 text-current w-full py-2 rounded text-white"
+              onClick={() => {
+                setOrder?.(order);
+              }}
+            >
+              {t('common:order-updated')}
+            </button>
+          )}
+          {!isUpdatedOrder && (
+            <>
+              <div className="flex justify-between items-center gap-4 pt-4 border-t border-current/10">
+                {order.status !== 'cancelled' &&
+                  order.status !== 'delivered' && (
+                    <Button
+                      onClick={handleStatusChange}
+                      disabled={isUpdatingStatus}
+                      className="flex-1 bg-white/90 hover:bg-white text-current"
+                    >
+                      {isUpdatingStatus ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          {t('common:loading')}
+                        </>
+                      ) : order.status === 'pending' ? (
+                        t('mark-in-cooking')
+                      ) : (
+                        t('mark-as-delivered')
+                      )}
+                    </Button>
+                  )}
+                {canCancel && onCancel && (
+                  <Button
+                    variant="danger"
+                    onClick={() => onCancel(order.id)}
+                    className="flex-1"
+                    spanClassName="text-white"
+                  >
+                    {t('cancel-order')}
+                  </Button>
+                )}
+              </div>
               <Button
-                onClick={handleStatusChange}
-                disabled={isUpdatingStatus}
-                className="flex-1 bg-white/90 hover:bg-white text-current"
+                onClick={handlePrint}
+                disabled={isPrinting}
+                className="bg-white/90 hover:bg-white text-current px-4 py-2 rounded w-full"
               >
-                {isUpdatingStatus ? (
+                {isPrinting ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    {t('common:loading')}
+                    {t('common:printing')}
                   </>
-                ) : order.status === 'pending' ? (
-                  t('mark-in-cooking')
                 ) : (
-                  t('mark-as-delivered')
+                  <>
+                    <Printer className="h-4 w-4 mr-2" />
+                    {t('print-bill')}
+                  </>
                 )}
               </Button>
-            )}
-            {canCancel && onCancel && (
-              <Button
-                variant="danger"
-                onClick={() => onCancel(order.id)}
-                className="flex-1"
-                spanClassName="text-white"
-              >
-                {t('cancel-order')}
-              </Button>
-            )}
-          </div>
-          <Button
-            onClick={handlePrint}
-            disabled={isPrinting}
-            className="bg-white/90 hover:bg-white text-current px-4 py-2 rounded w-full"
-          >
-            {isPrinting ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                {t('common:printing')}
-              </>
-            ) : (
-              <>
-                <Printer className="h-4 w-4 mr-2" />
-                {t('print-bill')}
-              </>
-            )}
-          </Button>
+            </>
+          )}
         </div>
       </motion.div>
     );

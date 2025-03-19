@@ -14,7 +14,6 @@ const ITEMS_PER_PAGE = 8;
 export function OrderList({ orders, onStatusChange }: OrderListProps) {
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Calculate pagination
   const totalPages = Math.ceil(orders.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedOrders = orders.slice(startIndex, startIndex + ITEMS_PER_PAGE);
