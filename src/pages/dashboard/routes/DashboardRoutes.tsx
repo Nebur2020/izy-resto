@@ -19,7 +19,6 @@ import { TrafficAnalytics } from '../pages/TrafficAnalytics';
 import { ProtectedRoute } from './ProtectedRoute';
 import { StaffMember } from '../../../types/staff';
 import { RestaurantSettings } from '../../../types';
-import ThemeCustomizerPage from '../pages/settings/EditTheme';
 import ThemePage from '../pages/settings/theme';
 
 interface DashboardRoutesProps {

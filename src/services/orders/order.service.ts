@@ -593,6 +593,51 @@ class OrderService {
       );
     }
   }
+
+  async updateOrder(
+    orderId: string,
+    updateData: Partial<Order>
+  ): Promise<void> {
+    try {
+      if (!orderId) {
+        throw new OrderServiceError(
+          'Order ID is required',
+          'orders/missing-order-id'
+        );
+      }
+
+      if (!updateData || Object.keys(updateData).length === 0) {
+        throw new OrderServiceError(
+          'No update data provided',
+          'orders/no-update-data'
+        );
+      }
+
+      const docRef = doc(db, this.collection, orderId);
+
+      const docSnap = await getDoc(docRef);
+      if (!docSnap.exists()) {
+        throw new OrderServiceError('Order not found', 'orders/not-found');
+      }
+
+      await updateDoc(docRef, {
+        ...updateData,
+        updatedAt: Timestamp.now(),
+      });
+
+      console.log(`Order ${orderId} updated successfully`);
+    } catch (error) {
+      console.error('Error updating order:', error);
+      if (error instanceof OrderServiceError) {
+        throw error;
+      }
+      throw new OrderServiceError(
+        'Failed to update order',
+        'orders/update-error',
+        error
+      );
+    }
+  }
 }
 
 export const orderService = new OrderService();
