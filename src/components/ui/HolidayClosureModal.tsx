@@ -2,14 +2,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, X, Palmtree, Clock, Settings } from 'lucide-react';
 import { useSettings } from '../../hooks/useSettings';
 import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { fr, enUS } from 'date-fns/locale';
 import { useRestaurantStatus } from '../../hooks/useRestaurantStatus';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from './Button';
 import { useTranslation } from 'react-i18next';
+import { Language } from '../../types';
 
 export function HolidayClosureModal() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lng = i18n.language as Language;
   const { settings } = useSettings();
   const { isHoliday } = useRestaurantStatus();
   const location = useLocation();
@@ -61,7 +63,7 @@ export function HolidayClosureModal() {
 
             <div className="mt-4 text-center">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                {settings?.name || 'Restaurant'} est fermé
+                {settings?.name || 'Restaurant'} {t('common:status.closed')}
               </h3>
 
               {settings?.holidayClosure?.reason && (
@@ -75,20 +77,37 @@ export function HolidayClosureModal() {
                   <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
                     <div className="flex items-center justify-center gap-2 text-sm text-amber-600 dark:text-amber-400">
                       <Calendar className="w-4 h-4" />
-                      <span>
-                        Du{' '}
-                        {format(
-                          new Date(settings?.holidayClosure?.startDate),
-                          'dd MMMM',
-                          { locale: fr }
-                        )}{' '}
-                        au{' '}
-                        {format(
-                          new Date(settings?.holidayClosure?.endDate),
-                          'dd MMMM yyyy',
-                          { locale: fr }
-                        )}
-                      </span>
+                      {lng === 'fr' ? (
+                        <span>
+                          Du{' '}
+                          {format(
+                            new Date(settings?.holidayClosure?.startDate),
+                            'dd MMMM',
+                            { locale: fr }
+                          )}{' '}
+                          au{' '}
+                          {format(
+                            new Date(settings?.holidayClosure?.endDate),
+                            'dd MMMM yyyy',
+                            { locale: fr }
+                          )}
+                        </span>
+                      ) : (
+                        <span>
+                          From{' '}
+                          {format(
+                            new Date(settings?.holidayClosure?.startDate),
+                            'MMMM dd',
+                            { locale: enUS }
+                          )}{' '}
+                          to{' '}
+                          {format(
+                            new Date(settings?.holidayClosure?.endDate),
+                            'MMMM dd, yyyy',
+                            { locale: enUS }
+                          )}
+                        </span>
+                      )}
                     </div>
                   </div>
                 )}
@@ -97,7 +116,7 @@ export function HolidayClosureModal() {
                 <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                   <div className="flex items-center justify-center gap-2 text-sm text-blue-600 dark:text-blue-400">
                     <Clock className="w-4 h-4" />
-                    <span>Réouverture aux horaires habituels</span>
+                    <span>{t('common:re-open-title')}</span>
                   </div>
                 </div>
               )}

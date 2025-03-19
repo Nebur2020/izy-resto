@@ -312,5 +312,8 @@
   "only-show-what-you-defined": "Only show what you defined",
   "orders-title": "Orders",
   "inventory-title": "Inventory",
-  "invalid-combination": "Invalid combination"
+  "invalid-combination": "Invalid combination",
+  "is-cloed": "is closed",
+  "re-open-title": "Reopening at regular hours"
+
 }
