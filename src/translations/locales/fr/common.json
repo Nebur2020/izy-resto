@@ -328,6 +328,7 @@
     "in-cooking": "En préparation",
     "delivered": "Livré",
     "canceled": "Annulé"
-  }
-
+  },
+  "createdAt": "Créé le",
+  "updatedAt": "Mis à jour le"
 }

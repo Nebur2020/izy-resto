@@ -327,5 +327,7 @@
     "in-progress": "In Progress",
     "completed": "Completed",
     "canceled": "Canceled"
-  }
+  },
+  "createdAt": "Created at",
+  "updatedAt": "Updated at"
 }
