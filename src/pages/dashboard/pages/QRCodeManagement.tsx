@@ -202,7 +202,7 @@ export function QRCodeManagement() {
                   disabled:opacity-50 disabled:cursor-not-allowed 
                   transform hover:-translate-y-0.5 active:scale-95
                   [&>*]:text-white [&>span]:text-white
-                  disabled:from-gray-400 disabled:to-gray-500
+                  disabled:from-gray-300 disabled:to-gray-300
                 `}
               >
                 <Sparkles

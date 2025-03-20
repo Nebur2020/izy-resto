@@ -6,16 +6,33 @@ import { useCategories } from '../../../hooks';
 interface MenuFiltersProps {
   activeCategory: string;
   onCategoryChange: (category: string) => void;
+  palette?: {
+    primary: string;
+    secondary: string;
+  };
+  isDarkMode?: boolean;
 }
 
 export function GridMenuCategories({
   activeCategory,
   onCategoryChange,
+  palette = {
+    primary: '#2563EB',
+    secondary: '#4D48E5',
+  },
+  isDarkMode = false,
 }: MenuFiltersProps) {
   const { categories, isLoading } = useCategories();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftScroll, setShowLeftScroll] = useState(false);
   const [showRightScroll, setShowRightScroll] = useState(false);
+
+  const activeGradientStyle = {
+    background: `linear-gradient(to right, ${palette.primary}, ${palette.secondary})`,
+    color: 'white',
+    boxShadow:
+      '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+  };
 
   const checkScroll = () => {
     const container = scrollContainerRef.current;
@@ -76,6 +93,7 @@ export function GridMenuCategories({
         >
           <div className="flex items-center gap-2 px-4 mx-auto">
             <motion.button
+              style={activeCategory === 'all' ? activeGradientStyle : {}}
               onClick={() => onCategoryChange('all')}
               className={`
                 flex-none px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap
@@ -105,6 +123,9 @@ export function GridMenuCategories({
                       : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
                   }
                 `}
+                style={
+                  activeCategory === category.id ? activeGradientStyle : {}
+                }
                 whileHover={{ y: -2 }}
                 whileTap={{ scale: 0.95 }}
               >

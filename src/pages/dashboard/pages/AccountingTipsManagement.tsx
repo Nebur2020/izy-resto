@@ -120,7 +120,6 @@ export const AccountingTipsManagement = () => {
   const handleExport = async () => {
     try {
       setIsDownloading(true);
-      // Use all filtered orders for export
       const ordersWithTips = allOrders.filter(order => !!order?.tip);
       exportTipsToCSV(ordersWithTips, settings, dateRange, t, lng);
     } catch (error) {
@@ -138,21 +137,17 @@ export const AccountingTipsManagement = () => {
         endDate: dateRange.to,
       });
 
-      // Filter orders with tips
       const ordersWithTips = response.filter(order => !!order?.tip);
 
-      // Sort by date descending
       const sortedOrders = ordersWithTips.sort((a, b) => {
         return b.createdAt - a.createdAt;
       });
 
       setAllOrders(sortedOrders);
 
-      // Initialize with first batch
       const initialBatch = sortedOrders.slice(0, ITEMS_PER_PAGE);
       setDisplayedOrders(initialBatch);
 
-      // Set hasMore if there are more orders than initial batch
       setHasMore(sortedOrders.length > ITEMS_PER_PAGE);
     } catch (error) {
       console.error('Error fetching orders:', error);
@@ -185,7 +180,6 @@ export const AccountingTipsManagement = () => {
     fetchOrders();
   }, [dateRange]);
 
-  // Calculate total tips
   const totalTips = allOrders.reduce(
     (acc, curr) => acc + (curr.tip?.amount || 0),
     0
@@ -257,44 +251,55 @@ export const AccountingTipsManagement = () => {
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               <AnimatePresence mode="wait" initial={false}>
-                {displayedOrders.map((order, index) => (
-                  <motion.tr
-                    key={order.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    transition={{
-                      duration: 0.2,
-                      delay: Math.min(index * 0.05, 0.3),
-                    }}
-                    className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-                  >
-                    <td className="px-6 py-4 text-sm whitespace-nowrap">
-                      {formatDate(
-                        order.createdAt,
-                        false,
-                        settings?.language || 'fr'
-                      )}
+                {displayedOrders.length > 0 ? (
+                  displayedOrders.map((order, index) => (
+                    <motion.tr
+                      key={order.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{
+                        duration: 0.2,
+                        delay: Math.min(index * 0.05, 0.3),
+                      }}
+                      className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                    >
+                      <td className="px-6 py-4 text-sm whitespace-nowrap">
+                        {formatDate(
+                          order.createdAt,
+                          false,
+                          settings?.language || 'fr'
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-sm whitespace-nowrap">
+                        #{order.id}
+                      </td>
+                      <td className="px-6 py-4 text-sm whitespace-nowrap">
+                        {formatCurrency(order?.tip?.amount, settings?.currency)}
+                        {order?.tip?.percentage && (
+                          <span className="ml-1 text-xs text-gray-500">
+                            ({order.tip.percentage}%)
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-sm whitespace-nowrap">
+                        {order.customerName}
+                      </td>
+                      <td className="px-6 py-4 text-sm whitespace-nowrap">
+                        {order.paymentMethod?.name || '-'}
+                      </td>
+                    </motion.tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={5}
+                      className="px-6 py-4 text-sm text-center text-gray-500"
+                    >
+                      {t('comptability:no-tips-found')}
                     </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap">
-                      #{order.id}
-                    </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap">
-                      {formatCurrency(order?.tip?.amount, settings?.currency)}
-                      {order?.tip?.percentage && (
-                        <span className="ml-1 text-xs text-gray-500">
-                          ({order.tip.percentage}%)
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap">
-                      {order.customerName}
-                    </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap">
-                      {order.paymentMethod?.name || '-'}
-                    </td>
-                  </motion.tr>
-                ))}
+                  </tr>
+                )}
               </AnimatePresence>
             </tbody>
           </table>

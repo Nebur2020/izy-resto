@@ -31,13 +31,11 @@ export function MenuManagement() {
     itemId?: string;
   }>({ isOpen: false });
 
-  // Load more state
   const [lastDoc, setLastDoc] =
     useState<QueryDocumentSnapshot<DocumentData> | null>(null);
   const [hasMore, setHasMore] = useState(false);
-  const [pageSize] = useState(10); // Items per load
+  const [pageSize] = useState(10);
 
-  // Load initial items
   useEffect(() => {
     if (!isSearching) {
       loadInitialItems();
@@ -61,24 +59,20 @@ export function MenuManagement() {
     try {
       setIsLoading(true);
 
-      // When a category is selected, use direct category filtering instead of filters
       if (selectedCategory !== 'all') {
         try {
-          // First try direct category filtering (simpler and more reliable)
           const categoryItems = await menuService.getMenuItemsByCategory(
             selectedCategory
           );
 
-          // Show first pageSize items and set hasMore if there are more
           setItems(categoryItems.slice(0, pageSize));
           setHasMore(categoryItems.length > pageSize);
-          setLastDoc(null); // Reset pagination for direct filtering
+          setLastDoc(null);
         } catch (error) {
           console.error('Error loading category items:', error);
           toast.error(t('common:error-loading-items'));
         }
       } else {
-        // For "all" category, use standard pagination
         try {
           const result = await menuService.getMenuItemsPaginated(
             pageSize,
@@ -89,7 +83,6 @@ export function MenuManagement() {
           setHasMore(result.hasMore);
         } catch (error) {
           console.error('Error loading paginated items:', error);
-          // Fallback to getAll if pagination fails
           const allItems = await menuService.getAll();
           setItems(allItems.slice(0, pageSize));
           setHasMore(allItems.length > pageSize);
@@ -111,7 +104,6 @@ export function MenuManagement() {
       setIsLoadingMore(true);
 
       if (selectedCategory !== 'all') {
-        // If a category is selected, load more from the cached category items
         const allCategoryItems = await menuService.getMenuItemsByCategory(
           selectedCategory
         );
@@ -124,7 +116,6 @@ export function MenuManagement() {
         setItems(prevItems => [...prevItems, ...moreItems]);
         setHasMore(currentLength + pageSize < allCategoryItems.length);
       } else {
-        // For "all" category, use standard pagination
         const result = await menuService.getMenuItemsPaginated(
           pageSize,
           lastDoc
@@ -140,7 +131,7 @@ export function MenuManagement() {
       setIsLoadingMore(false);
     }
   };
-
+  //lorenzo
   const performSearch = async () => {
     if (!searchTerm.trim()) return;
 
@@ -148,7 +139,6 @@ export function MenuManagement() {
     setIsSearching(true);
 
     try {
-      // For searching, get all items by category first
       let baseItems;
       if (selectedCategory === 'all') {
         baseItems = await menuService.getAll();
@@ -156,7 +146,6 @@ export function MenuManagement() {
         baseItems = await menuService.getMenuItemsByCategory(selectedCategory);
       }
 
-      // Filter based on search term
       const results = baseItems.filter(
         item =>
           item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -166,7 +155,6 @@ export function MenuManagement() {
       );
 
       setItems(results);
-      // No "load more" for search results
       setHasMore(false);
       setLastDoc(null);
     } catch (error) {
@@ -186,17 +174,13 @@ export function MenuManagement() {
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
 
-    // Reset pagination state
     setLastDoc(null);
     setHasMore(false);
 
-    // If searching, clear search when changing category
     if (isSearching) {
       setSearchTerm('');
       setIsSearching(false);
     }
-
-    // Items will be loaded by the useEffect watching selectedCategory
   };
 
   const handleSave = async (item: Omit<MenuItem, 'id'>) => {
@@ -302,16 +286,21 @@ export function MenuManagement() {
         </div>
       )}
 
-      {!isLoading && items.length > 0 && (
+      {!isLoading && items.length > 0 ? (
         <MenuItemList
           items={items}
           onEdit={handleEdit}
           onDelete={handleDelete}
           currency={settings?.currency}
         />
+      ) : (
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+          <div className="divide-y divide-gray-200 dark:divide-gray-700">
+            <EmptySection title={t('common:no-items-found')} />
+          </div>
+        </div>
       )}
 
-      {/* Load More Button - only show when not searching and more items exist */}
       {!isLoading && hasMore && !isSearching && (
         <div className="flex justify-center mt-6">
           <Button

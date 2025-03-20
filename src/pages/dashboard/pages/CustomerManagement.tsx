@@ -68,9 +68,7 @@ export function CustomerManagement() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold mb-2">
-          {t('client:customer')}
-        </h1>
+        <h1 className="text-2xl font-bold mb-2">{t('client:customer')}</h1>
         <p className="text-gray-600 dark:text-gray-400">
           {customers.length} {t('client:total-customers')}
         </p>

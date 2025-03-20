@@ -6,11 +6,27 @@ import { MinimalMenuCategories } from './MinimalMenuCategories';
 import { SearchBar } from '../SearchBar';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw } from 'lucide-react';
+import { useSettings } from '../../../hooks';
+import { hexToRgb } from '../../../lib/firebase/utils/functions';
 
 const INITIAL_ITEMS_COUNT = 8;
 const LOAD_MORE_COUNT = 8;
 
-export function MinimalMenuSection() {
+type MinimalMenuSectionProps = {
+  palette?: {
+    primary: string;
+    secondary: string;
+  };
+  isDarkMode?: boolean;
+};
+
+export function MinimalMenuSection({
+  palette = {
+    primary: '#2563EB',
+    secondary: '#4D48E5',
+  },
+  isDarkMode = false,
+}: MinimalMenuSectionProps) {
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [visibleItemsCount, setVisibleItemsCount] =
@@ -21,11 +37,17 @@ export function MinimalMenuSection() {
   );
 
   const { t } = useTranslation('menu');
+  const { settings } = useSettings();
 
-  // Reset visible items count when category or search changes
+  // Move the useEffect after all hook calls
   useEffect(() => {
     setVisibleItemsCount(INITIAL_ITEMS_COUNT);
   }, [activeCategory, searchTerm]);
+
+  // Early return but after all hooks are called
+  if (!settings) {
+    return null;
+  }
 
   const filteredItems = items.filter(item => {
     const matchesCategory =
@@ -38,16 +60,22 @@ export function MinimalMenuSection() {
     return matchesCategory && matchesSearch;
   });
 
-  // Get only the visible items based on current count
   const visibleItems = filteredItems.slice(0, visibleItemsCount);
-
-  // Check if there are more items to load
   const hasMoreItems = visibleItemsCount < filteredItems.length;
+
+  const buttonBgColor = isDarkMode
+    ? `rgba(${hexToRgb(palette.primary)}, 0.2)`
+    : `rgba(${hexToRgb(palette.primary)}, 0.1)`;
+
+  const buttonHoverBgColor = isDarkMode
+    ? `rgba(${hexToRgb(palette.primary)}, 0.3)`
+    : `rgba(${hexToRgb(palette.primary)}, 0.2)`;
+
+  const buttonTextColor = isDarkMode ? '#d1d5db' : palette.primary;
 
   const handleLoadMore = () => {
     setIsLoadingMore(true);
 
-    // Simulate loading delay for better UX
     setTimeout(() => {
       setVisibleItemsCount(prevCount => prevCount + LOAD_MORE_COUNT);
       setIsLoadingMore(false);
@@ -56,18 +84,28 @@ export function MinimalMenuSection() {
 
   return (
     <div className="space-y-12">
-      <SearchBar onSearch={setSearchTerm} />
+      <SearchBar
+        palette={settings.palette}
+        isDarkMode={isDarkMode}
+        onSearch={setSearchTerm}
+      />
 
       <MinimalMenuCategories
         activeCategory={activeCategory}
         onCategoryChange={category => {
           setActiveCategory(category);
         }}
+        primaryColor={settings.palette.primary}
       />
 
       <motion.div layout className="grid grid-cols-1 gap-8 max-w-3xl mx-auto">
         {visibleItems.map(item => (
-          <MinimalMenuItem key={item.id} item={item} />
+          <MinimalMenuItem
+            palette={settings.palette}
+            isDarkMode={isDarkMode}
+            key={item.id}
+            item={item}
+          />
         ))}
       </motion.div>
 
@@ -84,10 +122,19 @@ export function MinimalMenuSection() {
               <button
                 disabled={isLoadingMore}
                 onClick={handleLoadMore}
-                className="flex items-center gap-2 px-6 py-2 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-800/30
-                      text-blue-600 dark:text-blue-400 rounded-lg transition-colors font-medium"
+                className="flex items-center gap-2 px-6 py-2 rounded-lg transition-colors font-medium"
+                style={{
+                  backgroundColor: buttonBgColor,
+                  color: buttonTextColor,
+                  ':hover': {
+                    backgroundColor: buttonHoverBgColor,
+                  },
+                }}
               >
-                <RefreshCw className="w-4 h-4" />
+                <RefreshCw
+                  className="w-4 h-4"
+                  style={{ color: buttonTextColor }}
+                />
                 {t('common:load-more')}
               </button>
             </div>

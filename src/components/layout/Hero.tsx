@@ -4,6 +4,7 @@ import { useSettings } from '../../hooks/useSettings';
 import { Button } from '../ui/Button';
 import { OpeningHoursButton } from './OpeningHoursButton';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '../../context/ThemeContext';
 
 interface InfoCardProps {
   icon: React.ElementType;
@@ -11,6 +12,11 @@ interface InfoCardProps {
   description: string;
   onClick?: () => void;
   isButton?: boolean;
+  palette?: {
+    primary: string;
+    secondary: string;
+  };
+  isDarkMode: boolean;
 }
 
 function InfoCard({
@@ -19,6 +25,11 @@ function InfoCard({
   description,
   onClick,
   isButton,
+  palette = {
+    primary: '#2563EB',
+    secondary: '#4D48E5',
+  },
+  isDarkMode,
 }: InfoCardProps) {
   const Component = isButton ? 'button' : 'div';
   const baseClassName =
@@ -27,24 +38,34 @@ function InfoCard({
     ? `${baseClassName} hover:bg-white/95 dark:hover:bg-white/15 active:scale-[0.98]`
     : baseClassName;
 
+  // Generate dynamic color styles based on the palette
+  const iconColor = isDarkMode ? palette.secondary : palette.primary;
+  const titleColor = isDarkMode ? 'text-white' : 'text-gray-900';
+  const descriptionColor = isDarkMode ? 'text-gray-300' : 'text-gray-700';
+
   return (
     <Component onClick={onClick} className={className}>
       <div className="flex-shrink-0">
-        <Icon className="h-5 w-5 text-blue-500 dark:text-blue-400" />
+        <Icon className={`h-5 w-5`} style={{ color: iconColor }} />
       </div>
       <div className="min-w-0 flex-1 text-left">
-        <h3 className="text-sm font-medium text-gray-900 dark:text-white">
-          {title}
-        </h3>
-        <p className="text-sm text-gray-700 dark:text-gray-300 truncate">
-          {description}
-        </p>
+        <h3 className={`text-sm font-medium ${titleColor}`}>{title}</h3>
+        <p className={`text-sm ${descriptionColor} truncate`}>{description}</p>
       </div>
     </Component>
   );
 }
 
-export function Hero() {
+export function Hero({
+  palette = {
+    primary: '#2563EB',
+    secondary: '#4D48E5',
+  },
+  isDarkMode,
+}: {
+  palette?: { primary: string; secondary: string };
+  isDarkMode: boolean;
+}) {
   const { settings } = useSettings();
 
   const scrollToMenu = () => {
@@ -79,8 +100,17 @@ export function Hero() {
               <Button
                 onClick={scrollToMenu}
                 className="group relative rounded-full px-8 py-3 text-base font-medium transition-all hover:shadow-lg hover:opacity-90 sm:text-lg
-    bg-gradient-to-r from-gray-200 to-white text-blue-600 hover:bg-gradient-to-r hover:from-gray-200 hover:to-gray-300
-    dark:bg-gradient-to-r dark:from-blue-500 dark:to-blue-400 dark:text-white dark:hover:from-blue-600 dark:hover:to-blue-500"
+    bg-gradient-to-r from-gray-200 to-white hover:bg-gradient-to-r hover:from-gray-200 hover:to-gray-300
+    dark:bg-gradient-to-r dark:hover:from-blue-600 dark:hover:to-blue-500"
+                style={{
+                  color: isDarkMode ? '#FFFFFF' : palette.primary,
+                  background: isDarkMode
+                    ? `linear-gradient(to right, ${palette.primary}, ${palette.secondary})`
+                    : undefined,
+                }}
+                spanStyle={{
+                  color: isDarkMode ? '#FFFFFF' : palette.primary,
+                }}
               >
                 {t('view-menu')}
                 <ArrowDown className="ml-2 inline-block h-4 w-4 transition-transform group-hover:translate-y-1 group-hover:animate-bounce" />
@@ -106,6 +136,14 @@ export function Hero() {
                         '_blank'
                       );
                   }}
+                  palette={
+                    settings?.palette ||
+                    palette || {
+                      primary: '#3B82F6',
+                      secondary: '#60A5FA',
+                    }
+                  }
+                  isDarkMode={isDarkMode}
                 />
               </div>
               <div className="sm:flex-1">
@@ -121,6 +159,14 @@ export function Hero() {
                       window.location.href = `tel:${settings.phone}`;
                     }
                   }}
+                  palette={
+                    settings?.palette ||
+                    palette || {
+                      primary: '#3B82F6',
+                      secondary: '#60A5FA',
+                    }
+                  }
+                  isDarkMode={isDarkMode}
                 />
               </div>
             </div>

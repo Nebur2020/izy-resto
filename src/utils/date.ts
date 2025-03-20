@@ -59,8 +59,10 @@ export function formatDate(
     const formatString = withHours
       ? lang === 'fr'
         ? "dd MMMM yyyy 'à' HH:mm:ss"
-        : "dd MMMM yyyy 'at' HH:mm:ss"
-      : 'dd MMMM yyyy';
+        : "MMMM dd, yyyy 'at' HH:mm:ss"
+      : lang === 'fr'
+      ? 'dd MMMM yyyy'
+      : 'MMMM dd, yyyy';
 
     return format(dateObj, formatString, { locale });
   } catch (error) {

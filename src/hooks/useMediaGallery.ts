@@ -3,21 +3,27 @@ import { mediaService } from '../services/media/media.service';
 import { MediaFile } from '../types/media';
 import toast from 'react-hot-toast';
 
-export function useMediaGallery(itemsPerPage: number = 12) {
+export function useMediaGallery(itemsPerLoad: number = 12) {
   const [files, setFiles] = useState<MediaFile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
+    {}
+  );
+  const [lastLoadedIndex, setLastLoadedIndex] = useState(0);
 
   useEffect(() => {
-    loadFiles();
+    loadInitialFiles();
   }, []);
 
-  const loadFiles = async () => {
+  const loadInitialFiles = async () => {
     try {
       setIsLoading(true);
       const mediaFiles = await mediaService.getAllMedia();
-      setFiles(mediaFiles);
+      setFiles(mediaFiles.slice(0, itemsPerLoad));
+      setLastLoadedIndex(itemsPerLoad);
+      setHasMore(mediaFiles.length > itemsPerLoad);
     } catch (error) {
       console.error('Error loading media files:', error);
       toast.error('Erreur chargement gallerie');
@@ -26,22 +32,41 @@ export function useMediaGallery(itemsPerPage: number = 12) {
     }
   };
 
+  const loadMoreFiles = async () => {
+    if (!hasMore || isLoadingMore) return;
+
+    try {
+      setIsLoadingMore(true);
+      const mediaFiles = await mediaService.getAllMedia();
+      const nextFiles = mediaFiles.slice(
+        lastLoadedIndex,
+        lastLoadedIndex + itemsPerLoad
+      );
+      setFiles(prevFiles => [...prevFiles, ...nextFiles]);
+      setLastLoadedIndex(lastLoadedIndex + itemsPerLoad);
+      setHasMore(mediaFiles.length > lastLoadedIndex + itemsPerLoad);
+    } catch (error) {
+      console.error('Error loading more files:', error);
+      toast.error('Erreur chargement fichiers supplémentaires');
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+
   const uploadFiles = async (files: File[]) => {
     try {
       const uploadPromises = files.map(file => {
-        return mediaService.uploadFile(file, (progress) => {
+        return mediaService.uploadFile(file, progress => {
           setUploadProgress(prev => ({
             ...prev,
-            [file.name]: progress
+            [file.name]: progress,
           }));
         });
       });
 
       await Promise.all(uploadPromises);
-      await loadFiles(); // Reload files after upload
-      setCurrentPage(1); // Reset to first page
-      setUploadProgress({}); // Clear progress
-
+      await loadInitialFiles();
+      setUploadProgress({});
       return true;
     } catch (error) {
       console.error('Upload error:', error);
@@ -53,35 +78,23 @@ export function useMediaGallery(itemsPerPage: number = 12) {
   const deleteFiles = async (fileIds: string[]) => {
     try {
       await mediaService.deleteFiles(fileIds);
-      await loadFiles(); // Reload files after deletion
-      
-      // Update current page if needed
-      const newTotalPages = Math.ceil((files.length - fileIds.length) / itemsPerPage);
-      if (currentPage > newTotalPages) {
-        setCurrentPage(Math.max(1, newTotalPages));
-      }
+      await loadInitialFiles();
     } catch (error) {
       console.error('Delete error:', error);
       throw error;
     }
   };
 
-  const totalPages = Math.ceil(files.length / itemsPerPage);
-  const paginatedFiles = files.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
   return {
-    files: paginatedFiles,
+    files,
     totalFiles: files.length,
-    currentPage,
-    totalPages,
-    setCurrentPage,
     isLoading,
+    isLoadingMore,
+    hasMore,
     uploadFiles,
     deleteFiles,
     uploadProgress,
-    refreshFiles: loadFiles
+    loadMoreFiles,
+    refreshFiles: loadInitialFiles,
   };
 }

@@ -1,103 +1,123 @@
-import { ChevronDownIcon } from 'lucide-react';
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { ProductDetailsModal } from '../../../components/menu/ProductDetailsModal';
+import { useTranslation } from 'react-i18next';
+import { MenuItemWithVariants } from '../../../types';
+import { formatCurrency } from '../../../utils/currency';
+import { useSettings } from '../../../hooks';
 
-interface IitemCradProps {
-  title: string;
-  imageUrl: string;
-  shortDescription: string;
-  price: number;
-  size: 'small' | 'medium' | 'large';
+interface ItemCardProps {
+  item: MenuItemWithVariants;
+  primaryColor?: string;
+  isDarkMode?: boolean;
 }
 
-export default function ItemCard(props: IitemCradProps) {
-  const { imageUrl, title, shortDescription, price, size } = props;
-  const [selectedSize, setSelectedSize] = useState(size);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+export default function ItemCard({
+  item,
+  primaryColor,
+  isDarkMode,
+}: ItemCardProps) {
+  const { t } = useTranslation('pizzatheme');
   const [showModal, setShowModal] = useState(false);
+  const { settings } = useSettings();
 
-  const priceMap: Record<'small' | 'medium' | 'large', number> = {
-    small: price,
-    medium: price * 1.2,
-    large: price * 1.5,
+  const isOutOfStock = item.stockQuantity === 0;
+
+  const cardPrimaryColor = primaryColor || '#fcb302';
+
+  const cardClassName = isDarkMode
+    ? 'bg-[#1A1A1A] text-white'
+    : 'bg-black text-white';
+
+  const titleClassName = isDarkMode ? 'text-gray-100' : 'text-white';
+
+  const descriptionClassName = isDarkMode ? 'text-gray-300' : 'text-white';
+
+  const cardVariants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: { opacity: 1, scale: 1, transition: { duration: 0.5 } },
   };
 
-  const item = {
-    id: '1',
-    categoryId: '2',
-    stockQuantity: 10,
-    name: title,
-    description: shortDescription,
-    price,
-    image: imageUrl,
-    variantPrices: [],
+  const imageVariants = {
+    hover: { scale: 1.1, transition: { duration: 0.3 } },
   };
 
   return (
-    <div
-      className="flex flex-col items-center w-full sm:w-[45%] md:w-[30%] lg:w-[20%] min-w-[250px] max-w-sm border border-gray-300 rounded-xl mx-3 mb-5"
-      role="button"
-      onClick={() => setShowModal(true)}
-    >
-      <div className="relative w-[100%] h-[250px]">
-        <img
-          src={imageUrl}
-          alt={title}
-          className="w-full h-full object-cover rounded-t-lg"
-        />
-      </div>
-      <div className="flex flex-col items-start my-5 sm:my-11 w-full px-5 sm:px-10">
-        <h1 className="text-lg sm:text-2xl font-bold">{title}</h1>
-        <p className="mt-2 text-sm sm:text-base">{shortDescription}</p>
-      </div>
-      <div className="flex items-center mt-5 sm:mt-11 mb-3 sm:mb-5 relative w-full px-5 sm:px-10 pb-3">
-        <div className="relative w-full">
-          <button
-            className="flex justify-between items-center border pl-3 border-gray-300 rounded-full text-xs sm:text-sm w-full focus:outline-none"
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          >
-            {selectedSize}
-            <div className="bg-[#fcb302]  rounded-r-full px-3 py-2 flex items-center">
-              <ChevronDownIcon
-                className={`w-4 h-4 text-white transform transition-transform duration-200 ${
-                  isDropdownOpen ? 'rotate-180' : 'rotate-0'
-                }`}
-              />
+    <>
+      <motion.div
+        className={`flex flex-col items-center w-full rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 relative ${
+          isOutOfStock ? 'cursor-not-allowed' : 'cursor-pointer'
+        } ${cardClassName}`}
+        role="button"
+        onClick={() => !isOutOfStock && setShowModal(true)}
+        variants={cardVariants}
+        initial="hidden"
+        animate="visible"
+        whileHover="hover"
+      >
+        <motion.div
+          className="relative w-full h-[300px] lg:h-[300px]"
+          whileHover="hover"
+        >
+          <motion.img
+            src={item.image}
+            alt={item.name}
+            className="w-full h-full object-cover"
+            variants={imageVariants}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+          {!isOutOfStock && (
+            <div className="absolute top-4 right-4 z-10">
+              <span
+                className="px-3 py-2 rounded-full text-sm font-semibold"
+                style={{
+                  backgroundColor: cardPrimaryColor,
+                  color: 'white',
+                }}
+              >
+                {item.stockQuantity} {t('common:in-stock')}
+              </span>
             </div>
-          </button>
-
-          {isDropdownOpen && (
-            <ul className="absolute left-0 bottom-full w-full bg-white border border-gray-300 rounded-md mt-1 shadow-md z-10">
-              {['small', 'medium', 'large'].map(size => (
-                <li
-                  key={size}
-                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  onClick={() => {
-                    setSelectedSize(size as 'small' | 'medium' | 'large');
-                    setIsDropdownOpen(false);
-                  }}
-                >
-                  {size}
-                </li>
-              ))}
-            </ul>
           )}
-        </div>
-
-        <span className="text-lg sm:text-xl font-bold text-red-500 ml-3">
-          ${priceMap[selectedSize].toFixed(2)}
-        </span>
-      </div>
+          <div className="absolute bottom-0 left-0 p-6 text-white w-full">
+            <h1 className={`text-2xl font-bold ${titleClassName}`}>
+              {item.name}
+            </h1>
+            <p
+              className={`mt-2 text-md text-ellipsis truncate ${descriptionClassName}`}
+            >
+              {item.description}
+            </p>
+            <p
+              className={`text-xl font-bold mt-4`}
+              style={{ color: cardPrimaryColor }}
+            >
+              {formatCurrency(item.price, settings?.currency)}
+            </p>
+          </div>
+        </motion.div>
+        {isOutOfStock && (
+          <div
+            className={`absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center rounded-xl`}
+          >
+            <span
+              className="px-4 py-2 rounded-md text-lg font-bold bg-opacity-80 bg-white dark:bg-[#1A1A1A]"
+              style={{ color: cardPrimaryColor }}
+            >
+              {t('menu:out-of-stock')}
+            </span>
+          </div>
+        )}
+      </motion.div>
 
       {showModal && (
         <ProductDetailsModal
-          addProductToCartBgColor="bg-yellow-500 text-white"
-          stockAvailableBgColor="bg-[#f4ecdf] text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
-          priceStyle="text-[#fcb302]"
+          primaryColor={cardPrimaryColor}
+          isDarkMode={isDarkMode}
           item={item}
           onClose={() => setShowModal(false)}
         />
       )}
-    </div>
+    </>
   );
 }

@@ -3,9 +3,11 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, FileText } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { useSettings } from '../hooks/useSettings';
+import { useTranslation } from 'react-i18next';
 
 export function TermsOfService() {
   const { settings } = useSettings();
+  const { t } = useTranslation('common');
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4">
@@ -14,7 +16,7 @@ export function TermsOfService() {
         <Link to="/">
           <Button variant="ghost" className="mb-8">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Retour à l'accueil
+            {t('back-home')}
           </Button>
         </Link>
 
@@ -27,9 +29,7 @@ export function TermsOfService() {
             <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
               <FileText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
             </div>
-            <h1 className="text-3xl font-bold">
-              Conditions Générales d'Utilisation
-            </h1>
+            <h1 className="text-3xl font-bold">{t('terms-and-conditions')}</h1>
           </div>
 
           <div className="prose dark:prose-invert max-w-none">

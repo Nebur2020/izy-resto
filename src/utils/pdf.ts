@@ -74,324 +74,10 @@ export const getPdfTranslationValues = (
   };
 };
 
-// export async function generateReceiptPDF(
-//   order: Order,
-//   translations: Translations,
-//   t: (key: string) => string,
-//   lng: Language,
-//   settings?: Settings
-// ): Promise<jsPDF> {
-//   try {
-//     const receiptDiv = document.createElement('div');
-//     receiptDiv.style.position = 'absolute';
-//     receiptDiv.style.left = '-9999px';
-//     receiptDiv.style.background = 'white';
-//     receiptDiv.style.width = '280px';
-//     receiptDiv.style.padding = '15px';
-//     receiptDiv.style.fontFamily = 'Courier, monospace';
-//     receiptDiv.style.fontSize = '11px';
-//     receiptDiv.style.lineHeight = '1.3';
-//     receiptDiv.style.color = 'rgb(0, 0, 0)';
-//     receiptDiv.style.printColorAdjust = 'exact';
-//     receiptDiv.style.printColorAdjust = 'exact';
-
-//     const qrCodeUrl = await QRCode.toDataURL(
-//       `${window.location.origin}/order/${order.id}`,
-//       {
-//         margin: 0,
-//         width: 120,
-//         color: {
-//           dark: '#000000',
-//           light: '#FFFFFF',
-//         },
-//       }
-//     );
-
-//     const baseStyles =
-//       'color: rgb(0, 0, 0) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact;';
-
-//     receiptDiv.innerHTML = `
-//       <div style="${baseStyles} background-color: white;">
-//         <div style="text-align: center; ${baseStyles}">
-//           ${
-//             settings?.logo
-//               ? `
-//             <div style="margin-bottom: 15px; display: flex; justify-content: center;">
-//               <img src="${settings.logo}" width="${
-//                   settings.logoWidth || 120
-//                 }px" style="max-width: 80px;" />
-//             </div>
-//           `
-//               : ''
-//           }
-//           ${
-//             settings?.name
-//               ? `
-//             <div style="font-size: 16px; font-weight: bold; margin-bottom: 4px; ${baseStyles}">
-//               ${settings?.name || translations.restaurantName}
-//             </div>
-//             `
-//               : ''
-//           }
-//           ${
-//             settings?.address
-//               ? `
-//             <div style="margin-bottom: 2px; ${baseStyles}">
-//               ${settings?.address || '3000, rue de Mary'}
-//             </div>
-//             `
-//               : ''
-//           }
-//         </div>
-
-//         <div style="border-bottom: 1px dashed rgb(0, 0, 0); margin: 8px 0;"></div>
-
-//         <div style="margin-bottom: 8px; ${baseStyles}">
-//           <div style="${baseStyles}">${formatDate(
-//       order.createdAt,
-//       false,
-//       lng
-//     )}</div>
-//           <div style="${baseStyles}">${
-//       translations.transactionLabel
-//     } #${order.id.slice(0, 6)}</div>
-//           <div style="${baseStyles}">${
-//       order.diningOption === 'delivery'
-//         ? translations.deliveryLabel
-//         : translations.onSiteLabel
-//     }</div>
-//           ${
-//             order.tableNumber
-//               ? `<div style="${baseStyles}">Table #${order.tableNumber}</div>`
-//               : ''
-//           }
-//         </div>
-
-//         <div style="margin-bottom: 8px; ${baseStyles}">
-//           <div style="${baseStyles}">${order.customerName}</div>
-//           ${
-//             order.customerPhone
-//               ? `<div style="${baseStyles}">${order.customerPhone}</div>`
-//               : ''
-//           }
-//           ${
-//             order.customerEmail
-//               ? `<div style="${baseStyles}">${order.customerEmail}</div>`
-//               : ''
-//           }
-//           ${
-//             order.customerAddress
-//               ? `<div style="${baseStyles}">${order.customerAddress}</div>`
-//               : ''
-//           }
-//           ${
-//             order.delivery
-//               ? `<div style="${baseStyles}">${translations.deliveryLabel} ${order.delivery.name}</div>`
-//               : ''
-//           }
-//           ${
-//             order.preference
-//               ? `<div style="font-size: 10px; ${baseStyles}">${translations.noteLabel}: ${order.preference}</div>`
-//               : ''
-//           }
-//         </div>
-
-//         <div style="margin-bottom: 8px; ${baseStyles}">
-//           ${order.items
-//             .map(
-//               item => `
-//               <div style="display: flex; justify-content: space-between; margin-bottom: 2px; ${baseStyles}">
-//                 <div style="${baseStyles}">${item.quantity} ${item.name}</div>
-//                 <div style="${baseStyles}">${formatCurrency(
-//                 item.price * item.quantity,
-//                 settings?.currency
-//               )}</div>
-//               </div>
-//             `
-//             )
-//             .join('')}
-//         </div>
-
-//         <div style="border-bottom: 1px dashed rgb(0, 0, 0); margin: 8px 0;"></div>
-
-//         ${
-//           order.subtotal > 0
-//             ? `
-//           <div style="margin-bottom: 8px; ${baseStyles}">
-//             <div style="display: flex; justify-content: space-between; ${baseStyles}">
-//               <div style="${baseStyles}">${translations.subtotalLabel}</div>
-//               <div style="${baseStyles}">${formatCurrency(
-//                 order.subtotal,
-//                 settings?.currency
-//               )}</div>
-//             </div>
-//           `
-//             : ''
-//         }
-
-//         ${
-//           order.taxes?.length > 0
-//             ? order.taxes
-//                 ?.map(
-//                   tax => `
-//                 <div style="display: flex; justify-content: space-between; ${baseStyles}">
-//                   <div style="${baseStyles}">${tax.name} (${Number(
-//                     tax.rate
-//                   ).toFixed(3)}%)</div>
-//                   <div style="${baseStyles}">${formatCurrency(
-//                     tax.amount,
-//                     settings?.currency
-//                   )}</div>
-//                 </div>
-//               `
-//                 )
-//                 .join('')
-//             : ''
-//         }
-
-//         ${
-//           order.tip
-//             ? `
-//           <div style="display: flex; justify-content: space-between; ${baseStyles}">
-//             <div style="${baseStyles}">${translations.tipLabel} ${
-//                 order.tip.percentage ? ` (${order.tip.percentage}%)` : ''
-//               }</div>
-//             <div style="${baseStyles}">${formatCurrency(
-//                 order.tip.amount,
-//                 settings?.currency
-//               )}</div>
-//           </div>
-//           `
-//             : ''
-//         }
-
-//         ${
-//           order.delivery
-//             ? `
-//           <div style="display: flex; justify-content: space-between; ${baseStyles}">
-//             <div style="${baseStyles}">${translations.deliveryLabel}</div>
-//             <div style="${baseStyles}">${formatCurrency(
-//                 Number(order.delivery.price),
-//                 settings?.currency
-//               )}</div>
-//           </div>
-//           `
-//             : ''
-//         }
-
-//         <div style="display: flex; justify-content: space-between; margin-top: 4px; ${baseStyles}">
-//           <div style="${baseStyles}">${translations.totalLabel}</div>
-//           <div style="${baseStyles}">${formatCurrency(
-//       order.total,
-//       settings?.currency
-//     )}</div>
-//         </div>
-
-//         ${
-//           order.amountPaid && order.amountPaid > 0
-//             ? `
-//           <div style="display: flex; justify-content: space-between; margin-top: 4px; ${baseStyles}">
-//             <div style="${baseStyles}">${translations.amountReceivedLabel}</div>
-//             <div style="${baseStyles}">${formatCurrency(
-//                 order.amountPaid,
-//                 settings?.currency
-//               )}</div>
-//           </div>
-//           `
-//             : ''
-//         }
-
-//         ${
-//           order.change && order.change > 0
-//             ? `
-//           <div style="display: flex; justify-content: space-between; margin-top: 4px; ${baseStyles}">
-//             <div style="${baseStyles}">${translations.amountDueLabel}</div>
-//             <div style="${baseStyles}">${formatCurrency(
-//                 order.change,
-//                 settings?.currency
-//               )}</div>
-//           </div>
-//           `
-//             : ''
-//         }
-
-//         <div style="margin-bottom: 8px; ${baseStyles}">
-//           <div style="${baseStyles}">${translations.paymentMethodName}</div>
-//         </div>
-
-//         <div style="text-align: center; margin: 12px 0; ${baseStyles}">
-//           <div style="margin-bottom: 8px; ${baseStyles}">${
-//       translations.paymentReceiveLabel
-//     }</div>
-//           <img src="${qrCodeUrl}" width="120" style="margin: 0 auto; display: block;" />
-//           ${
-//             order.servedBy
-//               ? `<div style="${baseStyles}">${translations.servedByLabel} ${t(
-//                   `common:staff-names.${order.servedBy}`
-//                 )}</div>`
-//               : ''
-//           }
-//         </div>
-
-//         <div style="text-align: center; margin: 12px 0; ${baseStyles}">
-//           <div style="${baseStyles}">${formatDate(
-//       order.createdAt,
-//       true,
-//       lng
-//     )}</div>
-//         </div>
-//         <div style="border-bottom: 1px dashed rgb(0, 0, 0); margin: 8px 0;"></div>
-//       </div>
-//     `;
-
-//     document.body.appendChild(receiptDiv);
-
-//     const canvas = await html2canvas(receiptDiv, {
-//       scale: 2,
-//       useCORS: true,
-//       logging: false,
-//       backgroundColor: '#FFFFFF',
-//       onclone: document => {
-//         const elements = document.getElementsByTagName('*');
-//         for (let i = 0; i < elements.length; i++) {
-//           const element = elements[i] as HTMLElement;
-//           if (element.style) {
-//             element.style.color = 'rgb(0, 0, 0)';
-//           }
-//         }
-//       },
-//     });
-
-//     document.body.removeChild(receiptDiv);
-
-//     const contentWidth = 280;
-//     const contentHeight = canvas.height * (contentWidth / canvas.width);
-
-//     const pdf = new jsPDF({
-//       orientation: 'portrait',
-//       unit: 'px',
-//       format: [contentWidth, contentHeight],
-//       putOnlyUsedFonts: true,
-//       compress: true,
-//     });
-
-//     pdf.addImage(
-//       canvas.toDataURL('image/png', 1.0),
-//       'PNG',
-//       0,
-//       0,
-//       contentWidth,
-//       contentHeight,
-//       undefined,
-//       'FAST'
-//     );
-
-//     return pdf;
-//   } catch (error) {
-//     console.error('Error generating PDF:', error);
-//     throw new Error('Failed to generate PDF receipt');
-//   }
-// }
+function truncateText(text: string, maxLength: number): string {
+  if (!text) return '';
+  return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+}
 
 export async function generateReceiptPDF(
   order: Order,
@@ -401,18 +87,26 @@ export async function generateReceiptPDF(
   settings?: Settings
 ): Promise<jsPDF> {
   try {
+    const spacing = {
+      itemMargin: 5,
+      sectionMargin: 15,
+      lineHeight: 1.5,
+      dividerMargin: 12,
+    };
+
     const receiptDiv = document.createElement('div');
-    receiptDiv.style.position = 'absolute';
-    receiptDiv.style.left = '-9999px';
+    receiptDiv.style.position = 'relative';
     receiptDiv.style.background = 'white';
-    receiptDiv.style.width = '280px';
-    receiptDiv.style.padding = '15px';
-    receiptDiv.style.fontFamily = 'Courier, monospace';
-    receiptDiv.style.fontSize = '11px';
-    receiptDiv.style.lineHeight = '1.3';
+    receiptDiv.style.width = '100%';
+    receiptDiv.style.maxWidth = '280px';
+    receiptDiv.style.margin = '0 auto';
+    receiptDiv.style.padding = '20px';
+    receiptDiv.style.fontFamily = 'Arial, sans-serif, Courier monospace';
+    receiptDiv.style.fontSize = '12px';
+    receiptDiv.style.lineHeight = spacing.lineHeight.toString();
     receiptDiv.style.color = 'rgb(0, 0, 0)';
     receiptDiv.style.printColorAdjust = 'exact';
-    receiptDiv.style.printColorAdjust = 'exact';
+    receiptDiv.style.wordWrap = 'break-word';
 
     const qrCodeUrl = await QRCode.toDataURL(
       `${window.location.origin}/order/${order.id}`,
@@ -427,7 +121,7 @@ export async function generateReceiptPDF(
     );
 
     const baseStyles =
-      'color: rgb(0, 0, 0) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact;';
+      'color: rgb(0, 0, 0) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; overflow-wrap: break-word; word-wrap: break-word;';
 
     receiptDiv.innerHTML = `
       <div style="${baseStyles} background-color: white;">
@@ -436,7 +130,9 @@ export async function generateReceiptPDF(
           ${
             settings?.logo
               ? `
-            <div style="margin-bottom: 15px; display: flex; justify-content: center;">
+            <div style="margin-bottom: ${
+              spacing.sectionMargin
+            }px; display: flex; justify-content: center;">
               <img src="${settings.logo}" width="${
                   settings.logoWidth || 120
                 }px" style="max-width: 80px;" />
@@ -447,8 +143,8 @@ export async function generateReceiptPDF(
           ${
             settings?.name
               ? `
-            <div style="font-size: 16px; font-weight: bold; margin-bottom: 4px; ${baseStyles}">
-              ${settings?.name || translations.restaurantName}
+            <div style="font-size: 16px; font-weight: bold; margin-bottom: 8px; ${baseStyles}">
+              ${truncateText(settings?.name || translations.restaurantName, 40)}
             </div>
             `
               : ''
@@ -456,77 +152,99 @@ export async function generateReceiptPDF(
           ${
             settings?.address
               ? `
-            <div style="margin-bottom: 2px; ${baseStyles}">
-              ${settings?.address || '3000, rue de Mary'}
+            <div style="margin-bottom: 5px; ${baseStyles}">
+              ${truncateText(settings?.address || '3000, rue de Mary', 60)}
             </div>
             `
               : ''
           }
         </div>
 
-        <div style="border-bottom: 1px dashed rgb(0, 0, 0); margin: 8px 0;"></div>
+        <div style="border-bottom: 1px dashed rgb(0, 0, 0); margin: ${
+          spacing.dividerMargin
+        }px 0;"></div>
 
         <!-- Order Info -->
-        <div style="margin-bottom: 8px; ${baseStyles}">
-          <div style="font-weight: bold; ${baseStyles}">${
+        <div style="margin-bottom: ${spacing.sectionMargin}px; ${baseStyles}">
+          <div style="font-weight: bold; margin-bottom: 3px; ${baseStyles}">${
       translations.transactionLabel || 'Order'
     } #${order.id.slice(0, 6)}</div>
-          <div style="${baseStyles}">${formatDate(
+          <div style="margin-bottom: 3px; ${baseStyles}">${formatDate(
       order.createdAt,
       false,
       lng
     )}</div>
-          <div style="${baseStyles}">${
+          <div style="margin-bottom: 3px; ${baseStyles}">${
       order.diningOption === 'delivery'
         ? translations.deliveryLabel
         : translations.onSiteLabel
     }</div>
           ${
             order.tableNumber
-              ? `<div style="${baseStyles}">Table #${order.tableNumber}</div>`
+              ? `<div style="margin-bottom: 3px; ${baseStyles}">Table #${order.tableNumber}</div>`
               : ''
           }
         </div>
 
         <!-- Customer Info -->
-        <div style="margin-bottom: 8px; ${baseStyles}">
-          <div style="font-weight: bold; ${baseStyles}">${
+        <div style="margin-bottom: ${spacing.sectionMargin}px; ${baseStyles}">
+          <div style="font-weight: bold; margin-bottom: 5px; ${baseStyles}">${
       translations.customerLabel || 'Customer'
     }:</div>
-          <div style="${baseStyles}">${order.customerName}</div>
+          <div style="margin-bottom: 3px; ${baseStyles}">${truncateText(
+      order.customerName,
+      40
+    )}</div>
           ${
             order.customerPhone
-              ? `<div style="${baseStyles}">${order.customerPhone}</div>`
+              ? `<div style="margin-bottom: 3px; ${baseStyles}">${truncateText(
+                  order.customerPhone,
+                  20
+                )}</div>`
               : ''
           }
           ${
             order.customerEmail
-              ? `<div style="${baseStyles}">${order.customerEmail}</div>`
+              ? `<div style="margin-bottom: 3px; ${baseStyles}">${truncateText(
+                  order.customerEmail,
+                  40
+                )}</div>`
               : ''
           }
           ${
             order.customerAddress
-              ? `<div style="${baseStyles}">${order.customerAddress}</div>`
+              ? `<div style="margin-bottom: 3px; ${baseStyles}">${truncateText(
+                  order.customerAddress,
+                  60
+                )}</div>`
               : ''
           }
           ${
             order.delivery
-              ? `<div style="${baseStyles}">${translations.deliveryLabel} ${order.delivery.name}</div>`
+              ? `<div style="margin-bottom: 3px; ${baseStyles}">${
+                  translations.deliveryLabel
+                } ${truncateText(order.delivery.name, 30)}</div>`
               : ''
           }
           ${
             order.preference
-              ? `<div style="font-style: italic; font-size: 10px; ${baseStyles}">${translations.noteLabel}: ${order.preference}</div>`
+              ? `<div style="font-style: italic; font-size: 10px; margin-top: 5px; ${baseStyles}">${
+                  translations.noteLabel
+                }: ${truncateText(order.preference, 100)}</div>`
               : ''
           }
         </div>
 
-        <div style="border-bottom: 1px dashed rgb(0, 0, 0); margin: 8px 0;"></div>
+        <div style="border-bottom: 1px dashed rgb(0, 0, 0); margin: ${
+          spacing.dividerMargin
+        }px 0;"></div>
 
         <!-- Items Header -->
-        <div style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 4px; ${baseStyles}">
-          <div style="${baseStyles}">${translations.qtyLabel || 'QTY'}</div>
-          <div style="flex-grow: 1; padding-left: 8px; ${baseStyles}">${
+        <div style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 8px; ${baseStyles}">
+          <div style="width: 32px; ${baseStyles}">${
+      translations.qtyLabel || 'QTY'
+    }</div>
+          <div style="flex-grow: 1; padding-left: 10px; ${baseStyles}">${
       translations.itemLabel || 'ITEM'
     }</div>
           <div style="${baseStyles}">${
@@ -535,15 +253,18 @@ export async function generateReceiptPDF(
         </div>
 
         <!-- Order Items -->
-        <div style="margin-bottom: 8px; ${baseStyles}">
+        <div style="margin-bottom: ${spacing.sectionMargin}px; ${baseStyles}">
           ${order.items
             .map(
-              item => `
-              <div style="display: flex; justify-content: space-between; margin-bottom: 2px; ${baseStyles}">
-                <div style="width: 24px; ${baseStyles}">${item.quantity}</div>
-                <div style="flex-grow: 1; padding-left: 8px; ${baseStyles}">${
-                item.name
-              }</div>
+              (item, index) => `
+              <div style="display: flex; justify-content: space-between; margin-bottom: ${
+                spacing.itemMargin
+              }px; ${baseStyles}">
+                <div style="width: 32px; ${baseStyles}">${item.quantity}</div>
+                <div style="flex-grow: 1; padding-left: 10px; ${baseStyles}">${truncateText(
+                item.name,
+                30
+              )}</div>
                 <div style="${baseStyles}">${formatCurrency(
                 item.price * item.quantity,
                 settings?.currency
@@ -552,11 +273,19 @@ export async function generateReceiptPDF(
               ${
                 item.specialInstructions
                   ? `
-                <div style="display: flex; margin-left: 24px; font-size: 10px; font-style: italic; margin-bottom: 1px; ${baseStyles}">
-                  <div style="flex-grow: 1; padding-left: 8px; ${baseStyles}">* ${item.specialInstructions}</div>
+                <div style="display: flex; margin-left: 32px; font-size: 10px; font-style: italic; margin-bottom: 5px; ${baseStyles}">
+                  <div style="flex-grow: 1; padding-left: 10px; ${baseStyles}">* ${truncateText(
+                      item.specialInstructions,
+                      50
+                    )}</div>
                   <div style="${baseStyles}"></div>
                 </div>
               `
+                  : ''
+              }
+              ${
+                index < order.items.length - 1
+                  ? `<div style="height: 2px;"></div>`
                   : ''
               }
             `
@@ -564,76 +293,82 @@ export async function generateReceiptPDF(
             .join('')}
         </div>
 
-        <div style="border-bottom: 1px dashed rgb(0, 0, 0); margin: 8px 0;"></div>
+        <div style="border-bottom: 1px dashed rgb(0, 0, 0); margin: ${
+          spacing.dividerMargin
+        }px 0;"></div>
 
         <!-- Order Summary -->
-        ${
-          order.subtotal > 0
-            ? `
-          <div style="margin-bottom: 2px; ${baseStyles}">
-            <div style="display: flex; justify-content: space-between; ${baseStyles}">
-              <div style="${baseStyles}">${translations.subtotalLabel}</div>
-              <div style="${baseStyles}">${formatCurrency(
-                order.subtotal,
-                settings?.currency
-              )}</div>
+        <div style="margin-bottom: ${spacing.sectionMargin}px; ${baseStyles}">
+          ${
+            order.subtotal > 0
+              ? `
+            <div style="margin-bottom: 5px; ${baseStyles}">
+              <div style="display: flex; justify-content: space-between; ${baseStyles}">
+                <div style="${baseStyles}">${translations.subtotalLabel}</div>
+                <div style="${baseStyles}">${formatCurrency(
+                  order.subtotal,
+                  settings?.currency
+                )}</div>
+              </div>
             </div>
-          `
-            : ''
-        }
+            `
+              : ''
+          }
 
-        ${
-          order.taxes?.length > 0
-            ? order.taxes
-                ?.map(
-                  tax => `
-                <div style="display: flex; justify-content: space-between; ${baseStyles}">
-                  <div style="${baseStyles}">${tax.name} (${Number(
-                    tax.rate
-                  ).toFixed(2)}%)</div>
-                  <div style="${baseStyles}">${formatCurrency(
-                    tax.amount,
-                    settings?.currency
-                  )}</div>
-                </div>
-              `
-                )
-                .join('')
-            : ''
-        }
+          ${
+            order.taxes?.length > 0
+              ? order.taxes
+                  ?.map(
+                    tax => `
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 5px; ${baseStyles}">
+                    <div style="${baseStyles}">${truncateText(
+                      tax.name,
+                      20
+                    )} (${Number(tax.rate).toFixed(2)}%)</div>
+                    <div style="${baseStyles}">${formatCurrency(
+                      tax.amount,
+                      settings?.currency
+                    )}</div>
+                  </div>
+                `
+                  )
+                  .join('')
+              : ''
+          }
 
-        ${
-          order.tip
-            ? `
-          <div style="display: flex; justify-content: space-between; ${baseStyles}">
-            <div style="${baseStyles}">${translations.tipLabel} ${
-                order.tip.percentage ? ` (${order.tip.percentage}%)` : ''
-              }</div>
-            <div style="${baseStyles}">${formatCurrency(
-                order.tip.amount,
-                settings?.currency
-              )}</div>
-          </div>
-          `
-            : ''
-        }
+          ${
+            order.tip
+              ? `
+            <div style="display: flex; justify-content: space-between; margin-bottom: 5px; ${baseStyles}">
+              <div style="${baseStyles}">${translations.tipLabel} ${
+                  order.tip.percentage ? ` (${order.tip.percentage}%)` : ''
+                }</div>
+              <div style="${baseStyles}">${formatCurrency(
+                  order.tip.amount,
+                  settings?.currency
+                )}</div>
+            </div>
+            `
+              : ''
+          }
 
-        ${
-          order.delivery
-            ? `
-          <div style="display: flex; justify-content: space-between; ${baseStyles}">
-            <div style="${baseStyles}">${translations.deliveryLabel}</div>
-            <div style="${baseStyles}">${formatCurrency(
-                Number(order.delivery.price),
-                settings?.currency
-              )}</div>
-          </div>
-          `
-            : ''
-        }
+          ${
+            order.delivery
+              ? `
+            <div style="display: flex; justify-content: space-between; margin-bottom: 5px; ${baseStyles}">
+              <div style="${baseStyles}">${translations.deliveryLabel}</div>
+              <div style="${baseStyles}">${formatCurrency(
+                  Number(order.delivery.price),
+                  settings?.currency
+                )}</div>
+            </div>
+            `
+              : ''
+          }
+        </div>
 
         <!-- Total Amount -->
-        <div style="display: flex; justify-content: space-between; margin-top: 6px; margin-bottom: 4px; font-weight: bold; font-size: 13px; ${baseStyles}">
+        <div style="display: flex; justify-content: space-between; margin-top: 8px; margin-bottom: 10px; font-weight: bold; font-size: 14px; ${baseStyles}">
           <div style="${baseStyles}">${translations.totalLabel}</div>
           <div style="${baseStyles}">${formatCurrency(
       order.total,
@@ -642,54 +377,71 @@ export async function generateReceiptPDF(
         </div>
 
         <!-- Payment Information -->
-        ${
-          order.amountPaid && order.amountPaid > 0
-            ? `
-          <div style="display: flex; justify-content: space-between; margin-top: 4px; ${baseStyles}">
-            <div style="${baseStyles}">${translations.amountReceivedLabel}</div>
-            <div style="${baseStyles}">${formatCurrency(
-                order.amountPaid,
-                settings?.currency
-              )}</div>
-          </div>
-          `
-            : ''
-        }
-        
-        ${
-          order.change && order.change > 0
-            ? `
-          <div style="display: flex; justify-content: space-between; margin-top: 4px; ${baseStyles}">
-            <div style="${baseStyles}">${translations.amountDueLabel}</div>
-            <div style="${baseStyles}">${formatCurrency(
-                order.change,
-                settings?.currency
-              )}</div>
-          </div>
-          `
-            : ''
-        }
+        <div style="margin-bottom: ${spacing.sectionMargin}px; ${baseStyles}">
+          ${
+            order.amountPaid && order.amountPaid > 0
+              ? `
+            <div style="display: flex; justify-content: space-between; margin-top: 5px; margin-bottom: 5px; ${baseStyles}">
+              <div style="${baseStyles}">${
+                  translations.amountReceivedLabel
+                }</div>
+              <div style="${baseStyles}">${formatCurrency(
+                  order.amountPaid,
+                  settings?.currency
+                )}</div>
+            </div>
+            `
+              : ''
+          }
+          
+          ${
+            order.change && order.change > 0
+              ? `
+            <div style="display: flex; justify-content: space-between; margin-top: 5px; margin-bottom: 5px; ${baseStyles}">
+              <div style="${baseStyles}">${translations.amountDueLabel}</div>
+              <div style="${baseStyles}">${formatCurrency(
+                  order.change,
+                  settings?.currency
+                )}</div>
+            </div>
+            `
+              : ''
+          }
 
-        <div style="margin-top: 8px; margin-bottom: 8px; ${baseStyles}">
-          <div style="font-weight: bold; ${baseStyles}">${
+          <div style="margin-top: 10px; ${baseStyles}">
+            <div style="font-weight: bold; margin-bottom: 3px; ${baseStyles}">${
       translations.paymentMethodLabel || 'Payment Method'
     }:</div>
-          <div style="${baseStyles}">${translations.paymentMethodName}</div>
+            <div style="${baseStyles}">${truncateText(
+      translations.paymentMethodName,
+      30
+    )}</div>
+          </div>
         </div>
 
-        <div style="border-bottom: 1px dashed rgb(0, 0, 0); margin: 8px 0;"></div>
+        <div style="border-bottom: 1px dashed rgb(0, 0, 0); margin: ${
+          spacing.dividerMargin
+        }px 0;"></div>
 
         <!-- QR Code Section -->
-        <div style="text-align: center; margin: 12px 0; ${baseStyles}">
-          <div style="margin-bottom: 8px; ${baseStyles}">${
+        <div style="text-align: center; margin: ${
+          spacing.sectionMargin
+        }px 0; ${baseStyles}">
+          <div style="margin-bottom: 10px; ${baseStyles}">${
       translations.paymentReceiveLabel
     }</div>
           <img src="${qrCodeUrl}" width="120" style="margin: 0 auto; display: block;" />
           ${
             order.servedBy
-              ? `<div style="margin-top: 8px; ${baseStyles}">${
+              ? `<div style="margin-top: 10px; ${baseStyles}">${
                   translations.servedByLabel
-                } ${t(`common:staff-names.${order.servedBy}`)}</div>`
+                } ${truncateText(
+                  t(`common:staff-names.${order.servedBy}`) ===
+                    `staff-names.${order.servedBy}`
+                    ? order.servedBy
+                    : t(`common:staff-names.${order.servedBy}`),
+                  30
+                )}</div>`
               : ''
           }
         </div>
@@ -757,9 +509,11 @@ export async function generateReceiptPDF(
     throw new Error('Failed to generate PDF receipt');
   }
 }
+
 export async function generateUserReceipt(
   order: Order,
   t: (key: string) => string,
+  lng: Language,
   settings?: RestaurantSettings | null
 ): Promise<jsPDF> {
   try {
@@ -790,7 +544,8 @@ export async function generateUserReceipt(
           </p>
           <p style="color: #000000; font-size: 13px; margin: 0;">${formatDate(
             order.createdAt,
-            true
+            true,
+            lng
           )}</p>
         </div>
 

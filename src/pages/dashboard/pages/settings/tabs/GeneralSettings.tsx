@@ -7,6 +7,9 @@ import { allCurrencies } from '../../../../../constants/defaultSettings';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
 
+import PhoneInput, { CountryData } from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+
 export function GeneralSettings() {
   const { t } = useTranslation();
   const {
@@ -197,6 +200,38 @@ export function GeneralSettings() {
               handleFieldChange('language', language)
             }
           />
+
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              {t('common:phone-number')} skjd
+            </label>
+
+            <PhoneInput
+              country={watch('country.countryCode')}
+              value={`+${watch('country.dialCode')}`}
+              countryCodeEditable={false}
+              containerClass="w-[100px] flex items-center border-r  !border-none"
+              inputClass="!w-full !border-none bg-transparent pl-2 text-sm text-gray-700 !dark:text-gray-300 dark:bg-gray-800"
+              buttonClass="!bg-transparent !dark:bg-transparent !border-none p-0 flex items-center"
+              dropdownClass="absolute top-full z-50 bg-white dark:bg-gray-800 shadow-lg border  !border-none"
+              searchClass="!border-none"
+              onChange={(_, country: CountryData) => {
+                setValue(
+                  'country',
+                  {
+                    countryCode: country.countryCode,
+                    dialCode: country.dialCode,
+                    name: country.name,
+                  },
+                  {
+                    shouldDirty: true,
+                    shouldTouch: true,
+                  }
+                );
+              }}
+              enableSearch
+            />
+          </div>
         </div>
       </section>
 
@@ -270,6 +305,25 @@ export function GeneralSettings() {
               {t('setting:rate-limit-time-window-hours-description')}
             </p>
           </div>
+        </div>
+        <div className="w-full">
+          <label className="block text-sm font-medium mb-1">
+            {t('common:set-rate-limit-max-users-per-day')}
+          </label>
+          <input
+            type="number"
+            {...register('rateLimits.maxUsersPerDay')}
+            className={`w-full rounded-lg border p-2 dark:bg-gray-700 ${
+              errors.rateLimits?.maxUsersPerDay
+                ? 'border-red-500 dark:border-red-500'
+                : 'dark:border-gray-600'
+            }`}
+          />
+          {errors.rateLimits?.maxUsersPerDay && (
+            <p className="mt-1 text-sm text-red-500">
+              {errors.rateLimits.maxUsersPerDay.message}
+            </p>
+          )}
         </div>
       </section>
 

@@ -19,9 +19,10 @@ import { useTranslation } from 'react-i18next';
 
 interface SocialMediaIconProps {
   profile: SocialMediaProfile;
+  color?: string;
 }
 
-function SocialMediaIcon({ profile }: SocialMediaIconProps) {
+function SocialMediaIcon({ profile, color = '#fff' }: SocialMediaIconProps) {
   const icons = {
     facebook: Facebook,
     instagram: Instagram,
@@ -50,12 +51,24 @@ function SocialMediaIcon({ profile }: SocialMediaIconProps) {
       className="text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
       aria-label={`${t('visit-us')} ${profile.platform}`}
     >
-      <Icon className="w-7 h-7" />
+      <Icon color={color} className="w-7 h-7" />
     </a>
   );
 }
 
-export function Footer() {
+type FooterProps = {
+  palette?: {
+    primary: string;
+    secondary: string;
+  };
+};
+
+export function Footer({
+  palette = {
+    primary: '#2563EB',
+    secondary: '#4D48E5',
+  },
+}: FooterProps) {
   const { settings } = useSettings();
   const { t } = useTranslation('footer');
 
@@ -77,7 +90,11 @@ export function Footer() {
               {activeSocialProfiles.length > 0 && (
                 <div className="flex justify-center md:justify-start gap-4 mb-4">
                   {activeSocialProfiles.map(profile => (
-                    <SocialMediaIcon key={profile.platform} profile={profile} />
+                    <SocialMediaIcon
+                      color={palette.primary}
+                      key={profile.platform}
+                      profile={profile}
+                    />
                   ))}
                 </div>
               )}

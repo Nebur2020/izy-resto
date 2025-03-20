@@ -50,7 +50,7 @@ class StockUpdateService {
   ): number[] {
     return variantValues
       .map((value, index) => {
-        const regex = new RegExp(`\\b${value}\\b`);
+        const regex = new RegExp(`\\b${value.trim()}\\b`);
         return regex.test(itemId) ? index : -1;
       })
       .filter(index => index !== -1);
@@ -163,7 +163,7 @@ class StockUpdateService {
                 const currentUpdate = inventoryUpdates.get(connection.itemId);
                 const currentVariantCartItem = order.items.find(item => {
                   const v = variant.values[selectedIndex];
-                  const regex = new RegExp(`\\b${v}\\b`);
+                  const regex = new RegExp(`\\b${v.trim()}\\b`);
                   return regex.test(item.id);
                 });
 

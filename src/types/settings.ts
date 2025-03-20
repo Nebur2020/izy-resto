@@ -1,3 +1,4 @@
+import { PizzaThemeConfig } from '../pages/dashboard/pages/settings/theme/editor/pizza';
 import { HeaderStyle, LandingTemplate } from './theme';
 
 export interface TaxRate {
@@ -69,6 +70,7 @@ export interface RestaurantSettings {
   currency: Currency;
   defaultTheme: 'light' | 'dark'; // Add defaultTheme
   hasOpeningHours: boolean;
+
   openingHours: {
     timezone: string; // Required timezone
   } & {
@@ -90,6 +92,7 @@ export interface RestaurantSettings {
   rateLimits: {
     maxOrders: number;
     timeWindowHours: number;
+    maxUsersPerDay: number;
   };
   termsOfService?: string;
   holidayClosure?: {
@@ -112,4 +115,34 @@ export interface RestaurantSettings {
   staffPermissions: string[];
   delivery: DeliverySettings;
   language: Language;
+  country: {
+    dialCode: string;
+    countryCode: string;
+    name: string;
+  };
+  restaurantCharacteristics: string[];
+  freeHomeDelivery: string;
+  productListTitle: string;
+  productListDescription: string;
+  footerBannerTitle: string;
+  productDiscount: number;
+  freeDeliveryTitle: string;
+  freeDeliveryDescription: string;
+  activeTheme:
+    | {
+        key: 'pizza';
+        configuration: PizzaThemeConfig;
+      }
+    | {
+        key: 'minimal' | 'grid' | 'modern';
+        configuration: Record<string, unknown>;
+      };
+  palette: {
+    primary: string;
+    secondary: string;
+    background: string;
+  };
+  themes: {
+    pizza?: PizzaThemeConfig;
+  };
 }

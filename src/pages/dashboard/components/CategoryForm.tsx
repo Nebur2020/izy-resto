@@ -136,7 +136,7 @@ export function CategoryForm(props: CategoryFormProps) {
             <Button
               type="submit"
               disabled={!isDirty || isLoading}
-              className="px-6 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600"
+              className="px-6 hover:from-blue-700 hover:to-blue-600"
             >
               {category ? t("common:update") : t("common:add")}
             </Button>

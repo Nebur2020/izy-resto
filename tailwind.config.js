@@ -4,6 +4,9 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      container: {
+        margin: '0 auto',
+      },
       colors: {
         primary: {
           50: '#f0f9ff',

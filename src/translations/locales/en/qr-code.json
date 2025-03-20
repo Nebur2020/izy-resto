@@ -18,7 +18,7 @@
   "empty-url": "Please enter a URL",
   "invalid-url": "Invalid URL format",
   "qr-code-generation-failed": "Failed to generate QR code",
-  "qr-code-generated": "QR Code generated successfully",
+  "qr-code-generated": "QR Code successfully generated",
   "copied": "URL copied",
   "copy-failed": "Copy failed",
   "qr-code-downloaded": "QR Code downloaded"

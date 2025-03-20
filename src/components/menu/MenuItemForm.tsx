@@ -30,6 +30,7 @@ interface FormInputs {
   price: number;
   image: string;
   categoryId: string;
+  onlyShowVariantsYouDefine?: boolean;
   stockQuantity: number;
   inventoryConnections: Array<{
     itemId: string;
@@ -75,6 +76,7 @@ interface VariantsTabProps {
     >
   >;
   onVariantChange: () => void;
+  register: UseFormReturn<FormInputs>['register'];
 }
 
 // Memoize the VariantsTab component to prevent unnecessary re-renders
@@ -85,6 +87,7 @@ const MemoizedVariantsTab = memo(
     variantPrices,
     setVariantPrices,
     onVariantChange,
+    register,
   }: VariantsTabProps) => {
     const { t } = useTranslation();
 
@@ -100,11 +103,30 @@ const MemoizedVariantsTab = memo(
     return (
       <div>
         {selectedCategory && variants.length > 0 ? (
-          <VariantManager
-            variants={variants}
-            value={variantPrices}
-            onChange={handlePriceChange}
-          />
+          <>
+            {variantPrices.length > 0 && (
+              <div className="flex items-center space-x-2 mb-4">
+                <input
+                  type="checkbox"
+                  id="featuresDisplay"
+                  {...register('onlyShowVariantsYouDefine')}
+                  className="w-4 h-4 rounded"
+                />
+                <label
+                  htmlFor="featuresDisplay"
+                  className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                  {t('common:only-show-what-you-defined')}
+                </label>
+              </div>
+            )}
+
+            <VariantManager
+              variants={variants}
+              value={variantPrices}
+              onChange={handlePriceChange}
+            />
+          </>
         ) : (
           <div className="text-center py-8 text-gray-500">
             {t('inventory:select-category-to-add-variants')}
@@ -384,6 +406,7 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
       categoryId: item?.categoryId || '',
       stockQuantity: item?.stockQuantity || 0,
       inventoryConnections: item?.inventoryConnections || [],
+      onlyShowVariantsYouDefine: item?.onlyShowVariantsYouDefine || false,
     },
     mode: 'onChange', // This will validate on change
   });
@@ -529,6 +552,7 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
             variantPrices={variantPrices}
             setVariantPrices={setVariantPrices}
             onVariantChange={handleVariantChange}
+            register={register}
           />
         );
       default:
@@ -589,7 +613,8 @@ export function MenuItemForm({ item, onSave, onCancel }: MenuItemFormProps) {
                 <Button
                   type="submit"
                   className={`
-                    px-6 py-2 rounded-lg font-medium text-white
+                    text-white
+                    px-6 py-2 rounded-lg font-medium
                     transition-all duration-200
                     bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl
                   `}

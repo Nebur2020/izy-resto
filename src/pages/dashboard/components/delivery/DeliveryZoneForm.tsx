@@ -36,7 +36,9 @@ export function DeliveryZoneForm(props: IDeliveryZoneFormProps) {
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md">
         <div className="flex justify-between items-center p-6 border-b dark:border-gray-700">
           <h2 className="text-xl font-semibold">
-            {zone ? t("settingDelivery:update-zone") : t('settingDelivery:add-new-zone')}
+            {zone
+              ? t('settingDelivery:update-zone')
+              : t('settingDelivery:add-new-zone')}
           </h2>
           <button onClick={onCancel}>
             <X className="w-5 h-5" />
@@ -46,11 +48,11 @@ export function DeliveryZoneForm(props: IDeliveryZoneFormProps) {
         <div className="p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">
-             {t('settingDelivery:zone-name')}
+              {t('settingDelivery:zone-name')}
             </label>
             <input
               type="text"
-              {...register('name', { required: t("common:name-required") })}
+              {...register('name', { required: t('common:name-required') })}
               className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
               placeholder={t('settingDelivery:zone-name-placeholder')}
             />
@@ -73,15 +75,15 @@ export function DeliveryZoneForm(props: IDeliveryZoneFormProps) {
 
           <div>
             <label className="block text-sm font-medium mb-1">
-             {t('settingDelivery:delivery-price')}
+              {t('settingDelivery:delivery-price')}
             </label>
             <div className="relative">
               <input
                 type="number"
                 step={currency === 'XOF' ? '1' : '0.01'}
                 {...register('price', {
-                  required: t("common:price-required"),
-                  min: { value: 0, message: t("common:price-min") },
+                  required: t('common:price-required'),
+                  min: { value: 0, message: t('common:price-min') },
                 })}
                 className="w-full rounded-lg border dark:border-gray-600 p-2 dark:bg-gray-700"
               />
@@ -101,7 +103,7 @@ export function DeliveryZoneForm(props: IDeliveryZoneFormProps) {
               {t('common:cancel')}
             </Button>
             <Button type="button" onClick={handleSubmit(onSubmit)}>
-              {zone ? t("common:update") : t('common:add')}
+              {zone ? t('common:update') : t('common:add')}
             </Button>
           </div>
         </div>

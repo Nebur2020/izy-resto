@@ -9,9 +9,20 @@ import { useTranslation } from 'react-i18next';
 
 interface GridMenuItemProps {
   item: MenuItem;
+  palette?: {
+    primary: string;
+    secondary: string;
+  };
+  isDarkMode: boolean;
 }
 
-export function GridMenuItem({ item }: GridMenuItemProps) {
+export function GridMenuItem({
+  item,
+  palette = {
+    primary: '#2563EB',
+    secondary: '#4D48E5',
+  },
+}: GridMenuItemProps) {
   const { settings } = useSettings();
   const [showModal, setShowModal] = useState(false);
 
@@ -82,7 +93,6 @@ export function GridMenuItem({ item }: GridMenuItemProps) {
                       formatCurrency(item.price, settings?.currency)
                     ))}
                 </span>
-
               </div>
             </div>
           </div>
@@ -90,7 +100,11 @@ export function GridMenuItem({ item }: GridMenuItemProps) {
       </motion.div>
 
       {showModal && (
-        <ProductDetailsModal item={item} onClose={() => setShowModal(false)} />
+        <ProductDetailsModal
+          primaryColor={palette.primary}
+          item={item}
+          onClose={() => setShowModal(false)}
+        />
       )}
     </>
   );

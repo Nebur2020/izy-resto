@@ -14,6 +14,7 @@ export interface MenuItem {
   categoryId: string;
   stockQuantity: number;
   variants?: VariantOption[];
+  onlyShowVariantsYouDefine?: boolean;
   inventoryConnections?: InventoryConnection[]; // Add inventory connections
 }
 

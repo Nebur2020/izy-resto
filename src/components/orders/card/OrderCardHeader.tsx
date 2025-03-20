@@ -15,13 +15,19 @@ export function OrderCardHeader({ order }: OrderCardHeaderProps) {
   const { t, i18n } = useTranslation(['order', 'common']);
   const lang = i18n.language as Language;
 
+  const calculateTotal = () => {
+    if (order.status === 'cancelled') {
+      return order.subtotal || 0;
+    }
+    return order.total || 0;
+  };
 
   return (
     <div className="flex justify-between items-start">
       <div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 mb-2">
           <h3 className="text-lg font-semibold">
-            {t("order")} #{order.id.slice(0, 8)}
+            {t('order')} #{order.id.slice(0, 8)}
           </h3>
 
           {order.diningOption === 'dine-in' ? (
@@ -43,7 +49,7 @@ export function OrderCardHeader({ order }: OrderCardHeaderProps) {
 
       <div className="text-right">
         <p className="text-lg font-bold text-gray-900 dark:text-white">
-          {formatCurrency(order.total, settings?.currency)}
+          {formatCurrency(calculateTotal(), settings?.currency)}
         </p>
         <p className="text-sm text-gray-500 dark:text-gray-400">
           {totalItems} article{totalItems > 1 ? 's' : ''}

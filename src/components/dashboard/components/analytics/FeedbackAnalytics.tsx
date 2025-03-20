@@ -17,12 +17,8 @@ interface FeedbackAnalyticsProps {
   itemsPerPage?: number;
 }
 
-export function FeedbackAnalytics({
-  orders,
-  currentPage,
-  onPageChange,
-  itemsPerPage = 10,
-}: FeedbackAnalyticsProps) {
+export function FeedbackAnalytics(props: FeedbackAnalyticsProps) {
+  const { orders, currentPage, onPageChange, itemsPerPage = 10 } = props;
   const { settings } = useSettings();
   const { t, i18n } = useTranslation('common');
   const lng = i18n.language as Language;

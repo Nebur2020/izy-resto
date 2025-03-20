@@ -18,9 +18,11 @@ export const useAppVersion = () => {
       );
 
       if (lastestVersion) setVersion(lastestVersion);
-      setVersions(versionSettings.filter((_, i) => i < 4));
+      setVersions([
+        ...versionSettings.filter((_, i) => i < 3).filter(v => !v.isStable),
+        ...versionSettings.filter(v => v.isStable),
+      ]);
     } catch (error: any) {
-      console.log(error);
       setErrorLoading(error.message || 'Une erreur est survenue...');
     } finally {
       setLoading(false);

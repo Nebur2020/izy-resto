@@ -1,10 +1,13 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'custom';
   size?: 'sm' | 'md' | 'lg';
   translationKey?: string;
+  style?: React.CSSProperties;
   spanClassName?: string;
+  spanStyle?: React.CSSProperties;
 }
 
 export function Button({
@@ -15,8 +18,11 @@ export function Button({
   translationKey,
   disabled,
   spanClassName = '',
+  spanStyle = {},
+  style = {},
   ...props
 }: ButtonProps) {
+  const { t } = useTranslation();
   const baseStyles = `
     relative inline-flex items-center justify-center
     font-medium transition-all duration-200
@@ -47,11 +53,11 @@ export function Button({
     danger: `
    bg-gradient-to-r from-red-600 to-red-500
    hover:from-red-700 hover:to-red-600
-   text-white !text-white
+   text-white !text-white 
    shadow-sm
    focus:ring-red-500/50
    dark:from-red-500 dark:to-red-400 
-   dark:hover:from-red-600 dark:hover:to-red-500 text-white !text-white 
+   dark:hover:from-red-600 dark:hover:to-red-500 text-gray-900
  `,
     ghost: `
    text-gray-600 hover:text-gray-900
@@ -59,6 +65,7 @@ export function Button({
    hover:bg-gray-100 dark:hover:bg-gray-800
    focus:ring-gray-500/50 text-white !text-white 
  `,
+    custom: '',
   };
 
   const sizes = {
@@ -78,9 +85,13 @@ export function Button({
       className={`group ${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
       disabled={disabled}
       {...props}
+      style={style}
     >
       {hoverOverlay}
-      <span className={`relative flex items-center ${spanClassName}`}>
+      <span
+        className={`relative flex items-center ${spanClassName}`}
+        style={spanStyle}
+      >
         {content}
       </span>
     </button>

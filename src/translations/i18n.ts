@@ -82,6 +82,15 @@ import frPersonal from './locales/fr/personal.json';
 import frMedia from './locales/fr/media.json';
 import enMedia from './locales/en/media.json';
 
+import frLoging from './locales/fr/login.json';
+import enLoging from './locales/en/login.json';
+
+import frPizzatheme from './locales/fr/pizza-theme.json';
+import enPizzatheme from './locales/en/pizza-theme.json';
+
+import frNotification from './locales/fr/notification.json';
+import enNotification from './locales/en/notification.json';
+
 i18n.use(initReactI18next).init({
   resources: {
     en: {
@@ -112,6 +121,9 @@ i18n.use(initReactI18next).init({
       settingData: enSettingData,
       personal: enPersonal,
       media: enMedia,
+      login: enLoging,
+      pizzatheme: enPizzatheme,
+      notification: enNotification,
     },
     fr: {
       cart: frCart,
@@ -141,6 +153,9 @@ i18n.use(initReactI18next).init({
       settingData: frSettingData,
       personal: frPersonal,
       media: frMedia,
+      login: frLoging,
+      pizzatheme: frPizzatheme,
+      notification: frNotification,
     },
   },
   fallbackLng: 'fr',

@@ -16,9 +16,13 @@ interface IProductDetailsModalProps {
   item: MenuItemWithVariants | null;
   onClose: () => void;
   onAddToCart?: (item: MenuItem & { quantity: number }) => void;
+  primaryColor?: string;
+  isDarkMode?: boolean;
   addProductToCartBgColor?: string;
   stockAvailableBgColor?: string;
   priceStyle?: string;
+  addToCartButtonStyle?: string;
+  variantSelectStyles?: string;
 }
 
 export function ProductDetailsModal(props: IProductDetailsModalProps) {
@@ -26,12 +30,50 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
     item,
     onClose,
     onAddToCart,
-    addProductToCartBgColor = 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-300',
-    stockAvailableBgColor = 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
-    priceStyle = 'text-base sm:text-lg font-bold text-blue-600 dark:text-blue-400',
+    primaryColor = '#fcb302',
+    isDarkMode = false,
+    addProductToCartBgColor,
+    stockAvailableBgColor,
+    addToCartButtonStyle,
+    variantSelectStyles,
   } = props;
 
-  // Basic state
+  const primaryColorStyle = {
+    backgroundColor: primaryColor,
+  };
+
+  const primaryColorWithWhiteTextStyle = {
+    backgroundColor: primaryColor,
+    color: 'white',
+  };
+
+  const primaryColorTextStyle = {
+    color: primaryColor,
+  };
+
+  const primaryColorBgLightStyle = {
+    backgroundColor: `${primaryColor}20`,
+    color: primaryColor,
+  };
+
+  const defaultAddProductBgColor = 'text-white hover:bg-opacity-90';
+
+  const defaultStockBgColor = isDarkMode
+    ? `bg-opacity-20 text-${primaryColor}`
+    : '';
+
+  const defaultAddToCartButtonStyle = `${
+    addProductToCartBgColor || defaultAddProductBgColor
+  } w-full rounded-full py-2 sm:py-3 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed`;
+
+  const defaultVariantSelectStyles = 'text-white scale-105 shadow-md';
+
+  const finalStockBgColor = stockAvailableBgColor || defaultStockBgColor;
+  const finalAddToCartButtonStyle =
+    addToCartButtonStyle || defaultAddToCartButtonStyle;
+  const finalVariantSelectStyles =
+    variantSelectStyles || defaultVariantSelectStyles;
+
   const [fullPrice, setFullPrice] = useState(item?.price || 0);
   const [quantity, setQuantity] = useState(1);
   const [selectedVariants, setSelectedVariants] = useState<string[]>([]);
@@ -43,8 +85,9 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
     useState<string[]>([]);
   const [isLoadingPrice, setIsLoadingPrice] = useState(false);
   const [categoryVariants, setCategoryVariants] = useState<Variant[]>([]);
+  // Add a new state to track if the current selection is a valid combination
+  const [isValidCombination, setIsValidCombination] = useState(true);
 
-  // Refs and hooks
   const modalRef = useRef<HTMLDivElement>(null);
   const { addToCart, cart } = useCart();
   const { settings } = useSettings();
@@ -56,7 +99,6 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
   const isOutOfStock = item.stockQuantity === 0;
   const itemWithVariants = item as MenuItemWithVariants;
 
-  // Memoized values
   const variantTypes = useMemo(() => {
     return (
       itemWithVariants.variantPrices?.reduce((acc, vp) => {
@@ -72,10 +114,9 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
     );
   }, [itemWithVariants.variantPrices]);
 
-  // Memoized functions
   const getVariantId = useCallback(() => {
     if (!selectedVariants.length) return item.id;
-    return `${item.id}-${selectedVariants.sort().join('-')}`;
+    return `${item.id}-${selectedVariants.join('-')}`;
   }, [item.id, selectedVariants]);
 
   const getVariantImage = useCallback(() => {
@@ -97,31 +138,64 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
       .join(' ');
   }, [selectedVariants]);
 
-  const isVariantRequired = useCallback(
-    (type: string) => {
-      return !!variants.find(v => v.name.toLowerCase() === type.toLowerCase())
-        ?.isRequired;
-    },
-    [variants]
-  );
   const areAllRequiredVariantsSelected = useCallback(() => {
-    // Check each required variant from categoryVariants
     return categoryVariants
       .filter(variant => variant.isRequired)
       .every(variant => {
-        // Check if any value for this variant type is selected
         return selectedVariants.some(selected =>
           selected.startsWith(`${variant.name}: `)
         );
       });
   }, [categoryVariants, selectedVariants]);
 
+  // New function to check if the current selection is a valid combination
+  const checkValidCombination = useCallback(() => {
+    // If onlyShowVariantsYouDefine is not set, all combinations are valid
+    if (!item.onlyShowVariantsYouDefine) {
+      setIsValidCombination(true);
+      return true;
+    }
+
+    // If no variant prices defined, all combinations are valid
+    if (
+      !itemWithVariants.variantPrices ||
+      itemWithVariants.variantPrices.length === 0
+    ) {
+      setIsValidCombination(true);
+      return true;
+    }
+
+    // If no variants selected, base product is valid
+    if (selectedVariants.length === 0) {
+      setIsValidCombination(true);
+      return true;
+    }
+
+    // Sort both arrays for consistent comparison
+    const sortedSelectedVariants = [...selectedVariants].sort();
+
+    // Check if the exact combination exists in variantPrices
+    const exactMatch = itemWithVariants.variantPrices.some(vp => {
+      const sortedCombination = [...vp.variantCombination].sort();
+      return (
+        JSON.stringify(sortedCombination) ===
+        JSON.stringify(sortedSelectedVariants)
+      );
+    });
+
+    setIsValidCombination(exactMatch);
+    return exactMatch;
+  }, [
+    item.onlyShowVariantsYouDefine,
+    itemWithVariants.variantPrices,
+    selectedVariants,
+  ]);
+
   const getCartItem = useCallback(() => {
     const variantId = getVariantId();
     return cart.find(item => item.id === variantId);
   }, [cart, getVariantId]);
 
-  // Load category variants once
   useEffect(() => {
     if (item && item.categoryId) {
       const loadCategoryVariants = async () => {
@@ -139,7 +213,6 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
     }
   }, [item?.categoryId]);
 
-  // Handle clicks outside modal and escape key
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -165,7 +238,11 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
     };
   }, [onClose]);
 
-  // Update price whenever selected variants change
+  // Check for valid combinations whenever selectedVariants changes
+  useEffect(() => {
+    checkValidCombination();
+  }, [selectedVariants, checkValidCombination]);
+
   useEffect(() => {
     const updatePrice = async () => {
       if (!selectedVariants.length) {
@@ -177,14 +254,12 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
       try {
         setIsLoadingPrice(true);
 
-        // First check if we have predefined variant prices
         if (item.variantPrices && item.variantPrices.length > 0) {
           const sorted = selectedVariants.sort();
           const filtered = item.variantPrices.filter(
             vp => vp.variantCombination.length === sorted.length
           );
 
-          // Check if the exact combination exists
           const exists = filtered.find(
             vp =>
               JSON.stringify(vp.variantCombination) === JSON.stringify(sorted)
@@ -197,23 +272,17 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
           }
         }
 
-        // If no predefined price or no match found, calculate using categoryVariants
         if (categoryVariants.length > 0) {
-          // Parse selected variant values
           const selectedVariantMap = selectedVariants.reduce((acc, curr) => {
             const [name, value] = curr.split(': ');
             acc[name] = value;
             return acc;
           }, {} as Record<string, string>);
 
-          // console.log('selectedVariantMap', selectedVariantMap);
-
           let calculatedPrice = item.price;
 
-          // Calculate price from each selected variant
           categoryVariants.forEach(variant => {
             const selectedValue = selectedVariantMap[variant.name];
-            // console.log('selectedValue', selectedValue);
             if (selectedValue && variant.prices) {
               const valueIndex = variant.values.findIndex(
                 v => v === selectedValue
@@ -224,11 +293,6 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
                 !isNaN(variant.prices[valueIndex]) &&
                 typeof variant.prices[valueIndex] === 'number'
               ) {
-                // console.log(
-                //   'valueIndex',
-                //   valueIndex,
-                //   variant.prices[valueIndex]
-                // );
                 calculatedPrice += variant.prices[valueIndex];
               }
             }
@@ -236,12 +300,11 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
 
           setFullPrice(calculatedPrice);
         } else {
-          // Fallback to base price if no variants data available
           setFullPrice(item.price);
         }
       } catch (error) {
         console.error('Error updating price:', error);
-        setFullPrice(item.price); // Fallback to base price on error
+        setFullPrice(item.price);
       } finally {
         setIsLoadingPrice(false);
       }
@@ -250,47 +313,41 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
     updatePrice();
   }, [selectedVariants, item.price, item.variantPrices, categoryVariants]);
 
-  const handleVariantSelect = useCallback(
-    (variant: string) => {
-      const [type, value] = variant.split(': ');
+  const handleVariantSelect = useCallback((variant: string) => {
+    const [type, value] = variant.split(': ');
 
-      setUnselectedRequiredVariantType([]);
-      setVariantCombinationError('');
-      setIsLoadingPrice(true);
+    setUnselectedRequiredVariantType([]);
+    setVariantCombinationError('');
+    setIsLoadingPrice(true);
 
-      setSelectedVariants(prev => {
-        // If already selected, deselect it
-        if (prev.includes(variant)) {
-          const updatedSelection = prev.filter(v => v !== variant);
-          const hasOtherOfSameType = updatedSelection.some(v =>
-            v.startsWith(`${type}: `)
-          );
+    setSelectedVariants(prev => {
+      let updatedSelection;
 
-          // Update selection tracking
-          setSelectedVariantTypes(current => ({
-            ...current,
-            [type]: hasOtherOfSameType,
-          }));
+      if (prev.includes(variant)) {
+        // Removing a variant
+        updatedSelection = prev.filter(v => v !== variant);
+        const hasOtherOfSameType = updatedSelection.some(v =>
+          v.startsWith(`${type}: `)
+        );
 
-          return updatedSelection;
-        }
-
-        // Replace any existing variant of same type
+        setSelectedVariantTypes(current => ({
+          ...current,
+          [type]: hasOtherOfSameType,
+        }));
+      } else {
+        // Adding a variant or replacing one of the same type
         const filtered = prev.filter(v => !v.startsWith(`${type}: `));
-        const updatedSelection = [...filtered, variant];
+        updatedSelection = [...filtered, variant];
 
-        // Track that this variant type has been selected
         setSelectedVariantTypes(current => ({
           ...current,
           [type]: true,
         }));
+      }
 
-        // Always accept the selection - don't validate combinations
-        return updatedSelection;
-      });
-    },
-    [itemWithVariants.variantPrices]
-  );
+      return updatedSelection;
+    });
+  }, []);
 
   const handleAddToCart = useCallback(async () => {
     if (isOutOfStock) return;
@@ -298,7 +355,6 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
     setIsLoadingPrice(true);
     setUnselectedRequiredVariantType([]);
 
-    // Check for required variants that haven't been selected
     const requiredVariantTypes = variants
       .filter(v =>
         Object.keys(variantTypes)
@@ -375,7 +431,10 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
         className="relative w-full max-w-md rounded-2xl bg-white dark:bg-gray-900 shadow-2xl max-h-[90vh] overflow-hidden flex flex-col"
       >
         <button
-          onClick={onClose}
+          onClick={e => {
+            e.stopPropagation();
+            onClose();
+          }}
           className="absolute right-4 top-4 z-10 rounded-full bg-gray-100 dark:bg-gray-800 p-2 text-gray-600 dark:text-gray-300 transition-all hover:bg-gray-200 dark:hover:bg-gray-700"
         >
           <X className="h-5 w-5" />
@@ -410,8 +469,13 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
                   ? 'bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-400'
                   : item.stockQuantity <= 5
                   ? 'bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400'
-                  : stockAvailableBgColor
+                  : finalStockBgColor
               }`}
+              style={
+                !isOutOfStock && item.stockQuantity > 5
+                  ? primaryColorBgLightStyle
+                  : {}
+              }
             >
               <AlertCircle className="h-5 w-5" />
               <span className="text-[10px] sm:text-xs font-medium">
@@ -421,7 +485,6 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
               </span>
             </div>
 
-            {/* Variant Selection UI using categoryVariants */}
             {categoryVariants
               .sort((a, b) => {
                 if (a.name < b.name) {
@@ -437,6 +500,18 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
                   return null;
                 }
 
+                if (item.onlyShowVariantsYouDefine) {
+                  const values = variant.values.filter(v =>
+                    item.variantPrices.some(vp =>
+                      vp.variantCombination.includes(`${variant.name}: ${v}`)
+                    )
+                  );
+                  if (values.length === 0) {
+                    return null;
+                  }
+                  variant.values = values;
+                }
+
                 const isRequired = !!variant.isRequired;
                 const isSelected = selectedVariantTypes[variant.name];
 
@@ -447,12 +522,12 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
                         {variant.name}
                       </h3>
 
-                      {/* Selection status indicator */}
                       {isRequired && (
                         <div className="ml-2">
                           {isSelected ? (
                             <div
-                              className="h-2 w-2 rounded-full bg-green-500"
+                              className="h-2 w-2 rounded-full"
+                              style={primaryColorStyle}
                               title="Selected"
                             />
                           ) : (
@@ -482,11 +557,12 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
                             transition-all duration-300 ease-in-out
                             ${
                               isSelected
-                                ? 'bg-blue-600 text-white scale-105 shadow-md'
+                                ? finalVariantSelectStyles
                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 hover:scale-105'
                             }
                             disabled:opacity-50 disabled:cursor-not-allowed
                           `}
+                            style={isSelected ? primaryColorStyle : {}}
                             disabled={isOutOfStock}
                           >
                             {value}
@@ -499,9 +575,31 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
               })}
 
             {getCartItem() && (
-              <div className="bg-blue-50 dark:bg-blue-900/30 p-2 sm:p-2.5 rounded-lg text-blue-600 dark:text-blue-400 text-[10px] sm:text-xs font-medium text-center">
+              <div
+                className="p-2 sm:p-2.5 rounded-lg text-xs font-medium text-center"
+                style={primaryColorBgLightStyle}
+              >
                 {t('already-in-cart')}: {getCartItem()?.quantity}{' '}
                 {(getCartItem()?.quantity || 0) > 1 ? t('units') : t('unit')}
+              </div>
+            )}
+
+            {/* Show error message when combination is invalid */}
+            {selectedVariants.length > 0 && !isValidCombination && (
+              <div className="flex items-center gap-2 p-2 sm:p-3 rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400">
+                <AlertCircle className="h-5 w-5" />
+                <span className="text-[10px] sm:text-xs font-medium">
+                  {t('common:combination-no-items')}
+                </span>
+              </div>
+            )}
+
+            {variantCombinationError && (
+              <div className="flex items-center gap-2 p-2 sm:p-3 mb-5 rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400">
+                <AlertCircle className="h-5 w-5" />
+                <span className="text-[10px] sm:text-xs font-medium">
+                  {variantCombinationError}
+                </span>
               </div>
             )}
           </div>
@@ -535,7 +633,10 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
               </Button>
             </div>
 
-            <div className={`${priceStyle} flex items-center`}>
+            <div
+              className="text-base sm:text-lg font-bold flex items-center"
+              style={primaryColorTextStyle}
+            >
               {isLoadingPrice ? (
                 <Loader className="h-4 w-4 animate-spin mr-2" />
               ) : null}
@@ -550,13 +651,31 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
           )}
 
           <Button
+            variant="custom"
             onClick={handleAddToCart}
             disabled={
               isOutOfStock ||
               isLoadingPrice ||
-              !areAllRequiredVariantsSelected()
+              !areAllRequiredVariantsSelected() ||
+              (selectedVariants.length > 0 && !isValidCombination) // Add condition for invalid combinations
             }
-            className={`${addProductToCartBgColor} w-full rounded-full py-2 sm:py-3 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 ease-in-out disabled:bg-gray-300 disabled:cursor-not-allowed dark:bg-blue-500 dark:hover:bg-blue-600 dark:disabled:bg-gray-700`}
+            className={finalAddToCartButtonStyle}
+            style={
+              !isOutOfStock &&
+              !isLoadingPrice &&
+              areAllRequiredVariantsSelected() &&
+              (selectedVariants.length === 0 || isValidCombination) // Consider combination validity
+                ? primaryColorWithWhiteTextStyle
+                : primaryColorBgLightStyle
+            }
+            spanClassName={`${
+              !isOutOfStock &&
+              !isLoadingPrice &&
+              areAllRequiredVariantsSelected() &&
+              (selectedVariants.length === 0 || isValidCombination) // Consider combination validity
+                ? 'text-white'
+                : ''
+            }`}
           >
             {isLoadingPrice ? (
               <Loader className="h-5 w-5 animate-spin mr-1" />
@@ -569,6 +688,8 @@ export function ProductDetailsModal(props: IProductDetailsModalProps) {
               ? t('loading')
               : !areAllRequiredVariantsSelected()
               ? t('select-required-variants')
+              : selectedVariants.length > 0 && !isValidCombination
+              ? t('common:invalid-combination') // Message for invalid combinations
               : t('add-to-cart')}
           </Button>
         </div>
