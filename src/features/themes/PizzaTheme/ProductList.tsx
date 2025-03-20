@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MinimalMenuCategories } from '../../../components/menu/minimal/MinimalMenuCategories';
 import { useMenu } from '../../../hooks';
 import ItemCard from './ItemCard';
 import { useTranslation } from 'react-i18next';
 import { usePizzaTheme } from './context/PizzaThemeContext';
+import { SearchBar } from '../../../components/menu/SearchBar';
+import { useSettings } from '../../../hooks';
 
 interface ProductListProps {
   tagline?: string;
@@ -13,12 +15,18 @@ interface ProductListProps {
   isDarkMode?: boolean;
 }
 
+const INITIAL_ITEMS_COUNT = 8;
+
 export default function ProductList({
   tagline,
   title,
   primaryColor,
   isDarkMode,
 }: ProductListProps) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [visibleItemsCount, setVisibleItemsCount] =
+    useState(INITIAL_ITEMS_COUNT);
+  const { settings } = useSettings();
   const { t } = useTranslation('pizzatheme');
   const themeConfig = usePizzaTheme();
   const [activeCategory, setActiveCategory] = useState('all');
@@ -28,21 +36,28 @@ export default function ProductList({
   const filteredItems = items.filter(item => {
     const matchesCategory =
       activeCategory === 'all' || item.categoryId === activeCategory;
-    return matchesCategory;
+    const matchesSearch =
+      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (item.description?.toLowerCase() || '').includes(
+        searchTerm.toLowerCase()
+      );
+    return matchesCategory && matchesSearch;
   });
   const [itemsToShow, setItemsToShow] = useState(8);
 
-  // Default to theme context isDarkMode if not provided as prop
   const isDarkModeActive = isDarkMode;
 
   const loadMore = () => {
     setItemsToShow(prevItemsToShow => prevItemsToShow + 6);
   };
 
-  // Use props if provided, otherwise fall back to theme context values
   const sectionTagline = tagline || themeConfig.menuSection.tagline;
   const sectionTitle = title || themeConfig.menuSection.title;
   const buttonColor = primaryColor;
+
+  useEffect(() => {
+    setVisibleItemsCount(INITIAL_ITEMS_COUNT);
+  }, [activeCategory, searchTerm]);
 
   return (
     <section
@@ -84,6 +99,13 @@ export default function ProductList({
             }
             activeCategoryStyles={`bg-[${buttonColor}] text-white`}
           />
+          <div className="my-5">
+            <SearchBar
+              palette={settings?.palette}
+              isDarkMode={isDarkMode}
+              onSearch={setSearchTerm}
+            />
+          </div>
           {filteredItems.length === 0 && (
             <div className="text-center py-12">
               <p

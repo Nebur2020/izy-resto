@@ -4,11 +4,6 @@ interface BadgeProps {
   children: React.ReactNode;
   variant?: 'default' | 'success' | 'warning';
   className?: string;
-  // palette: {
-  //   primary: string;
-  //   secondary: string;
-  // };
-  // isDarkMode: boolean;
 }
 
 export function Badge({
