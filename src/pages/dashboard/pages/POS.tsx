@@ -559,8 +559,6 @@ export function POS() {
       <Modal
         isOpen={isAddItemsToOrder}
         onClose={() => setIsAddItemsToOrder(false)}
-        modalTitle={t('common:add-article')}
-        displayCloseButton
       >
         <>
           <POSMenuGrid

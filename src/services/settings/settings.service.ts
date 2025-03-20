@@ -12,15 +12,15 @@ class SettingsService {
     try {
       const docRef = doc(db, this.collection, this.document);
       const docSnap = await getDoc(docRef);
-
+      
       if (docSnap.exists()) {
         // Merge with default settings to ensure all fields exist
         return {
           ...DEFAULT_SETTINGS,
-          ...docSnap.data(),
+          ...docSnap.data()
         } as RestaurantSettings;
       }
-
+      
       // If no settings exist, return defaults
       return DEFAULT_SETTINGS;
     } catch (error) {
@@ -48,39 +48,12 @@ class SettingsService {
     try {
       const docRef = doc(db, this.collection, this.document);
       const docSnap = await getDoc(docRef);
-
+      
       if (!docSnap.exists()) {
         await setDoc(docRef, DEFAULT_SETTINGS);
       }
     } catch (error) {
       console.error('Error initializing default settings:', error);
-    }
-  }
-
-  async checkUserLimit(): Promise<{ allowed: boolean }> {
-    const today = new Date().toISOString().split('T')[0];
-
-    const settings = await this.getSettings();
-    const maxUsersPerDay = settings.rateLimits.maxUsersPerDay;
-
-    const usersTodayDoc = await getDoc(doc(db, 'dailyUsers', today));
-    let usersToday = 0;
-    if (usersTodayDoc.exists()) {
-      usersToday = usersTodayDoc.data().count;
-    }
-
-    if (usersToday >= maxUsersPerDay) {
-      return { allowed: false };
-    } else {
-      await setDoc(
-        doc(db, 'dailyUsers', today),
-        {
-          count: usersToday + 1,
-        },
-        { merge: true }
-      );
-
-      return { allowed: true };
     }
   }
 }
