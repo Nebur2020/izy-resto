@@ -323,5 +323,5 @@
   "re-open-title": "Réouverture aux horaires habituels",
   "set-rate-limit-max-users-per-day": "Nombre maximum d'utilisateurs par jour",
   "rate-limit-max-users-per-day": "Utilisateur maximum par jour atteint",
-  "rate-limit-max-users-per-day-description": "Désolé, le nombre maximum d'utilisateurs pour aujourd'hui a été atteint. Veuillez réessayer demain."
+  "rate-limit-max-users-per-day-description": "Désolé, le nombre maximum d'utilisateurs pour aujourd'hui a été atteint."
 }
