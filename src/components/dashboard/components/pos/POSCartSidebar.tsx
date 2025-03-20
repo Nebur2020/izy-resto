@@ -163,8 +163,10 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
 
       await orderService.updateOrder(order.id, updateData);
       toast.success(t('common:order-successfully-updated'));
+      clearCart();
+      setCustomerInfo({});
+      setTableNumber('');
       refreshOrders();
-
       if (onClose) {
         onClose();
       }
