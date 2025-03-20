@@ -92,6 +92,7 @@ export interface RestaurantSettings {
   rateLimits: {
     maxOrders: number;
     timeWindowHours: number;
+    maxUsersPerDay: number;
   };
   termsOfService?: string;
   holidayClosure?: {
