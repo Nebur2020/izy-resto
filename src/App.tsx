@@ -11,6 +11,7 @@ import { HolidayClosureModal } from './components/ui/HolidayClosureModal';
 import { ServerCartProvider } from './context/ServerCartContext';
 import { Toast } from './components/ui';
 import './translations/i18n';
+import { UserLimitProvider } from './context/UserLimitContext';
 
 export default function App() {
   // Add SEO hook to update title and favicon
@@ -23,11 +24,13 @@ export default function App() {
           <CartProvider>
             <ServerCartProvider>
               <OrderProvider>
-                <AppRoutes />
-                <RestaurantClosedModal />
-                <HolidayClosureModal />
-                <CookieBanner />
-                <Toast />
+                <UserLimitProvider>
+                  <AppRoutes />
+                  <RestaurantClosedModal />
+                  <HolidayClosureModal />
+                  <CookieBanner />
+                  <Toast />
+                </UserLimitProvider>
               </OrderProvider>
             </ServerCartProvider>
           </CartProvider>
