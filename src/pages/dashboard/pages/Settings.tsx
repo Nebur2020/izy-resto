@@ -8,7 +8,6 @@ import {
   GeneralSettings,
   AppearanceSettings,
   BusinessSettings,
-  // IntegrationSettings,
   SEOSettings,
   DataManagement,
   LegalSettings,
@@ -42,7 +41,6 @@ export function Settings() {
     { id: 'delivery', label: t('setting:delivery') },
     { id: 'seo', label: t('setting:seo') },
     { id: 'legal', label: t('setting:legal') },
-    // { id: 'integrations', label: t('setting:integrations') },
     { id: 'data', label: t('setting:data') },
   ];
 
@@ -79,8 +77,6 @@ export function Settings() {
         return <DeliverySettings />;
       case 'legal':
         return <LegalSettings />;
-      // case 'integrations':
-      //   return <IntegrationSettings />;
       case 'data':
         return <DataManagement />;
       default:

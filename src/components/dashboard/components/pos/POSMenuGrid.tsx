@@ -15,36 +15,45 @@ interface POSMenuGridProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
   onToggleCart: () => void;
+  isItemOrderFromOrder?: boolean;
 }
 
 export function POSMenuGrid(props: POSMenuGridProps) {
   const { t } = useTranslation('common');
-  const { items, onAddToCart, searchTerm, onSearchChange, onToggleCart } =
-    props;
+  const {
+    items,
+    onAddToCart,
+    searchTerm,
+    onSearchChange,
+    onToggleCart,
+    isItemOrderFromOrder,
+  } = props;
   const { settings } = useSettings();
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const { theme } = useTheme();
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
-      <div className="p-4 flex items-center gap-4">
-        <div className="relative flex-1">
-          <input
-            type="text"
-            placeholder={t('search-items')}
-            value={searchTerm}
-            onChange={e => onSearchChange(e.target.value)}
-            className="w-full pl-4 pr-4 py-2 rounded-lg border dark:border-gray-700"
-          />
+      {!isItemOrderFromOrder && (
+        <div className="p-4 flex items-center gap-4">
+          <div className="relative flex-1">
+            <input
+              type="text"
+              placeholder={t('search-items')}
+              value={searchTerm}
+              onChange={e => onSearchChange(e.target.value)}
+              className="w-full pl-4 pr-4 py-2 rounded-lg border dark:border-gray-700"
+            />
+          </div>
+          <Button
+            variant="secondary"
+            className="lg:hidden"
+            onClick={onToggleCart}
+          >
+            <ShoppingBag className="w-5 h-5" />
+          </Button>
         </div>
-        <Button
-          variant="secondary"
-          className="lg:hidden"
-          onClick={onToggleCart}
-        >
-          <ShoppingBag className="w-5 h-5" />
-        </Button>
-      </div>
+      )}
 
       <div className="flex-1 overflow-y-auto p-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

@@ -19,10 +19,12 @@ interface OrderCardProps {
   order: Order;
   onStatusChange: (orderId: string, status: string) => Promise<void>;
   onCancel?: (orderId: string) => void;
+  isUpdatedOrder?: boolean;
+  setOrder?: (order: Order) => void;
 }
 
 export const OrderCard = React.forwardRef<HTMLDivElement, OrderCardProps>(
-  ({ order, onStatusChange, onCancel }, ref) => {
+  ({ order, onStatusChange, onCancel, isUpdatedOrder, setOrder }, ref) => {
     const { settings } = useSettings();
     const { t, i18n } = useTranslation('order');
     const lng = i18n.language as Language;
@@ -67,10 +69,9 @@ export const OrderCard = React.forwardRef<HTMLDivElement, OrderCardProps>(
           {
             ...translations,
             paymentMethodName: t(
-              `payment-method-names.${
-                order.diningOption === 'dine-in'
-                  ? 'dine-in'
-                  : order.paymentMethod?.name
+              `payment-method-names.${order.diningOption === 'dine-in'
+                ? 'dine-in'
+                : order.paymentMethod?.name
               }`
             ),
           },
@@ -96,9 +97,8 @@ export const OrderCard = React.forwardRef<HTMLDivElement, OrderCardProps>(
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
-        className={`rounded-lg shadow-sm p-6 ${statusStyles[order.status]} ${
-          order.status === 'cancelled' ? 'opacity-75 cursor-not-allowed' : ''
-        }`}
+        className={`rounded-lg shadow-sm p-6 ${statusStyles[order.status]} ${order.status === 'cancelled' ? 'opacity-75 cursor-not-allowed' : ''
+          }`}
       >
         <div className="space-y-6">
           <OrderCardHeader order={order} />
@@ -110,53 +110,68 @@ export const OrderCard = React.forwardRef<HTMLDivElement, OrderCardProps>(
             updatedAt={order.updatedAt}
           />
           <OrderCardDetails order={order} />
-          <div className="flex justify-between items-center gap-4 pt-4 border-t border-current/10">
-            {order.status !== 'cancelled' && order.status !== 'delivered' && (
+          {isUpdatedOrder && (
+            <Button
+              className='w-full'
+              onClick={() => {
+                setOrder?.(order);
+              }}
+            >
+              {t('common:order-updated')}
+            </Button>
+          )}
+          {!isUpdatedOrder && (
+            <>
+              <div className="flex justify-between items-center gap-4 pt-4 border-t border-current/10">
+                {order.status !== 'cancelled' &&
+                  order.status !== 'delivered' && (
+                    <Button
+                      onClick={handleStatusChange}
+                      disabled={isUpdatingStatus}
+                      className="flex-1 bg-white/90 hover:bg-white text-current"
+                    >
+                      {isUpdatingStatus ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          {t('common:loading')}
+                        </>
+                      ) : order.status === 'pending' ? (
+                        t('mark-in-cooking')
+                      ) : (
+                        t('mark-as-delivered')
+                      )}
+                    </Button>
+                  )}
+                {canCancel && onCancel && (
+                  <Button
+                    variant="danger"
+                    onClick={() => onCancel(order.id)}
+                    className="flex-1"
+                    spanClassName="text-white"
+                  >
+                    {t('cancel-order')}
+                  </Button>
+                )}
+              </div>
               <Button
-                onClick={handleStatusChange}
-                disabled={isUpdatingStatus}
-                className="flex-1 bg-white/90 hover:bg-white text-current"
+                onClick={handlePrint}
+                disabled={isPrinting}
+                className="bg-white/90 hover:bg-white text-current px-4 py-2 rounded w-full"
               >
-                {isUpdatingStatus ? (
+                {isPrinting ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    {t('common:loading')}
+                    {t('common:printing')}
                   </>
-                ) : order.status === 'pending' ? (
-                  t('mark-in-cooking')
                 ) : (
-                  t('mark-as-delivered')
+                  <>
+                    <Printer className="h-4 w-4 mr-2" />
+                    {t('print-bill')}
+                  </>
                 )}
               </Button>
-            )}
-            {canCancel && onCancel && (
-              <Button
-                variant="danger"
-                onClick={() => onCancel(order.id)}
-                className="flex-1"
-                spanClassName="text-white"
-              >
-                {t('cancel-order')}
-              </Button>
-            )}
-          </div>
-          <Button
-            onClick={handlePrint}
-            disabled={isPrinting}
-            className="bg-white/90 hover:bg-white text-current px-4 py-2 rounded w-full"
-          >
-            {isPrinting ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                {t('common:printing')}
-              </>
-            ) : (
-              <>
-                <Printer className="h-4 w-4 mr-2" />
-                {t('print-bill')}
-              </>
-            )}
-          </Button>
+            </>
+          )}
         </div>
       </motion.div>
     );

@@ -61,8 +61,11 @@ export function OrderCardDetails({ order }: OrderCardDetailsProps) {
       <div className="border-t border-current/10 pt-4">
         <h4 className="font-medium mb-2">{t('order:product-order')}</h4>
         <div className="space-y-2">
-          {order.items.map(item => (
-            <div key={item.id} className="flex justify-between text-sm">
+          {order.items.map((item, key) => (
+            <div
+              key={`${item.name}-${key}-${item.id}`}
+              className="flex justify-between text-sm"
+            >
               <span>
                 {item.quantity}x {item.name}
               </span>

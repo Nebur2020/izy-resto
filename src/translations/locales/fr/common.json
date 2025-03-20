@@ -317,6 +317,24 @@
   "contact-support": "Contacter le support",
   "estimated-completion": "Temps estimé",
   "orders-title": "Commandes",
+  "order-list": "Liste des commandes",
+  "product-list": "Liste des produits",
+  "order-updated": "Mettre à jour la commande",
+  "add-more-items": "Ajouter plus d'articles",
+  "confirm-updated-order": "Confirmer la mise à jour de la commande",
+  "order-successfully-updated": "Commande mise à jour avec succès",
   "inventory-title": "Inventaire",
-  "invalid-combination": "Combinaison invalide"
+  "invalid-combination": "Combinaison invalide",
+  "is-cloed": "est fermé",
+  "re-open-title": "Réouverture aux horaires habituels",
+  "status": {
+    "open": "Ouvert",
+    "closed": "Fermé",
+    "pending": "En attente",
+    "in-cooking": "En préparation",
+    "delivered": "Livré",
+    "canceled": "Annulé"
+  },
+  "createdAt": "Créé le",
+  "updatedAt": "Mis à jour le"
 }

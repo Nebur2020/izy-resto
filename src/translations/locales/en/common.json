@@ -315,6 +315,24 @@
   "if-problem-persists": "If the problem persists, please contact support.",
   "contact-support": "Contact support",
   "orders-title": "Orders",
+  "order-list": "Order list",
+  "product-list": "Product list",
+  "order-updated": "Update order",
+  "add-more-items": "Add more items",
+  "confirm-updated-order": "Confirm Update Order",
+  "order-successfully-updated": "Order successfully updated",
   "inventory-title": "Inventory",
-  "invalid-combination": "Invalid combination"
+  "invalid-combination": "Invalid combination",
+  "is-cloed": "is closed",
+  "re-open-title": "Reopening at regular hours",
+  "status": {
+    "open": "Open",
+    "closed": "Closed",
+    "pending": "Pending",
+    "in-progress": "In Progress",
+    "completed": "Completed",
+    "canceled": "Canceled"
+  },
+  "createdAt": "Created at",
+  "updatedAt": "Updated at"
 }

@@ -1,4 +1,5 @@
 import jsPDF from 'jspdf';
+import { Transaction } from '../types';
 
 export async function exportToPng(element: HTMLElement): Promise<void> {
   const { default: html2canvas } = await import('html2canvas');
@@ -105,7 +106,7 @@ export async function exportToPdf(element: HTMLElement): Promise<void> {
   }
 }
 
-export function convertToCsv(transactions: any[]) {
+export function convertToCsv(transactions: Transaction[]) {
   if (transactions.length === 0) return '';
 
   const headers = Object.keys(transactions[0]).join(',');
