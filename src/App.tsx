@@ -10,12 +10,10 @@ import { CookieBanner } from './components/ui/CookieBanner';
 import { HolidayClosureModal } from './components/ui/HolidayClosureModal';
 import { ServerCartProvider } from './context/ServerCartContext';
 import { Toast } from './components/ui';
-import './lib/firebase/config'
+import './lib/firebase/config';
 import './translations/i18n';
-import { UserLimitProvider } from './context/UserLimitContext';
 
 export default function App() {
-  // Add SEO hook to update title and favicon
   useSEO();
 
   return (
@@ -25,13 +23,11 @@ export default function App() {
           <CartProvider>
             <ServerCartProvider>
               <OrderProvider>
-                <UserLimitProvider>
-                  <AppRoutes />
-                  <RestaurantClosedModal />
-                  <HolidayClosureModal />
-                  <CookieBanner />
-                  <Toast />
-                </UserLimitProvider>
+                <AppRoutes />
+                <RestaurantClosedModal />
+                <HolidayClosureModal />
+                <CookieBanner />
+                <Toast />
               </OrderProvider>
             </ServerCartProvider>
           </CartProvider>
