@@ -99,7 +99,7 @@ export default function ProductList({
             }
             activeCategoryStyles={`bg-[${buttonColor}] text-white`}
           />
-          <div className="my-5">
+          <div className="mt-20">
             <SearchBar
               palette={settings?.palette}
               isDarkMode={isDarkMode}

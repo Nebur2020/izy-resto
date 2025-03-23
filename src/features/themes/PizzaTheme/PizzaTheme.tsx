@@ -26,32 +26,27 @@ export default function PizzaTheme() {
   const { settings } = useSettings();
   const { isLoading, isLayoutMounted } = useLayoutMount();
 
-  // Sync theme with settings and configuration
   useEffect(() => {
     if (settings) {
       setThemeConfig(settings.activeTheme.configuration as PizzaThemeConfig);
     }
   }, [settings]);
 
-  // if (!settings || isLoading) return null;
 
   const primaryColor = settings?.palette.primary;
   const secondaryColor = settings?.palette.secondary;
   const backgroundColor = settings?.palette.background;
 
-  // Derive CSS variables for dynamic styling
   const themeColors = {
     '--primary-color': primaryColor,
     '--secondary-color': secondaryColor,
     '--background-color': backgroundColor,
-    // Add dark mode variables
     '--dark-background': '#1a1a1a',
     '--dark-surface': '#2d2d2d',
     '--dark-text': '#ffffff',
     '--dark-text-secondary': '#cccccc',
   };
 
-  // Determine if current theme is dark
   const isDarkMode = theme === 'dark';
 
   return (
@@ -115,7 +110,6 @@ export default function PizzaTheme() {
             )}
 
             {
-              // Display the special item section if enabled
               themeConfig.specialItem?.general?.display && (
                 <OrderNow
                   title={themeConfig.specialItem.title}
