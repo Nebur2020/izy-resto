@@ -306,25 +306,6 @@ export function GeneralSettings() {
             </p>
           </div>
         </div>
-        <div className="w-full">
-          <label className="block text-sm font-medium mb-1">
-            {t('common:set-rate-limit-max-users-per-day')}
-          </label>
-          <input
-            type="number"
-            {...register('rateLimits.maxUsersPerDay')}
-            className={`w-full rounded-lg border p-2 dark:bg-gray-700 ${
-              errors.rateLimits?.maxUsersPerDay
-                ? 'border-red-500 dark:border-red-500'
-                : 'dark:border-gray-600'
-            }`}
-          />
-          {errors.rateLimits?.maxUsersPerDay && (
-            <p className="mt-1 text-sm text-red-500">
-              {errors.rateLimits.maxUsersPerDay.message}
-            </p>
-          )}
-        </div>
       </section>
 
       <SocialMediaSettings />
