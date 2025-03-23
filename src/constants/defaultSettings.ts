@@ -308,6 +308,13 @@ export const allCurrencies: AllCurrency[] = [
     display: 'BIF',
     acceptedPaymentMethods: [],
   },
+  {
+    label: 'Livre égyptienne (EGP)',
+    value: 'EGP',
+    infos: '',
+    display: 'EGP',
+    acceptedPaymentMethods: [],
+  },
 ];
 
 export const getCurrencyObject = (currency: string) => {

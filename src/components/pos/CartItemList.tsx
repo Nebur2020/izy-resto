@@ -115,14 +115,17 @@ export function CartItemList(props: CartItemListProps) {
                 <Plus className="w-4 h-4" />
               </Button>
 
-              <Button
-                variant="danger"
-                size="sm"
-                onClick={() => removeFromCart(item.id)}
-                className="h-8 w-8 p-0 rounded-full ml-2 text-white"
-              >
-                <Trash2 className="w-4 h-4 text-white" />
-              </Button>
+              {(!isItemOrderFromOrder ||
+                (isItemOrderFromOrder && cart.length > 1)) && (
+                <Button
+                  variant="danger"
+                  size="sm"
+                  onClick={() => removeFromCart(item.id)}
+                  className="h-8 w-8 p-0 rounded-full ml-2 text-white"
+                >
+                  <Trash2 className="w-4 h-4 text-white" />
+                </Button>
+              )}
             </div>
           </motion.div>
         ))}

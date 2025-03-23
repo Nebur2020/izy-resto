@@ -2,10 +2,15 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { firebaseConfig } from '../../config/api.config';
+import { getAnalytics } from "firebase/analytics";
+
 
 export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
+export const analytics = getAnalytics(app);
+
+// console.log('Firebase initialized', analytics);
 
 // Enable offline persistence
 enableIndexedDbPersistence(db).catch((err) => {

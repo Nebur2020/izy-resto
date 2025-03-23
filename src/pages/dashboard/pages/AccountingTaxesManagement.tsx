@@ -168,9 +168,9 @@ export const AccountingTaxesManagement = () => {
         endDate: dateRange.to,
       });
 
-      const ordersWithTaxes = response.filter(
+      const ordersWithTaxes = response.filter(order => order.status === 'delivered').filter(
         order => order?.taxes?.length > 0
-      );
+      )
 
       const sortedOrders = ordersWithTaxes.sort((a, b) => {
         return b.createdAt - a.createdAt;

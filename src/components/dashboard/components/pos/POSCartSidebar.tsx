@@ -12,6 +12,12 @@ import { formatCurrency } from '../../../../utils/currency';
 import { useSettings } from '../../../../hooks';
 import { useTranslation } from 'react-i18next';
 import { orderService } from '../../../../services';
+import {
+  calculatePriceWithoutTaxes,
+  calculateTaxes,
+  calculateTotal,
+} from '../../../../utils/tax';
+import { useOrders } from '../../../../context/OrderContext';
 
 interface IPOSCartSidebarProps {
   onClose?: () => void;
@@ -55,9 +61,11 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
 
   const [error, setError] = useState('');
   const [showExtras, setShowExtras] = useState(false);
+  const [isUpdatingOrder, setIsUpdatingOrder] = useState(false);
   const { settings } = useSettings();
   const { t } = useTranslation('common');
-  const { total, addToCart, clearCart, setCart } = useServerCart();
+  const { total: orderTotal, addToCart, clearCart, setCart } = useServerCart();
+  const { refreshOrders } = useOrders();
 
   const cartItems = useMemo(() => {
     if (cart && cart.length > 0) {
@@ -66,10 +74,6 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
       return [];
     }
   }, [order, cart]);
-
-  const orderTotal = useMemo(() => {
-    return total;
-  }, [order, total]);
 
   useEffect(() => {
     if (order) {
@@ -122,18 +126,27 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
 
   const handleUpdateOrder = async () => {
     try {
+      setIsUpdatingOrder(true);
       if (!order) {
         throw new Error('No order to update');
       }
 
-      const subtotal =
-        cart?.reduce((sum, item) => sum + item.price * item.quantity, 0) || 0;
+      const subtotal = cart.reduce((sum, item) => {
+        const itemPrice = settings?.taxes.includedInPrice
+          ? calculatePriceWithoutTaxes(item.price, settings.taxes.rates, [
+              item.categoryId,
+            ])
+          : item.price;
+        return sum + itemPrice * item.quantity;
+      }, 0);
 
-      const total =
-        subtotal +
-        (order.taxTotal || 0) +
-        (typeof order.tip?.amount === 'number' ? order.tip.amount : 0) +
-        ((order.delivery && order.delivery.price) || 0);
+      const { taxes, total: taxTotal } = calculateTaxes(
+        subtotal,
+        settings?.taxes.rates || [],
+        cart.map(item => item.categoryId)
+      );
+
+      const total = calculateTotal(subtotal, taxTotal, 0);
 
       const updateData = {
         tableNumber,
@@ -143,12 +156,17 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
         subtotal,
         total,
         amountPaid,
+        taxes,
+        taxTotal,
         updatedAt: new Date().toISOString(),
       };
 
       await orderService.updateOrder(order.id, updateData);
       toast.success(t('common:order-successfully-updated'));
-
+      clearCart();
+      setCustomerInfo({});
+      setTableNumber('');
+      refreshOrders();
       if (onClose) {
         onClose();
       }
@@ -161,6 +179,8 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
         toast.error(t('order-update-fail'));
         setError(t('order-update-fail'));
       }
+    } finally {
+      setIsUpdatingOrder(false);
     }
   };
 
@@ -242,12 +262,12 @@ export function POSCartSidebar(props: IPOSCartSidebarProps) {
 
           <Button
             onClick={order ? handleUpdateOrder : handleCheckout}
-            disabled={cartItems.length === 0 || isSubmitting}
+            disabled={cartItems.length === 0 || isSubmitting || isUpdatingOrder}
             className="w-full py-3 text-base font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-lg
                      transition-colors duration-200 shadow-sm hover:shadow-md
                      disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
-            {isSubmitting
+            {isSubmitting || isUpdatingOrder
               ? t('processing')
               : order
               ? t('common:confirm-updated-order')

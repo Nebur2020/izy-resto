@@ -319,8 +319,18 @@
   "inventory-title": "Inventory",
   "invalid-combination": "Invalid combination",
   "is-closed": "is closed",
-  "re-open-title": "Reopening at regular hours",
   "set-rate-limit-max-users-per-day": "Set the maximum number of users per day",
   "rate-limit-max-users-per-day": "Maximum number of users per day limit reached",
-  "rate-limit-max-users-per-day-description": "Sorry, the maximum number of users for today has been reached."
+  "rate-limit-max-users-per-day-description": "Sorry, the maximum number of users for today has been reached.",
+  "re-open-title": "Reopening at regular hours",
+  "status": {
+    "open": "Open",
+    "closed": "Closed",
+    "pending": "Pending",
+    "in-progress": "In Progress",
+    "completed": "Completed",
+    "canceled": "Canceled"
+  },
+  "createdAt": "Created at",
+  "updatedAt": "Updated at"
 }

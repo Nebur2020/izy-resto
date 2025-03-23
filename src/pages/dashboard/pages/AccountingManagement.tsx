@@ -20,6 +20,7 @@ import { AccountingDeliveryManagement } from './AccountingDeliveryManagement';
 import { useTranslation } from 'react-i18next';
 import { downloadCsv } from '../../../utils/export';
 import { convertToCsv } from '../../../utils/export';
+import { Transaction } from '../../../types';
 
 export function AccountingManagement() {
   const { t } = useTranslation();
@@ -143,6 +144,41 @@ export function AccountingManagement() {
       setIsDownloading(false);
     }
   };
+
+  function convertToCsv(transactions: Transaction[]) {
+    if (transactions.length === 0) return '';
+
+    // Static keys in the order we want them to appear in the CSV
+    const keys = [
+      'id',
+      'date',
+      'source',
+      'description',
+      'reference',
+      'debit',
+      'credit',
+      'createdAt',
+      'updatedAt',
+    ];
+
+    const headers = keys.map(k => t(`common:${k}`)).join(',');
+
+    const rows = transactions
+      .map(transaction =>
+        keys
+          .map(key => {
+            const value = transaction[key as keyof Transaction];
+            if (typeof value === 'string') {
+              return `"${value.replace(/"/g, '""')}"`;
+            }
+            return value;
+          })
+          .join(',')
+      )
+      .join('\n');
+
+    return `${headers}\n${rows}`;
+  }
 
   const handleExportCsv = async () => {
     if (!settings) return;

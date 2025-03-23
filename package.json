@@ -1,7 +1,7 @@
 {
   "name": "restaurant",
   "private": true,
-  "version": "1.27.1",
+  "version": "1.28.3",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -49,6 +49,7 @@
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^14.1.2",
     "@types/crypto-js": "^4.2.2",
+    "@types/firebase": "^2.4.32",
     "@types/react": "^18.2.43",
     "@types/react-beautiful-dnd": "^13.1.8",
     "@types/react-dom": "^18.2.17",
