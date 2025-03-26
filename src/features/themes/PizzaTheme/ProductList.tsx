@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MinimalMenuCategories } from '../../../components/menu/minimal/MinimalMenuCategories';
 import { useMenu } from '../../../hooks';
 import ItemCard from './ItemCard';
 import { useTranslation } from 'react-i18next';
 import { usePizzaTheme } from './context/PizzaThemeContext';
+import { SearchBar } from '../../../components/menu/SearchBar';
+import { useSettings } from '../../../hooks';
+import { motion, AnimatePresence } from 'framer-motion'; // Importez framer-motion
 
 interface ProductListProps {
   tagline?: string;
@@ -13,12 +16,18 @@ interface ProductListProps {
   isDarkMode?: boolean;
 }
 
+const INITIAL_ITEMS_COUNT = 8;
+
 export default function ProductList({
   tagline,
   title,
   primaryColor,
   isDarkMode,
 }: ProductListProps) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [visibleItemsCount, setVisibleItemsCount] =
+    useState(INITIAL_ITEMS_COUNT);
+  const { settings } = useSettings();
   const { t } = useTranslation('pizzatheme');
   const themeConfig = usePizzaTheme();
   const [activeCategory, setActiveCategory] = useState('all');
@@ -28,21 +37,78 @@ export default function ProductList({
   const filteredItems = items.filter(item => {
     const matchesCategory =
       activeCategory === 'all' || item.categoryId === activeCategory;
-    return matchesCategory;
+    const matchesSearch =
+      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (item.description?.toLowerCase() || '').includes(
+        searchTerm.toLowerCase()
+      );
+    return matchesCategory && matchesSearch;
   });
   const [itemsToShow, setItemsToShow] = useState(8);
+  const [isSearching, setIsSearching] = useState(false);
 
-  // Default to theme context isDarkMode if not provided as prop
   const isDarkModeActive = isDarkMode;
 
   const loadMore = () => {
     setItemsToShow(prevItemsToShow => prevItemsToShow + 6);
   };
 
-  // Use props if provided, otherwise fall back to theme context values
   const sectionTagline = tagline || themeConfig.menuSection.tagline;
   const sectionTitle = title || themeConfig.menuSection.title;
   const buttonColor = primaryColor;
+
+  useEffect(() => {
+    if (searchTerm) {
+      setIsSearching(true);
+    } else {
+      const timer = setTimeout(() => {
+        setIsSearching(false);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [searchTerm]);
+
+  useEffect(() => {
+    setVisibleItemsCount(INITIAL_ITEMS_COUNT);
+  }, [activeCategory, searchTerm]);
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: {
+      opacity: 0,
+      y: 20,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: 'spring',
+        stiffness: 100,
+        damping: 12,
+      },
+    },
+    exit: {
+      opacity: 0,
+      y: -20,
+      transition: {
+        duration: 0.2,
+      },
+    },
+  };
+
+  const handleSearch = term => {
+    setSearchTerm(term);
+    setItemsToShow(8);
+  };
 
   return (
     <section
@@ -84,30 +150,65 @@ export default function ProductList({
             }
             activeCategoryStyles={`bg-[${buttonColor}] text-white`}
           />
-          {filteredItems.length === 0 && (
-            <div className="text-center py-12">
-              <p
-                className={isDarkModeActive ? 'text-gray-400' : 'text-gray-500'}
-              >
-                {t('common:product-list-no-items')}
-              </p>
-            </div>
-          )}
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 mt-20 gap-4 px-0 lg:px-20">
-            {filteredItems.length > 0 &&
-              filteredItems
-                .slice(0, itemsToShow)
-                .map(item => (
-                  <ItemCard
-                    key={item.id}
-                    item={item}
-                    primaryColor={buttonColor}
-                    isDarkMode={isDarkModeActive}
-                  />
-                ))}
+          <div className="mt-20">
+            <SearchBar
+              palette={settings?.palette}
+              isDarkMode={isDarkMode}
+              onSearch={handleSearch}
+            />
           </div>
+          <AnimatePresence mode="wait">
+            {filteredItems.length === 0 ? (
+              <motion.div
+                key="no-results"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="text-center py-12"
+              >
+                <p
+                  className={
+                    isDarkModeActive ? 'text-gray-400' : 'text-gray-500'
+                  }
+                >
+                  {t('common:product-list-no-items')}
+                </p>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="results"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 mt-20 gap-4 px-0 lg:px-20"
+              >
+                <AnimatePresence>
+                  {filteredItems.slice(0, itemsToShow).map(item => (
+                    <motion.div
+                      key={item.id}
+                      variants={itemVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      layout
+                    >
+                      <ItemCard
+                        item={item}
+                        primaryColor={buttonColor}
+                        isDarkMode={isDarkModeActive}
+                      />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
           {itemsToShow < filteredItems.length && (
-            <div className="text-center mt-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center mt-8"
+            >
               <button
                 onClick={loadMore}
                 className="text-white px-6 py-2 rounded-full transition-colors"
@@ -118,7 +219,7 @@ export default function ProductList({
               >
                 {t('common:load-more')}
               </button>
-            </div>
+            </motion.div>
           )}
         </div>
       </div>

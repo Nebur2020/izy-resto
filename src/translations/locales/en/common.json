@@ -318,7 +318,10 @@
   "order-successfully-updated": "Order successfully updated",
   "inventory-title": "Inventory",
   "invalid-combination": "Invalid combination",
-  "is-cloed": "is closed",
+  "is-closed": "is closed",
+  "set-rate-limit-max-users-per-day": "Set the maximum number of users per day",
+  "rate-limit-max-users-per-day": "Maximum number of users per day limit reached",
+  "rate-limit-max-users-per-day-description": "Sorry, the maximum number of users for today has been reached.",
   "re-open-title": "Reopening at regular hours",
   "status": {
     "open": "Open",

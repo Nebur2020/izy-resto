@@ -7,7 +7,6 @@ import { SearchBar } from '../SearchBar';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw } from 'lucide-react';
 import { useSettings } from '../../../hooks';
-import { useTheme } from '../../../context/ThemeContext';
 import { hexToRgb } from '../../../lib/firebase/utils/functions';
 
 const INITIAL_ITEMS_COUNT = 8;

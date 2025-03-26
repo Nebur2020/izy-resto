@@ -9,6 +9,7 @@ import PizzaTheme from '../../features/themes/PizzaTheme/PizzaTheme';
 
 export const Home = () => {
   const { settings } = useSettings();
+
   const getLandingComponent = useCallback(() => {
     switch (settings?.activeTheme.key) {
       case 'minimal':
