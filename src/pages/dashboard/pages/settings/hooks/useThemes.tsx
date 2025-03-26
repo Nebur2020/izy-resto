@@ -29,6 +29,16 @@ export const useAppThemes = (): {
       icon: Sun,
       config: defaultConfig,
     },
+    {
+      id: '2',
+      imageUrl:
+        'https://broccoli-omega.vercel.app/_next/image?url=%2Fimg%2Fslider%2F23.png&w=3840&q=75',
+      title: t('settingAppearence:food-theme-name'),
+      description: t('settingAppearence:food-theme-description'),
+      value: 'food',
+      icon: Sun,
+      config: defaultConfig,
+    },
   ];
 
   const defaultThemes = [

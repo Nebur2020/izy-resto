@@ -333,5 +333,8 @@
     "canceled": "Annulé"
   },
   "createdAt": "Créé le",
-  "updatedAt": "Mis à jour le"
+  "updatedAt": "Mis à jour le",
+  "contact-us": "Contactez-nous",
+  "address": "Adresse",
+  "opening-time": "Heures d'ouverture"
 }

@@ -1,8 +1,9 @@
 import { useSettings } from '../../../../../../hooks';
 import PizzaThemeEditor, { defaultConfig, PizzaThemeConfig } from './pizza';
+import FoodThemeEditor from './food';
 
 type EditorProps = {
-  theme: 'pizza' | 'modern' | 'minimal' | 'grid';
+  theme: 'pizza' | 'modern' | 'minimal' | 'grid' | 'food';
 };
 
 const Editor = ({ theme }: EditorProps) => {
@@ -30,6 +31,17 @@ const Editor = ({ theme }: EditorProps) => {
     case 'pizza':
       return (
         <PizzaThemeEditor
+          config={
+            Object.keys(settings.activeTheme?.configuration || {}).length > 0
+              ? (settings.activeTheme.configuration as PizzaThemeConfig)
+              : settings.themes[theme] || defaultConfig
+          }
+          onSave={onSave}
+        />
+      );
+    case 'food':
+      return (
+        <FoodThemeEditor
           config={
             Object.keys(settings.activeTheme?.configuration || {}).length > 0
               ? (settings.activeTheme.configuration as PizzaThemeConfig)

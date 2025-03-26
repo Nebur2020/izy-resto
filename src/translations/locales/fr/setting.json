@@ -90,5 +90,19 @@
   "partner-logo": "Logo du partenaire",
   "partner-logo-description": "Télécharger le logo du partenaire (taille recommandée : 150x80px)",
   "add-partner-logo": "Ajouter un logo de partenaire",
-  "partner-title": "Titre de la section partenaire"
+  "partner-title": "Titre de la section partenaire",
+  "banner": "Bannière",
+  "add-slide": "Ajouter une diapositive",
+  "slide-image": "Image de la diapositive",
+  "slide-image-description": "Télécharger l'image de la diapositive (taille recommandée : 1200x600px)",
+  "about-us": "À propos de nous",
+  "about-us-section-title": "Titre de la section À propos de nous",
+  "about-us-section-title-placeholder": "Ajoutez une description de votre entreprise ici",
+  "about-us-content-title": "Titre du contenu À propos de nous",
+  "about-us-content-title-placeholder": "Ajoutez une description de votre entreprise ici",
+  "about-us-description": "Description de À propos de nous",
+  "about-us-description-placeholder": "Ajoutez une description de votre entreprise ici",
+  "about-us-image": "Image de À propos de nous",
+  "about-us-image-description": "Télécharger l'image de À propos de nous (taille recommandée : 1200x600px)",
+  "discount-item": "Section de réduction"
 }

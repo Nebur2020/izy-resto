@@ -1,3 +1,4 @@
+import { FoodThemeConfig } from '../pages/dashboard/pages/settings/theme/editor/food';
 import { PizzaThemeConfig } from '../pages/dashboard/pages/settings/theme/editor/pizza';
 import { HeaderStyle, LandingTemplate } from './theme';
 
@@ -6,8 +7,8 @@ export interface TaxRate {
   name: string;
   rate: number;
   enabled: boolean;
-  appliesTo: 'all' | string; // all items or specific categories
-  order: number; // For controlling calculation order
+  appliesTo: 'all' | string;
+  order: number;
 }
 
 export interface DeliveryZone {
@@ -132,6 +133,10 @@ export interface RestaurantSettings {
     | {
         key: 'pizza';
         configuration: PizzaThemeConfig;
+      }
+    | {
+        key: 'food';
+        configuration: FoodThemeConfig;
       }
     | {
         key: 'minimal' | 'grid' | 'modern';
