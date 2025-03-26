@@ -38,5 +38,7 @@
   "secondary-color-description": "Secondary color for backgrounds and borders",
   "color-preview": "Color Preview",
   "primary": "Primary",
-  "secondary": "Secondary"
+  "secondary": "Secondary",
+  "food-theme-description": "An elegant and modern restaurant theme for food lovers, offering a smooth and immersive online experience.",
+  "food-theme-name": "FoodTheme"
 }

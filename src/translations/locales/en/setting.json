@@ -88,5 +88,19 @@
   "partner-logo": "Partner Logo",
   "partner-logo-description": "Upload partner logo (recommended size: 150x80px)",
   "add-partner-logo": "Add Partner Logo",
-  "partner-title": "Partner Section Title"
+  "partner-title": "Partner Section Title",
+  "banner": "Banner",
+  "add-slide": "Add Slide",
+  "slide-image": "Slide Image",
+  "slide-image-description": "Upload slide image (recommended size: 1200x600px)",
+  "about-us": "About Us",
+  "about-us-section-title": "About Us Section Title",
+  "about-us-section-title-placeholder": "Add a description of your business here",
+  "about-us-content-title": "About Us Content Title",
+  "about-us-content-title-placeholder": "Add a description of your business here",
+  "about-us-description": "About Us Description",
+  "about-us-description-placeholder": "Add a description of your business here",
+  "about-us-image": "About Us Image",
+  "about-us-image-description": "Upload About Us image (recommended size: 1200x600px)",
+  "discount-item": "Discount Section"
 }
