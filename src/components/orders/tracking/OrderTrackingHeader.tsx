@@ -14,6 +14,8 @@ export function OrderTrackingHeader({ order }: OrderTrackingHeaderProps) {
   const { t, i18n } = useTranslation('order');
 
   const lang = i18n.language as Language;
+  const secondaryColor = settings?.palette.secondary;
+  const primaryColor = settings?.palette.primary;
 
   const calculateTotal = () => {
     if (order.status === 'cancelled') {
@@ -34,7 +36,7 @@ export function OrderTrackingHeader({ order }: OrderTrackingHeaderProps) {
           </p>
         </div>
         <div className="text-right">
-          <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+          <p className="text-2xl font-bold" style={{ color: primaryColor }}>
             {formatCurrency(calculateTotal(), settings?.currency)}
           </p>
           <p className="text-gray-600 dark:text-gray-400">
@@ -43,23 +45,35 @@ export function OrderTrackingHeader({ order }: OrderTrackingHeaderProps) {
         </div>
       </div>
       <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-        <div className="flex items-center space-x-2 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-4 py-2 rounded-full">
+        <div
+          className="flex items-center space-x-2 px-4 py-2 rounded-full"
+          style={{
+            backgroundColor: `${primaryColor}`, // 20 opacity
+            color: "#fff",
+          }}
+        >
           {order.diningOption === 'dine-in' ? (
             <>
               <Utensils className="h-5 w-5" />
-              <span>
+              <span className='text-white'>
                 {t('on-site')} (Table {order.tableNumber})
               </span>
             </>
           ) : (
             <>
               <Truck className="h-5 w-5" />
-              <span>{t('delivery')}</span>
+              <span className='text-white'>{t('delivery')}</span>
             </>
           )}
         </div>
         {order.paymentMethod && (
-          <div className="flex items-center space-x-2 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-4 py-2 rounded-full">
+          <div
+            className="flex items-center space-x-2 px-4 py-2 rounded-full"
+            style={{
+              backgroundColor: `${secondaryColor}20`,
+              color: secondaryColor,
+            }}
+          >
             <CreditCard className="h-5 w-5" />
             <span>
               {t(`payment-method-names.${order.paymentMethod.name}`) ===

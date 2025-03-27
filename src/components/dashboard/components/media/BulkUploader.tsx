@@ -1,13 +1,15 @@
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, X, AlertCircle } from 'lucide-react';
+import { Upload, X, AlertCircle, Cloud, Server } from 'lucide-react';
 import { ProgressBar } from '../../../ui/ProgressBar';
 import { useTranslation } from 'react-i18next';
 
+type StorageProvider = 'firebase' | 'cloudinary';
+
 interface IBulkUploaderProps {
   onClose: () => void;
-  onUpload: (files: File[]) => Promise<void>;
+  onUpload: (files: File[], storageProvider: StorageProvider) => Promise<void>;
   maxSizeMB?: number;
   acceptedFileTypes?: string[];
 }
@@ -22,9 +24,17 @@ interface UploadStatus {
 
 export function BulkUploader(props: IBulkUploaderProps) {
   const { t } = useTranslation();
-  const { onClose, onUpload, maxSizeMB = 10, acceptedFileTypes = ['image/*'] } = props;
+  const {
+    onClose,
+    onUpload,
+    maxSizeMB = 10,
+    acceptedFileTypes = ['image/*'],
+  } = props;
+
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>({});
   const [isUploading, setIsUploading] = useState(false);
+  const [storageProvider, setStorageProvider] =
+    useState<StorageProvider>('firebase');
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
@@ -56,7 +66,7 @@ export function BulkUploader(props: IBulkUploaderProps) {
           }, 500);
 
           try {
-            await onUpload([file]);
+            await onUpload([file], storageProvider);
             clearInterval(interval);
             setUploadStatus(prev => ({
               ...prev,
@@ -83,7 +93,7 @@ export function BulkUploader(props: IBulkUploaderProps) {
         setIsUploading(false);
       }
     },
-    [onUpload, onClose]
+    [onUpload, onClose, storageProvider]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -110,9 +120,90 @@ export function BulkUploader(props: IBulkUploaderProps) {
           <X className="w-5 h-5" />
         </button>
 
-        <h2 className="text-xl font-semibold mb-6">
-          {t('media:add-media')}
-        </h2>
+        <h2 className="text-xl font-semibold mb-6">{t('media:add-media')}</h2>
+
+        <div className="mb-6">
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+            {t('common:select-storage-destination')}
+          </p>
+          <div className="grid grid-cols-2 gap-4">
+            <label
+              className={`
+                relative flex flex-col items-center justify-center p-4 rounded-lg border-2 cursor-pointer
+                transition-all group h-[50px]
+                ${
+                  storageProvider === 'firebase'
+                    ? 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/20'
+                    : 'border-gray-300 hover:border-gray-400 dark:border-gray-600 dark:hover:border-gray-500'
+                }
+                ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}
+              `}
+            >
+              <input
+                type="radio"
+                name="storageProvider"
+                value="firebase"
+                checked={storageProvider === 'firebase'}
+                onChange={() => setStorageProvider('firebase')}
+                disabled={isUploading}
+                className="absolute opacity-0"
+              />
+              <div className="flex items-center justify-around">
+                <Server
+                  className={`
+                    w-[25px] h-10 mr-2
+                    ${
+                      storageProvider === 'firebase'
+                        ? 'text-blue-500 dark:text-blue-400'
+                        : 'text-gray-400 group-hover:text-gray-500'
+                    }
+                  `}
+                />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                  Firebase
+                </span>
+              </div>
+            </label>
+
+            <label
+              className={`
+                relative flex flex-col items-center justify-center p-4 rounded-lg border-2 cursor-pointer
+                transition-all group h-[50px]
+                ${
+                  storageProvider === 'cloudinary'
+                    ? 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/20'
+                    : 'border-gray-300 hover:border-gray-400 dark:border-gray-600 dark:hover:border-gray-500'
+                }
+                ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}
+              `}
+            >
+              <input
+                type="radio"
+                name="storageProvider"
+                value="cloudinary"
+                checked={storageProvider === 'cloudinary'}
+                onChange={() => setStorageProvider('cloudinary')}
+                disabled={isUploading}
+                className="absolute opacity-0"
+              />
+              <div className="flex items-center justify-around">
+                <Cloud
+                  className={`
+                  w-[25px] h-[25px] mr-2
+                  ${
+                    storageProvider === 'cloudinary'
+                      ? 'text-blue-500 dark:text-blue-400'
+                      : 'text-gray-400 group-hover:text-gray-500'
+                  }
+                `}
+                />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                  Cloudinary
+                </span>
+              </div>
+            </label>
+          </div>
+        </div>
 
         <div
           {...getRootProps()}
