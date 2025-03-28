@@ -102,7 +102,7 @@ export function OrderReceipt() {
                 <h1 className="text-2xl font-bold mb-1">
                   {order.status === 'cancelled'
                     ? t('order-canceled')
-                    : t('order-confirmed')}
+                    : t('order-confirmed')} ajhzsx
                 </h1>
                 <p className="text-white/80">
                   {order.status === 'cancelled'

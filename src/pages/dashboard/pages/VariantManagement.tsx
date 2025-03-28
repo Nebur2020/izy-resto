@@ -8,6 +8,7 @@ import { VariantForm } from '../../../components/dashboard/components/variants/V
 import { ConfirmationModal } from '../../../components/ui/ConfirmationModal';
 import { useTranslation } from 'react-i18next';
 import { variantService } from '../../../services/variants/variant.service';
+import { useSettings } from '../../../hooks';
 import { Variant } from '../../../types';
 
 export function VariantManagement() {
@@ -20,7 +21,6 @@ export function VariantManagement() {
     addVariant,
     updateVariant,
     deleteVariant,
-    refreshVariants,
   } = useVariants();
 
   const {
@@ -38,6 +38,9 @@ export function VariantManagement() {
   const [searchResults, setSearchResults] = useState<Variant[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
+
+  const settings = useSettings();
+  const primaryColor = settings?.settings?.palette.primary;
 
   // Handle search
   useEffect(() => {
@@ -126,9 +129,14 @@ export function VariantManagement() {
             {t('variant:variant-description')}
           </p>
         </div>
-        <Button onClick={() => setIsFormOpen(true)}>
+        <Button
+          onClick={() => setIsFormOpen(true)}
+          variant="custom"
+          style={{ backgroundColor: primaryColor }}
+          spanClassName="text-white"
+        >
           <Plus className="w-4 h-4 mr-2" />
-          {t('variant:add-variant')}
+          {t('variant:add-variant')} sjhdzb
         </Button>
       </div>
 
@@ -173,6 +181,7 @@ export function VariantManagement() {
         isLoading={currentLoading && displayedVariants.length === 0}
         onEdit={setEditingVariant}
         onDelete={id => setDeleteConfirmation({ isOpen: true, variantId: id })}
+        primaryColor={primaryColor}
       />
 
       {isSearching && !searchLoading && searchResults.length === 0 && (
@@ -216,6 +225,7 @@ export function VariantManagement() {
             setIsFormOpen(false);
             setEditingVariant(null);
           }}
+          primaryColor={primaryColor}
         />
       )}
 

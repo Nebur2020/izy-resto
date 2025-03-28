@@ -51,6 +51,7 @@ interface IVariantFormProps {
   onCancel: () => void;
   loadMoreCategories?: () => Promise<void>;
   hasMoreCategories?: boolean;
+  primaryColor?: string;
 }
 
 export function VariantForm(props: IVariantFormProps) {
@@ -62,6 +63,7 @@ export function VariantForm(props: IVariantFormProps) {
     onCancel,
     loadMoreCategories,
     hasMoreCategories = false,
+    primaryColor,
   } = props;
   const { items: inventory } = useInventory();
   const [categoriesLoading, setCategoriesLoading] = useState(false);
@@ -276,6 +278,11 @@ export function VariantForm(props: IVariantFormProps) {
                           : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600'
                       }
                     `}
+                    style={{
+                      backgroundColor:
+                        categoryIds?.includes(category.id) && "#ccc",
+                      color: categoryIds?.includes(category.id) ? '#000' : ''
+                    }}
                   >
                     <input
                       type="checkbox"
@@ -328,13 +335,17 @@ export function VariantForm(props: IVariantFormProps) {
                   type="button"
                   onClick={addValue}
                   className="px-3 py-1.5 text-sm bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-400"
+                  variant="custom"
+                  style={{
+                    backgroundColor: "#ccc",
+                  }}
+                  spanClassName="text-black"
                 >
                   <Plus className="w-4 h-4 mr-1" />
                   {t('common:add')}
                 </Button>
               </div>
 
-              {/* Improved Variant Values UI */}
               <div className="border rounded-lg dark:border-gray-700 overflow-hidden">
                 {/* Tabs */}
                 {values.length > 0 && (
@@ -349,6 +360,10 @@ export function VariantForm(props: IVariantFormProps) {
                             ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 border-b-2 border-blue-500'
                             : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50'
                         }`}
+                        style={{
+                          borderColor:
+                            activeValueTab === index ? primaryColor : '',
+                        }}
                       >
                         <span className="truncate max-w-32">
                           {value || `Option ${index + 1}`}
@@ -424,6 +439,9 @@ export function VariantForm(props: IVariantFormProps) {
                           type="button"
                           onClick={() => addInventoryConnection(activeValueTab)}
                           className="px-3 py-1.5 text-xs bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-400"
+                          variant='custom'
+                          style={{ backgroundColor: "#ccc" }}
+                          spanClassName='text-black'
                         >
                           <Plus className="w-3.5 h-3.5 mr-1" />
                           {t('common:add-article')}
@@ -569,7 +587,10 @@ export function VariantForm(props: IVariantFormProps) {
               <Button
                 type="submit"
                 disabled={!isDirty}
-                className="px-6 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white shadow-sm disabled:opacity-50"
+                className="px-6 py-2  hover:from-blue-700 hover:to-blue-600 text-white shadow-sm disabled:opacity-50"
+                variant='custom'
+                style={{ backgroundColor: primaryColor }}
+                spanClassName='text-white'
               >
                 {variant ? t('common:update') : t('common:add')}
               </Button>

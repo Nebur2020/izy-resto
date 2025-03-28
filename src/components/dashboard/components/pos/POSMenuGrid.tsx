@@ -32,6 +32,8 @@ export function POSMenuGrid(props: POSMenuGridProps) {
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const { theme } = useTheme();
 
+  const primaryColor = settings?.palette.primary;
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {!isItemOrderFromOrder && (
@@ -81,7 +83,10 @@ export function POSMenuGrid(props: POSMenuGridProps) {
                     {item.description}
                   </p>
                   <div className="flex justify-between items-center">
-                    <span className="font-bold text-blue-600 dark:text-blue-400">
+                    <span
+                      className="font-bold dark:text-blue-400"
+                      style={{ color: primaryColor }}
+                    >
                       {formatCurrency(item.price, settings?.currency)}
                     </span>
                   </div>

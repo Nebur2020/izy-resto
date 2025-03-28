@@ -6,6 +6,7 @@ import { Button } from '../../../../../components/ui/Button';
 import { useCategories } from '../../../../../hooks/useCategories';
 import { KeywordsInput } from '../../../../../components/settings/seo/KeywordsInput';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../../../../../hooks';
 
 export function TaxSettings() {
   const { t } = useTranslation();
@@ -19,6 +20,9 @@ export function TaxSettings() {
   const { categories } = useCategories();
   const taxEnabled = watch('taxes.enabled');
   const tipsEnabled = watch('tips.enabled');
+  
+  const { settings } = useSettings();
+  const primaryColor = settings?.palette.primary
 
   const CategorySelect = ({ index }: { index: number }) => {
     const currentValue = watch(`taxes.rates.${index}.appliesTo`);
@@ -84,7 +88,7 @@ export function TaxSettings() {
       <section className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Receipt className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            <Receipt className="h-5 w-5 dark:text-blue-400" color={primaryColor} />
             <h2 className="text-xl font-semibold">Taxes</h2>
           </div>
           {taxEnabled && (
@@ -211,7 +215,7 @@ export function TaxSettings() {
       </section>
       <section className="space-y-6">
         <div className="flex items-center gap-3">
-          <Coins className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <Coins className="h-5 w-5 dark:text-blue-400" color={primaryColor} />
           <h2 className="text-xl font-semibold">
             {t('taxAndTips:tips')}
           </h2>

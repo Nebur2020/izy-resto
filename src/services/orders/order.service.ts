@@ -625,7 +625,6 @@ class OrderService {
         updatedAt: Timestamp.now(),
       });
 
-      console.log(`Order ${orderId} updated successfully`);
     } catch (error) {
       console.error('Error updating order:', error);
       if (error instanceof OrderServiceError) {

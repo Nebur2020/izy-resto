@@ -6,6 +6,7 @@ import { useCustomers } from '../../../hooks/useCustomers';
 import { CustomerDetailsModal } from '../../../components/dashboard/CustomerDetailsModal';
 import { Pagination } from '../../../components/ui/Pagination';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../../../hooks';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -21,6 +22,9 @@ export function CustomerManagement() {
     null
   );
   const [currentPage, setCurrentPage] = useState(1);
+
+  const { settings } = useSettings();
+  const primaryColor = settings?.palette.primary;
 
   const filteredCustomers = useMemo(() => {
     return customers
@@ -86,6 +90,7 @@ export function CustomerManagement() {
       <CustomerList
         customers={paginatedCustomers}
         onViewDetails={setSelectedCustomerId}
+        primaryColor={primaryColor}
       />
 
       {totalPages > 1 && (

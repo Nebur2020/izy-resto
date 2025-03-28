@@ -36,6 +36,8 @@ export function MenuManagement() {
   const [hasMore, setHasMore] = useState(false);
   const [pageSize] = useState(10);
 
+  const primaryColor = settings?.palette.primary;
+
   useEffect(() => {
     if (!isSearching) {
       loadInitialItems();
@@ -131,7 +133,6 @@ export function MenuManagement() {
       setIsLoadingMore(false);
     }
   };
-  //lorenzo
   const performSearch = async () => {
     if (!searchTerm.trim()) return;
 
@@ -260,7 +261,10 @@ export function MenuManagement() {
             onCategoryChange={handleCategoryChange}
           />
 
-          <Button onClick={() => setIsFormOpen(true)}>
+          <Button onClick={() => setIsFormOpen(true)} variant="custom"
+            style={{ backgroundColor: primaryColor, color: '#fff' }}
+            spanClassName='text-white'
+            >
             <Plus className="w-5 h-5 mr-2" />
             {t('variant:add-item')}
           </Button>

@@ -336,5 +336,6 @@
   "updatedAt": "Mis à jour le",
   "contact-us": "Contactez-nous",
   "address": "Adresse",
-  "opening-time": "Heures d'ouverture"
+  "opening-time": "Heures d'ouverture",
+  "select-storage-destination": "Sélectionner la destination de stockage"
 }

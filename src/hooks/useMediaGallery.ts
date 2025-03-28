@@ -75,6 +75,28 @@ export function useMediaGallery(itemsPerLoad: number = 12) {
     }
   };
 
+  const updloadFileToFirebase = async (files: File[]) => {
+    try {
+      const uploadPromises = files.map(file => {
+        return mediaService.uploadFileToFirebase(file, progress => {
+          setUploadProgress(prev => ({
+            ...prev,
+            [file.name]: progress,
+          }));
+        });
+      });
+
+      await Promise.all(uploadPromises);
+      await loadInitialFiles();
+      setUploadProgress({});
+      return true;
+    } catch (error) {
+      console.error('Upload error:', error);
+      setUploadProgress({});
+      throw error;
+    }
+  }
+
   const deleteFiles = async (fileIds: string[]) => {
     try {
       await mediaService.deleteFiles(fileIds);
@@ -92,6 +114,7 @@ export function useMediaGallery(itemsPerLoad: number = 12) {
     isLoadingMore,
     hasMore,
     uploadFiles,
+    updloadFileToFirebase,
     deleteFiles,
     uploadProgress,
     loadMoreFiles,

@@ -9,12 +9,15 @@ import { StaffMember } from '../../../types/staff';
 import toast from 'react-hot-toast';
 import { useStaffCheck } from '../../../hooks/useStaffCheck';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../../../hooks';
 
 export function StaffManagement() {
   const { t } = useTranslation();
   const { staff, isLoading, createStaff, updateStaff, deleteStaff } =
     useStaff();
   const { isStaff, staffData } = useStaffCheck();
+  const { settings } = useSettings();
+  const primaryColor = settings?.palette.primary;
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingStaff, setEditingStaff] = useState<StaffMember | null>(null);
@@ -97,7 +100,12 @@ export function StaffManagement() {
           </p>
         </div>
         {((isStaff && staffData?.role === 'admin') || !isStaff) && (
-          <Button onClick={() => setIsFormOpen(true)}>
+          <Button
+            onClick={() => setIsFormOpen(true)}
+            variant="custom"
+            style={{ backgroundColor: primaryColor }}
+            spanClassName="text-white"
+          >
             <Plus className="w-4 h-4 mr-2" />
             {t('personal:add-staff')}
           </Button>

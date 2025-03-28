@@ -46,8 +46,6 @@ export default function FoodTheme() {
 
   const isDarkMode = theme === 'dark';
 
-  console.log('themeConfig.banner: ', themeConfig.banner);
-
   return (
     <>
       <AnimatePresence>
