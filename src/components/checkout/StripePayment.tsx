@@ -202,7 +202,6 @@ const PaymentModal = ({
 
       throw new Error('Error');
     } catch (error: any) {
-      console.log(error);
 
       if (error instanceof AxiosError) {
         setErrorMessage(
