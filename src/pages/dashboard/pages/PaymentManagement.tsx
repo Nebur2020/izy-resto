@@ -7,6 +7,7 @@ import { ConfirmationModal } from '../../../components/ui/ConfirmationModal';
 import { usePayments } from '../../../hooks/usePayments';
 import { PaymentMethod } from '../../../types/payment';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../../../hooks';
 
 export function PaymentManagement() {
   const { t } = useTranslation();
@@ -25,6 +26,8 @@ export function PaymentManagement() {
     isOpen: boolean;
     methodId?: string;
   }>({ isOpen: false });
+  const { settings } = useSettings();
+  const primaryColor = settings?.palette.primary;
 
   const handleSave = async (data: Omit<PaymentMethod, 'id'>) => {
     try {
@@ -61,7 +64,12 @@ export function PaymentManagement() {
             {t('payment:payment-method-managment')}
           </p>
         </div>
-        <Button onClick={() => setIsFormOpen(true)}>
+        <Button
+          onClick={() => setIsFormOpen(true)}
+          variant="custom"
+          style={{ backgroundColor: primaryColor, color: '#fff' }}
+          spanClassName='text-white'
+        >
           <Plus className="w-4 h-4 mr-2" />
           {t('payment:add-payment-method')}
         </Button>

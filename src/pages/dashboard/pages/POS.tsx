@@ -39,8 +39,10 @@ export function POS() {
     hasMore: hasMoreOrders,
     loadMoreOrders,
     searchOrders,
-    orders
+    orders,
   } = useOrders();
+
+  const primaryColor = settings?.palette.primary;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -322,9 +324,13 @@ export function POS() {
             <button
               className={`flex-1 py-2 text-center ${
                 activeTab === 'products'
-                  ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 dark:text-gray-400'
+                  ? 'border-b-2 text-primary-color'
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
               }`}
+              style={{
+                borderColor:
+                  activeTab === 'products' ? primaryColor : 'transparent',
+              }}
               onClick={() => {
                 clearCart();
                 setCustomerInfo({});
@@ -339,9 +345,13 @@ export function POS() {
             <button
               className={`flex-1 py-2 text-center ${
                 activeTab === 'orders'
-                  ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 dark:text-gray-400'
+                  ? 'border-b-2 text-primary-color'
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
               }`}
+              style={{
+                borderColor:
+                  activeTab === 'orders' ? primaryColor : 'transparent',
+              }}
               onClick={() => {
                 clearCart();
                 setCustomerInfo({});
@@ -358,10 +368,11 @@ export function POS() {
           <div>
             {activeTab === 'products' && (
               <>
-                <div className='mt-10 mb-5'>
+                <div className="mt-10 mb-5">
                   <MenuFilters
                     activeCategory={selectedCategory}
                     onCategoryChange={setSelectedCategory}
+                    isDarkMode
                   />
                 </div>
                 <POSMenuGrid
@@ -453,9 +464,9 @@ export function POS() {
                       isSearching
                         ? searchResults
                         : orders.filter(
-                          o =>
-                            o.status === 'pending' || o.status === 'preparing'
-                        )
+                            o =>
+                              o.status === 'pending' || o.status === 'preparing'
+                          )
                     }
                     isLoading={
                       (isLoading || isLoadingOrders) && orders.length === 0

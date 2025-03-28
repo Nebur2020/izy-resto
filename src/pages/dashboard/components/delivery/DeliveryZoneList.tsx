@@ -13,6 +13,7 @@ interface DeliveryZoneListProps {
   onEdit: (zone: DeliveryZone) => void;
   onDelete: (zone: DeliveryZone) => void;
   itemsPerPage?: number;
+  primaryColor?: string;
 }
 
 export function DeliveryZoneList({
@@ -22,6 +23,7 @@ export function DeliveryZoneList({
   onEdit,
   onDelete,
   itemsPerPage = 5, // Default to 5 items per page
+  primaryColor
 }: DeliveryZoneListProps) {
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -64,8 +66,8 @@ export function DeliveryZoneList({
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                  <MapPin className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg" style={{ backgroundColor: primaryColor }}>
+                  <MapPin className="w-5 h-5 text-blue-600 dark:text-blue-400" color='#fff'/>
                 </div>
                 <div>
                   <h3 className="font-medium text-lg">{zone.name}</h3>

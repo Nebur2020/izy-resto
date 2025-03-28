@@ -2,6 +2,7 @@ import { OrderStatus } from '../../types';
 import { Button } from '../ui/Button';
 import { Calendar } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../../hooks';
 
 interface IOrderFiltersProps {
   currentFilter: OrderStatus | 'all';
@@ -42,15 +43,23 @@ export function OrderFilters(props: IOrderFiltersProps) {
     onDateRangeChange({});
   };
 
+  const { settings } = useSettings();
+  const primaryColor = settings?.palette.primary;
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
         {filters.map(filter => (
           <Button
             key={filter.value}
-            variant={currentFilter === filter.value ? 'primary' : 'secondary'}
+            variant="secondary"
             onClick={() => onFilterChange(filter.value)}
             size="sm"
+            style={{
+              backgroundColor:
+                currentFilter === filter.value ? primaryColor : undefined,
+                color: currentFilter === filter.value ? 'white' : undefined,
+            }}
           >
             {filter.label}
           </Button>

@@ -1,4 +1,3 @@
-import React from 'react';
 import { UseFormRegister } from 'react-hook-form';
 import { Globe } from 'lucide-react';
 import { RestaurantSettings } from '../../../../types';

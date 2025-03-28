@@ -6,10 +6,14 @@ import { KeywordsInput } from '../../../../../components/settings/seo/KeywordsIn
 import { LogoUploader } from '../../../../../components/settings/LogoUploader';
 import { useSEOUpdater } from '../../../../../hooks/useSEOUpdater';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../../../../../hooks';
 
 export function SEOSettings() {
   const { t } = useTranslation();
   const { register, watch, setValue } = useFormContext<RestaurantSettings>();
+
+  const { settings } = useSettings();
+  const primaryColor = settings?.palette.primary;
   
   useSEOUpdater(watch('seo.title'), watch('seo.favicon'));
 
@@ -17,7 +21,7 @@ export function SEOSettings() {
     <div className="space-y-8">
       <section className="space-y-6">
         <div className="flex items-center gap-3">
-          <Search className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <Search className="h-5 w-5 dark:text-blue-400" color={primaryColor} />
           <h2 className="text-xl font-semibold">
             {t('settingSeo:seo-settings-title')}
           </h2>
@@ -71,7 +75,7 @@ export function SEOSettings() {
 
       <section className="space-y-6">
         <div className="flex items-center gap-3">
-          <Globe className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <Globe className="h-5 w-5 dark:text-blue-400" color={primaryColor} />
           <h2 className="text-xl font-semibold">
             {t('settingSeo:seo-images-title')}
           </h2>
@@ -96,7 +100,7 @@ export function SEOSettings() {
 
       <section className="space-y-6">
         <div className="flex items-center gap-3">
-          <Share2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <Share2 className="h-5 w-5 dark:text-blue-400" color={primaryColor} />
           <h2 className="text-xl font-semibold">
             {t('settingSeo:seo-social-title')}
           </h2>

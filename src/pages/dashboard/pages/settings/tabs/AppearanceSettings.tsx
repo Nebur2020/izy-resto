@@ -219,9 +219,9 @@ export function AppearanceSettings() {
     <div className="space-y-8">
       <section className="space-y-6">
         <div className="flex items-center gap-3 mb-6">
-          <Layout className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <Layout className="h-5 w-5 dark:text-blue-400" color={primaryColor}/>
           <h2 className="text-xl font-semibold">
-            {t('settingAppearence:display-mode')}
+            {t('settingAppearence:display-mode')} sjhasb
           </h2>
         </div>
 
@@ -248,7 +248,7 @@ export function AppearanceSettings() {
       </section>
       <section className="space-y-6">
         <div className="flex items-center gap-3">
-          <MenuSquare className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <MenuSquare className="h-5 w-5 dark:text-blue-400"  color={primaryColor}/>
           <h2 className="text-xl font-semibold">
             {t('settingAppearence:header')}
           </h2>
@@ -280,7 +280,7 @@ export function AppearanceSettings() {
       </section>
       <section className="space-y-6">
         <div className="flex items-center gap-3">
-          <LayoutGrid className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <LayoutGrid className="h-5 w-5 dark:text-blue-400" color={primaryColor}/>
           <h2 className="text-xl font-semibold">
             {t('settingAppearence:landing-page')}
           </h2>
@@ -307,7 +307,7 @@ export function AppearanceSettings() {
 
       <section className="space-y-6">
         <div className="flex items-center gap-3">
-          <Store className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <Store className="h-5 w-5 dark:text-blue-400" color={primaryColor}/>
           <h2 className="text-xl font-semibold">
             {t('settingAppearence:premium-theme-title')}
           </h2>
@@ -336,7 +336,7 @@ export function AppearanceSettings() {
 
       <section className="space-y-6">
         <div className="flex items-center gap-3">
-          <Palette className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <Palette className="h-5 w-5 dark:text-blue-400" color={primaryColor}/>
           <h2 className="text-xl font-semibold">
             {t('settingAppearence:color-palette')}
           </h2>
@@ -425,7 +425,7 @@ export function AppearanceSettings() {
 
       <section className="space-y-6">
         <div className="flex items-center gap-3">
-          <Layout className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <Layout className="h-5 w-5 dark:text-blue-400" color={primaryColor}/>
           <h2 className="text-xl font-semibold">
             {t('settingAppearence:deployment')}
           </h2>
@@ -491,8 +491,9 @@ export function AppearanceSettings() {
             className="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors
                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
                 disabled:pointer-events-none disabled:opacity-50
-                bg-blue-600 text-white hover:bg-blue-700
+               text-white hover:bg-blue-700
                 dark:bg-blue-500 dark:hover:bg-blue-600"
+                style={{ backgroundColor: primaryColor }}
           >
             {isDeploying ? (
               <>

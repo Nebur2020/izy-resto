@@ -35,12 +35,12 @@ export function CategoryForm(props: CategoryFormProps) {
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               {category
                 ? t('category:update-category')
-                : t('category:new-category')}
+                : t('category:new-category')} sjhzdsb
             </h3>
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               {category
                 ? t('category:update-category-details')
-                : t('category:add-new-category')}
+                : t('category:add-new-category')} sjhzdsb
             </p>
           </div>
           <button
