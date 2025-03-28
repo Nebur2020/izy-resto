@@ -352,6 +352,7 @@ export function POS() {
                 borderColor:
                   activeTab === 'orders' ? primaryColor : 'transparent',
               }}
+
               onClick={() => {
                 clearCart();
                 setCustomerInfo({});
