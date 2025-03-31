@@ -23,7 +23,6 @@ const PendingTransaction = () => {
     message: 'Votre paiement a bien été pris en compte...',
     buttonText:
       'Merci de fermer la fenêtre et de retourner page où la commande a été effectuée.',
-    onButtonClick: () => console.log('Refresh clicked'),
   };
 
   return <PaymentReturn {...pendingProps} />;

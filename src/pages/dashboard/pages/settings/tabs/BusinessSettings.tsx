@@ -3,6 +3,7 @@ import { Calendar, Clock, Globe, Truck } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import { timezones } from '../../../../../constants/timezones';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../../../../../hooks';
 
 const ErrorAlert = ({ message }: { message: string }) => (
   <div
@@ -22,6 +23,9 @@ export function BusinessSettings() {
     setError,
     clearErrors,
   } = useFormContext();
+
+  const {settings} = useSettings();
+  const primaryColor = settings?.palette.primary;
 
   const canDeliver = watch('canDeliver');
   const canDineIn = watch('canDineIn');
@@ -67,7 +71,7 @@ export function BusinessSettings() {
       {/* Contact Information */}
       <section className="space-y-6">
         <div className="flex items-center gap-3 mb-6">
-          <Globe className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <Globe className="h-5 w- dark:text-blue-400" color={primaryColor}/>
           <h2 className="text-xl font-semibold">
             {t('settingBusiness:contact-information')}
           </h2>
@@ -100,7 +104,7 @@ export function BusinessSettings() {
 
       <section className="space-y-6">
         <div className="flex items-center gap-3">
-          <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <Calendar className="h-5 w-5 dark:text-blue-400" color={primaryColor} />
           <h2 className="text-xl font-semibold">
             {t('settingBusiness:business-hours')}
           </h2>
@@ -185,7 +189,7 @@ export function BusinessSettings() {
       <section className="space-y-6">
         <div className="flex items-center justify-between gap-3 mb-6">
           <div className="flex items-center gap-3">
-            <Clock className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            <Clock className="h-5 w-5 dark:text-blue-400" color={primaryColor} />
             <h2 className="text-xl font-semibold">
               {t('settingBusiness:opening-hours')}
             </h2>
@@ -246,7 +250,7 @@ export function BusinessSettings() {
 
         <section className="space-y-4">
           <div className="flex items-center gap-3">
-            <Truck className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            <Truck className="h-5 w-5 dark:text-blue-400" color={primaryColor} />
             <label className="flex items-center space-x-2">
               <input
                 type="checkbox"
@@ -263,7 +267,7 @@ export function BusinessSettings() {
           </div>
 
           <div className="flex items-center gap-3">
-            <Truck className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            <Truck className="h-5 w-5 dark:text-blue-400" color={primaryColor} />
             <label className="flex items-center space-x-2">
               <input
                 type="checkbox"

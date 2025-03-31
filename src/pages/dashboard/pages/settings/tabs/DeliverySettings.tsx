@@ -10,6 +10,7 @@ import { ConfirmDialog } from '../../../../../components/ui/ConfirmDialog';
 import { DeliveryZoneForm } from '../../../components/delivery/DeliveryZoneForm';
 import { DeliveryZoneList } from '../../../components/delivery/DeliveryZoneList';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../../../../../hooks';
 
 export function DeliverySettings() {
   const { t } = useTranslation();
@@ -20,6 +21,9 @@ export function DeliverySettings() {
     formState: { errors },
     trigger,
   } = useFormContext<RestaurantSettings>();
+
+  const { settings } = useSettings();
+  const primaryColor = settings?.palette.primary
 
   const [isFormOpen, setIsFormOpen] = React.useState(false);
   const [editingZone, setEditingZone] = React.useState<DeliveryZone | null>(
@@ -84,10 +88,8 @@ export function DeliverySettings() {
     <div className="space-y-8">
       <section className="space-y-4">
         <div className="flex items-center gap-3">
-          <Truck className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-          <h2 className="text-xl font-semibold">
-            {t('common:delivery')}
-          </h2>
+          <Truck className="h-5 w-5 dark:text-blue-400" color={primaryColor} />
+          <h2 className="text-xl font-semibold">{t('common:delivery')}</h2>
         </div>
 
         <div className="flex items-center gap-2">
@@ -109,7 +111,13 @@ export function DeliverySettings() {
             <h3 className="text-lg font-medium">
               {t('settingDelivery:delivery-zones')}
             </h3>
-            <Button type="button" onClick={() => setIsFormOpen(true)}>
+            <Button
+              type="button"
+              onClick={() => setIsFormOpen(true)}
+              variant="custom"
+              style={{ backgroundColor: primaryColor }}
+              spanClassName="text-white"
+            >
               <Plus className="w-4 h-4 mr-2" />
               {t('settingDelivery:add-zone')}
             </Button>
@@ -138,6 +146,7 @@ export function DeliverySettings() {
                 zone,
               });
             }}
+            primaryColor={primaryColor}
           />
         </section>
       )}
@@ -160,8 +169,8 @@ export function DeliverySettings() {
           deliveryEnabled && zones.length === 1
             ? t('settingDelivery:delete-last-zone-warning')
             : t('settingDelivery:delete-zone-warning', {
-              deleteConfirmation: deleteConfirmation.zone?.name,
-            })
+                deleteConfirmation: deleteConfirmation.zone?.name,
+              })
         }
         confirmLabel={t('common:delete')}
         onConfirm={handleDelete}

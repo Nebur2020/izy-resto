@@ -18,6 +18,7 @@ import {
   SocialMediaProfile,
 } from '../../../../../types/settings';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../../../../../hooks';
 
 const PLATFORMS = [
   { id: 'whatsapp', name: 'Whatsapp', icon: MessageCircle },
@@ -29,10 +30,12 @@ const PLATFORMS = [
   { id: 'tiktok', name: 'Tiktok', icon: Hash },
 ];
 
-export function SocialMediaSettings() {
+export function SocialMediaSettings(p) {
   const { t } = useTranslation();
   const { watch, setValue } = useFormContext<RestaurantSettings>();
   const socialMedia = watch('socialMedia') || [];
+  const { settings } = useSettings();
+  const primaryColor = settings?.palette.primary;
 
   const handleAddProfile = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -67,14 +70,20 @@ export function SocialMediaSettings() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Share2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <Share2 className="h-5 w-5 dark:text-blue-400" color={primaryColor}/>
           <h2 className="text-xl font-semibold">
             {t('setting:social-media-profiles')}
           </h2>
         </div>
-        <Button type="button" onClick={handleAddProfile}>
+        <Button
+          type="button"
+          onClick={handleAddProfile}
+          variant="custom"
+          style={{ backgroundColor: primaryColor }}
+          spanClassName="text-white"
+        >
           <Plus className="w-4 h-4 mr-2" />
-          {t('setting:add-profile')}
+          {t('setting:add-profile')} szhjdsba
         </Button>
       </div>
 
@@ -126,11 +135,17 @@ export function SocialMediaSettings() {
                 <div className="flex items-center gap-2">
                   <Button
                     type="button"
-                    variant={profile.active ? 'primary' : 'secondary'}
+                    variant="custom"
                     size="sm"
                     onClick={e =>
                       handleUpdateProfile(e, index, { active: !profile.active })
                     }
+                    style={{
+                      backgroundColor: profile.active
+                        ? primaryColor
+                        : 'transparent',
+                    }}
+                    spanClassName={profile.active ? 'text-white' : ''}
                   >
                     {profile.active ? t('common:Actif') : t('common:Inactif')}
                   </Button>

@@ -332,5 +332,9 @@
     "canceled": "Canceled"
   },
   "createdAt": "Created at",
-  "updatedAt": "Updated at"
+  "updatedAt": "Updated at",
+  "contact-us": "Contact us",
+  "address": "Address",
+  "opening-time": "Opening time",
+  "select-storage-destination": "Select storage destination"
 }

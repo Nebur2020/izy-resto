@@ -17,6 +17,7 @@ import {
 } from '../../../types';
 import { DateFilter } from '../../../components/dashboard/components/accounting/DateFilter';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../../../hooks';
 
 export function InventoryManagement() {
   const { t } = useTranslation();
@@ -46,6 +47,9 @@ export function InventoryManagement() {
     startDate: new Date(new Date().setHours(0, 0, 0, 0)),
     endDate: new Date(),
   });
+
+  const { settings } = useSettings();
+  const primaryColor = settings?.palette.primary;
 
   const tabs = [
     { id: 'inventory', label: t('inventory:inventory') },
@@ -166,7 +170,12 @@ export function InventoryManagement() {
           </p>
         </div>
         <div className="flex gap-3">
-          <Button onClick={() => setIsUpdateFormOpen(true)}>
+          <Button
+            onClick={() => setIsUpdateFormOpen(true)}
+            variant="custom"
+            style={{ backgroundColor: primaryColor, color: '#fff' }}
+            spanClassName='text-white'
+          >
             {t('inventory:update-stock')}
           </Button>
           <Button
@@ -174,6 +183,9 @@ export function InventoryManagement() {
               setEditingItem(null);
               setIsFormOpen(true);
             }}
+            variant="custom"
+            style={{ backgroundColor: primaryColor, color: '#fff' }}
+            spanClassName='text-white'
           >
             <Plus className="w-4 h-4 mr-2" />
             {t('inventory:add-product')}
@@ -281,7 +293,6 @@ export function InventoryManagement() {
         message={t('inventory:confirm-delete-product', {
           deleteConfirmationProduct: deleteConfirmation.itemName,
         })}
-        
         confirmLabel={t('common:delete')}
         onConfirm={handleDelete}
         onCancel={() => setDeleteConfirmation({ isOpen: false })}

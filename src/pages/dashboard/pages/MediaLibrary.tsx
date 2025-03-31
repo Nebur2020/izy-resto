@@ -30,6 +30,7 @@ export function MediaLibrary() {
     totalFiles,
     isLoading,
     uploadFiles,
+    updloadFileToFirebase,
     deleteFiles,
     loadMoreFiles,
     hasMore,
@@ -39,9 +40,16 @@ export function MediaLibrary() {
     file.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleUpload = async (files: File[]) => {
+  const handleUpload = async (
+    files: File[],
+    storageProvider: 'firebase' | 'cloudinary'
+  ) => {
     try {
-      await uploadFiles(files);
+      if (storageProvider === 'cloudinary') {
+        await uploadFiles(files);
+      } else if (storageProvider === 'firebase') {
+        await updloadFileToFirebase(files);
+      }
       setIsUploadModalOpen(false);
     } catch (error) {
       console.error('Upload error:', error);

@@ -9,7 +9,7 @@ interface SearchBarProps {
     primary: string;
     secondary: string;
   };
-  isDarkMode: boolean;
+  isDarkMode?: boolean;
 }
 
 export function SearchBar({
@@ -18,7 +18,6 @@ export function SearchBar({
     primary: '#2563EB',
     secondary: '#4D48E5',
   },
-  isDarkMode,
 }: SearchBarProps) {
   const [searchTerm, setSearchTerm] = useState('');
 

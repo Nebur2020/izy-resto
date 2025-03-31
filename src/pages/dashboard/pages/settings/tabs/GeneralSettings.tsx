@@ -6,6 +6,7 @@ import { SocialMediaSettings } from './SocialMediaSettings';
 import { allCurrencies } from '../../../../../constants/defaultSettings';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../../../../../hooks';
 
 import PhoneInput, { CountryData } from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
@@ -18,6 +19,9 @@ export function GeneralSettings() {
     setValue,
     formState: { errors },
   } = useFormContext<RestaurantSettings>();
+
+  const { settings } = useSettings();
+  const primaryColor = settings?.palette.primary;
 
   const handleFieldChange = (
     field: 'logo' | 'coverImage' | 'language',
@@ -36,7 +40,7 @@ export function GeneralSettings() {
     <div className="space-y-8">
       <section className="space-y-6">
         <div className="flex items-center gap-3 mb-6">
-          <Building2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <Building2 className="h-5 w-5 dark:text-blue-400" color={primaryColor} />
           <h2 className="text-xl font-semibold">
             {t('setting:general-information')}
           </h2>
@@ -203,7 +207,7 @@ export function GeneralSettings() {
 
           <div>
             <label className="block text-sm font-medium mb-1">
-              {t('common:phone-number')} skjd
+              {t('common:phone-number')}
             </label>
 
             <PhoneInput
@@ -237,7 +241,7 @@ export function GeneralSettings() {
 
       <section className="space-y-6">
         <div className="flex items-center gap-3">
-          <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <Shield className="h-5 w-5 dark:text-blue-400" color={primaryColor}/>
           <h2 className="text-xl font-semibold">
             {t('setting:security-and-rate-limits')}
           </h2>
@@ -308,7 +312,7 @@ export function GeneralSettings() {
         </div>
       </section>
 
-      <SocialMediaSettings />
+      <SocialMediaSettings primaryColor={primaryColor}/>
     </div>
   );
 }

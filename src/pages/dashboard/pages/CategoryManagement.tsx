@@ -17,6 +17,7 @@ import { ConfirmationModal } from '../../../components/ui/ConfirmationModal';
 import toast from 'react-hot-toast';
 import EmptySection from '../../../components/dashboard/shared/EmptySection';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../../../hooks';
 
 export function CategoryManagement() {
   const {
@@ -28,7 +29,6 @@ export function CategoryManagement() {
     addCategory,
     updateCategory,
     deleteCategory,
-    refreshCategories,
   } = useCategories();
 
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -46,7 +46,9 @@ export function CategoryManagement() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const { t } = useTranslation();
 
-  // Handle search with debounce
+  const settings = useSettings();
+  const primaryColor = settings?.settings?.palette.primary;
+
   useEffect(() => {
     const delaySearch = setTimeout(() => {
       if (searchTerm.trim() !== '') {
@@ -162,10 +164,20 @@ export function CategoryManagement() {
             {t('category:category-description')}
           </p>
         </div>
-        <Button onClick={() => setIsFormOpen(true)} type="button">
+        <Button
+          onClick={() => setIsFormOpen(true)}
+          type="button"
+          variant="custom"
+          style={{
+            backgroundColor: primaryColor,
+          }}
+          spanClassName="text-white"
+        >
           <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
-          <span className="relative">{t('category:new-category')}</span>
+          <span className="relative text-white">
+            {t('category:new-category')}
+          </span>
         </Button>
       </div>
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
@@ -251,7 +263,13 @@ export function CategoryManagement() {
                     <div className="flex items-center justify-between">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3">
-                          <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-sm font-medium">
+                          <span
+                            className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-sm font-medium"
+                            style={{
+                              backgroundColor: primaryColor,
+                              opacity: 0.5,
+                            }}
+                          >
                             {category.order}
                           </span>
                           <div>

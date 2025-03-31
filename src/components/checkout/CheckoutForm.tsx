@@ -253,7 +253,7 @@ export function CheckoutForm({
       const order = await orderService.getOrderById(orderId);
       navigate(`/order/${order?.id}`);
     } catch (error: any) {
-      console.log('Error creating order:', error?.code);
+      console.error('Error creating order:', error?.code);
       if (error?.code?.includes('rate-limit')) {
         setRateLimitError(error?.message || 'Rate limit atteint...');
       }
