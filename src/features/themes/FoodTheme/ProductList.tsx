@@ -1,12 +1,11 @@
-import { useEffect, useState } from 'react';
+import { SetStateAction, useEffect, useState } from 'react';
 import { MinimalMenuCategories } from '../../../components/menu/minimal/MinimalMenuCategories';
 import { useMenu } from '../../../hooks';
 import ItemCard from './ItemCard';
 import { useTranslation } from 'react-i18next';
-import { usePizzaTheme } from './context/PizzaThemeContext';
 import { SearchBar } from '../../../components/menu/SearchBar';
 import { useSettings } from '../../../hooks';
-import { motion, AnimatePresence } from 'framer-motion'; // Importez framer-motion
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ProductListProps {
   tagline?: string;
@@ -19,8 +18,6 @@ interface ProductListProps {
 const INITIAL_ITEMS_COUNT = 8;
 
 export default function ProductList({
-  tagline,
-  title,
   primaryColor,
   isDarkMode,
 }: ProductListProps) {
@@ -29,7 +26,6 @@ export default function ProductList({
     useState(INITIAL_ITEMS_COUNT);
   const { settings } = useSettings();
   const { t } = useTranslation('pizzatheme');
-  const themeConfig = usePizzaTheme();
   const [activeCategory, setActiveCategory] = useState('all');
   const { items } = useMenu(
     activeCategory !== 'all' ? activeCategory : undefined
@@ -53,8 +49,6 @@ export default function ProductList({
     setItemsToShow(prevItemsToShow => prevItemsToShow + 6);
   };
 
-  const sectionTagline = tagline || themeConfig.menuSection.tagline;
-  const sectionTitle = title || themeConfig.menuSection.title;
   const buttonColor = primaryColor;
 
   useEffect(() => {
@@ -105,7 +99,7 @@ export default function ProductList({
     },
   };
 
-  const handleSearch = term => {
+  const handleSearch = (term: SetStateAction<string>) => {
     setSearchTerm(term);
     setItemsToShow(8);
   };
@@ -116,26 +110,14 @@ export default function ProductList({
       className={`${isDarkModeActive ? 'bg-[#171717]' : ''} py-20`}
     >
       <div className="container mx-auto">
-        <div className="flex flex-col items-center pb-20 text-center">
-          {sectionTagline && (
-            <span
-              className="font-bold text-sm sm:text-base mb-3"
-              style={{ color: primaryColor }}
-            >
-              {sectionTagline}
-            </span>
-          )}
-          {sectionTitle && (
-            <h1
-              className={`text-3xl sm:text-4xl lg:text-5xl font-bold max-w-[90%] sm:max-w-[70%] lg:max-w-[50%] ${
-                isDarkModeActive ? 'text-white' : ''
-              }`}
-            >
-              {sectionTitle}
-            </h1>
-          )}
-        </div>
         <div>
+          <div className="mb-20">
+            <SearchBar
+              palette={settings?.palette}
+              isDarkMode={isDarkMode}
+              onSearch={handleSearch}
+            />
+          </div>
           <MinimalMenuCategories
             primaryColor={primaryColor}
             activeCategory={activeCategory}
@@ -150,13 +132,6 @@ export default function ProductList({
             }
             activeCategoryStyles={`bg-[${buttonColor}] text-white`}
           />
-          <div className="mt-20">
-            <SearchBar
-              palette={settings?.palette}
-              isDarkMode={isDarkMode}
-              onSearch={handleSearch}
-            />
-          </div>
           <AnimatePresence mode="wait">
             {filteredItems.length === 0 ? (
               <motion.div
@@ -190,6 +165,7 @@ export default function ProductList({
                       initial="hidden"
                       animate="visible"
                       exit="exit"
+                      className="flex justify-center"
                       layout
                     >
                       <ItemCard
@@ -211,10 +187,9 @@ export default function ProductList({
             >
               <button
                 onClick={loadMore}
-                className="text-white px-6 py-2 rounded-full transition-colors"
+                className="text-white px-6 py-2 rounded-full transition-colors hover:opacity-90"
                 style={{
                   backgroundColor: buttonColor,
-                  ':hover': { backgroundColor: `${buttonColor}dd` },
                 }}
               >
                 {t('common:load-more')}

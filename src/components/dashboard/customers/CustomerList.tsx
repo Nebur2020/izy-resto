@@ -9,11 +9,12 @@ import { useTranslation } from 'react-i18next';
 interface ICustomerListProps {
   customers: CustomerStats[];
   onViewDetails: (customerId: string) => void;
+  primaryColor?: string;
 }
 
 export function CustomerList(props: ICustomerListProps) {
   const { t } = useTranslation();
-  const { customers, onViewDetails } = props;
+  const { customers, onViewDetails, primaryColor } = props;
   const { settings } = useSettings();
   return (
     <div className="grid gap-4">
@@ -44,12 +45,12 @@ export function CustomerList(props: ICustomerListProps) {
 
               <div className="flex flex-col sm:items-end gap-2">
                 <div className="flex items-center gap-2">
-                  <ShoppingBag className="w-4 h-4 text-blue-500" />
+                  <ShoppingBag className="w-4 h-4" color={primaryColor}/>
                   <span className="text-sm font-medium">
                     {customer.orderCount} {t('order:orders')}
                   </span>
                 </div>
-                <p className="text-lg font-semibold text-blue-600 dark:text-blue-400">
+                <p className="text-lg font-semibold text-blue-600 dark:text-blue-400" style={{ color: primaryColor }}>
                   {formatCurrency(customer.totalSpent, settings?.currency)}
                 </p>
 

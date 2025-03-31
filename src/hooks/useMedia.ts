@@ -37,9 +37,21 @@ export function useMedia() {
     }
   };
 
+  const updloadFileToFirebase = async (file: File) => {
+    try {
+      const url = await mediaService.uploadFileToFirebase(file);
+      await loadFiles(); // Reload files after upload
+      return url;
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error('Failed to upload file');
+      throw error;
+    }
+  };
+
   const deleteFile = async (fileId: string) => {
     try {
-      await mediaService.deleteFile(fileId);
+      await mediaService.deleteFile([fileId]);
       await loadFiles(); // Reload files after deletion
       toast.success('Fichier supprimé avec succès');
     } catch (error) {
@@ -53,6 +65,7 @@ export function useMedia() {
     files,
     isLoading,
     uploadFile,
+    updloadFileToFirebase,
     deleteFile,
     refreshFiles: loadFiles,
   };

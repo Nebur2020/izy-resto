@@ -3,6 +3,7 @@ import { useCategories } from '../../hooks/useCategories';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../../hooks';
 
 interface IMenuFiltersProps {
   activeCategory: string;
@@ -30,6 +31,9 @@ export function MenuFilters(props: IMenuFiltersProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftScroll, setShowLeftScroll] = useState(false);
   const [showRightScroll, setShowRightScroll] = useState(false);
+
+  const settings = useSettings();
+  const primaryColor = settings?.settings?.palette.primary;
 
   const { t } = useTranslation('menu');
 
@@ -99,17 +103,19 @@ export function MenuFilters(props: IMenuFiltersProps) {
           <div className="flex items-center gap-2 px-4 mx-auto">
             <motion.button
               onClick={() => onCategoryChange('all')}
-              className={`
-                flex-none px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap
-                transition-all duration-200 hover:scale-105
-                ${
-                  activeCategory !== 'all'
-                    ? 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
-                    : ''
-                }
-              `}
-              style={activeCategory === 'all' ? activeGradientStyle : {}}
-              whileHover={{ y: -2 }}
+              className={`flex-none px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 hover:scale-105 ${
+                activeCategory !== 'all'
+                  ? 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                  : 'text-white'
+              }`}
+              style={{
+                backgroundColor: activeCategory === 'all' ? primaryColor : '',
+                color: activeCategory === 'all' ? 'white' : '',
+              }}
+              whileHover={{
+                y: activeCategory === 'all' ? 0 : -2,
+                scale: activeCategory === 'all' ? 1 : 1.05,
+              }}
               whileTap={{ scale: 0.95 }}
             >
               {t('principal-menu')}
@@ -128,9 +134,11 @@ export function MenuFilters(props: IMenuFiltersProps) {
                       : ''
                   }
                 `}
-                style={
-                  activeCategory === category.id ? activeGradientStyle : {}
-                }
+                style={{
+                  backgroundColor:
+                    activeCategory === category.id ? primaryColor : '',
+                  color: activeCategory === category.id ? 'white' : '',
+                }}
                 whileHover={{ y: -2 }}
                 whileTap={{ scale: 0.95 }}
               >

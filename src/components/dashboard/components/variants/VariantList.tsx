@@ -11,11 +11,13 @@ interface VariantListProps {
   isLoading: boolean;
   onEdit: (variant: Variant) => void;
   onDelete: (id: string) => void;
+  primaryColor?: string;
 }
 
 export function VariantList(props: VariantListProps) {
   const { t } = useTranslation();
-  const { variants, categories, isLoading, onEdit, onDelete } = props;
+  const { variants, categories, isLoading, onEdit, onDelete, primaryColor } =
+    props;
   const getCategoryBadges = (categoryIds: string[]) => {
     return categoryIds.map(id => {
       const category = categories.find(c => c.id === id);
@@ -25,6 +27,7 @@ export function VariantList(props: VariantListProps) {
         <span
           key={id}
           className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 border border-blue-100 dark:border-blue-800"
+          style={{ backgroundColor: primaryColor, color: '#fff' }}
         >
           {category.name}
         </span>
@@ -63,8 +66,11 @@ export function VariantList(props: VariantListProps) {
                 <div className="p-4 sm:p-5">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
-                        <Tag className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                      <div
+                        className="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center"
+                        style={{ backgroundColor: primaryColor }}
+                      >
+                        <Tag className="w-5 h-5 text-white dark:text-blue-400" />
                       </div>
                       <div>
                         <h3 className="text-base font-medium text-gray-900 dark:text-white flex items-center gap-2">
@@ -80,12 +86,17 @@ export function VariantList(props: VariantListProps) {
                       <Button
                         onClick={() => onEdit(variant)}
                         className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                        variant='custom'
+                        style={{ backgroundColor: "#ccc" }}
                       >
                         <Edit2 className="w-4 h-4" />
                       </Button>
                       <Button
                         onClick={() => onDelete(variant.id)}
                         className="p-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                        variant="custom"
+                        style={{ backgroundColor: "#f00" }}
+                        spanClassName='text-white'
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>

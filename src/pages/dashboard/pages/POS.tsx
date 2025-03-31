@@ -18,7 +18,6 @@ import { useTranslation } from 'react-i18next';
 import { OrderList } from '../../../components/orders/OrderList';
 import { useOrders } from '../../../context/OrderContext';
 import { Modal } from '../../../components/ui/Modal';
-import { useOrdersRealtime } from '../../../hooks/useOrdersRealtime';
 
 export function POS() {
   const { t } = useTranslation();
@@ -40,8 +39,10 @@ export function POS() {
     hasMore: hasMoreOrders,
     loadMoreOrders,
     searchOrders,
-    orders
+    orders,
   } = useOrders();
+
+  const primaryColor = settings?.palette.primary;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -319,13 +320,17 @@ export function POS() {
     <>
       <div className="h-[calc(100vh-6rem)] flex flex-col lg:flex-row gap-6">
         <div className="flex-1 flex flex-col">
-
-          <div className="flex border-b dark:border-gray-700">
+          <div className="flex border-b dark:border-gray-700 mt-5">
             <button
-              className={`flex-1 py-2 text-center ${activeTab === 'products'
-                ? 'border-b-2 border-blue-600 text-blue-600'
-                : 'text-gray-600 dark:text-gray-400'
-                }`}
+              className={`flex-1 py-2 text-center ${
+                activeTab === 'products'
+                  ? 'border-b-2 text-primary-color'
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+              }`}
+              style={{
+                borderColor:
+                  activeTab === 'products' ? primaryColor : 'transparent',
+              }}
               onClick={() => {
                 clearCart();
                 setCustomerInfo({});
@@ -338,10 +343,16 @@ export function POS() {
               {t('common:product-list')}
             </button>
             <button
-              className={`flex-1 py-2 text-center ${activeTab === 'orders'
-                ? 'border-b-2 border-blue-600 text-blue-600'
-                : 'text-gray-600 dark:text-gray-400'
-                }`}
+              className={`flex-1 py-2 text-center ${
+                activeTab === 'orders'
+                  ? 'border-b-2 text-primary-color'
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+              }`}
+              style={{
+                borderColor:
+                  activeTab === 'orders' ? primaryColor : 'transparent',
+              }}
+
               onClick={() => {
                 clearCart();
                 setCustomerInfo({});
@@ -358,10 +369,11 @@ export function POS() {
           <div>
             {activeTab === 'products' && (
               <>
-                <div className='mt-10 mb-5'>
+                <div className="mt-10 mb-5">
                   <MenuFilters
                     activeCategory={selectedCategory}
                     onCategoryChange={setSelectedCategory}
+                    isDarkMode
                   />
                 </div>
                 <POSMenuGrid
@@ -429,7 +441,6 @@ export function POS() {
                       </button>
                     </div>
                   </div>
-
                   {isSearching && (
                     <div className="mt-2 text-sm text-blue-600 dark:text-blue-400">
                       {searchLoading ? (
@@ -454,9 +465,9 @@ export function POS() {
                       isSearching
                         ? searchResults
                         : orders.filter(
-                          o =>
-                            o.status === 'pending' || o.status === 'preparing'
-                        )
+                            o =>
+                              o.status === 'pending' || o.status === 'preparing'
+                          )
                     }
                     isLoading={
                       (isLoading || isLoadingOrders) && orders.length === 0
@@ -464,7 +475,6 @@ export function POS() {
                     isUpdatedOrder={isUpdatedOrder}
                     setOrder={setOrder}
                   />
-
                   {hasMoreOrders && !isLoadingMoreOrders && !isLoadingMore && (
                     <div className="flex justify-center mt-6">
                       <button

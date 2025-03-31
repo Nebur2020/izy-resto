@@ -16,6 +16,7 @@ import { db } from '../../../../../lib/firebase/config';
 import { collection, getDocs, writeBatch } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../../../../../hooks';
 
 interface CollectionData {
   name: string;
@@ -35,6 +36,9 @@ export function DataManagement() {
     itemCount?: number;
   }>({ isOpen: false });
   const [resetConfirmation, setResetConfirmation] = useState(false);
+
+  const {settings} = useSettings();
+  const primaryColor = settings?.palette.primary;
 
   const collectionsMapping: { [key: string]: string } = {
     'settingData:categories': 'categories',
@@ -184,7 +188,7 @@ export function DataManagement() {
     <div className="space-y-8">
       <section className="space-y-6">
         <div className="flex items-center gap-3">
-          <Database className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <Database className="h-5 w-5 dark:text-blue-400" color={primaryColor} />
           <h2 className="text-xl font-semibold">
             {t('settingData:manage-data')}
           </h2>
@@ -203,8 +207,8 @@ export function DataManagement() {
                 className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                    <FolderOpen className="w-5 h-5 text-blue-500" />
+                  <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg" style={{ backgroundColor: primaryColor }}>
+                    <FolderOpen className="w-5 h-5 text-blue-500" color="#fff"/>
                   </div>
                   <div>
                     <h3 className="font-medium capitalize">{name}</h3>

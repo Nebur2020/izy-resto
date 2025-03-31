@@ -42,7 +42,7 @@ export function TransactionForm(props: ITransactionFormProps) {
       };
       await onSave(formattedData);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setIsLoading(false);
     }

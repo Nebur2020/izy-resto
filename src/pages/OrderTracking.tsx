@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { Order } from '../types';
 import { db } from '../lib/firebase/config';
 import { doc, onSnapshot } from 'firebase/firestore';
+import { useSettings } from '../hooks';
 
 export default function OrderTracking() {
   const { t } = useTranslation('order');
@@ -26,7 +27,8 @@ export default function OrderTracking() {
   const [order, setOrder] = useState<Order | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Memoize the fetchInitialOrder function to prevent recreation on each render
+  const { settings } = useSettings();
+
   const fetchInitialOrder = useCallback(
     async (id: string) => {
       try {
@@ -39,7 +41,6 @@ export default function OrderTracking() {
     [getOrderById]
   );
 
-  // Fetch initial order data and set up real-time listener
   useEffect(() => {
     let unsubscribe: () => void = () => {};
     let isMounted = true;
@@ -93,7 +94,6 @@ export default function OrderTracking() {
 
     setupOrderListener();
 
-    // Clean up listener on unmount
     return () => {
       isMounted = false;
       unsubscribe();
@@ -144,6 +144,8 @@ export default function OrderTracking() {
     );
   }
 
+  const primaryColor = settings?.palette.primary;
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
       <div className="max-w-3xl mx-auto">
@@ -163,10 +165,12 @@ export default function OrderTracking() {
           <div>
             <div
               className={`p-6 text-white rounded-t-2xl shadow-xl overflow-hidden ${
-                order.status === 'cancelled'
-                  ? 'bg-red-600'
-                  : 'bg-gradient-to-r from-emerald-500 to-green-600'
+                order.status === 'cancelled' ? 'bg-red-600' : ''
               }`}
+              style={{
+                backgroundColor:
+                  order.status !== 'cancelled' ? primaryColor : undefined,
+              }}
             >
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-white/20 rounded-xl">
@@ -185,7 +189,7 @@ export default function OrderTracking() {
                   <p className="text-white/80">
                     {order.status === 'cancelled'
                       ? t('this-order-is-canceled')
-                      : t('order-successfully-saved')} hjadgsa
+                      : t('order-successfully-saved')}
                   </p>
                 </div>
               </div>

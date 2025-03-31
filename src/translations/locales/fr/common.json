@@ -325,8 +325,11 @@
   "order-successfully-updated": "Commande mise à jour avec succès",
   "inventory-title": "Inventaire",
   "invalid-combination": "Combinaison invalide",
-  "is-cloed": "est fermé",
+  "is-closed": "est fermé",
   "re-open-title": "Réouverture aux horaires habituels",
+  "set-rate-limit-max-users-per-day": "Nombre maximum d'utilisateurs par jour",
+  "rate-limit-max-users-per-day": "Utilisateur maximum par jour atteint",
+  "rate-limit-max-users-per-day-description": "Désolé, le nombre maximum d'utilisateurs pour aujourd'hui a été atteint.",
   "status": {
     "open": "Ouvert",
     "closed": "Fermé",
@@ -336,5 +339,9 @@
     "canceled": "Annulé"
   },
   "createdAt": "Créé le",
-  "updatedAt": "Mis à jour le"
+  "updatedAt": "Mis à jour le",
+  "contact-us": "Contactez-nous",
+  "address": "Adresse",
+  "opening-time": "Heures d'ouverture",
+  "select-storage-destination": "Sélectionner la destination de stockage"
 }

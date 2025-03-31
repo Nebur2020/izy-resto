@@ -218,7 +218,7 @@ export const AccountingTaxesManagement = () => {
       );
       await generateTaxReportCSV(ordersWithTaxes, t, lng, settings, dateRange);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setIsDownloading(false);
     }

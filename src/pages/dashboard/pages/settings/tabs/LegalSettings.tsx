@@ -2,18 +2,22 @@ import { FileText } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import { RestaurantSettings } from '../../../../../types/settings';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../../../../../hooks';
 
 export function LegalSettings() {
   const { t } = useTranslation();
   const { register } = useFormContext<RestaurantSettings>();
 
+  const { settings } = useSettings();
+  const primaryColor = settings?.palette.primary
+
   return (
     <div className="space-y-8">
       <section className="space-y-6">
         <div className="flex items-center gap-3">
-          <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <FileText className="h-5 w-5 dark:text-blue-400" color={primaryColor} />
           <h2 className="text-xl font-semibold">
-            {t('settingLegal:legal-settings-title')}
+            {t('settingLegal:legal-settings-title')} asjhSB
           </h2>
         </div>
 

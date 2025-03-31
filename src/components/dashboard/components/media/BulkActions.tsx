@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
 import { Trash2, Upload } from 'lucide-react';
-import { Button } from '../../../ui/Button';
+import { Button } from '../../../../components/ui/Button';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../../../../hooks';
 
 interface IBulkActionsProps {
   selectedCount: number;
@@ -13,10 +14,17 @@ interface IBulkActionsProps {
 export function BulkActions(props: IBulkActionsProps) {
   const { t } = useTranslation();
   const { selectedCount, onUpload, onDelete, onClearSelection } = props;
+  const { settings } = useSettings();
+  const primaryColor = settings?.palette.primary;
 
   if (selectedCount === 0) {
     return (
-      <Button onClick={onUpload}>
+      <Button
+        onClick={onUpload}
+        style={{ backgroundColor: primaryColor }}
+        variant="custom"
+        spanClassName="text-white"
+      >
         <Upload className="w-4 h-4 mr-2" />
         {t('media:add-media')}
       </Button>
@@ -35,7 +43,7 @@ export function BulkActions(props: IBulkActionsProps) {
         {selectedCount > 1 ? 's' : ''}
       </span>
 
-      <Button variant="danger" onClick={onDelete} spanClassName='text-white'>
+      <Button variant="danger" onClick={onDelete} spanClassName="text-white">
         <Trash2 className="w-4 h-4 mr-2 text-white" />
         {t('common:delete')}
       </Button>

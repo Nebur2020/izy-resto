@@ -3,6 +3,7 @@ import { X, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../../ui/Button';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../../../hooks';
 
 interface IKeywordsInputProps {
   value: string[];
@@ -14,6 +15,9 @@ export function KeywordsInput(props: IKeywordsInputProps) {
   const { value, onChange, type = 'text' } = props;
   const { t } = useTranslation();
   const [input, setInput] = React.useState('');
+
+  const {settings} = useSettings();
+  const primaryColor = settings?.palette.primary;
 
   const handleAdd = (e?: React.FormEvent) => {
     if (e) {
@@ -54,6 +58,9 @@ export function KeywordsInput(props: IKeywordsInputProps) {
           type="button"
           onClick={() => handleAdd()}
           disabled={!input.trim()}
+          style={{ backgroundColor: primaryColor }}
+          variant='custom'
+          spanClassName='text-white'
         >
           <Plus className="w-4 h-4 mr-2" />
           {t('common:add')}
@@ -69,6 +76,7 @@ export function KeywordsInput(props: IKeywordsInputProps) {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
               className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded-full text-sm"
+              style={{ backgroundColor: primaryColor, color: "#fff" }}
             >
               {keyword}
               <button

@@ -13,9 +13,11 @@ import { useTranslation } from 'react-i18next';
 
 interface OrderTrackingTimelineProps {
   order: Order;
+  borderColor?: string;
 }
 
-export function OrderTrackingTimeline({ order }: OrderTrackingTimelineProps) {
+export function OrderTrackingTimeline(props: OrderTrackingTimelineProps) {
+  const { order } = props;
   const { t, i18n } = useTranslation('order');
   const lng = i18n.language as Language;
   const [isDownloading, setIsDownloading] = useState(false);
@@ -23,6 +25,7 @@ export function OrderTrackingTimeline({ order }: OrderTrackingTimelineProps) {
 
   const { settings } = useSettings();
   const { updateOrderStatus } = useOrders();
+  const secondaryColor = settings?.palette.secondary;
 
   const handleCancelOrder = async () => {
     if (order.status !== 'pending') {
@@ -85,14 +88,22 @@ export function OrderTrackingTimeline({ order }: OrderTrackingTimelineProps) {
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-col items-center pt-6 border-t dark:border-gray-700"
           >
-            <OrderQRCode orderId={order.id} size={150} />
-            <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
+            <OrderQRCode
+              orderId={order.id}
+              size={150}
+              borderColor={secondaryColor}
+            />
+            <p className="mt-4 text-sm" style={{ color: secondaryColor }}>
               {t('scan-and-track')}
             </p>
             <Button
               variant="primary"
               onClick={handleCopyLink}
               className="w-full mt-4"
+              style={{
+                backgroundColor: `${secondaryColor}20`,
+                color: secondaryColor,
+              }}
             >
               <Clipboard className="w-4 h-4 mr-2" />
               {t('click-to-copy')}
@@ -102,6 +113,10 @@ export function OrderTrackingTimeline({ order }: OrderTrackingTimelineProps) {
               onClick={handleDownloadReceipt}
               disabled={isDownloading || order.status === 'pending'}
               className="w-full mt-4"
+              style={{
+                backgroundColor: `${secondaryColor}20`,
+                color: secondaryColor,
+              }}
             >
               <Download className="w-4 h-4 mr-2" />
               {isDownloading

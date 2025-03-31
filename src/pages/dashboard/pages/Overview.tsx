@@ -12,6 +12,7 @@ import { useOrdersRealtime } from '../../../hooks/useOrdersRealtime';
 import { Laptop, Loader } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { PaymentMethodStats } from '../../../components/dashboard/components/analytics/PaymentMethodStats';
+import { useSettings } from '../../../hooks';
 
 export function Overview() {
   const isMobile = useIsMobile();
@@ -21,6 +22,9 @@ export function Overview() {
   });
   const { orders, isLoading, error } = useOrdersRealtime();
   const { t } = useTranslation('dashboard');
+
+  const { settings } = useSettings();
+  const primaryColor = settings?.palette.primary;
 
   const filteredOrders = useMemo(() => {
     if (!orders || orders.length === 0) return [];
@@ -149,7 +153,10 @@ export function Overview() {
 
       {filteredOrders.length === 0 ? (
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+          <div
+            className={`w-16 h-16 mx-auto mb-4 rounded-full dark:bg-blue-900/30 flex items-center justify-center`}
+            style={{ backgroundColor: primaryColor, opacity: 0.5 }}
+          >
             <span className="text-2xl">📊</span>
           </div>
           <h3 className="text-lg font-semibold mb-2">

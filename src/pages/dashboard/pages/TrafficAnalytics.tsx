@@ -35,6 +35,8 @@ export function TrafficAnalytics() {
 
   const stats = useTrafficStats(orders, dateRange);
 
+  const primaryColor = settings?.palette.primary;
+
   const tabs = [
     { id: 'overview', label: t('dashboard:overview') },
     { id: 'feedback', label: t('client-note') },

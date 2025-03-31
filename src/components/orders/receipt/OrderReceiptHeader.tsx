@@ -32,12 +32,12 @@ export function OrderReceiptHeader({ status }: OrderReceiptHeaderProps) {
         </div>
         <div>
           <h1 className="text-xl sm:text-3xl font-bold mb-2">
-            {isCancelled ? t('order-cancel') : t('order-confirm')}
+            {isCancelled ? t('order-cancel') : t('order-confirm')} shdb
           </h1>
           <p className="text-white/80">
             {isCancelled
               ? t('this-order-is-cancelled')
-              : t('this-order-is-confirmed')}
+              : t('this-order-is-confirmed')} szdhbx
           </p>
         </div>
       </div>

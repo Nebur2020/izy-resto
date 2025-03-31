@@ -740,7 +740,7 @@ export default function PizzaThemeEditor(props: PizzaThemeEditorProps) {
       setIsUpdating(false);
       toast.success(t('setting:theme-saved'));
     } catch (error) {
-      console.log('Error saving theme', error);
+      console.error('Error saving theme', error);
       toast.error(t('setting:theme-saved-error'));
     } finally {
       setIsUpdating(false);

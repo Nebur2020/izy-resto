@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Language, Order, OrderStatus } from '../../types';
 import { formatFirestoreTimestamp } from '../../utils/date';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../../hooks/useSettings';
 
 interface IOrderTimelineProps {
   status: OrderStatus;
@@ -34,6 +35,9 @@ export function OrderTimeline(props: IOrderTimelineProps) {
     return statusLabels[status];
   };
 
+  const settings = useSettings();
+  const primaryColor = settings.settings?.palette.primary;
+
   return (
     <div className="mt-4">
       <div className="relative">
@@ -49,10 +53,10 @@ export function OrderTimeline(props: IOrderTimelineProps) {
                   initial={false}
                   animate={{
                     scale: isActive ? 1.2 : 1,
-                    backgroundColor: isCompleted ? '#3B82F6' : '#E5E7EB',
+                    backgroundColor: isCompleted ? primaryColor : '#E5E7EB',
                   }}
                   className={`w-5 h-5 rounded-full relative z-10 ${
-                    isActive ? 'ring-4 ring-blue-100 dark:ring-blue-900' : ''
+                    isActive ? `ring-4 ring-[#fff]` : ''
                   }`}
                 />
                 <span className="mt-2 text-sm text-center">

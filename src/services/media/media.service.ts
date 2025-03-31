@@ -1,7 +1,22 @@
-import { collection, query, getDocs, doc, runTransaction, orderBy, writeBatch, getDoc } from 'firebase/firestore';
-import { db } from '../../lib/firebase/config';
+import {
+  collection,
+  query,
+  getDocs,
+  doc,
+  runTransaction,
+  orderBy,
+  writeBatch,
+  getDoc,
+} from 'firebase/firestore';
+import { db, storage } from '../../lib/firebase/config';
 import { MediaFile } from '../../types/media';
 import { cloudinaryService } from '../cloudinary/cloudinary.service';
+import {
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+  deleteObject,
+} from 'firebase/storage';
 
 class MediaService {
   private readonly collection = 'media';
@@ -15,7 +30,7 @@ class MediaService {
       const snapshot = await getDocs(q);
       return snapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       })) as MediaFile[];
     } catch (error) {
       console.error('Error fetching media:', error);
@@ -23,19 +38,22 @@ class MediaService {
     }
   }
 
-  async uploadFile(file: File, onProgress?: (progress: number) => void): Promise<string> {
+  async uploadFile(
+    file: File,
+    onProgress?: (progress: number) => void
+  ): Promise<string> {
     try {
       // First upload to Cloudinary
       const url = await cloudinaryService.uploadFile(file, onProgress);
 
       // Then save to Firestore using a transaction
-      await runTransaction(db, async (transaction) => {
+      await runTransaction(db, async transaction => {
         const mediaFile: Omit<MediaFile, 'id'> = {
           name: file.name,
           url,
           size: file.size,
           type: file.type,
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
         };
 
         const docRef = doc(collection(db, this.collection));
@@ -47,7 +65,10 @@ class MediaService {
       // If Cloudinary upload succeeds but Firestore fails, try to clean up
       if (typeof error === 'object' && error !== null && 'url' in error) {
         try {
-          const publicId = (error as { url: string }).url.split('/').pop()?.split('.')[0];
+          const publicId = (error as { url: string }).url
+            .split('/')
+            .pop()
+            ?.split('.')[0];
           if (publicId) {
             await cloudinaryService.deleteFile(publicId);
           }
@@ -59,7 +80,49 @@ class MediaService {
     }
   }
 
-  async deleteFiles(ids: string[]): Promise<void> {
+  async uploadFileToFirebase(
+    file: File,
+    onProgress?: (progress: number) => void
+  ): Promise<string> {
+    try {
+      const storageRef = ref(storage, `media/${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      return new Promise((resolve, reject) => {
+        uploadTask.on(
+          'state_changed',
+          snapshot => {
+            if (onProgress) {
+              const progress =
+                (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              onProgress(progress);
+            }
+          },
+          error => reject(error),
+          async () => {
+            const url = await getDownloadURL(uploadTask.snapshot.ref);
+            await runTransaction(db, async transaction => {
+              const mediaFile: Omit<MediaFile, 'id'> = {
+                name: file.name,
+                url,
+                size: file.size,
+                type: file.type,
+                createdAt: new Date().toISOString(),
+              };
+              const docRef = doc(collection(db, this.collection));
+              transaction.set(docRef, mediaFile);
+            });
+            resolve(url);
+          }
+        );
+      });
+    } catch (error) {
+      console.error('Error uploading file to Firebase:', error);
+      throw new Error('Failed to upload file');
+    }
+  }
+
+  async deleteFile(ids: string[]): Promise<void> {
     try {
       const batch = writeBatch(db);
 
@@ -68,28 +131,41 @@ class MediaService {
       for (const id of ids) {
         const docRef = doc(db, this.collection, id);
         const docSnap = await getDoc(docRef);
-        
+
         if (docSnap.exists()) {
           files.push({ id, ...docSnap.data() } as MediaFile);
           batch.delete(docRef);
         }
       }
 
-      // Delete from Cloudinary first
+      // Delete the actual files from either Firebase Storage or Cloudinary
       await Promise.all(
-        files.map(async (file) => {
+        files.map(async file => {
           try {
-            const publicId = file.url.split('/').pop()?.split('.')[0];
-            if (publicId) {
-              await cloudinaryService.deleteFile(publicId);
+            if (file.url.includes('firebasestorage')) {
+              // Handle Firebase Storage deletion
+              const fileRef = ref(storage, file.url);
+              await deleteObject(fileRef);
+            } else if (file.url.includes('cloudinary')) {
+              // Handle Cloudinary deletion
+              const publicId = file.url.split('/').pop()?.split('.')[0];
+              if (publicId) {
+                await cloudinaryService.deleteFile(publicId);
+              }
+            } else {
+              console.warn(`Unknown storage provider for file: ${file.url}`);
             }
           } catch (error) {
-            console.error(`Error deleting file from Cloudinary: ${file.url}`, error);
+            console.error(
+              `Error deleting file from storage: ${file.url}`,
+              error
+            );
+            // Continue with other deletions even if one fails
           }
         })
       );
 
-      // Then commit Firestore batch
+      // Then commit Firestore batch to remove database entries
       await batch.commit();
     } catch (error) {
       console.error('Error deleting files:', error);

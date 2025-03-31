@@ -10,8 +10,6 @@ export const db = getFirestore(app);
 export const storage = getStorage(app);
 export const analytics = getAnalytics(app);
 
-// console.log('Firebase initialized', analytics);
-
 // Enable offline persistence
 enableIndexedDbPersistence(db).catch((err) => {
   if (err.code === 'failed-precondition') {
