@@ -22,24 +22,20 @@ export function calculateTaxes(
     .filter(
       tax =>
         tax.enabled &&
-        (tax.appliesTo === 'all' ||
-          (categoryIds && categoryIds.includes(tax.appliesTo)))
+        (tax.appliesTo === 'all' || categoryIds?.includes(tax.appliesTo))
     )
     .sort((a, b) => a.order - b.order);
 
-  let runningTotal = subtotal;
   const taxes = [];
 
   for (const tax of applicableTaxes) {
-    const amount = calculateTaxAmount(runningTotal, tax.rate);
+    const amount = calculateTaxAmount(subtotal, tax.rate);
     taxes.push({
       id: tax.id,
       name: tax.name,
       rate: tax.rate,
       amount,
     });
-    // Some taxes might be calculated on top of previous taxes
-    runningTotal += amount;
   }
 
   const totalTax = taxes.reduce((sum, tax) => sum + tax.amount, 0);
@@ -74,12 +70,14 @@ export function calculatePriceWithoutTaxes(
     .filter(
       tax =>
         tax.enabled &&
-        (tax.appliesTo === 'all' ||
-          (categoryIds && categoryIds.includes(tax.appliesTo)))
+        (tax.appliesTo === 'all' || categoryIds?.includes(tax.appliesTo))
     )
     .sort((a, b) => a.order - b.order);
 
-  let totalRate = applicableTaxes.reduce((sum, tax) => sum + tax.rate, 0);
+  let totalRate = applicableTaxes.reduce(
+    (sum, tax) => sum + Number(tax.rate),
+    0
+  );
   return Math.round((priceWithTax / (1 + totalRate / 100)) * 100) / 100;
 }
 

@@ -12,7 +12,7 @@ interface OrderTrackingDetailsProps {
 export function OrderTrackingDetails({ order }: OrderTrackingDetailsProps) {
   const { settings } = useSettings();
   const { t } = useTranslation('order');
-  const secondaryColor = settings?.palette.secondary;
+  // const secondaryColor = settings?.palette.secondary;
   const primaryColor = settings?.palette.primary;
 
   const showAdditionalCharges = order.status !== 'cancelled';
@@ -87,12 +87,12 @@ export function OrderTrackingDetails({ order }: OrderTrackingDetailsProps) {
             <div key={item.id} className="flex justify-between items-center">
               <div>
                 <p className="font-medium">{item.name}</p>
-                <p className="text-sm" style={{ color: secondaryColor }}>
+                <p className="text-sm" style={{ color: primaryColor }}>
                   {formatCurrency(item.price, settings?.currency)} ×{' '}
                   {item.quantity}
                 </p>
               </div>
-              <p className="font-medium" style={{ color: secondaryColor }}>
+              <p className="font-medium" style={{ color: primaryColor }}>
                 {formatCurrency(item.price * item.quantity, settings?.currency)}
               </p>
             </div>
@@ -104,7 +104,7 @@ export function OrderTrackingDetails({ order }: OrderTrackingDetailsProps) {
               {order.subtotal && (
                 <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
                   <span>{t('cart:sub-total')}</span>
-                  <span style={{ color: secondaryColor }}>
+                  <span style={{ color: primaryColor }}>
                     {formatCurrency(order.subtotal, settings?.currency)}
                   </span>
                 </div>
@@ -119,7 +119,7 @@ export function OrderTrackingDetails({ order }: OrderTrackingDetailsProps) {
                     <span>
                       {tax.name} ({formatTaxRate(tax.rate)})
                     </span>
-                    <span style={{ color: secondaryColor }}>
+                    <span style={{ color: primaryColor }}>
                       {formatCurrency(tax.amount, settings?.currency)}
                     </span>
                   </div>
@@ -132,7 +132,7 @@ export function OrderTrackingDetails({ order }: OrderTrackingDetailsProps) {
                   <span>
                     {t('tip')} ({order.tip.percentage}%)
                   </span>
-                  <span style={{ color: secondaryColor }}>
+                  <span style={{ color: primaryColor }}>
                     {formatCurrency(order.tip.amount, settings?.currency)}
                   </span>
                 </div>
@@ -142,7 +142,7 @@ export function OrderTrackingDetails({ order }: OrderTrackingDetailsProps) {
                   <span>
                     {t('delivery-to')} {order.delivery.name}
                   </span>
-                  <span style={{ color: secondaryColor }}>
+                  <span style={{ color: primaryColor }}>
                     {formatCurrency(
                       Number(order.delivery.price),
                       settings?.currency
@@ -153,7 +153,7 @@ export function OrderTrackingDetails({ order }: OrderTrackingDetailsProps) {
 
               <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
                 <span>{t('total')}</span>
-                <span className="font-bold" style={{ color: secondaryColor }}>
+                <span className="font-bold" style={{ color: primaryColor }}>
                   {formatCurrency(calculateTotal(), settings?.currency)}
                 </span>
               </div>
