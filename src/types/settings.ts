@@ -149,5 +149,6 @@ export interface RestaurantSettings {
   };
   themes: {
     pizza?: PizzaThemeConfig;
+    food?: FoodThemeConfig;
   };
 }

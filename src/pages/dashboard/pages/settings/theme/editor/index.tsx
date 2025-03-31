@@ -1,6 +1,9 @@
 import { useSettings } from '../../../../../../hooks';
-import PizzaThemeEditor, { defaultConfig, PizzaThemeConfig } from './pizza';
-import FoodThemeEditor from './food';
+import PizzaThemeEditor, {
+  defaultConfig as pizzaDefaultConfig,
+  PizzaThemeConfig,
+} from './pizza';
+import FoodThemeEditor, { fooThemDefaultConfig, FoodThemeConfig } from './food';
 
 type EditorProps = {
   theme: 'pizza' | 'modern' | 'minimal' | 'grid' | 'food';
@@ -11,7 +14,7 @@ const Editor = ({ theme }: EditorProps) => {
 
   if (!settings) return null;
 
-  const onSave = async (data: {
+  const onSavePizza = async (data: {
     key: 'pizza';
     configuration: PizzaThemeConfig;
   }) => {
@@ -22,7 +25,25 @@ const Editor = ({ theme }: EditorProps) => {
         configuration: data.configuration,
       },
       themes: {
+        ...settings.themes,
         pizza: data.configuration,
+      },
+    });
+  };
+
+  const onSaveFood = async (data: {
+    key: 'food';
+    configuration: FoodThemeConfig;
+  }) => {
+    await updateSettings({
+      ...settings,
+      activeTheme: {
+        key: data.key,
+        configuration: data.configuration,
+      },
+      themes: {
+        ...settings.themes,
+        food: data.configuration,
       },
     });
   };
@@ -34,9 +55,9 @@ const Editor = ({ theme }: EditorProps) => {
           config={
             Object.keys(settings.activeTheme?.configuration || {}).length > 0
               ? (settings.activeTheme.configuration as PizzaThemeConfig)
-              : settings.themes[theme] || defaultConfig
+              : settings.themes.pizza || pizzaDefaultConfig
           }
-          onSave={onSave}
+          onSave={onSavePizza}
         />
       );
     case 'food':
@@ -44,21 +65,21 @@ const Editor = ({ theme }: EditorProps) => {
         <FoodThemeEditor
           config={
             Object.keys(settings.activeTheme?.configuration || {}).length > 0
-              ? (settings.activeTheme.configuration as PizzaThemeConfig)
-              : settings.themes[theme] || defaultConfig
+              ? (settings.activeTheme.configuration as FoodThemeConfig)
+              : settings.themes.food || fooThemDefaultConfig
           }
-          onSave={onSave}
+          onSave={onSaveFood}
         />
       );
     case 'modern':
-      return <div>modern Editor</div>;
+      return <div>Modern Editor</div>;
     case 'minimal':
-      return <div>minimal Editor</div>;
+      return <div>Minimal Editor</div>;
     case 'grid':
-      return <div>grid Editor</div>;
+      return <div>Grid Editor</div>;
+    default:
+      return <div>Not found</div>;
   }
-
-  return <div>Not found</div>;
 };
 
 export default Editor;
