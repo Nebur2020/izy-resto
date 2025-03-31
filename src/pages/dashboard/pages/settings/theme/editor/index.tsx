@@ -1,6 +1,9 @@
 import { useSettings } from '../../../../../../hooks';
 import PizzaThemeEditor, { defaultConfig, PizzaThemeConfig } from './pizza';
-import FoodThemeEditor from './food';
+import FoodThemeEditor, {
+  FoodThemeConfig,
+  defaultConfig as foodDefaultConfig,
+} from './food';
 
 type EditorProps = {
   theme: 'pizza' | 'modern' | 'minimal' | 'grid' | 'food';
@@ -11,20 +14,26 @@ const Editor = ({ theme }: EditorProps) => {
 
   if (!settings) return null;
 
-  const onSave = async (data: {
-    key: 'pizza';
-    configuration: PizzaThemeConfig;
-  }) => {
-    await updateSettings({
+  const onSave = async (
+    data:
+      | {
+          key: 'pizza';
+          configuration: PizzaThemeConfig;
+        }
+      | {
+          key: 'food';
+          configuration: FoodThemeConfig;
+        }
+  ) => {
+    const config = {
       ...settings,
-      activeTheme: {
-        key: data.key,
-        configuration: data.configuration,
-      },
-      themes: {
-        pizza: data.configuration,
-      },
-    });
+      activeTheme: data, // Pass the typed data object directly
+    };
+    config['themes'] = {
+      ...settings.themes,
+      [data.key]: data.configuration,
+    };
+    await updateSettings(config);
   };
 
   switch (theme) {
@@ -40,13 +49,13 @@ const Editor = ({ theme }: EditorProps) => {
         />
       );
     case 'food':
+      const conf =
+        Object.keys(settings.activeTheme?.configuration || {}).length > 0
+          ? (settings.activeTheme.configuration as FoodThemeConfig)
+          : settings.themes[theme] || foodDefaultConfig;
       return (
         <FoodThemeEditor
-          config={
-            Object.keys(settings.activeTheme?.configuration || {}).length > 0
-              ? (settings.activeTheme.configuration as PizzaThemeConfig)
-              : settings.themes[theme] || defaultConfig
-          }
+          config={conf?.banner?.images?.length > 0 ? conf : foodDefaultConfig}
           onSave={onSave}
         />
       );

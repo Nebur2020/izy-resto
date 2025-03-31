@@ -149,5 +149,9 @@ export interface RestaurantSettings {
   };
   themes: {
     pizza?: PizzaThemeConfig;
+    food?: FoodThemeConfig;
+    minimal?: Record<string, unknown>;
+    grid?: Record<string, unknown>;
+    modern?: Record<string, unknown>;
   };
 }
