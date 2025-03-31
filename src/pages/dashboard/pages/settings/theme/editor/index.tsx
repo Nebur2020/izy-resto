@@ -5,6 +5,7 @@ import PizzaThemeEditor, {
 } from './pizza';
 import FoodThemeEditor, { fooThemDefaultConfig, FoodThemeConfig } from './food';
 
+
 type EditorProps = {
   theme: 'pizza' | 'modern' | 'minimal' | 'grid' | 'food';
 };
@@ -69,6 +70,17 @@ const Editor = ({ theme }: EditorProps) => {
               : settings.themes.food || fooThemDefaultConfig
           }
           onSave={onSaveFood}
+        />
+      );
+    case 'food':
+      return (
+        <FoodThemeEditor
+          config={
+            Object.keys(settings.activeTheme?.configuration || {}).length > 0
+              ? (settings.activeTheme.configuration as PizzaThemeConfig)
+              : settings.themes[theme] || defaultConfig
+          }
+          onSave={onSave}
         />
       );
     case 'modern':

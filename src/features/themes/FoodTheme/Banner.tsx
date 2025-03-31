@@ -59,7 +59,7 @@ export default function Banner(props: BannerProps) {
 
       <div className="absolute inset-0 bg-black/50" />
 
-      <div className="relative z-10 container mx-auto h-full flex items-center justify-center text-center">
+      <div className="relative z-10 container mx-auto h-full flex items-center justify-center text-center overflow-hidden">
         <motion.div
           key={currentSlide}
           initial={{ opacity: 0, y: 50 }}

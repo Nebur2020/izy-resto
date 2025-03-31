@@ -11,7 +11,13 @@ import {
 import { db, storage } from '../../lib/firebase/config';
 import { MediaFile } from '../../types/media';
 import { cloudinaryService } from '../cloudinary/cloudinary.service';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+
+import {
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+  deleteObject,
+} from 'firebase/storage';
 
 class MediaService {
   private readonly collection = 'media';
@@ -133,24 +139,34 @@ class MediaService {
         }
       }
 
-      // Delete from Cloudinary first
+      // Delete the actual files from either Firebase Storage or Cloudinary
       await Promise.all(
         files.map(async file => {
           try {
-            const publicId = file.url.split('/').pop()?.split('.')[0];
-            if (publicId) {
-              await cloudinaryService.deleteFile(publicId);
+            if (file.url.includes('firebasestorage')) {
+              // Handle Firebase Storage deletion
+              const fileRef = ref(storage, file.url);
+              await deleteObject(fileRef);
+            } else if (file.url.includes('cloudinary')) {
+              // Handle Cloudinary deletion
+              const publicId = file.url.split('/').pop()?.split('.')[0];
+              if (publicId) {
+                await cloudinaryService.deleteFile(publicId);
+              }
+            } else {
+              console.warn(`Unknown storage provider for file: ${file.url}`);
             }
           } catch (error) {
             console.error(
-              `Error deleting file from Cloudinary: ${file.url}`,
+
+              `Error deleting file from storage: ${file.url}`,
               error
             );
           }
         })
       );
 
-      // Then commit Firestore batch
+      // Then commit Firestore batch to remove database entries
       await batch.commit();
     } catch (error) {
       console.error('Error deleting files:', error);

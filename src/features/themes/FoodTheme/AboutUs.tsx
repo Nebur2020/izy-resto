@@ -42,6 +42,7 @@ export default function AboutUs(props: IAboutUsProps) {
 
           {/* Image du chef */}
           <div className="relative z-10 w-[250px] h-[250px] sm:w-[350px] sm:h-[350px] md:w-[400px] md:h-[400px] lg:w-[500px] lg:h-[500px]">
+
             <img
               src={image}
               alt="Chef"

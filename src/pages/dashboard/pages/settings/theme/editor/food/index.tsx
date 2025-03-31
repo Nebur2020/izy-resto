@@ -64,6 +64,7 @@ export interface FoodThemeConfig {
 }
 
 export const fooThemDefaultConfig: FoodThemeConfig = {
+
   banner: {
     slides: [
       {

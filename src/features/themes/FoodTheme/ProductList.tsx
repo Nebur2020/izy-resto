@@ -8,6 +8,7 @@ import { useSettings } from '../../../hooks';
 import { motion, AnimatePresence } from 'framer-motion';
 import LoadMoreButton from '../../../components/ui/LoadMoreButton';
 
+
 interface ProductListProps {
   tagline?: string;
   title?: string;
@@ -166,6 +167,7 @@ export default function ProductList({
                       initial="hidden"
                       animate="visible"
                       exit="exit"
+                      className="flex justify-center"
                       layout
                     >
                       <ItemCard
@@ -186,6 +188,7 @@ export default function ProductList({
               className="text-center mt-8"
             >
               <LoadMoreButton handleLoadMore={loadMore} isLoading={false} />
+
             </motion.div>
           )}
         </div>

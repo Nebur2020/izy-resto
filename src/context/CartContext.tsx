@@ -44,11 +44,47 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     return sum + itemPrice * item.quantity;
   }, 0);
 
-  // Calculate taxes
-  const { taxes, total: taxTotal } = calculateTaxes(
-    subtotal,
-    settings?.taxes.rates || [],
-    cart.map(item => item.categoryId)
+  // Calculate taxes per item
+  const { taxes, taxTotal } = cart.reduce<{
+    taxes: { id: string; name: string; rate: number; amount: number }[];
+    taxTotal: number;
+  }>(
+    (acc, item) => {
+      const { taxes, total } = calculateTaxes(
+        item.price * item.quantity,
+        settings?.taxes.rates || [],
+        item.categoryId ? [item.categoryId] : []
+      );
+      const taxTotal = acc.taxTotal + total;
+      const taxList = acc.taxes.concat(
+        taxes.map(tax => ({
+          ...tax,
+          amount: tax.amount,
+        }))
+      );
+      // merge duplicate taxes
+      const taxMap = new Map<
+        string,
+        { id: string; name: string; rate: number; amount: number }
+      >();
+      taxList.forEach(tax => {
+        const existingTax = taxMap.get(tax.id);
+        if (existingTax) {
+          existingTax.amount += tax.amount;
+        } else {
+          taxMap.set(tax.id, { ...tax });
+        }
+      });
+      const mergedTaxes = Array.from(taxMap.values());
+      return {
+        taxes: mergedTaxes,
+        taxTotal,
+      };
+    },
+    {
+      taxes: [],
+      taxTotal: 0,
+    }
   );
 
   // Calculate tip
@@ -102,7 +138,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         return currentCart;
       }
 
-      const newItem = { ...item, quantity: item.quantity || 1 };
+      const newItem: CartItem = {
+        ...item,
+        quantity: item.quantity || 1,
+        options: [],
+        specialInstructions: '',
+        selectedVariants: [],
+      };
       // toast.success('Produit ajouté au panier');
       return [...currentCart, newItem];
     });

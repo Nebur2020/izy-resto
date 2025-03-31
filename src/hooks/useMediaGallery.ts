@@ -95,11 +95,11 @@ export function useMediaGallery(itemsPerLoad: number = 12) {
       setUploadProgress({});
       throw error;
     }
-  }
+  };
 
   const deleteFiles = async (fileIds: string[]) => {
     try {
-      await mediaService.deleteFiles(fileIds);
+      await mediaService.deleteFile(fileIds);
       await loadInitialFiles();
     } catch (error) {
       console.error('Delete error:', error);
