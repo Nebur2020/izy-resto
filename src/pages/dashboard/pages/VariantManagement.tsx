@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { variantService } from '../../../services/variants/variant.service';
 import { useSettings } from '../../../hooks';
 import { Variant } from '../../../types';
+import LoadMoreButton from '../../../components/ui/LoadMoreButton';
 
 export function VariantManagement() {
   const { t } = useTranslation();
@@ -195,13 +196,9 @@ export function VariantManagement() {
         </div>
       )}
 
-      {/* Load More Button */}
       {showLoadMore && (
         <div className="flex justify-center mt-6">
-          <Button onClick={handleLoadMore} className="px-4 py-2">
-            <RefreshCw className="w-4 h-4 mr-2" />
-            {t('common:load-more')}
-          </Button>
+          <LoadMoreButton handleLoadMore={handleLoadMore} isLoading={false} />
         </div>
       )}
 

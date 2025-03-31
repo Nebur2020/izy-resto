@@ -6,6 +6,7 @@ import { LogoUploader } from '../../../settings/LogoUploader';
 import { paymentService } from '../../../../services/payments/payment.service';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../../../../hooks';
 
 type PaymentMethodType =
   | 'Wave'
@@ -33,7 +34,6 @@ interface PaymentMethodFormProps {
   onCancel: () => void;
 }
 
-// Built-in payment methods that don't need custom names
 const BUILT_IN_METHODS = new Set([
   'Wave',
   'PayTech',
@@ -91,6 +91,8 @@ export function PaymentMethodForm({
   onCancel,
 }: PaymentMethodFormProps) {
   const { t } = useTranslation();
+  const { settings } = useSettings();
+  const primaryColor = settings?.palette.primary;
 
   // Initialize payment type based on existing method or default to 'Autres'
   const initialType =
@@ -389,7 +391,13 @@ export function PaymentMethodForm({
               <Button type="button" variant="secondary" onClick={onCancel}>
                 {t('common:cancel')}
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                spanClassName="text-white"
+                style={{ backgroundColor: primaryColor }}
+                variant="custom"
+              >
                 {isSubmitting
                   ? t('common:saving')
                   : method

@@ -7,6 +7,7 @@ import { useOrders } from '../../../context/OrderContext';
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
 import { useTranslation } from 'react-i18next';
 import { Search, RefreshCw, X } from 'lucide-react';
+import LoadMoreButton from '../../../components/ui/LoadMoreButton';
 
 export function OrderManagement() {
   const { t } = useTranslation();
@@ -264,14 +265,10 @@ export function OrderManagement() {
 
       {!isSearching && hasMore && !isLoading && !isLoadingMore && (
         <div className="flex justify-center mt-6">
-          <button
-            onClick={loadMoreOrders}
-            className="flex items-center gap-2 px-6 py-2 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-800/30
-                      text-blue-600 dark:text-blue-400 rounded-lg transition-colors font-medium"
-          >
-            <RefreshCw className="w-4 h-4" />
-            {t('common:load-more')}
-          </button>
+          <LoadMoreButton
+            handleLoadMore={loadMoreOrders || (() => {})}
+            isLoading={(isLoading || isLoadingMore) ?? false}
+          />
         </div>
       )}
 

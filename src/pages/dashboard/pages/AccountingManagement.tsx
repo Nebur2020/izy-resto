@@ -19,7 +19,6 @@ import { AccountingTipsManagement } from './AccountingTipsManagement';
 import { AccountingDeliveryManagement } from './AccountingDeliveryManagement';
 import { useTranslation } from 'react-i18next';
 import { downloadCsv } from '../../../utils/export';
-import { convertToCsv } from '../../../utils/export';
 import { Transaction } from '../../../types';
 
 export function AccountingManagement() {
@@ -36,6 +35,8 @@ export function AccountingManagement() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [exportData, setExportData] = useState<any[]>([]);
   const statementRef = useRef<HTMLDivElement>(null);
+
+  const primaryColor = settings?.palette.primary;
 
   const tabs = [
     { id: 'transactions', label: t('comptability:transaction') },
@@ -224,7 +225,12 @@ export function AccountingManagement() {
                 onDateChange={handleDateChange}
               />
               <div className="flex gap-2">
-                <Button onClick={() => setIsFormOpen(true)}>
+                <Button
+                  onClick={() => setIsFormOpen(true)}
+                  variant="custom"
+                  style={{ backgroundColor: primaryColor }}
+                  spanClassName="text-white"
+                >
                   <Plus className="w-4 h-4 mr-2" />
                   {t('comptability:add-transaction')}
                 </Button>

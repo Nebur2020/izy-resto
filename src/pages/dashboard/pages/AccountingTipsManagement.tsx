@@ -15,6 +15,7 @@ import { formatDate } from '../../../utils';
 import { formatCurrency } from '../../../utils/currency';
 import { Language, Order } from '../../../types';
 import { useTranslation } from 'react-i18next';
+import LoadMoreButton from '../../../components/ui/LoadMoreButton';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -136,7 +137,9 @@ export const AccountingTipsManagement = () => {
         endDate: dateRange.to,
       });
 
-      const ordersWithTips = response.filter(order => !!order?.tip).filter(order => order.status === 'delivered');
+      const ordersWithTips = response
+        .filter(order => !!order?.tip)
+        .filter(order => order.status === 'delivered');
 
       const sortedOrders = ordersWithTips.sort((a, b) => {
         return b.createdAt - a.createdAt;
@@ -313,26 +316,10 @@ export const AccountingTipsManagement = () => {
 
         {hasMore && (
           <div className="px-6 py-4 border-t dark:border-gray-700">
-            <Button
-              variant="outline"
-              onClick={loadMore}
-              disabled={isLoadingMore}
-              className="w-full flex items-center justify-center gap-2"
-            >
-              {isLoadingMore ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <ChevronDown className="w-4 h-4" />
-              )}
-              <span>
-                {isLoadingMore ? t('common:loading') : t('common:load-more')}
-                {displayedOrders.length > 0 && allOrders.length > 0 && (
-                  <span className="ml-1 text-gray-500">
-                    ({displayedOrders.length}/{allOrders.length})
-                  </span>
-                )}
-              </span>
-            </Button>
+            <LoadMoreButton
+              handleLoadMore={loadMore}
+              isLoading={isLoadingMore}
+            />
           </div>
         )}
       </div>

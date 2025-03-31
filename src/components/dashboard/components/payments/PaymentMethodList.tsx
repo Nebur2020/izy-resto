@@ -3,6 +3,7 @@ import { Edit2, Trash2, QrCode } from 'lucide-react';
 import { PaymentMethod } from '../../../../types/payment';
 import { Button } from '../../../ui/Button';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../../../../hooks';
 
 interface IPaymentMethodListProps {
   methods: PaymentMethod[];
@@ -14,6 +15,8 @@ interface IPaymentMethodListProps {
 export function PaymentMethodList(props: IPaymentMethodListProps) {
   const { t } = useTranslation();
   const { methods, isLoading, onEdit, onDelete } = props;
+  const { settings } = useSettings();
+  const primaryColor = settings?.palette.primary;
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -77,7 +80,10 @@ export function PaymentMethodList(props: IPaymentMethodListProps) {
                     ? t(`order:payment-method-names.${method.name}`)
                     : method.name}
                   {method.isDefault && (
-                    <span className="ml-2 text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
+                    <span
+                      className="ml-2 text-xs dark:bg-blue-900/50 text-white dark:text-blue-200 px-2 py-1 rounded-full"
+                      style={{ color: primaryColor }}
+                    >
                       {t('common:payment-method-default')}
                     </span>
                   )}
