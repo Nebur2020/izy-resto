@@ -88,7 +88,6 @@ export interface PizzaThemeConfig {
   };
 }
 
-// Default configuration with placeholder values
 export const defaultConfig: PizzaThemeConfig = {
   header: {
     deliveryText: 'Free Home delivery 48 Hours',

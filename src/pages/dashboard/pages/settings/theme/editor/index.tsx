@@ -5,7 +5,6 @@ import PizzaThemeEditor, {
 } from './pizza';
 import FoodThemeEditor, { fooThemDefaultConfig, FoodThemeConfig } from './food';
 
-
 type EditorProps = {
   theme: 'pizza' | 'modern' | 'minimal' | 'grid' | 'food';
 };
@@ -77,10 +76,10 @@ const Editor = ({ theme }: EditorProps) => {
         <FoodThemeEditor
           config={
             Object.keys(settings.activeTheme?.configuration || {}).length > 0
-              ? (settings.activeTheme.configuration as PizzaThemeConfig)
-              : settings.themes[theme] || defaultConfig
+              ? (settings.activeTheme.configuration as FoodThemeConfig)
+              : settings.themes[theme] || fooThemDefaultConfig
           }
-          onSave={onSave}
+          onSave={onSaveFood}
         />
       );
     case 'modern':
