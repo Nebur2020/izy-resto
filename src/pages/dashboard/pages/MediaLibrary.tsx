@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Grid, List, RefreshCw } from 'lucide-react';
+import { Search, Grid, List, Palette } from 'lucide-react';
 import { MediaGrid } from '../../../components/dashboard/components/media/MediaGrid';
 import { MediaList } from '../../../components/dashboard/components/media/MediaList';
 import { BulkUploader } from '../../../components/dashboard/components/media/BulkUploader';
@@ -8,7 +8,8 @@ import { useMediaGallery } from '../../../hooks/useMediaGallery';
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button } from '../../../components/ui/Button';
+import LoadMoreButton from '../../../components/ui/LoadMoreButton';
+import { useSettings } from '../../../hooks';
 
 const ITEMS_PER_LOAD = 12;
 
@@ -98,6 +99,9 @@ export function MediaLibrary() {
     }
   };
 
+  const { settings } = useSettings();
+  const primaryColor = settings?.palette.primary;
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -142,6 +146,7 @@ export function MediaLibrary() {
                 ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
                 : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
+            style={isGridView ? { color: primaryColor } : {}}
           >
             <Grid className="h-4 w-4" />
           </button>
@@ -152,6 +157,7 @@ export function MediaLibrary() {
                 ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
                 : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
+            style={isGridView ? { color: primaryColor } : {}}
           >
             <List className="h-4 w-4" />
           </button>
@@ -189,18 +195,10 @@ export function MediaLibrary() {
         )}
         {hasMore && (
           <div className="flex justify-center mt-6">
-            <Button
-              onClick={handleLoadMore}
-              disabled={isLoadingMore}
-              className="px-6 py-2"
-            >
-              {isLoadingMore ? (
-                <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <RefreshCw className="w-4 h-4 mr-2" />
-              )}
-              {t('common:load-more')}
-            </Button>
+            <LoadMoreButton
+              handleLoadMore={handleLoadMore}
+              isLoading={isLoadingMore}
+            />
           </div>
         )}
       </div>

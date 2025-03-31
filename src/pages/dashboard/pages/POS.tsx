@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { OrderList } from '../../../components/orders/OrderList';
 import { useOrders } from '../../../context/OrderContext';
 import { Modal } from '../../../components/ui/Modal';
+import LoadMoreButton from '../../../components/ui/LoadMoreButton';
 
 export function POS() {
   const { t } = useTranslation();
@@ -387,21 +388,10 @@ export function POS() {
 
                 {!isLoading && hasMore && !searchTerm && (
                   <div className="flex justify-center mt-6 mb-6">
-                    <Button
-                      onClick={loadMoreItems}
-                      disabled={isLoadingMore}
-                      className="px-6 py-2 shadow-md"
-                      size="lg"
-                    >
-                      {isLoadingMore ? (
-                        <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
-                      ) : (
-                        <RefreshCw className="w-5 h-5 mr-2" />
-                      )}
-                      {isLoadingMore
-                        ? t('common:loading')
-                        : t('common:load-more')}
-                    </Button>
+                    <LoadMoreButton
+                      handleLoadMore={loadMoreItems}
+                      isLoading={isLoadingMore}
+                    />
                   </div>
                 )}
               </>
@@ -477,14 +467,10 @@ export function POS() {
                   />
                   {hasMoreOrders && !isLoadingMoreOrders && !isLoadingMore && (
                     <div className="flex justify-center mt-6">
-                      <button
-                        onClick={loadMoreOrders}
-                        className="flex items-center gap-2 px-6 py-2 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-800/30
-                      text-blue-600 dark:text-blue-400 rounded-lg transition-colors font-medium"
-                      >
-                        <RefreshCw className="w-4 h-4" />
-                        {t('common:load-more')}
-                      </button>
+                      <LoadMoreButton
+                        handleLoadMore={loadMoreOrders}
+                        isLoading={false}
+                      />
                     </div>
                   )}
 
@@ -586,19 +572,10 @@ export function POS() {
 
           {!isLoading && hasMore && !searchTerm && (
             <div className="flex justify-center mt-6 mb-6">
-              <Button
-                onClick={loadMoreItems}
-                disabled={isLoadingMore}
-                className="px-6 py-2 shadow-md"
-                size="lg"
-              >
-                {isLoadingMore ? (
-                  <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
-                ) : (
-                  <RefreshCw className="w-5 h-5 mr-2" />
-                )}
-                {isLoadingMore ? t('common:loading') : t('common:load-more')}
-              </Button>
+              <LoadMoreButton
+                handleLoadMore={loadMoreItems}
+                isLoading={isLoadingMore}
+              />
             </div>
           )}
         </>

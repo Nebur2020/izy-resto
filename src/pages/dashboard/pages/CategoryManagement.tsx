@@ -18,6 +18,7 @@ import toast from 'react-hot-toast';
 import EmptySection from '../../../components/dashboard/shared/EmptySection';
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '../../../hooks';
+import LoadMoreButton from '../../../components/ui/LoadMoreButton';
 
 export function CategoryManagement() {
   const {
@@ -157,7 +158,10 @@ export function CategoryManagement() {
       <div className="flex flex-col space-y-4 md:space-y-0 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900 dark:text-white flex items-center gap-3">
-            <LayoutGrid className="w-6 h-6 text-blue-500" />
+            <LayoutGrid
+              className="w-6 h-6 text-blue-500"
+              style={{ color: primaryColor }}
+            />
             {t('category:category-title')}
           </h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -311,10 +315,10 @@ export function CategoryManagement() {
 
       {showLoadMore && (
         <div className="flex justify-center mt-6">
-          <Button onClick={loadMoreCategories} className="px-4 py-2">
-            <RefreshCw className="w-4 h-4 mr-2" />
-            {t('common:load-more')}
-          </Button>
+          <LoadMoreButton
+            handleLoadMore={loadMoreCategories}
+            isLoading={false}
+          />
         </div>
       )}
 

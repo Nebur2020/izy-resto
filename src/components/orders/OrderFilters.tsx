@@ -57,9 +57,9 @@ export function OrderFilters(props: IOrderFiltersProps) {
             size="sm"
             style={{
               backgroundColor:
-                currentFilter === filter.value ? primaryColor : undefined,
-                color: currentFilter === filter.value ? 'white' : undefined,
+                currentFilter === filter.value ? primaryColor : undefined
             }}
+            spanClassName={`${currentFilter === filter.value ? "text-white" : "text-black"}`}
           >
             {filter.label}
           </Button>
