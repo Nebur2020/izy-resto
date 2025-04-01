@@ -80,7 +80,6 @@ export const fooThemDefaultConfig: FoodThemeConfig = {
     images: [
       'https://radiustheme.com/demo/wordpress/themes/panpie/wp-content/uploads/2021/01/slider1.jpg',
       'https://radiustheme.com/demo/wordpress/themes/panpie/wp-content/uploads/2021/01/slider2.jpg',
-      'https://radiustheme.com/demo/wordpress/themes/panpie/wp-content/uploads/2021/01/slider3.jpg',
     ],
     general: {
       display: true,

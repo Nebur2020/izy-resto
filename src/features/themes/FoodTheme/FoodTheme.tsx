@@ -25,12 +25,10 @@ export default function FoodTheme() {
   const { isLoading, isLayoutMounted } = useLayoutMount();
 
   useEffect(() => {
-    if (settings) {
-      if (
-        (settings?.activeTheme?.configuration as FoodThemeConfig)?.banner
-          ?.images
-      ) {
-        setThemeConfig(settings.activeTheme.configuration as any);
+    if (settings?.activeTheme?.key === 'food') {
+      console.log(settings);
+      if (settings?.activeTheme?.configuration?.banner?.images.length > 0) {
+        setThemeConfig(settings?.activeTheme?.configuration);
       }
     }
   }, [settings]);
