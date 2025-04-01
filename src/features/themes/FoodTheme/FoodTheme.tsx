@@ -26,7 +26,12 @@ export default function FoodTheme() {
 
   useEffect(() => {
     if (settings) {
-      setThemeConfig(settings.activeTheme.configuration as any);
+      if (
+        (settings?.activeTheme?.configuration as FoodThemeConfig)?.banner
+          ?.images
+      ) {
+        setThemeConfig(settings.activeTheme.configuration as any);
+      }
     }
   }, [settings]);
 

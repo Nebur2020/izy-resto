@@ -1,9 +1,9 @@
 import { useSettings } from '../../../../../../hooks';
-import PizzaThemeEditor, {
-  defaultConfig as pizzaDefaultConfig,
-  PizzaThemeConfig,
-} from './pizza';
-import FoodThemeEditor, { fooThemDefaultConfig, FoodThemeConfig } from './food';
+import PizzaThemeEditor, { defaultConfig, PizzaThemeConfig } from './pizza';
+import FoodThemeEditor, {
+  FoodThemeConfig,
+  defaultConfig as foodDefaultConfig,
+} from './food';
 
 type EditorProps = {
   theme: 'pizza' | 'modern' | 'minimal' | 'grid' | 'food';
@@ -14,38 +14,26 @@ const Editor = ({ theme }: EditorProps) => {
 
   if (!settings) return null;
 
-  const onSavePizza = async (data: {
-    key: 'pizza';
-    configuration: PizzaThemeConfig;
-  }) => {
-    await updateSettings({
+  const onSave = async (
+    data:
+      | {
+          key: 'pizza';
+          configuration: PizzaThemeConfig;
+        }
+      | {
+          key: 'food';
+          configuration: FoodThemeConfig;
+        }
+  ) => {
+    const config = {
       ...settings,
-      activeTheme: {
-        key: data.key,
-        configuration: data.configuration,
-      },
-      themes: {
-        ...settings.themes,
-        pizza: data.configuration,
-      },
-    });
-  };
-
-  const onSaveFood = async (data: {
-    key: 'food';
-    configuration: FoodThemeConfig;
-  }) => {
-    await updateSettings({
-      ...settings,
-      activeTheme: {
-        key: data.key,
-        configuration: data.configuration,
-      },
-      themes: {
-        ...settings.themes,
-        food: data.configuration,
-      },
-    });
+      activeTheme: data, // Pass the typed data object directly
+    };
+    config['themes'] = {
+      ...settings.themes,
+      [data.key]: data.configuration,
+    };
+    await updateSettings(config);
   };
 
   switch (theme) {
@@ -55,42 +43,31 @@ const Editor = ({ theme }: EditorProps) => {
           config={
             Object.keys(settings.activeTheme?.configuration || {}).length > 0
               ? (settings.activeTheme.configuration as PizzaThemeConfig)
-              : settings.themes.pizza || pizzaDefaultConfig
+              : settings.themes[theme] || defaultConfig
           }
-          onSave={onSavePizza}
+          onSave={onSave}
         />
       );
     case 'food':
+      const conf =
+        Object.keys(settings.activeTheme?.configuration || {}).length > 0
+          ? (settings.activeTheme.configuration as FoodThemeConfig)
+          : settings.themes[theme] || foodDefaultConfig;
       return (
         <FoodThemeEditor
-          config={
-            Object.keys(settings.activeTheme?.configuration || {}).length > 0
-              ? (settings.activeTheme.configuration as FoodThemeConfig)
-              : settings.themes.food || fooThemDefaultConfig
-          }
-          onSave={onSaveFood}
-        />
-      );
-    case 'food':
-      return (
-        <FoodThemeEditor
-          config={
-            Object.keys(settings.activeTheme?.configuration || {}).length > 0
-              ? (settings.activeTheme.configuration as FoodThemeConfig)
-              : settings.themes[theme] || fooThemDefaultConfig
-          }
-          onSave={onSaveFood}
+          config={conf?.banner?.images?.length > 0 ? conf : foodDefaultConfig}
+          onSave={onSave}
         />
       );
     case 'modern':
-      return <div>Modern Editor</div>;
+      return <div>modern Editor</div>;
     case 'minimal':
-      return <div>Minimal Editor</div>;
+      return <div>minimal Editor</div>;
     case 'grid':
-      return <div>Grid Editor</div>;
-    default:
-      return <div>Not found</div>;
+      return <div>grid Editor</div>;
   }
+
+  return <div>Not found</div>;
 };
 
 export default Editor;

@@ -26,22 +26,22 @@ export default function Banner(props: BannerProps) {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentSlide(prev => (prev + 1) % images.length);
+      setCurrentSlide(prev => (prev + 1) % slides.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, [images.length]);
+  }, [slides.length]);
 
   const nextSlide = () => {
-    setCurrentSlide(prev => (prev + 1) % images.length);
+    setCurrentSlide(prev => (prev + 1) % slides.length);
   };
 
   const prevSlide = () => {
-    setCurrentSlide(prev => (prev - 1 + images.length) % images.length);
+    setCurrentSlide(prev => (prev - 1 + slides.length) % slides.length);
   };
 
   return (
     <section className="relative h-screen overflow-hidden">
-      {images.map((image, index) => (
+      {slides.map((image, index) => (
         <motion.div
           key={index}
           className="absolute inset-0 bg-cover bg-center"
@@ -80,7 +80,7 @@ export default function Banner(props: BannerProps) {
               style={{ backgroundColor: primaryColor }}
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8, duration: 0.5 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
               onClick={() => {
                 document
                   .getElementById('product-list')
@@ -108,7 +108,7 @@ export default function Banner(props: BannerProps) {
       </button>
 
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-2 z-20">
-        {images.map((_, index) => (
+        {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}
