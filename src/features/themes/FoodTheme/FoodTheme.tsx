@@ -11,15 +11,16 @@ import { useTheme } from '../../../context/ThemeContext';
 import { useSettings } from '../../../hooks/useSettings';
 import {
   FoodThemeConfig,
-  fooThemDefaultConfig,
+  foodThemDefaultConfig,
 } from '../../../pages/dashboard/pages/settings/theme/editor/food';
 import { FoodThemeProvider } from './context/FoodThemeContext';
 import { useLayoutMount } from '../../../hooks/useLayoutMount';
 import OrderNow from './OrderNow';
 
 export default function FoodTheme() {
-  const [themeConfig, setThemeConfig] =
-    useState<FoodThemeConfig>(fooThemDefaultConfig);
+  const [themeConfig, setThemeConfig] = useState<FoodThemeConfig>(
+    foodThemDefaultConfig
+  );
   const { theme } = useTheme();
   const { settings } = useSettings();
   const { isLoading, isLayoutMounted } = useLayoutMount();

@@ -1,14 +1,14 @@
 import React, { createContext, useContext } from 'react';
 import {
   FoodThemeConfig,
-  fooThemDefaultConfig,
+  foodThemDefaultConfig,
 } from '../../../../pages/dashboard/pages/settings/theme/editor/food';
 
-const FoodThemeContext = createContext<FoodThemeConfig>(fooThemDefaultConfig);
+const FoodThemeContext = createContext<FoodThemeConfig>(foodThemDefaultConfig);
 
 export const FoodThemeProvider = ({
   children,
-  value = fooThemDefaultConfig,
+  value = foodThemDefaultConfig,
 }: {
   children: React.ReactNode;
   value?: FoodThemeConfig;

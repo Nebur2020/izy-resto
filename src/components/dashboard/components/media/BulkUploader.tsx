@@ -1,7 +1,14 @@
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, X, AlertCircle, Cloud, Server } from 'lucide-react';
+import {
+  Upload,
+  X,
+  AlertCircle,
+  Cloud,
+  Server,
+  AlertTriangle,
+} from 'lucide-react';
 import { ProgressBar } from '../../../ui/ProgressBar';
 import { useTranslation } from 'react-i18next';
 
@@ -34,7 +41,7 @@ export function BulkUploader(props: IBulkUploaderProps) {
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>({});
   const [isUploading, setIsUploading] = useState(false);
   const [storageProvider, setStorageProvider] =
-    useState<StorageProvider>('firebase');
+    useState<StorageProvider>('cloudinary');
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
@@ -132,44 +139,6 @@ export function BulkUploader(props: IBulkUploaderProps) {
                 relative flex flex-col items-center justify-center p-4 rounded-lg border-2 cursor-pointer
                 transition-all group h-[50px]
                 ${
-                  storageProvider === 'firebase'
-                    ? 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/20'
-                    : 'border-gray-300 hover:border-gray-400 dark:border-gray-600 dark:hover:border-gray-500'
-                }
-                ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}
-              `}
-            >
-              <input
-                type="radio"
-                name="storageProvider"
-                value="firebase"
-                checked={storageProvider === 'firebase'}
-                onChange={() => setStorageProvider('firebase')}
-                disabled={isUploading}
-                className="absolute opacity-0"
-              />
-              <div className="flex items-center justify-around">
-                <Server
-                  className={`
-                    w-[25px] h-10 mr-2
-                    ${
-                      storageProvider === 'firebase'
-                        ? 'text-blue-500 dark:text-blue-400'
-                        : 'text-gray-400 group-hover:text-gray-500'
-                    }
-                  `}
-                />
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                  Firebase
-                </span>
-              </div>
-            </label>
-
-            <label
-              className={`
-                relative flex flex-col items-center justify-center p-4 rounded-lg border-2 cursor-pointer
-                transition-all group h-[50px]
-                ${
                   storageProvider === 'cloudinary'
                     ? 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/20'
                     : 'border-gray-300 hover:border-gray-400 dark:border-gray-600 dark:hover:border-gray-500'
@@ -202,7 +171,67 @@ export function BulkUploader(props: IBulkUploaderProps) {
                 </span>
               </div>
             </label>
+
+            <label
+              className={`
+                relative flex flex-col items-center justify-center p-4 rounded-lg border-2 cursor-pointer
+                transition-all group h-[50px]
+                ${
+                  storageProvider === 'firebase'
+                    ? 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/20'
+                    : 'border-gray-300 hover:border-gray-400 dark:border-gray-600 dark:hover:border-gray-500'
+                }
+                ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}
+              `}
+            >
+              <input
+                type="radio"
+                name="storageProvider"
+                value="firebase"
+                checked={storageProvider === 'firebase'}
+                onChange={() => setStorageProvider('firebase')}
+                disabled={isUploading}
+                className="absolute opacity-0"
+              />
+              <div className="flex items-center justify-around">
+                <Server
+                  className={`
+                    w-[25px] h-10 mr-2
+                    ${
+                      storageProvider === 'firebase'
+                        ? 'text-blue-500 dark:text-blue-400'
+                        : 'text-gray-400 group-hover:text-gray-500'
+                    }
+                  `}
+                />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                  Firebase
+                </span>
+              </div>
+            </label>
           </div>
+
+          {/* Firebase Warning Message */}
+          <AnimatePresence>
+            {storageProvider === 'firebase' && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg dark:bg-amber-900/20 dark:border-amber-700"
+              >
+                <div className="flex items-start">
+                  <AlertTriangle className="w-5 h-5 text-amber-500 dark:text-amber-400 mr-2 flex-shrink-0 mt-0.5" />
+                  <p className="text-sm text-amber-700 dark:text-amber-300">
+                    {t('media:firebase-billing-warning', {
+                      defaultValue:
+                        'Warning: Firebase storage requires billing to be activated in your Firebase console before uploading files.',
+                    })}
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         <div

@@ -12,5 +12,6 @@
   "element": "Élément",
   "selected": "sélectionné",
   "files-deleted": "Fichiers supprimés avec succès",
-  "file-deleted": "Fichier supprimé avec succès"
+  "file-deleted": "Fichier supprimé avec succès",
+  "firebase-billing-warning": "Attention: le stockage Firebase nécessite que la facturation soit activée dans votre console Firebase avant de télécharger des fichiers."
 }

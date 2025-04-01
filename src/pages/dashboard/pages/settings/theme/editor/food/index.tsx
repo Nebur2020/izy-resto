@@ -63,8 +63,7 @@ export interface FoodThemeConfig {
   };
 }
 
-export const fooThemDefaultConfig: FoodThemeConfig = {
-
+export const foodThemDefaultConfig: FoodThemeConfig = {
   banner: {
     slides: [
       {
@@ -138,7 +137,7 @@ function BannerTab() {
           defaultValue={[]}
           render={({ field: { onChange, value = [] } }) => (
             <div className="space-y-4">
-              {value.map((slide, index) => (
+              {value.map((_, index) => (
                 <div
                   key={index}
                   className="p-4 border rounded-lg dark:border-gray-700 space-y-3"
