@@ -16,5 +16,5 @@ export interface StaffFormData {
   name: string;
   role: 'admin' | 'staff';
   permissions: string[];
-  allowedRoutes?: string[]; // Array of allowed dashboard route paths
+  allowedRoutes: string[]; // Array of allowed dashboard route paths
 }
