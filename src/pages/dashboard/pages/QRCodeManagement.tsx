@@ -14,6 +14,7 @@ import { Button } from '../../../components/ui/Button';
 import QRCode from 'qrcode';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../../../hooks';
 
 function isValidUrl(url: string): { isValid: boolean; formattedUrl: string } {
   url = url.trim().replace(/\/+$/, '');
@@ -43,6 +44,9 @@ export function QRCodeManagement() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [copied, setCopied] = useState(false);
   const [urlError, setUrlError] = useState<string | null>(null);
+
+  const { settings } = useSettings();
+  const primaryColor = settings?.palette.primary;
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -289,9 +293,11 @@ export function QRCodeManagement() {
           >
             <div className="flex items-center gap-3 mb-4">
               <div className="p-2 bg-blue-500/10 dark:bg-blue-500/20 rounded-lg">
-                <Info className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <Info className="w-5 h-5 dark:text-blue-400" />
               </div>
-              <h3 className="font-semibold text-blue-900 dark:text-blue-100">
+              <h3
+                className="font-semibold text-blue-900 dark:text-blue-100"
+              >
                 {t('qrCode:used-direction')}
               </h3>
             </div>

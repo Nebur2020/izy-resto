@@ -14,8 +14,9 @@ export function UserInfo() {
       <div className="text-sm">
         <span className="text-gray-600 dark:text-gray-300">{user.email}</span>
         <span className="mx-2 text-gray-400">|</span>
-        <span className="text-blue-600 dark:text-blue-400 font-medium capitalize">
-          {isStaff && staffData?.role !== 'admin' ? 'Staff' : 'Admin'}
+        <span
+          className="font-medium capitalize">
+          {isStaff && staffData?.role !== 'admin' ? 'Staff' : 'Admin'} hsbdz
         </span>
       </div>
     </div>

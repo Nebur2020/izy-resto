@@ -10,6 +10,7 @@ import { TransactionForm } from './TransactionForm';
 import { ConfirmationModal } from '../../../ui/ConfirmationModal';
 import { useTranslation } from 'react-i18next';
 import { Language } from '../../../../types';
+import LoadMoreButton from '../../../ui/LoadMoreButton';
 
 interface TransactionListProps {
   transactions: Transaction[];
@@ -32,8 +33,6 @@ export function TransactionList(props: TransactionListProps) {
     onDelete,
     hasMore,
     onLoadMore,
-    displayedCount = 0,
-    totalCount = 0,
   } = props;
   const { t, i18n } = useTranslation();
   const lng = i18n.language as Language;
@@ -199,26 +198,10 @@ export function TransactionList(props: TransactionListProps) {
 
         {(hasMore || isLoadingMore) && (
           <div className="px-6 py-4 border-t dark:border-gray-700">
-            <Button
-              variant="outline"
-              onClick={onLoadMore}
-              disabled={isLoading || isLoadingMore}
-              className="w-full flex items-center justify-center gap-2"
-            >
-              {isLoadingMore ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <ChevronDown className="w-4 h-4" />
-              )}
-              <span>
-                {isLoadingMore ? t('common:loading') : t('common:load-more')}
-                {displayedCount > 0 && totalCount > 0 && (
-                  <span className="ml-1 text-gray-500">
-                    ({displayedCount}/{totalCount})
-                  </span>
-                )}
-              </span>
-            </Button>
+            <LoadMoreButton
+              handleLoadMore={onLoadMore || (() => {})}
+              isLoading={(isLoading || isLoadingMore) ?? false}
+            />
           </div>
         )}
       </div>

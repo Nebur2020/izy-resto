@@ -63,7 +63,8 @@ export interface FoodThemeConfig {
   };
 }
 
-export const defaultConfig: FoodThemeConfig = {
+export const fooThemDefaultConfig: FoodThemeConfig = {
+
   banner: {
     slides: [
       {
@@ -327,7 +328,6 @@ function DiscountTab() {
 
   return (
     <div className="space-y-6">
-      {/* Display checkbox */}
       <div className="flex items-center space-x-2">
         <input
           type="checkbox"
@@ -393,7 +393,6 @@ const FooterDeliveryTab = () => {
         {t('setting:footer-settings')}
       </h3>
 
-      {/* Display checkbox for footer */}
       <div className="flex items-center space-x-2">
         <input
           type="checkbox"

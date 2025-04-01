@@ -11,6 +11,7 @@ import {
 import { db, storage } from '../../lib/firebase/config';
 import { MediaFile } from '../../types/media';
 import { cloudinaryService } from '../cloudinary/cloudinary.service';
+
 import {
   ref,
   uploadBytesResumable,
@@ -157,10 +158,10 @@ class MediaService {
             }
           } catch (error) {
             console.error(
+
               `Error deleting file from storage: ${file.url}`,
               error
             );
-            // Continue with other deletions even if one fails
           }
         })
       );

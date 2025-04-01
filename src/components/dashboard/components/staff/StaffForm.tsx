@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Button } from '../../../ui/Button';
 import { StaffFormData, StaffMember } from '../../../../types/staff';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../../../../hooks';
 
 interface StaffFormProps {
   staff?: StaffMember | null;
@@ -29,6 +30,9 @@ export function StaffForm({ staff, onSave, onCancel }: StaffFormProps) {
         },
   });
 
+  const { settings } = useSettings();
+  const primaryColor = settings?.palette.primary;
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <motion.div
@@ -38,7 +42,7 @@ export function StaffForm({ staff, onSave, onCancel }: StaffFormProps) {
       >
         <div className="flex justify-between items-center p-6 border-b dark:border-gray-700">
           <h2 className="text-xl font-semibold">
-            {staff ? t("personal:update-menber") : t("personal:new-personal")}
+            {staff ? t('personal:update-menber') : t('personal:new-personal')}
           </h2>
           <button onClick={onCancel}>
             <X className="w-5 h-5" />
@@ -143,12 +147,18 @@ export function StaffForm({ staff, onSave, onCancel }: StaffFormProps) {
             <Button type="button" variant="secondary" onClick={onCancel}>
               {t('common:cancel')}
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              variant="custom"
+              style={{ backgroundColor: primaryColor }}
+              spanClassName='text-white'
+            >
               {isSubmitting
                 ? t('common:saving')
                 : staff
                 ? t('common:update')
-                :   t('personal:create-account')}
+                : t('personal:create-account')}
             </Button>
           </div>
         </form>

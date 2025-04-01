@@ -33,6 +33,7 @@ export function CustomerDetailsModal({
 }: CustomerDetailsModalProps) {
   const { t, i18n } = useTranslation(['dashboard', 'common']);
   const { settings } = useSettings();
+  const primaryColor = settings?.palette.primary;
   const lng = i18n.language as Language;
 
   const stats = React.useMemo(() => {
@@ -184,8 +185,14 @@ export function CustomerDetailsModal({
         </div>
 
         <div className="border-t dark:border-gray-700 p-4">
-          <Button onClick={onClose} className="w-full">
-            {t('close')}
+          <Button
+            onClick={onClose}
+            className="w-full"
+            style={{ backgroundColor: primaryColor }}
+            variant="custom"
+            spanClassName="text-white"
+          >
+            {t('common:close')}
           </Button>
         </div>
       </motion.div>

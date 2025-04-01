@@ -24,6 +24,7 @@ export function StockUpdateForm(props: IStockUpdateFormProps) {
   const { items, onSubmit, onCancel, isSubmitting } = props;
   const { t } = useTranslation();
   const { settings } = useSettings();
+  const primaryColor = settings?.palette.primary;
   const [searchTerm, setSearchTerm] = useState('');
   const {
     register,
@@ -63,7 +64,7 @@ export function StockUpdateForm(props: IStockUpdateFormProps) {
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between sm:justify-start gap-2">
               <h2 className="text-lg sm:text-xl font-semibold flex items-center gap-2 truncate">
-                <Package className="w-5 h-5 flex-shrink-0 text-blue-500" />
+                <Package className="w-5 h-5 flex-shrink-0" style={{color: primaryColor}} />
                 <span className="truncate">{t('inventory:update-stock')}</span>
               </h2>
               <button
@@ -219,6 +220,11 @@ export function StockUpdateForm(props: IStockUpdateFormProps) {
                 type="submit"
                 disabled={isSubmitting || !updates.some(u => u.quantity > 0)}
                 className="w-full sm:w-auto min-w-0 sm:min-w-[200px] relative order-1 sm:order-2"
+                style={{
+                  backgroundColor: primaryColor
+                }}
+                spanClassName='text-white'
+                variant='custom'
               >
                 {isSubmitting ? (
                   <>

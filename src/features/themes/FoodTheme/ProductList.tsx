@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { SearchBar } from '../../../components/menu/SearchBar';
 import { useSettings } from '../../../hooks';
 import { motion, AnimatePresence } from 'framer-motion';
+import LoadMoreButton from '../../../components/ui/LoadMoreButton';
+
 
 interface ProductListProps {
   tagline?: string;
@@ -185,15 +187,8 @@ export default function ProductList({
               animate={{ opacity: 1, y: 0 }}
               className="text-center mt-8"
             >
-              <button
-                onClick={loadMore}
-                className="text-white px-6 py-2 rounded-full transition-colors hover:opacity-90"
-                style={{
-                  backgroundColor: buttonColor,
-                }}
-              >
-                {t('common:load-more')}
-              </button>
+              <LoadMoreButton handleLoadMore={loadMore} isLoading={false} />
+
             </motion.div>
           )}
         </div>

@@ -16,6 +16,7 @@ import { Category } from '../../../../types';
 import { useTranslation } from 'react-i18next';
 import { useInventory } from '../../../../hooks/useInventory';
 import { useState, useEffect } from 'react';
+import LoadMoreButton from '../../../ui/LoadMoreButton';
 
 interface InventoryConnection {
   itemId: string;
@@ -298,23 +299,11 @@ export function VariantForm(props: IVariantFormProps) {
                   </label>
                 ))}
               </div>
-
               {hasMoreCategories && (
-                <div className="flex justify-center">
-                  <Button
-                    type="button"
-                    onClick={handleLoadMoreCategories}
-                    disabled={categoriesLoading}
-                    className="px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20 flex items-center gap-2"
-                  >
-                    {categoriesLoading ? (
-                      <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                    ) : (
-                      <ChevronDown className="w-4 h-4" />
-                    )}
-                    {t('common:load-more')}
-                  </Button>
-                </div>
+                <LoadMoreButton
+                  handleLoadMore={handleLoadMoreCategories}
+                  isLoading={categoriesLoading}
+                />
               )}
 
               {errors.categoryIds && (

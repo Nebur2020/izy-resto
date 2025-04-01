@@ -3,6 +3,7 @@ import { X, Hash, Type, AlignLeft } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { Category } from '../../../types';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../../../hooks';
 
 interface CategoryFormProps {
   category: Category | null;
@@ -25,6 +26,8 @@ export function CategoryForm(props: CategoryFormProps) {
       order: 0,
     },
   });
+  const { settings } = useSettings();
+  const primaryColor = settings?.palette.primary;
 
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4 z-50">
@@ -135,8 +138,11 @@ export function CategoryForm(props: CategoryFormProps) {
             </Button>
             <Button
               type="submit"
+              variant='custom'
               disabled={!isDirty || isLoading}
-              className="px-6 hover:from-blue-700 hover:to-blue-600"
+              className="px-6"
+              style={{ background: primaryColor }}
+              spanClassName='text-white'
             >
               {category ? t("common:update") : t("common:add")}
             </Button>

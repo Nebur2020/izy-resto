@@ -29,6 +29,8 @@ export const OrderCard = React.forwardRef<HTMLDivElement, OrderCardProps>(
     const { t, i18n } = useTranslation('order');
     const lng = i18n.language as Language;
 
+    const primaryColor = settings?.palette.primary;
+
     const canCancel = ['pending', 'preparing'].includes(order.status);
     const [isPrinting, setIsPrinting] = useState(false);
     const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
@@ -69,9 +71,10 @@ export const OrderCard = React.forwardRef<HTMLDivElement, OrderCardProps>(
           {
             ...translations,
             paymentMethodName: t(
-              `payment-method-names.${order.diningOption === 'dine-in'
-                ? 'dine-in'
-                : order.paymentMethod?.name
+              `payment-method-names.${
+                order.diningOption === 'dine-in'
+                  ? 'dine-in'
+                  : order.paymentMethod?.name
               }`
             ),
           },
@@ -97,8 +100,9 @@ export const OrderCard = React.forwardRef<HTMLDivElement, OrderCardProps>(
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
-        className={`rounded-lg shadow-sm p-6 ${statusStyles[order.status]} ${order.status === 'cancelled' ? 'opacity-75 cursor-not-allowed' : ''
-          }`}
+        className={`rounded-lg shadow-sm p-6 ${statusStyles[order.status]} ${
+          order.status === 'cancelled' ? 'opacity-75 cursor-not-allowed' : ''
+        }`}
       >
         <div className="space-y-6">
           <OrderCardHeader order={order} />
@@ -112,10 +116,13 @@ export const OrderCard = React.forwardRef<HTMLDivElement, OrderCardProps>(
           <OrderCardDetails order={order} />
           {isUpdatedOrder && (
             <Button
-              className='w-full'
+              className="w-full"
               onClick={() => {
                 setOrder?.(order);
               }}
+              variant="custom"
+              style={{ backgroundColor: primaryColor }}
+              spanClassName="text-white"
             >
               {t('common:order-updated')}
             </Button>
@@ -126,9 +133,12 @@ export const OrderCard = React.forwardRef<HTMLDivElement, OrderCardProps>(
                 {order.status !== 'cancelled' &&
                   order.status !== 'delivered' && (
                     <Button
+                      variant="custom"
                       onClick={handleStatusChange}
                       disabled={isUpdatingStatus}
-                      className="flex-1 bg-white/90 hover:bg-white text-current"
+                      className={`flex-1 text-current`}
+                      style={{ backgroundColor: primaryColor }}
+                      spanClassName="text-white"
                     >
                       {isUpdatingStatus ? (
                         <>
@@ -139,7 +149,8 @@ export const OrderCard = React.forwardRef<HTMLDivElement, OrderCardProps>(
                         t('mark-in-cooking')
                       ) : (
                         t('mark-as-delivered')
-                      )}
+                      )}{' '}
+                      shdgzs
                     </Button>
                   )}
                 {canCancel && onCancel && (

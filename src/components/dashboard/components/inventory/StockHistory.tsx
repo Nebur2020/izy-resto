@@ -34,6 +34,7 @@ export function StockHistory(props: IStockHistoryProps) {
   const { settings } = useSettings();
   const [isDownloading, setIsDownloading] = useState(false);
   const lng = i18n.language as Language;
+  const primaryColor = settings?.palette.primary;
 
   if (isLoading) {
     return (
@@ -89,7 +90,13 @@ export function StockHistory(props: IStockHistoryProps) {
         <h3 className="text-lg font-semibold">
           {t('inventory:stock-history')}
         </h3>
-        <Button onClick={handleExport} disabled={isDownloading}>
+        <Button
+          onClick={handleExport}
+          disabled={isDownloading}
+          style={{ backgroundColor: primaryColor }}
+          spanClassName="text-white"
+          variant="custom"
+        >
           <Download className="w-4 h-4 mr-2" />
           {isDownloading
             ? t('common:downloading-in-progress')
