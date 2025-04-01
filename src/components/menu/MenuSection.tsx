@@ -7,6 +7,7 @@ import { SearchBar } from './SearchBar';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw } from 'lucide-react';
 import { hexToRgb } from '../../lib/firebase/utils/functions';
+import LoadMoreButton from '../ui/LoadMoreButton';
 
 const INITIAL_ITEMS_COUNT = 9;
 const LOAD_MORE_COUNT = 9;
@@ -170,21 +171,7 @@ export function MenuSection({
           animate={{ opacity: 1, y: 0 }}
           className="flex justify-center mt-12"
         >
-          <button
-            disabled={isLoadingMore}
-            onClick={handleLoadMore}
-            className="flex items-center gap-2 px-6 py-2 rounded-lg transition-colors font-medium"
-            style={{
-              backgroundColor: buttonBgColor,
-              color: buttonTextColor,
-              ':hover': {
-                backgroundColor: buttonHoverBgColor,
-              },
-            }}
-          >
-            <RefreshCw className="w-4 h-4" style={{ color: buttonTextColor }} />
-            {t('common:load-more')}
-          </button>
+          <LoadMoreButton handleLoadMore={handleLoadMore} isLoading={isLoadingMore} />
         </motion.div>
       )}
     </div>

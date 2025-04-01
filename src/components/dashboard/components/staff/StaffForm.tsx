@@ -6,6 +6,7 @@ import { StaffFormData, StaffMember } from '../../../../types/staff';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { PUBLIC_ROUTES, ADMIN_ROUTES } from '../../../../constants/routes';
+import { useSettings } from '../../../../hooks';
 
 interface StaffFormProps {
   staff?: StaffMember | null;
@@ -14,13 +15,15 @@ interface StaffFormProps {
 }
 
 // Enhanced StaffFormData to include allowedRoutes
-interface EnhancedStaffFormData extends StaffFormData {
-  allowedRoutes?: string[];
-}
+// interface EnhancedStaffFormData extends StaffFormData {
+//   allowedRoutes?: string[];
+// }
 
 export function StaffForm({ staff, onSave, onCancel }: StaffFormProps) {
   const { t } = useTranslation();
   const [selectedRole, setSelectedRole] = useState(staff?.role || 'staff');
+  const { settings } = useSettings();
+  const primaryColor = settings?.palette.primary;
   // console.log(staff);
 
   // Initialize allowedRoutes with PUBLIC_ROUTES if staff is new or doesn't have allowedRoutes
@@ -37,7 +40,7 @@ export function StaffForm({ staff, onSave, onCancel }: StaffFormProps) {
     watch,
     setValue,
     formState: { errors, isSubmitting },
-  } = useForm<EnhancedStaffFormData>({
+  } = useForm<StaffFormData>({
     defaultValues: staff
       ? {
           name: staff.name,
@@ -75,7 +78,7 @@ export function StaffForm({ staff, onSave, onCancel }: StaffFormProps) {
     if (selectedRole === 'admin') return; // Admin has access to all routes
 
     // If it's a public route, do nothing - they must remain selected
-    if (PUBLIC_ROUTES.includes(route)) return;
+    if (PUBLIC_ROUTES.includes(route as any)) return;
 
     const updatedRoutes = allowedRoutes.includes(route)
       ? allowedRoutes.filter(r => r !== route)
@@ -107,17 +110,18 @@ export function StaffForm({ staff, onSave, onCancel }: StaffFormProps) {
   };
 
   // Handle form submission
-  const onSubmitForm = async (data: EnhancedStaffFormData) => {
+  const onSubmitForm = async (data: StaffFormData) => {
     try {
-      // If admin, they have access to all routes (set null to indicate all access)
+      // If admin, they have access to all routes (use empty array or all routes based on your backend implementation)
       // If staff, ensure all public routes are included and use the selected allowedRoutes
-      let finalAllowedRoutes;
+      let finalAllowedRoutes: string[];
 
       if (data.role === 'admin') {
-        finalAllowedRoutes = null; // Admin has access to all routes
+        // For admin, use empty array to indicate all access, or alternatively include all routes
+        finalAllowedRoutes = []; // Admin has access to all routes
       } else {
         // Ensure all PUBLIC_ROUTES are included for staff
-        const publicRoutesSet = new Set(PUBLIC_ROUTES);
+        const publicRoutesSet = new Set<string>(PUBLIC_ROUTES);
         const adminRoutesSelected = allowedRoutes.filter(
           r => !publicRoutesSet.has(r)
         );
@@ -137,7 +141,7 @@ export function StaffForm({ staff, onSave, onCancel }: StaffFormProps) {
   };
 
   // Check if a route is a public route
-  const isPublicRoute = (route: string) => PUBLIC_ROUTES.includes(route);
+  // const isPublicRoute = (route: string) => PUBLIC_ROUTES.includes(route);
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
@@ -335,7 +339,13 @@ export function StaffForm({ staff, onSave, onCancel }: StaffFormProps) {
             <Button type="button" variant="secondary" onClick={onCancel}>
               {t('common:cancel')}
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              variant="custom"
+              style={{ backgroundColor: primaryColor }}
+              spanClassName="text-white"
+            >
               {isSubmitting
                 ? t('common:saving')
                 : staff

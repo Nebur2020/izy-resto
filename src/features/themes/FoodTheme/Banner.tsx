@@ -41,12 +41,12 @@ export default function Banner(props: BannerProps) {
 
   return (
     <section className="relative h-screen overflow-hidden">
-      {slides.map((image, index) => (
+      {slides.map((_, index) => (
         <motion.div
           key={index}
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: `url(${image})`,
+            backgroundImage: `url(${images[index]})`,
             opacity: index === currentSlide ? 1 : 0,
           }}
           initial={{ opacity: 0 }}

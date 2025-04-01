@@ -14,6 +14,7 @@ import { useSettings } from '../../../hooks/useSettings';
 import toast from 'react-hot-toast';
 import EmptySection from '../../../components/dashboard/shared/EmptySection';
 import { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
+import LoadMoreButton from '../../../components/ui/LoadMoreButton';
 
 export function MenuManagement() {
   const { t } = useTranslation();
@@ -261,10 +262,12 @@ export function MenuManagement() {
             onCategoryChange={handleCategoryChange}
           />
 
-          <Button onClick={() => setIsFormOpen(true)} variant="custom"
+          <Button
+            onClick={() => setIsFormOpen(true)}
+            variant="custom"
             style={{ backgroundColor: primaryColor, color: '#fff' }}
-            spanClassName='text-white'
-            >
+            spanClassName="text-white"
+          >
             <Plus className="w-5 h-5 mr-2" />
             {t('variant:add-item')}
           </Button>
@@ -307,18 +310,10 @@ export function MenuManagement() {
 
       {!isLoading && hasMore && !isSearching && (
         <div className="flex justify-center mt-6">
-          <Button
-            onClick={loadMoreItems}
-            disabled={isLoadingMore}
-            className="px-6 py-2"
-          >
-            {isLoadingMore ? (
-              <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-            ) : (
-              <RefreshCw className="w-4 h-4 mr-2" />
-            )}
-            {t('common:load-more')}
-          </Button>
+          <LoadMoreButton
+            handleLoadMore={loadMoreItems}
+            isLoading={isLoadingMore}
+          />
         </div>
       )}
 

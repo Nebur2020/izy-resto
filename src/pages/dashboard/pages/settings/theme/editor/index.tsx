@@ -2,7 +2,7 @@ import { useSettings } from '../../../../../../hooks';
 import PizzaThemeEditor, { defaultConfig, PizzaThemeConfig } from './pizza';
 import FoodThemeEditor, {
   FoodThemeConfig,
-  defaultConfig as foodDefaultConfig,
+  foodThemDefaultConfig,
 } from './food';
 
 type EditorProps = {
@@ -33,6 +33,7 @@ const Editor = ({ theme }: EditorProps) => {
       ...settings.themes,
       [data.key]: data.configuration,
     };
+
     await updateSettings(config);
   };
 
@@ -52,10 +53,12 @@ const Editor = ({ theme }: EditorProps) => {
       const conf =
         Object.keys(settings.activeTheme?.configuration || {}).length > 0
           ? (settings.activeTheme.configuration as FoodThemeConfig)
-          : settings.themes[theme] || foodDefaultConfig;
+          : settings.themes[theme] || foodThemDefaultConfig;
       return (
         <FoodThemeEditor
-          config={conf?.banner?.images?.length > 0 ? conf : foodDefaultConfig}
+          config={
+            conf?.banner?.images?.length > 0 ? conf : foodThemDefaultConfig
+          }
           onSave={onSave}
         />
       );

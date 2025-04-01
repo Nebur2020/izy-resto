@@ -63,7 +63,7 @@ export interface FoodThemeConfig {
   };
 }
 
-export const defaultConfig: FoodThemeConfig = {
+export const foodThemDefaultConfig: FoodThemeConfig = {
   banner: {
     slides: [
       {
@@ -79,7 +79,6 @@ export const defaultConfig: FoodThemeConfig = {
     images: [
       'https://radiustheme.com/demo/wordpress/themes/panpie/wp-content/uploads/2021/01/slider1.jpg',
       'https://radiustheme.com/demo/wordpress/themes/panpie/wp-content/uploads/2021/01/slider2.jpg',
-      'https://radiustheme.com/demo/wordpress/themes/panpie/wp-content/uploads/2021/01/slider3.jpg',
     ],
     general: {
       display: true,
@@ -138,7 +137,7 @@ function BannerTab() {
           defaultValue={[]}
           render={({ field: { onChange, value = [] } }) => (
             <div className="space-y-4">
-              {value.map((slide, index) => (
+              {value.map((_, index) => (
                 <div
                   key={index}
                   className="p-4 border rounded-lg dark:border-gray-700 space-y-3"
@@ -327,7 +326,6 @@ function DiscountTab() {
 
   return (
     <div className="space-y-6">
-      {/* Display checkbox */}
       <div className="flex items-center space-x-2">
         <input
           type="checkbox"
@@ -393,7 +391,6 @@ const FooterDeliveryTab = () => {
         {t('setting:footer-settings')}
       </h3>
 
-      {/* Display checkbox for footer */}
       <div className="flex items-center space-x-2">
         <input
           type="checkbox"

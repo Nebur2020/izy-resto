@@ -12,5 +12,6 @@
   "element": "Element",
   "selected": "selected",
   "files-deleted": "Files successfully deleted",
-  "file-deleted": "File successfully deleted"
+  "file-deleted": "File successfully deleted",
+  "firebase-billing-warning": "Warning: Firebase storage requires billing to be activated in your Firebase console before uploading files."
 }

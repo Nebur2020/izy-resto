@@ -3,6 +3,7 @@ import { useFoodTheme } from './context/FoodThemeContext';
 import { useSettings } from '../../../hooks/useSettings';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import packageJson from '../../../../package.json';
 
 interface FooterProps {
   siteName?: string;
@@ -138,7 +139,7 @@ export default function Footer(props: FooterProps) {
             </div>
           </div>
 
-          <div className="flex flex-col items-center justify-center mb-8 md:mb-0">
+          <div className="flex flex-col items-center mb-8 md:mb-0">
             <div className="mb-4">
               <img
                 src={siteLogo}
@@ -188,8 +189,11 @@ export default function Footer(props: FooterProps) {
           </div>
         </div>
 
-        <div className="text-center mt-12 border-t border-gray-700 pt-4">
-          <p className="text-white">{`Copyright ${new Date().getFullYear()} by ${siteName} All Right Reserved.`}</p>
+        <div className="text-center text-xs text-white mt-12 border-t border-gray-700 pt-4">
+          <p>{` © Copyright ${new Date().getFullYear()} - AF | ${t(
+            'footer:all-rights-reserved'
+          )}`}</p>
+          <p className="mt-2">v{packageJson.version}</p>
         </div>
       </div>
     </footer>

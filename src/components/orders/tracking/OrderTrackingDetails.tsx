@@ -12,7 +12,6 @@ interface OrderTrackingDetailsProps {
 export function OrderTrackingDetails({ order }: OrderTrackingDetailsProps) {
   const { settings } = useSettings();
   const { t } = useTranslation('order');
-  // const secondaryColor = settings?.palette.secondary;
   const primaryColor = settings?.palette.primary;
 
   const showAdditionalCharges = order.status !== 'cancelled';

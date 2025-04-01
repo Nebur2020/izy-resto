@@ -16,6 +16,7 @@ export function InventoryForm(props: IInventoryFormProps) {
   const { item, onSave, onCancel } = props;
   const { t } = useTranslation();
   const { settings } = useSettings();
+  const primaryColor = settings?.palette.primary;
   const {
     register,
     handleSubmit,
@@ -228,7 +229,13 @@ export function InventoryForm(props: IInventoryFormProps) {
             <Button type="button" variant="secondary" onClick={onCancel}>
               {t('common:cancel')}
             </Button>
-            <Button onClick={handleSubmit(onSave)} disabled={isSubmitting}>
+            <Button
+              onClick={handleSubmit(onSave)}
+              disabled={isSubmitting}
+              variant="custom"
+              style={{ backgroundColor: primaryColor }}
+              spanClassName="text-white"
+            >
               {isSubmitting
                 ? t('common:saving')
                 : item

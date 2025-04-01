@@ -7,6 +7,7 @@ import { usePizzaTheme } from './context/PizzaThemeContext';
 import { SearchBar } from '../../../components/menu/SearchBar';
 import { useSettings } from '../../../hooks';
 import { motion, AnimatePresence } from 'framer-motion'; // Importez framer-motion
+import LoadMoreButton from '../../../components/ui/LoadMoreButton';
 
 interface ProductListProps {
   tagline?: string;
@@ -209,16 +210,7 @@ export default function ProductList({
               animate={{ opacity: 1, y: 0 }}
               className="text-center mt-8"
             >
-              <button
-                onClick={loadMore}
-                className="text-white px-6 py-2 rounded-full transition-colors"
-                style={{
-                  backgroundColor: buttonColor,
-                  ':hover': { backgroundColor: `${buttonColor}dd` },
-                }}
-              >
-                {t('common:load-more')}
-              </button>
+              <LoadMoreButton handleLoadMore={loadMore} isLoading={false} />
             </motion.div>
           )}
         </div>
