@@ -52,14 +52,3 @@ export function formatCurrency(
 export function getCurrencyStep(currency?: Currency): string {
   return currency === 'XOF' ? '1' : '0.01';
 }
-
-export function getQuickAmounts(currency?: Currency): number[] {
-  switch (currency) {
-    case 'XOF':
-      return [5000, 10000, 20000, 30000];
-    case 'EUR':
-      return [10, 20, 50, 100];
-    default:
-      return [10, 20, 50, 100];
-  }
-}

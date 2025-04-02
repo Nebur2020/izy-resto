@@ -1,6 +1,6 @@
 import { CartItem } from './cart';
 import { PaymentMethod } from './payment';
-import { DeliveryZone, TaxRate } from './settings';
+import { DeliveryZone } from './settings';
 
 export interface OrderTax {
   id: string;
@@ -38,9 +38,9 @@ export interface Order {
   rating?: OrderRating;
   createdAt: any;
   updatedAt: any;
-  subtotal: number; // Price before tax and tip
-  taxes: OrderTax[]; // Array of applied taxes
-  taxTotal: number; // Total tax amount
+  subtotal: number;
+  taxes: OrderTax[];
+  taxTotal: number;
   tip: OrderTip | null;
   amountPaid?: number;
   change?: number;
