@@ -150,7 +150,6 @@ export const OrderCard = React.forwardRef<HTMLDivElement, OrderCardProps>(
                       ) : (
                         t('mark-as-delivered')
                       )}{' '}
-                      shdgzs
                     </Button>
                   )}
                 {canCancel && onCancel && (
