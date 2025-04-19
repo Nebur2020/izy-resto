@@ -13,7 +13,6 @@ import { orderService } from '../../../services/orders/order.service';
 import { menuService } from '../../../services/menu/menu.service';
 import { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
 import { RefreshCw, Search, X } from 'lucide-react';
-import { Button } from '../../../components/ui/Button';
 import { useTranslation } from 'react-i18next';
 import { OrderList } from '../../../components/orders/OrderList';
 import { useOrders } from '../../../context/OrderContext';
@@ -230,7 +229,7 @@ export function POS() {
     if (!searchTerm) return items;
 
     return items.filter(item =>
-      item.name.toLowerCase().includes(searchTerm.toLowerCase())
+      item.name.toLowerCase().includes(searchTerm.toLowerCase()) || item.description.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [items, searchTerm]);
 
@@ -323,11 +322,10 @@ export function POS() {
         <div className="flex-1 flex flex-col">
           <div className="flex border-b dark:border-gray-700 mt-5">
             <button
-              className={`flex-1 py-2 text-center ${
-                activeTab === 'products'
-                  ? 'border-b-2 text-primary-color'
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-              }`}
+              className={`flex-1 py-2 text-center ${activeTab === 'products'
+                ? 'border-b-2 text-primary-color'
+                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                }`}
               style={{
                 borderColor:
                   activeTab === 'products' ? primaryColor : 'transparent',
@@ -344,11 +342,10 @@ export function POS() {
               {t('common:product-list')}
             </button>
             <button
-              className={`flex-1 py-2 text-center ${
-                activeTab === 'orders'
-                  ? 'border-b-2 text-primary-color'
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-              }`}
+              className={`flex-1 py-2 text-center ${activeTab === 'orders'
+                ? 'border-b-2 text-primary-color'
+                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                }`}
               style={{
                 borderColor:
                   activeTab === 'orders' ? primaryColor : 'transparent',
@@ -455,9 +452,9 @@ export function POS() {
                       isSearching
                         ? searchResults
                         : orders.filter(
-                            o =>
-                              o.status === 'pending' || o.status === 'preparing'
-                          )
+                          o =>
+                            o.status === 'pending' || o.status === 'preparing'
+                        )
                     }
                     isLoading={
                       (isLoading || isLoadingOrders) && orders.length === 0

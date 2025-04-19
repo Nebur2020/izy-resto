@@ -273,16 +273,17 @@ export function VariantForm(props: IVariantFormProps) {
                     key={category.id}
                     className={`
                       group flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all duration-200
-                      ${
-                        categoryIds?.includes(category.id)
-                          ? 'bg-blue-50 border-blue-500 dark:bg-blue-900/20 dark:border-blue-400'
-                          : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600'
+                      ${categoryIds?.includes(category.id)
+                        ? 'bg-blue-50 border-blue-500 dark:bg-blue-900/20 dark:border-blue-400'
+                        : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600'
                       }
                     `}
                     style={{
                       backgroundColor:
-                        categoryIds?.includes(category.id) && "#ccc",
-                      color: categoryIds?.includes(category.id) ? '#000' : ''
+                        categoryIds?.includes(category.id) ? primaryColor + '20' : '',
+                      borderColor:
+                        categoryIds?.includes(category.id) ? primaryColor : '',
+                      color: categoryIds?.includes(category.id) ? primaryColor : ''
                     }}
                   >
                     <input
@@ -323,12 +324,13 @@ export function VariantForm(props: IVariantFormProps) {
                 <Button
                   type="button"
                   onClick={addValue}
-                  className="px-3 py-1.5 text-sm bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-400"
+                  className="px-3 py-1.5 text-sm"
                   variant="custom"
                   style={{
-                    backgroundColor: "#ccc",
+                    backgroundColor: primaryColor + '20',
+                    color: primaryColor
                   }}
-                  spanClassName="text-black"
+                  spanClassName={`text-${primaryColor}`}
                 >
                   <Plus className="w-4 h-4 mr-1" />
                   {t('common:add')}
@@ -344,14 +346,15 @@ export function VariantForm(props: IVariantFormProps) {
                         key={Math.random()}
                         type="button"
                         onClick={() => setActiveValueTab(index)}
-                        className={`flex items-center gap-2 px-4 py-2.5 text-sm whitespace-nowrap ${
-                          activeValueTab === index
-                            ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 border-b-2 border-blue-500'
-                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50'
-                        }`}
+                        className={`flex items-center gap-2 px-4 py-2.5 text-sm whitespace-nowrap ${activeValueTab === index
+                          ? 'bg-white dark:bg-gray-700 border-b-2'
+                          : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50'
+                          }`}
                         style={{
                           borderColor:
                             activeValueTab === index ? primaryColor : '',
+                          color:
+                            activeValueTab === index ? primaryColor : ''
                         }}
                       >
                         <span className="truncate max-w-32">
@@ -427,10 +430,13 @@ export function VariantForm(props: IVariantFormProps) {
                         <Button
                           type="button"
                           onClick={() => addInventoryConnection(activeValueTab)}
-                          className="px-3 py-1.5 text-xs bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-400"
+                          className="px-3 py-1.5 text-xs"
                           variant='custom'
-                          style={{ backgroundColor: "#ccc" }}
-                          spanClassName='text-black'
+                          style={{
+                            backgroundColor: primaryColor + '20',
+                            color: primaryColor
+                          }}
+                          spanClassName={`text-${primaryColor}`}
                         >
                           <Plus className="w-3.5 h-3.5 mr-1" />
                           {t('common:add-article')}
@@ -438,7 +444,7 @@ export function VariantForm(props: IVariantFormProps) {
                       </div>
 
                       {(inventoryConnections?.[activeValueTab] || []).length ===
-                      0 ? (
+                        0 ? (
                         <div className="flex flex-col items-center justify-center py-8 px-4 border border-dashed rounded-lg dark:border-gray-700">
                           <Package className="w-10 h-10 text-gray-300 dark:text-gray-600 mb-2" />
                           <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
@@ -449,7 +455,13 @@ export function VariantForm(props: IVariantFormProps) {
                             onClick={() =>
                               addInventoryConnection(activeValueTab)
                             }
-                            className="mt-3 px-3 py-1.5 text-xs bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-400"
+                            className="mt-3 px-3 py-1.5 text-xs"
+                            variant='custom'
+                            style={{
+                              backgroundColor: primaryColor + '20',
+                              color: primaryColor
+                            }}
+                            spanClassName={`text-${primaryColor}`}
                           >
                             <Plus className="w-3.5 h-3.5 mr-1" />
                             {t('common:add-article')}
@@ -511,19 +523,19 @@ export function VariantForm(props: IVariantFormProps) {
                                   <div className="col-span-1 flex justify-end">
                                     {inventoryConnections[activeValueTab]
                                       .length > 1 && (
-                                      <button
-                                        type="button"
-                                        onClick={() =>
-                                          removeInventoryConnection(
-                                            activeValueTab,
-                                            connectionIndex
-                                          )
-                                        }
-                                        className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
-                                      >
-                                        <Trash2 className="w-4 h-4" />
-                                      </button>
-                                    )}
+                                        <button
+                                          type="button"
+                                          onClick={() =>
+                                            removeInventoryConnection(
+                                              activeValueTab,
+                                              connectionIndex
+                                            )
+                                          }
+                                          className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
+                                        >
+                                          <Trash2 className="w-4 h-4" />
+                                        </button>
+                                      )}
                                   </div>
                                 </div>
                               </div>
@@ -548,7 +560,13 @@ export function VariantForm(props: IVariantFormProps) {
                     <Button
                       type="button"
                       onClick={addValue}
-                      className="px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 dark:bg-blue-900/30 dark:hover:bg-blue-900/40 dark:text-blue-300"
+                      variant='custom'
+                      style={{
+                        backgroundColor: primaryColor + '20',
+                        color: primaryColor
+                      }}
+                      spanClassName={`text-${primaryColor}`}
+                      className="px-4 py-2"
                     >
                       <Plus className="w-4 h-4 mr-2" />
                       {t('variant:add-first-value')}
@@ -569,14 +587,14 @@ export function VariantForm(props: IVariantFormProps) {
               <Button
                 type="button"
                 onClick={onCancel}
-                className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                variant='danger'
               >
                 {t('common:cancel')}
               </Button>
               <Button
                 type="submit"
                 disabled={!isDirty}
-                className="px-6 py-2  hover:from-blue-700 hover:to-blue-600 text-white shadow-sm disabled:opacity-50"
+                className="px-6 py-2 shadow-sm disabled:opacity-50"
                 variant='custom'
                 style={{ backgroundColor: primaryColor }}
                 spanClassName='text-white'

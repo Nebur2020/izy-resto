@@ -38,12 +38,12 @@ export function CategoryForm(props: CategoryFormProps) {
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               {category
                 ? t('category:update-category')
-                : t('category:new-category')} sjhzdsb
+                : t('category:new-category')}
             </h3>
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               {category
                 ? t('category:update-category-details')
-                : t('category:add-new-category')} sjhzdsb
+                : t('category:add-new-category')}
             </p>
           </div>
           <button
@@ -130,9 +130,14 @@ export function CategoryForm(props: CategoryFormProps) {
           <div className="flex justify-end gap-3 pt-2">
             <Button
               type="button"
-              variant="secondary"
               onClick={onCancel}
-              className="px-4"
+              className="p-2"
+              variant="custom"
+              style={{
+                backgroundColor: "rgba(239, 68, 68, 0.1)",
+                color: "rgb(239, 68, 68)"
+              }}
+              spanClassName="text-inherit"
             >
               {t('common:cancel')}
             </Button>

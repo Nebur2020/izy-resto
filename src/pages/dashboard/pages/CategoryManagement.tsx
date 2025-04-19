@@ -7,6 +7,8 @@ import {
   LayoutGrid,
   RefreshCw,
   X,
+  Edit2,
+  Trash2,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../../../components/ui/Button';
@@ -159,7 +161,7 @@ export function CategoryManagement() {
         <div>
           <h1 className="text-2xl font-semibold text-gray-900 dark:text-white flex items-center gap-3">
             <LayoutGrid
-              className="w-6 h-6 text-blue-500"
+              className="w-6 h-6"
               style={{ color: primaryColor }}
             />
             {t('category:category-title')}
@@ -177,7 +179,11 @@ export function CategoryManagement() {
           }}
           spanClassName="text-white"
         >
-          <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+            style={{
+              backgroundImage: `linear-gradient(to right, ${primaryColor}33, transparent)`
+            }}
+          />
           <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
           <span className="relative text-white">
             {t('category:new-category')}
@@ -192,7 +198,11 @@ export function CategoryManagement() {
               placeholder={t('category:search-placeholder')}
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-10 py-2 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-500/20 transition-shadow"
+              className="w-full pl-10 pr-10 py-2 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 focus:ring-2 transition-shadow"
+              style={{
+                '--tw-ring-color': primaryColor + '33',
+                borderColor: searchTerm ? primaryColor : ''
+              } as React.CSSProperties}
             />
             <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
             {searchTerm && (
@@ -205,11 +215,16 @@ export function CategoryManagement() {
             )}
           </div>
           <Button
-            variant="secondary"
+            variant="custom"
             onClick={() =>
               setSortOrder(current => (current === 'asc' ? 'desc' : 'asc'))
             }
             className="min-w-[140px]"
+            style={{
+              backgroundColor: primaryColor + '15',
+              color: primaryColor
+            }}
+            spanClassName="text-inherit"
           >
             <ArrowUpDown className="w-4 h-4 mr-2" />
             {sortOrder === 'asc'
@@ -218,7 +233,7 @@ export function CategoryManagement() {
           </Button>
         </div>
         {isSearching && (
-          <div className="mt-2 text-sm text-blue-600 dark:text-blue-400">
+          <div className="mt-2 text-sm" style={{ color: primaryColor }}>
             {searchLoading ? (
               <span className="flex items-center">
                 <RefreshCw className="w-3 h-3 mr-2 animate-spin" />
@@ -236,7 +251,7 @@ export function CategoryManagement() {
         {currentLoading && sortedCategories.length === 0 ? (
           <div className="flex justify-center items-center h-64">
             <div className="flex flex-col items-center gap-2">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+              <Loader2 className="w-8 h-8 animate-spin" style={{ color: primaryColor }} />
               <span className="text-sm text-gray-500 dark:text-gray-400">
                 {t('common:category-loading')}
               </span>
@@ -268,10 +283,9 @@ export function CategoryManagement() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3">
                           <span
-                            className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-sm font-medium"
+                            className="flex items-center justify-center w-8 h-8 rounded-lg text-sm font-medium text-white"
                             style={{
                               backgroundColor: primaryColor,
-                              opacity: 0.5,
                             }}
                           >
                             {category.order}
@@ -288,20 +302,31 @@ export function CategoryManagement() {
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 ml-4">
+
+                      <div className="flex items-center gap-2">
                         <Button
-                          variant="ghost"
                           onClick={() => handleEdit(category)}
-                          className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                          variant="custom"
+                          size="sm"
+                          style={{
+                            backgroundColor: primaryColor + '20',
+                            color: primaryColor
+                          }}
+                          spanClassName="text-inherit"
                         >
-                          {t('common:edit')}
+                          <Edit2 className="w-4 h-4" />
                         </Button>
                         <Button
-                          variant="ghost"
                           onClick={() => handleDelete(category)}
-                          className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                          className="p-2"
+                          variant="custom"
+                          style={{
+                            backgroundColor: "rgba(239, 68, 68, 0.1)",
+                            color: "rgb(239, 68, 68)"
+                          }}
+                          spanClassName="text-inherit"
                         >
-                          {t('common:delete')}
+                          <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
                     </div>
@@ -318,6 +343,7 @@ export function CategoryManagement() {
           <LoadMoreButton
             handleLoadMore={loadMoreCategories}
             isLoading={false}
+            primaryColor={primaryColor}
           />
         </div>
       )}
@@ -325,7 +351,7 @@ export function CategoryManagement() {
       {!isSearching && isLoading && categories.length > 0 && (
         <div className="flex justify-center mt-6">
           <div className="animate-spin">
-            <RefreshCw className="w-6 h-6 text-blue-500" />
+            <RefreshCw className="w-6 h-6" style={{ color: primaryColor }} />
           </div>
         </div>
       )}
