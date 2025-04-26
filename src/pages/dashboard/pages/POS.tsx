@@ -228,9 +228,16 @@ export function POS() {
   const filteredItems = useMemo(() => {
     if (!searchTerm) return items;
 
-    return items.filter(item =>
+    const result = items.filter(item =>
       item.name.toLowerCase().includes(searchTerm.toLowerCase()) || item.description.toLowerCase().includes(searchTerm.toLowerCase())
     );
+    //remove duplicates
+    const uniqueItems = result.filter(
+      (item, index, self) =>
+        index ===
+        self.findIndex(i => i.id === item.id && i.name === item.name)
+    );
+    return uniqueItems;
   }, [items, searchTerm]);
 
   const handleQuickAmount = (amount: number) => {
@@ -380,7 +387,7 @@ export function POS() {
                   searchTerm={searchTerm}
                   onSearchChange={setSearchTerm}
                   onToggleCart={() => setIsSidebarOpen(true)}
-                  isLoading={isLoading}
+                // isLoading={isLoading}
                 />
 
                 {!isLoading && hasMore && !searchTerm && (
