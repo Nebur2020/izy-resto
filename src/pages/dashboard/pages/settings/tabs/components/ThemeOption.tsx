@@ -2,6 +2,7 @@ import React from 'react';
 import { LucideIcon } from 'lucide-react';
 import { UseFormRegister } from 'react-hook-form';
 import { RestaurantSettings } from '../../../../../../types/settings';
+import { useSettings } from '../../../../../../hooks/useSettings';
 
 interface ThemeOptionProps {
   icon: LucideIcon;
@@ -20,17 +21,30 @@ export function ThemeOption({
   value,
   selected,
   onChange,
-  register
+  register,
 }: ThemeOptionProps) {
+  const { settings } = useSettings();
+  const primaryColor = settings?.palette?.primary || '#0ea5e9';
+
+  // Create styles using primary color with opacity for different states
+  const selectedBorderStyle = { borderColor: primaryColor };
+  const selectedBgStyle = { backgroundColor: `${primaryColor}10` }; // 10% opacity
+
   return (
-    <div 
+    <div
       className={`
         relative rounded-lg border-2 p-6 cursor-pointer transition-all
-        ${selected
-          ? 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/20'
-          : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600'
+        ${
+          selected
+            ? 'dark:bg-opacity-10'
+            : 'border-gray-200 dark:border-gray-700 hover:border-opacity-60'
         }
       `}
+      style={selected ? { ...selectedBorderStyle, ...selectedBgStyle } : {}}
+      onMouseOver={e =>
+        !selected && (e.currentTarget.style.borderColor = `${primaryColor}80`)
+      }
+      onMouseOut={e => !selected && (e.currentTarget.style.borderColor = '')}
       onClick={() => onChange(value)}
     >
       <input
@@ -40,8 +54,15 @@ export function ThemeOption({
         className="sr-only"
       />
       <div className="flex items-center gap-4">
-        <div className={`p-3 ${value === 'light' ? 'bg-white' : 'bg-gray-900'} rounded-lg shadow-md`}>
-          <Icon className={`w-8 h-8 ${value === 'light' ? 'text-amber-500' : 'text-blue-400'}`} />
+        <div
+          className={`p-3 ${
+            value === 'light' ? 'bg-white' : 'bg-gray-900'
+          } rounded-lg shadow-md`}
+        >
+          <Icon
+            className={`w-8 h-8`}
+            style={{ color: value === 'light' ? '#f59e0b' : primaryColor }}
+          />
         </div>
         <div>
           <h3 className="font-medium text-lg mb-1">{title}</h3>

@@ -6,8 +6,6 @@ import {
   Moon,
   MenuSquare,
   LayoutGrid,
-  Rows,
-  Columns,
   LayoutDashboard,
   LayoutList,
   X,
@@ -248,7 +246,10 @@ export function AppearanceSettings() {
       </section>
       <section className="space-y-6">
         <div className="flex items-center gap-3">
-          <MenuSquare className="h-5 w-5 dark:text-blue-400" color={primaryColor} />
+          <MenuSquare
+            className="h-5 w-5 dark:text-blue-400"
+            color={primaryColor}
+          />
           <h2 className="text-xl font-semibold">
             {t('settingAppearence:header')}
           </h2>
@@ -280,7 +281,10 @@ export function AppearanceSettings() {
       </section>
       <section className="space-y-6">
         <div className="flex items-center gap-3">
-          <LayoutGrid className="h-5 w-5 dark:text-blue-400" color={primaryColor} />
+          <LayoutGrid
+            className="h-5 w-5 dark:text-blue-400"
+            color={primaryColor}
+          />
           <h2 className="text-xl font-semibold">
             {t('settingAppearence:landing-page')}
           </h2>
@@ -336,7 +340,10 @@ export function AppearanceSettings() {
 
       <section className="space-y-6">
         <div className="flex items-center gap-3">
-          <Palette className="h-5 w-5 dark:text-blue-400" color={primaryColor} />
+          <Palette
+            className="h-5 w-5 dark:text-blue-400"
+            color={primaryColor}
+          />
           <h2 className="text-xl font-semibold">
             {t('settingAppearence:color-palette')}
           </h2>
@@ -452,8 +459,8 @@ export function AppearanceSettings() {
                   {vers.isLatest
                     ? `(${t('common:latest')})`
                     : vers.isStable
-                      ? `(${t('common:stable')})`
-                      : ''}
+                    ? `(${t('common:stable')})`
+                    : ''}
                 </option>
               ))}
             </select>

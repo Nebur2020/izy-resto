@@ -2,60 +2,11 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '../../../hooks/useSettings';
 import { usePizzaTheme } from './context/PizzaThemeContext';
-import {
-  Facebook,
-  Instagram,
-  Twitter,
-  MapPin,
-  Phone,
-  Mail,
-  Youtube,
-  LinkIcon,
-} from 'lucide-react';
+import { MapPin, Phone, Mail, LinkIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import Whatsapp from '../../../components/svg/whatsapp';
-import Tiktok from '../../../components/svg/Tiktok';
+
 import packageJson from '../../../../package.json';
-import { SocialMediaProfile } from '../../../types/settings';
-
-interface SocialMediaIconProps {
-  profile: SocialMediaProfile;
-  color?: string;
-}
-
-function SocialMediaIcon({ profile, color = 'white' }: SocialMediaIconProps) {
-  const icons = {
-    facebook: Facebook,
-    instagram: Instagram,
-    twitter: Twitter,
-    youtube: Youtube,
-    tiktok: Tiktok,
-    whatsapp: Whatsapp,
-  };
-
-  const Icon = icons[profile.platform];
-  if (!Icon) return null;
-
-  const { t } = useTranslation('footer');
-
-  return (
-    <a
-      href={
-        profile.platform === 'whatsapp'
-          ? `https://wa.me/${profile.url}`
-              .replace(/\+/g, '')
-              .replace(/\s+/g, '')
-          : profile.url
-      }
-      target="_blank"
-      rel="noopener noreferrer"
-      className={`text-${color} hover:text-yellow-500 transition-colors`}
-      aria-label={`${t('visit-us')} ${profile.platform}`}
-    >
-      <Icon color={color} className="w-7 h-7" />
-    </a>
-  );
-}
+import { SocialMediaIcon } from '../../../components/social-media-icon';
 
 interface FooterProps {
   logo?: string;

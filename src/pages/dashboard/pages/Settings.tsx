@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { RestaurantSettings } from '../../../types';
 import { useSettings } from '../../../hooks/useSettings';
 import { Tabs } from '../../../components/ui/Tabs';
+import { Button } from '../../../components/ui/Button';
 import {
   GeneralSettings,
   AppearanceSettings,
@@ -106,20 +107,14 @@ export function Settings() {
 
           {activeTab !== 'data' && (
             <div className="flex justify-end pt-6 border-t dark:border-gray-700">
-              <button
+              <Button
                 type="submit"
                 disabled={!isDirty || isSubmitting}
-                className={`
-                  px-6 py-2 rounded-lg font-medium text-white
-                  transition-all duration-200
-                  ${isDirty && !isSubmitting
-                    ? 'bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl'
-                    : 'bg-gray-400 cursor-not-allowed'
-                  }
-                `}
+                variant="primary"
+                className="px-6 py-2"
               >
                 {isSubmitting ? t('common:saving') : t('setting:save-settings')}
-              </button>
+              </Button>
             </div>
           )}
         </form>

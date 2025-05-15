@@ -1,9 +1,9 @@
-import { Facebook, Twitter, Instagram } from 'lucide-react';
 import { useFoodTheme } from './context/FoodThemeContext';
 import { useSettings } from '../../../hooks/useSettings';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import packageJson from '../../../../package.json';
+import { SocialMediaIcon } from '../../../components/social-media-icon';
 
 interface FooterProps {
   siteName?: string;
@@ -67,24 +67,28 @@ export default function Footer(props: FooterProps) {
       });
   }, [settings?.openingHours, footerShowHours]);
 
-  const socialIcons = [
-    {
-      Icon: Facebook,
-      link:
-        settings?.socialMedia?.find(s => s.platform === 'facebook')?.url || '#',
-    },
-    {
-      Icon: Twitter,
-      link:
-        settings?.socialMedia?.find(s => s.platform === 'twitter')?.url || '#',
-    },
-    {
-      Icon: Instagram,
-      link:
-        settings?.socialMedia?.find(s => s.platform === 'instagram')?.url ||
-        '#',
-    },
-  ];
+  const activeSocialProfiles =
+    settings?.socialMedia?.filter(
+      profile => profile.active && profile.url.trim()
+    ) || [];
+  // [
+  //   {
+  //     Icon: Facebook,
+  //     link:
+  //       settings?.socialMedia?.find(s => s.platform === 'facebook')?.url || '#',
+  //   },
+  //   {
+  //     Icon: Twitter,
+  //     link:
+  //       settings?.socialMedia?.find(s => s.platform === 'twitter')?.url || '#',
+  //   },
+  //   {
+  //     Icon: Instagram,
+  //     link:
+  //       settings?.socialMedia?.find(s => s.platform === 'instagram')?.url ||
+  //       '#',
+  //   },
+  // ];
 
   return (
     <footer
@@ -135,7 +139,9 @@ export default function Footer(props: FooterProps) {
                   </ul>
                 </div>
               )}
-              <p style={{ color: primaryColor }}>Booking Time: 24/7 Hours</p>
+              <p style={{ color: primaryColor }}>
+                {t('foodtheme:booking-time')}
+              </p>
             </div>
           </div>
 
@@ -168,31 +174,26 @@ export default function Footer(props: FooterProps) {
                 {t('common:phone-number')}: {settings?.phone}
               </p>
 
-              <div className="flex justify-center md:justify-start space-x-4 mt-4">
-                {socialIcons.map(({ Icon, link }, index) => (
-                  <a
-                    key={index}
-                    href={link}
-                    className="bg-gray-700 rounded-full p-2 hover:bg-opacity-75 transition-colors"
-                    style={{
-                      backgroundColor: isDarkMode
-                        ? 'rgba(255,255,255,0.1)'
-                        : 'rgba(0,0,0,0.1)',
-                      color: primaryColor,
-                    }}
-                  >
-                    <Icon className="w-6 h-6" />
-                  </a>
-                ))}
-              </div>
+              {/* Social Media Icons */}
+              {activeSocialProfiles.length > 0 && (
+                <div className="flex justify-center sm:justify-start gap-4 mb-4">
+                  {activeSocialProfiles.map(profile => (
+                    <SocialMediaIcon
+                      key={profile.platform}
+                      profile={profile}
+                      color={primaryColor}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         <div className="text-center text-xs text-white mt-12 border-t border-gray-700 pt-4">
-          <p>{` © Copyright ${new Date().getFullYear()} - AF | ${t(
-            'footer:all-rights-reserved'
-          )}`}</p>
+          <p>{` © ${t('foodtheme:copyright')} ${new Date().getFullYear()} - ${t(
+            'foodtheme:copyright-owner'
+          )} | ${t('footer:all-rights-reserved')}`}</p>
           <p className="mt-2">v{packageJson.version}</p>
         </div>
       </div>

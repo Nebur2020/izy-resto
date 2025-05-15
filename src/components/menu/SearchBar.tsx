@@ -18,8 +18,10 @@ export function SearchBar({
     primary: '#2563EB',
     secondary: '#4D48E5',
   },
+  isDarkMode,
 }: SearchBarProps) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -36,13 +38,15 @@ export function SearchBar({
 
   // Use primary color for focus ring and icon
   const primaryColor = palette.primary;
+  const focusRingColor = `${primaryColor}40`;
+  const hoverBgColor = isDarkMode ? `${primaryColor}20` : `${primaryColor}10`;
 
   return (
     <div className="relative max-w-xl mx-auto">
       <div className="relative">
         <Search
           className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5"
-          style={{ color: primaryColor }}
+          style={{ color: searchTerm || isFocused ? primaryColor : '#9ca3af' }}
         />
         <input
           type="text"
@@ -51,13 +55,14 @@ export function SearchBar({
           placeholder={t('search-items')}
           className="w-full pl-12 pr-10 py-3 rounded-full border border-gray-200 dark:border-gray-700 
                    bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm
-                   focus:outline-none focus:ring-2
-                   shadow-sm hover:shadow-md transition-shadow"
-          style={
-            {
-              '--tw-ring-color': primaryColor,
-            } as React.CSSProperties
-          }
+                   focus:outline-none
+                   shadow-sm hover:shadow-md transition-all duration-300"
+          style={{
+            boxShadow: isFocused ? `0 0 0 3px ${focusRingColor}` : '',
+            borderColor: isFocused ? primaryColor : '',
+          }}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
         />
         <AnimatePresence>
           {searchTerm && (
@@ -67,9 +72,13 @@ export function SearchBar({
               exit={{ opacity: 0, scale: 0.5, translateY: '-50%' }}
               onClick={clearSearch}
               className="absolute right-4 top-[50%] -translate-y-[50%] p-1 rounded-full 
-                       hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                       transition-colors"
+              style={{
+                backgroundColor: hoverBgColor,
+                color: primaryColor,
+              }}
             >
-              <X className="h-4 w-4 text-gray-500" />
+              <X className="h-4 w-4" />
             </motion.button>
           )}
         </AnimatePresence>

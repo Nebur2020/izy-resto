@@ -88,6 +88,9 @@ import enLoging from './locales/en/login.json';
 import frPizzatheme from './locales/fr/pizza-theme.json';
 import enPizzatheme from './locales/en/pizza-theme.json';
 
+import enFoodtheme from './locales/en/food-theme.json';
+import frFoodtheme from './locales/fr/food-theme.json';
+
 import frNotification from './locales/fr/notification.json';
 import enNotification from './locales/en/notification.json';
 
@@ -123,6 +126,7 @@ i18n.use(initReactI18next).init({
       media: enMedia,
       login: enLoging,
       pizzatheme: enPizzatheme,
+      foodtheme: enFoodtheme,
       notification: enNotification,
     },
     fr: {
@@ -155,6 +159,7 @@ i18n.use(initReactI18next).init({
       media: frMedia,
       login: frLoging,
       pizzatheme: frPizzatheme,
+      foodtheme: frFoodtheme,
       notification: frNotification,
     },
   },

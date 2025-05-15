@@ -4,6 +4,7 @@ import { ProductDetailsModal } from '../../../components/menu/ProductDetailsModa
 import { MenuItemWithVariants } from '../../../types';
 import { formatCurrency } from '../../../utils/currency';
 import { useSettings } from '../../../hooks';
+import { useTranslation } from 'react-i18next';
 
 interface ItemCardProps {
   item: MenuItemWithVariants;
@@ -20,6 +21,7 @@ export default function ItemCard({
   const isOutOfStock = item.stockQuantity === 0;
   const { settings } = useSettings();
   const [showModal, setShowModal] = useState(false);
+  const { t } = useTranslation();
 
   const truncateText = (text: string, maxLength: number) => {
     if (text.length > maxLength) {
@@ -70,7 +72,7 @@ export default function ItemCard({
                   !isOutOfStock && setShowModal(true);
                 }}
               >
-                Add to Cart
+                {t('foodtheme:add-to-cart')}
               </motion.button>
             )}
           </AnimatePresence>
@@ -91,7 +93,7 @@ export default function ItemCard({
             </span>
             {!isOutOfStock && (
               <span className="text-xs text-gray-500">
-                {item.stockQuantity} in stock
+                {item.stockQuantity} {t('foodtheme:in-stock')}
               </span>
             )}
           </div>
@@ -99,8 +101,15 @@ export default function ItemCard({
 
         {isOutOfStock && (
           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <span className="bg-white px-3 py-1 rounded text-sm font-medium">
-              Out of Stock
+            <span
+              className="px-4 py-2 rounded-md text-sm font-bold transform rotate-[-15deg]"
+              style={{
+                backgroundColor: primaryColor || '#f44336',
+                color: 'white',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+              }}
+            >
+              {t('foodtheme:out-of-stock')}
             </span>
           </div>
         )}

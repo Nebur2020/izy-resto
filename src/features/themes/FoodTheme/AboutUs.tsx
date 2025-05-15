@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 interface IAboutUsProps {
   primaryColor?: string;
   sectionTitle: string;
@@ -10,6 +12,7 @@ interface IAboutUsProps {
 export default function AboutUs(props: IAboutUsProps) {
   const { primaryColor, sectionTitle, contentTitle, description, image } =
     props;
+  const { t } = useTranslation();
 
   return (
     <section className="container mx-auto px-4 py-16 flex flex-col lg:flex-row items-center">
@@ -42,10 +45,9 @@ export default function AboutUs(props: IAboutUsProps) {
 
           {/* Image du chef */}
           <div className="relative z-10 w-[250px] h-[250px] sm:w-[350px] sm:h-[350px] md:w-[400px] md:h-[400px] lg:w-[500px] lg:h-[500px]">
-
             <img
               src={image}
-              alt="Chef"
+              alt={t('foodtheme:chef-image-alt')}
               className="w-full h-full rounded-full object-cover shadow-lg"
             />
           </div>

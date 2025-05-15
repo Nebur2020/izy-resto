@@ -6,7 +6,7 @@ interface IOrderNowProps {
   buttonText?: string;
 }
 
-export default function IOrderNowProps(props: IOrderNowProps) {
+export default function OrderNow(props: IOrderNowProps) {
   const { primaryColor, isDarkMode, discountTitle, description, buttonText } =
     props;
 

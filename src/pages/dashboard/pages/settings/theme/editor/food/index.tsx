@@ -20,6 +20,7 @@ import { Button } from '../../../../../../../components/ui';
 import { LogoUploader } from '../../../../../../../components/settings';
 
 import toast from 'react-hot-toast';
+import { useSettings } from '../../../../../../../hooks';
 
 export interface FoodThemeConfig {
   banner: {
@@ -459,6 +460,8 @@ export default function FoodThemeEditor(props: FoodThemEditorProps) {
   const [isSaved, setIsSaved] = useState(false);
   const { t } = useTranslation();
   const [isUpdating, setIsUpdating] = useState(false);
+  const { settings } = useSettings();
+  const primaryColor = settings?.palette?.primary || '#3B82F6';
 
   const methods = useForm<FoodThemeConfig>({
     defaultValues: props.config,
@@ -570,10 +573,18 @@ export default function FoodThemeEditor(props: FoodThemEditorProps) {
                           transition-colors duration-200
                           ${
                             activeTab === tab.id
-                              ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 font-medium'
+                              ? 'font-medium'
                               : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
                           }
                         `}
+                      style={
+                        activeTab === tab.id
+                          ? {
+                              backgroundColor: `${primaryColor}10`,
+                              color: primaryColor,
+                            }
+                          : {}
+                      }
                     >
                       {tab.icon}
                       <span>{tab.label}</span>
