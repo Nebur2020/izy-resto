@@ -70,7 +70,7 @@ export function SocialMediaSettings(p) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Share2 className="h-5 w-5 dark:text-blue-400" color={primaryColor}/>
+          <Share2 className="h-5 w-5 dark:text-blue-400" color={primaryColor} />
           <h2 className="text-xl font-semibold">
             {t('setting:social-media-profiles')}
           </h2>
@@ -83,7 +83,7 @@ export function SocialMediaSettings(p) {
           spanClassName="text-white"
         >
           <Plus className="w-4 h-4 mr-2" />
-          {t('setting:add-profile')} szhjdsba
+          {t('setting:add-profile')}
         </Button>
       </div>
 

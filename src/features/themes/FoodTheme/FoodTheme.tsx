@@ -27,7 +27,6 @@ export default function FoodTheme() {
 
   useEffect(() => {
     if (settings?.activeTheme?.key === 'food') {
-      console.log(settings);
       if (settings?.activeTheme?.configuration?.banner?.images.length > 0) {
         setThemeConfig(settings?.activeTheme?.configuration);
       }

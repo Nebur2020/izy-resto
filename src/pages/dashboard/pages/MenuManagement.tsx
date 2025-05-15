@@ -134,6 +134,7 @@ export function MenuManagement() {
       setIsLoadingMore(false);
     }
   };
+
   const performSearch = async () => {
     if (!searchTerm.trim()) return;
 
@@ -141,29 +142,47 @@ export function MenuManagement() {
     setIsSearching(true);
 
     try {
-      let baseItems;
-      if (selectedCategory === 'all') {
-        baseItems = await menuService.getAll();
-      } else {
-        baseItems = await menuService.getMenuItemsByCategory(selectedCategory);
-      }
-
-      const results = baseItems.filter(
-        item =>
-          item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.description
-            ?.toLowerCase()
-            .includes(searchTerm.toLowerCase() || '')
+      // Use the searchMenuItems function with pagination support instead of filtering all items
+      const result = await menuService.searchMenuItems(
+        searchTerm,
+        pageSize,
+        null,
+        selectedCategory !== 'all' ? selectedCategory : undefined
       );
 
-      setItems(results);
-      setHasMore(false);
-      setLastDoc(null);
+      setItems(result.items);
+      setLastDoc(result.lastDoc);
+      setHasMore(result.hasMore);
     } catch (error) {
       console.error('Error searching menu items:', error);
       toast.error(t('common:error-searching'));
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Add a function to load more search results
+  const loadMoreSearchResults = async () => {
+    if (!hasMore || isLoadingMore || !searchTerm) return;
+
+    try {
+      setIsLoadingMore(true);
+
+      const result = await menuService.searchMenuItems(
+        searchTerm,
+        pageSize,
+        lastDoc,
+        selectedCategory !== 'all' ? selectedCategory : undefined
+      );
+
+      setItems(prevItems => [...prevItems, ...result.items]);
+      setLastDoc(result.lastDoc);
+      setHasMore(result.hasMore);
+    } catch (error) {
+      console.error('Error loading more search results:', error);
+      toast.error(t('common:error-loading-more-search-results'));
+    } finally {
+      setIsLoadingMore(false);
     }
   };
 
@@ -308,10 +327,10 @@ export function MenuManagement() {
         </div>
       )}
 
-      {!isLoading && hasMore && !isSearching && (
+      {!isLoading && hasMore && (
         <div className="flex justify-center mt-6">
           <LoadMoreButton
-            handleLoadMore={loadMoreItems}
+            handleLoadMore={isSearching ? loadMoreSearchResults : loadMoreItems}
             isLoading={isLoadingMore}
           />
         </div>

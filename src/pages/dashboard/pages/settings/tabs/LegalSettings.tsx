@@ -17,7 +17,7 @@ export function LegalSettings() {
         <div className="flex items-center gap-3">
           <FileText className="h-5 w-5 dark:text-blue-400" color={primaryColor} />
           <h2 className="text-xl font-semibold">
-            {t('settingLegal:legal-settings-title')} asjhSB
+            {t('settingLegal:legal-settings-title')}
           </h2>
         </div>
 

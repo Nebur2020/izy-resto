@@ -47,7 +47,7 @@ export function RecentOrderModal({ order, onClose }: RecentOrderModalProps) {
             </button>
           </div>
         </div>
-        <div className="overflow-y-auto p-4 space-y-6">
+        <div className="overflow-y-auto p-4 space-y-6 max-h-[calc(100vh-200px)]">
           <OrderTimeline
             order={order}
             status={order.status}

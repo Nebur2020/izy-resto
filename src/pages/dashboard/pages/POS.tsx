@@ -13,7 +13,6 @@ import { orderService } from '../../../services/orders/order.service';
 import { menuService } from '../../../services/menu/menu.service';
 import { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
 import { RefreshCw, Search, X } from 'lucide-react';
-import { Button } from '../../../components/ui/Button';
 import { useTranslation } from 'react-i18next';
 import { OrderList } from '../../../components/orders/OrderList';
 import { useOrders } from '../../../context/OrderContext';
@@ -88,6 +87,8 @@ export function POS() {
       } else {
         setIsSearching(false);
         setSearchResults([]);
+        // Load initial items when search is cleared
+        loadInitialItems();
       }
     }, 500);
 
@@ -229,9 +230,17 @@ export function POS() {
   const filteredItems = useMemo(() => {
     if (!searchTerm) return items;
 
-    return items.filter(item =>
-      item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const result = items.filter(
+      item =>
+        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.description.toLowerCase().includes(searchTerm.toLowerCase())
     );
+    //remove duplicates
+    const uniqueItems = result.filter(
+      (item, index, self) =>
+        index === self.findIndex(i => i.id === item.id && i.name === item.name)
+    );
+    return uniqueItems;
   }, [items, searchTerm]);
 
   const handleQuickAmount = (amount: number) => {
@@ -298,16 +307,116 @@ export function POS() {
   const performSearch = async (term: string) => {
     if (term.trim().length < 2) return;
 
-    setSearchLoading(true);
     setIsSearching(true);
 
+    if (activeTab === 'products') {
+      try {
+        setIsLoading(true);
+
+        // Use the searchMenuItems function with better error handling
+        try {
+          const result = await menuService.searchMenuItems(
+            term,
+            pageSize,
+            null
+          );
+
+          if (result && Array.isArray(result.items)) {
+            setMenuItems(result.items);
+            setLastDoc(result.lastDoc);
+            setHasMore(result.hasMore);
+          } else {
+            // Fallback to getting all items if search fails
+            console.warn(
+              'Search result structure was invalid, falling back to all items'
+            );
+            const allItems = await menuService.getAll();
+            setMenuItems(allItems.slice(0, pageSize));
+            setHasMore(allItems.length > pageSize);
+          }
+        } catch (searchError) {
+          console.error('Error in searchMenuItems:', searchError);
+          // Fallback to basic filtering if search fails
+          const allItems = await menuService.getAll();
+          const filteredItems = allItems.filter(
+            item =>
+              item.name.toLowerCase().includes(term.toLowerCase()) ||
+              (item.description &&
+                item.description.toLowerCase().includes(term.toLowerCase()))
+          );
+          setMenuItems(filteredItems.slice(0, pageSize));
+          setHasMore(filteredItems.length > pageSize);
+        }
+      } catch (error) {
+        console.error('Error searching menu items:', error);
+        toast.error(t('common:error-searching-menu'));
+        // Load initial items as fallback
+        loadInitialItems();
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      setSearchLoading(true);
+
+      try {
+        const results = await searchOrders(term);
+        setSearchResults(results || []);
+      } catch (error) {
+        console.error('Error searching orders:', error);
+        setSearchResults([]);
+      } finally {
+        setSearchLoading(false);
+      }
+    }
+  };
+
+  const loadMoreSearchItems = async () => {
+    if (!hasMore || isLoadingMore || !searchTerm) return;
+
     try {
-      const results = await searchOrders(term);
-      setSearchResults(results);
+      setIsLoadingMore(true);
+
+      try {
+        // Search the entire database consistently, not filtering by category
+        const result = await menuService.searchMenuItems(
+          searchTerm,
+          pageSize,
+          lastDoc
+        );
+
+        if (result && Array.isArray(result.items)) {
+          setMenuItems(prevItems => [...prevItems, ...result.items]);
+          setLastDoc(result.lastDoc);
+          setHasMore(result.hasMore);
+        } else {
+          console.warn('Search more results structure was invalid');
+          setHasMore(false);
+        }
+      } catch (searchError) {
+        console.error('Error in searchMenuItems for loadMore:', searchError);
+        // Fallback to client-side filtering if server search fails
+        const allItems = await menuService.getAll();
+        const startIndex = menuItems.length;
+        const filteredItems = allItems
+          .filter(
+            item =>
+              item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              (item.description &&
+                item.description
+                  .toLowerCase()
+                  .includes(searchTerm.toLowerCase()))
+          )
+          .slice(startIndex, startIndex + pageSize);
+
+        setMenuItems(prevItems => [...prevItems, ...filteredItems]);
+        setHasMore(filteredItems.length >= pageSize);
+      }
     } catch (error) {
-      console.error('Error searching orders:', error);
+      console.error('Error loading more search results:', error);
+      toast.error(t('common:error-loading-more-search-results'));
+      setHasMore(false);
     } finally {
-      setSearchLoading(false);
+      setIsLoadingMore(false);
     }
   };
 
@@ -315,6 +424,9 @@ export function POS() {
     setSearchTerm('');
     setIsSearching(false);
     setSearchResults([]);
+    if (activeTab === 'products') {
+      loadInitialItems();
+    }
   };
 
   return (
@@ -353,7 +465,6 @@ export function POS() {
                 borderColor:
                   activeTab === 'orders' ? primaryColor : 'transparent',
               }}
-
               onClick={() => {
                 clearCart();
                 setCustomerInfo({});
@@ -383,13 +494,15 @@ export function POS() {
                   searchTerm={searchTerm}
                   onSearchChange={setSearchTerm}
                   onToggleCart={() => setIsSidebarOpen(true)}
-                  isLoading={isLoading}
+                  // isLoading={isLoading}
                 />
 
-                {!isLoading && hasMore && !searchTerm && (
+                {!isLoading && hasMore && (
                   <div className="flex justify-center mt-6 mb-6">
                     <LoadMoreButton
-                      handleLoadMore={loadMoreItems}
+                      handleLoadMore={
+                        searchTerm ? loadMoreSearchItems : loadMoreItems
+                      }
                       isLoading={isLoadingMore}
                     />
                   </div>
@@ -424,6 +537,23 @@ export function POS() {
                     </div>
                     <div>
                       <button
+                        onClick={() => {
+                          setSearchTerm('');
+                          setIsSearching(false);
+                          setSearchResults([]);
+                          // Refresh the orders list
+                          try {
+                            const refreshFunc =
+                              orders.length > 0
+                                ? loadMoreOrders
+                                : loadInitialItems;
+                            refreshFunc();
+                            toast.success(t('common:refreshed'));
+                          } catch (error) {
+                            console.error('Error refreshing data:', error);
+                            toast.error(t('common:error-refreshing'));
+                          }
+                        }}
                         className="flex items-center gap-2 p-2 text-blue-600 hover:bg-blue-50 rounded-full"
                         title={t('common:refresh')}
                       >
@@ -570,10 +700,12 @@ export function POS() {
             isItemOrderFromOrder={isItemOrderFromOrder}
           />
 
-          {!isLoading && hasMore && !searchTerm && (
+          {!isLoading && hasMore && (
             <div className="flex justify-center mt-6 mb-6">
               <LoadMoreButton
-                handleLoadMore={loadMoreItems}
+                handleLoadMore={
+                  searchTerm ? loadMoreSearchItems : loadMoreItems
+                }
                 isLoading={isLoadingMore}
               />
             </div>

@@ -94,10 +94,12 @@ export const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
             \{' '}
             {!isOutOfStock && item.stockQuantity <= 5 && (
               <Badge
-                // palette={palette}
-                // isDarkMode={isDarkMode}
-                variant="warning"
+                variant="primary"
                 className="absolute left-2 top-2 hidden shadow-lg md:flex md:left-4 md:top-4"
+                customColors={{
+                  backgroundColor: `${palette.primary}30`,
+                  textColor: palette.primary,
+                }}
               >
                 {`${t('remain-juste')} ${item.stockQuantity}`}
               </Badge>
@@ -129,8 +131,12 @@ export const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
             </div>
             {itemInCart && (
               <Badge
-                variant="success"
+                variant="primary"
                 className="absolute left-2 bottom-2 z-10 shadow-lg md:left-4 md:bottom-4"
+                customColors={{
+                  backgroundColor: palette.primary,
+                  textColor: 'white',
+                }}
               >
                 {itemInCart.quantity}
               </Badge>
@@ -153,7 +159,10 @@ export const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
 
             <div className="mt-auto">
               {!isOutOfStock && (
-                <div className="hidden md:block text-sm text-gray-500 dark:text-gray-400">
+                <div
+                  className="hidden md:block text-sm dark:text-gray-400"
+                  style={{ color: palette.primary }}
+                >
                   {`${item.stockQuantity} ${t('in-stock')}`}
                 </div>
               )}
@@ -162,13 +171,23 @@ export const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
                   {item.variants.slice(0, 1).map((variant, index) => (
                     <span
                       key={index}
-                      className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-300 md:px-3 md:py-1"
+                      className="rounded-full px-2 py-0.5 text-xs font-medium dark:bg-gray-700 md:px-3 md:py-1"
+                      style={{
+                        backgroundColor: `${palette.primary}15`,
+                        color: palette.primary,
+                      }}
                     >
                       {t(variant.value)}
                     </span>
                   ))}
                   {item.variants.length > 1 && (
-                    <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-600 dark:bg-blue-900/50 dark:text-blue-400 md:px-3 md:py-1">
+                    <span
+                      className="rounded-full px-2 py-0.5 text-xs font-medium md:px-3 md:py-1"
+                      style={{
+                        backgroundColor: `${palette.primary}30`,
+                        color: palette.primary,
+                      }}
+                    >
                       +{item.variants.length - 1} options
                     </span>
                   )}

@@ -3,7 +3,6 @@ import { formatCurrency } from './currency';
 import { formatDate } from './date';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-import QRCode from 'qrcode';
 import { formatTaxRate } from './tax';
 
 type Translations = {
@@ -107,18 +106,6 @@ export async function generateReceiptPDF(
     receiptDiv.style.color = 'rgb(0, 0, 0)';
     receiptDiv.style.printColorAdjust = 'exact';
     receiptDiv.style.wordWrap = 'break-word';
-
-    const qrCodeUrl = await QRCode.toDataURL(
-      `${window.location.origin}/order/${order.id}`,
-      {
-        margin: 0,
-        width: 120,
-        color: {
-          dark: '#000000',
-          light: '#FFFFFF',
-        },
-      }
-    );
 
     const baseStyles =
       'color: rgb(0, 0, 0) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; overflow-wrap: break-word; word-wrap: break-word;';
@@ -422,29 +409,6 @@ export async function generateReceiptPDF(
         <div style="border-bottom: 1px dashed rgb(0, 0, 0); margin: ${
           spacing.dividerMargin
         }px 0;"></div>
-
-        <!-- QR Code Section -->
-        <div style="text-align: center; margin: ${
-          spacing.sectionMargin
-        }px 0; ${baseStyles}">
-          <div style="margin-bottom: 10px; ${baseStyles}">${
-      translations.paymentReceiveLabel
-    }</div>
-          <img src="${qrCodeUrl}" width="120" style="margin: 0 auto; display: block;" />
-          ${
-            order.servedBy
-              ? `<div style="margin-top: 10px; ${baseStyles}">${
-                  translations.servedByLabel
-                } ${truncateText(
-                  t(`common:staff-names.${order.servedBy}`) ===
-                    `staff-names.${order.servedBy}`
-                    ? order.servedBy
-                    : t(`common:staff-names.${order.servedBy}`),
-                  30
-                )}</div>`
-              : ''
-          }
-        </div>
 
         <!-- Footer -->
         <div style="text-align: center; margin: 12px 0; ${baseStyles}">

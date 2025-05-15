@@ -3,6 +3,7 @@ import { RestaurantSettings } from '../../../../../../types/settings';
 import { useTranslation } from 'react-i18next';
 import { LucideIcon } from 'lucide-react';
 import { Button } from '../../../../../../components/ui';
+import { useSettings } from '../../../../../../hooks/useSettings';
 
 interface TemplateOptionProps {
   icon: LucideIcon;
@@ -19,6 +20,8 @@ interface TemplateOptionProps {
 
 export function TemplateOption(props: TemplateOptionProps) {
   const { t } = useTranslation();
+  const { settings } = useSettings();
+  const primaryColor = settings?.palette?.primary || '#0ea5e9';
   const {
     title,
     description,
@@ -30,16 +33,26 @@ export function TemplateOption(props: TemplateOptionProps) {
     onCustomize,
   } = props;
 
+  // Create styles using primary color with opacity for different states
+  const selectedBorderStyle = { borderColor: primaryColor };
+  const selectedBgStyle = { backgroundColor: `${primaryColor}10` }; // 10% opacity
+  const hoverBorderStyle = { borderColor: `${primaryColor}80` }; // 50% opacity
+
   return (
     <div
       className={`
         relative rounded-lg border-2 p-4 cursor-pointer transition-all flex flex-col h-full
         ${
           selected
-            ? 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/20'
-            : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600'
+            ? 'dark:bg-opacity-10'
+            : 'border-gray-200 dark:border-gray-700 hover:border-opacity-60'
         }
       `}
+      style={selected ? { ...selectedBorderStyle, ...selectedBgStyle } : {}}
+      onMouseOver={e =>
+        !selected && (e.currentTarget.style.borderColor = `${primaryColor}80`)
+      }
+      onMouseOut={e => !selected && (e.currentTarget.style.borderColor = '')}
       onClick={() => onChange(value)}
     >
       <input
@@ -63,7 +76,8 @@ export function TemplateOption(props: TemplateOptionProps) {
         <Button
           type="button"
           onClick={onCustomize}
-          className="mt-4 bg-blue-500 w-full text-white rounded-lg px-4 py-2"
+          className="mt-4 w-full text-white rounded-lg px-4 py-2"
+          style={{ backgroundColor: primaryColor }}
         >
           {t('settingAppearence:customize')}
         </Button>

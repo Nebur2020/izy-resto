@@ -137,7 +137,7 @@ export function VariantManagement() {
           spanClassName="text-white"
         >
           <Plus className="w-4 h-4 mr-2" />
-          {t('variant:add-variant')} sjhdzb
+          {t('variant:add-variant')}
         </Button>
       </div>
 

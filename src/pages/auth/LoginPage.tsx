@@ -5,14 +5,18 @@ import { Button } from '../../components/ui/Button';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../../hooks/useSettings';
 
 export function LoginPage() {
   const { t } = useTranslation();
   const { login } = useAuth();
+  const { settings } = useSettings();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const primaryColor = settings?.palette.primary || '#3B82F6'; // Default to blue-500 if not set
 
   const validateEmail = (email: string) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -67,8 +71,7 @@ export function LoginPage() {
           errorMessage = t('login:too-many-requests');
           break;
         case 'auth/network-request-failed':
-          errorMessage =
-            t('login:network-request-failed');
+          errorMessage = t('login:network-request-failed');
           break;
       }
 
@@ -100,8 +103,14 @@ export function LoginPage() {
             transition={{ delay: 0.2 }}
             className="relative"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-xl blur-xl" />
-            <div className="relative bg-gradient-to-r from-blue-600 to-indigo-600 p-4 rounded-xl shadow-lg">
+            <div
+              className="absolute inset-0 rounded-xl blur-xl"
+              style={{ background: `${primaryColor}20` }} // 20 is opacity in hex (12.5%)
+            />
+            <div
+              className="relative p-4 rounded-xl shadow-lg"
+              style={{ background: primaryColor }}
+            >
               <Utensils className="w-12 h-12 text-white" />
             </div>
           </motion.div>
@@ -147,7 +156,25 @@ export function LoginPage() {
                   required
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  className="appearance-none block w-full pl-10 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
+                  className="appearance-none block w-full pl-10 px-3 py-2 border-0 rounded-md shadow-sm placeholder-gray-400 focus:outline-none sm:text-sm dark:bg-gray-700 dark:text-white bg-gray-50 dark:bg-gray-700 transition-all duration-300"
+                  style={
+                    {
+                      '--tw-ring-color': primaryColor,
+                      '--tw-ring-opacity': '1',
+                      '--tw-ring-offset-width': '0px',
+                      '--tw-ring-offset-shadow': '0 0 #0000',
+                      '--tw-ring-shadow': `0 0 0 0px ${primaryColor}`,
+                      boxShadow:
+                        'var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)',
+                    } as React.CSSProperties
+                  }
+                  onFocus={e => {
+                    e.currentTarget.style.boxShadow = `0 0 0 0 #0000, 0 0 0 2px ${primaryColor}, 0 0 #0000`;
+                  }}
+                  onBlur={e => {
+                    e.currentTarget.style.boxShadow =
+                      '0 0 0 0 #0000, 0 0 0 0px #3b82f6, 0 0 #0000';
+                  }}
                   placeholder="admin@example.com"
                 />
               </div>
@@ -170,7 +197,25 @@ export function LoginPage() {
                   required
                   value={password}
                   onChange={e => setPassword(e.target.value)}
-                  className="appearance-none block w-full pl-10 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
+                  className="appearance-none block w-full pl-10 px-3 py-2 border-0 rounded-md shadow-sm placeholder-gray-400 focus:outline-none sm:text-sm dark:bg-gray-700 dark:text-white bg-gray-50 dark:bg-gray-700 transition-all duration-300"
+                  style={
+                    {
+                      '--tw-ring-color': primaryColor,
+                      '--tw-ring-opacity': '1',
+                      '--tw-ring-offset-width': '0px',
+                      '--tw-ring-offset-shadow': '0 0 #0000',
+                      '--tw-ring-shadow': `0 0 0 0px ${primaryColor}`,
+                      boxShadow:
+                        'var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)',
+                    } as React.CSSProperties
+                  }
+                  onFocus={e => {
+                    e.currentTarget.style.boxShadow = `0 0 0 0 #0000, 0 0 0 2px ${primaryColor}, 0 0 #0000`;
+                  }}
+                  onBlur={e => {
+                    e.currentTarget.style.boxShadow =
+                      '0 0 0 0 #0000, 0 0 0 0px #3b82f6, 0 0 #0000';
+                  }}
                   placeholder="••••••••"
                 />
               </div>
@@ -179,10 +224,17 @@ export function LoginPage() {
             <div>
               <Button
                 type="submit"
-                className="w-full flex justify-center items-center py-2.5 relative overflow-hidden group"
+                variant="custom"
+                className="w-full flex justify-center items-center py-2.5 relative overflow-hidden group rounded-xl shadow-sm text-white"
                 disabled={isLoading}
+                style={{
+                  backgroundColor: primaryColor,
+                }}
               >
-                <span className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 group-hover:opacity-100 opacity-0 transition-opacity" />
+                <span
+                  className="absolute inset-0 group-hover:opacity-100 opacity-0 transition-opacity rounded-xl"
+                  style={{ background: 'rgba(255, 255, 255, 0.1)' }}
+                />
                 {isLoading ? (
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                 ) : (

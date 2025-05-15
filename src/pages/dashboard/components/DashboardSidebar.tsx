@@ -18,11 +18,14 @@ import {
   Users2,
   CreditCard,
   BarChart,
+  Info,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { StaffMember } from '../../../types/staff';
 import { RestaurantSettings } from '../../../types';
+import packageJSOn from '../../../../package.json';
+import { useAppVersion } from '../../../hooks/useAppVersion';
 
 interface DashboardSidebarProps {
   currentPage: string;
@@ -41,6 +44,22 @@ export function DashboardSidebar({
   const { t } = useTranslation('dashboard');
   const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { version } = useAppVersion();
+
+  // Get primary color from settings or use a default
+  const primaryColor = settings?.palette?.primary || '#3B82F6'; // Default to blue if not set
+
+  // Create dynamic styles for active items using the primary color
+  const activeStyle = {
+    backgroundColor: `${primaryColor}10`, // 10% opacity version of primary color
+    color: primaryColor,
+  };
+
+  // Create hover style for menu items
+  const hoverStyle = {
+    '--hover-color': `${primaryColor}10`, // CSS variable for hover background
+    '--text-hover-color': primaryColor, // CSS variable for hover text color
+  } as React.CSSProperties;
 
   const menuItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: t('dashboard') },
@@ -69,6 +88,7 @@ export function DashboardSidebar({
       initial={false}
       animate={{ width: isCollapsed ? '5rem' : '16rem' }}
       className="relative h-full bg-white dark:bg-gray-800 flex flex-col shadow-sm"
+      style={hoverStyle}
     >
       {/* Toggle Button */}
       <button
@@ -83,7 +103,7 @@ export function DashboardSidebar({
       </button>
 
       {/* Navigation */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-700 scrollbar-track-transparent">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-700 scrollbar-track-transparent flex flex-col">
         <nav className="p-3 pt-8">
           {menuItems
             .filter(item => {
@@ -109,14 +129,15 @@ export function DashboardSidebar({
                   whileHover={{ x: isCollapsed ? 0 : 4 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => navigate(`/dashboard/${item.id}`)}
+                  style={currentPage === item.id ? activeStyle : {}}
                   className={`
                   w-full flex items-center space-x-3 
                   ${isCollapsed ? 'justify-center px-3 py-3' : 'px-4 py-3'}
                   rounded-lg transition-colors relative group
                   ${
                     currentPage === item.id
-                      ? 'bg-blue-50 text-white dark:bg-blue-900/20'
-                      : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      ? ''
+                      : 'text-gray-700 dark:text-gray-200 hover:text-[color:var(--text-hover-color)] hover:bg-[color:var(--hover-color)] dark:hover:bg-[color:var(--hover-color)]'
                   }
                 `}
                 >
@@ -130,7 +151,11 @@ export function DashboardSidebar({
                       className={`
                     relative z-10 transition-transform duration-200
                     ${isCollapsed ? 'w-6 h-6 group-hover:scale-110' : 'w-5 h-5'}
+                    group-hover:text-[color:var(--text-hover-color)]
                   `}
+                      style={
+                        currentPage === item.id ? { color: primaryColor } : {}
+                      }
                     />
                     <AnimatePresence mode="wait">
                       {!isCollapsed && (
@@ -168,6 +193,77 @@ export function DashboardSidebar({
               </motion.div>
             ))}
         </nav>
+        {/* Version Display Component */}
+        <div className="mt-auto px-3 py-4 border-t border-gray-100 dark:border-gray-700">
+          <div
+            className={`flex items-center ${
+              isCollapsed ? 'justify-center' : 'px-2'
+            }`}
+          >
+            <Info
+              className={`${
+                isCollapsed ? 'w-5 h-5' : 'w-4 h-4'
+              } text-gray-400 flex-shrink-0`}
+            />
+
+            <AnimatePresence mode="wait">
+              {!isCollapsed && (
+                <motion.div
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: 'auto' }}
+                  exit={{ opacity: 0, width: 0 }}
+                  className="ml-2 flex items-center overflow-hidden"
+                >
+                  <div>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {t('version')}:
+                    </span>
+                    <div className="flex items-center">
+                      <span className="font-medium text-sm mr-1.5">
+                        {packageJSOn.version}
+                      </span>
+                      {version?.isStable && (
+                        <span className="px-1.5 py-0.5 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded text-[10px] font-medium">
+                          {t('stable')}
+                        </span>
+                      )}
+                      {version && !version.isStable && (
+                        <span className="px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200 rounded text-[10px] font-medium">
+                          {t('beta')}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Version tooltip for collapsed state */}
+            {isCollapsed && (
+              <div
+                className="
+                absolute left-full bottom-4 ml-3 
+                bg-gray-800 text-white text-xs 
+                px-3 py-2 rounded-md 
+                opacity-0 invisible
+                group-hover:opacity-100 group-hover:visible
+                transition-all duration-200
+                pointer-events-none
+                z-50
+                shadow-lg
+                whitespace-nowrap
+              "
+              >
+                {t('version')}: {packageJSOn.version}
+                {version?.isStable
+                  ? ` (${t('stable')})`
+                  : version
+                  ? ` (${t('beta')})`
+                  : ''}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </motion.aside>
   );
