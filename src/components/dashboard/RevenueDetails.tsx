@@ -15,12 +15,22 @@ export function RevenueDetails({ orders, dateRange }: RevenueDetailsProps) {
   const { t } = useTranslation('dashboard');
   const { settings } = useSettings();
 
-  const totalRevenue = orders
-    .filter(order => order.status === 'delivered')
-    .reduce((sum, order) => sum + Number(order.subtotal), 0);
+  const totalRevenue = React.useMemo(() => {
+    // The orders are already filtered for 'delivered' status in both Overview and EnhancedOverview
+    // Calculate total revenue using the standardized approach
+    return orders.reduce((sum, order) => {
+      // Safely access subtotal - handle strings or numbers
+      const subtotal = typeof order.subtotal === 'string'
+        ? parseFloat(order.subtotal)
+        : (typeof order.subtotal === 'number' ? order.subtotal : 0);
 
-  const averageOrder =
-    orders.length > 0 ? Number(totalRevenue) / orders.length : 0;
+      // Only add valid numbers
+      return sum + (isNaN(subtotal) ? 0 : subtotal);
+    }, 0);
+  }, [orders]);
+
+  // Calculate average order value simply as total divided by count
+  const averageOrder = orders.length > 0 ? Number(totalRevenue) / orders.length : 0;
   const ordersCount = orders.length;
 
   const dailyRevenue = React.useMemo(() => {
@@ -30,7 +40,7 @@ export function RevenueDetails({ orders, dateRange }: RevenueDetailsProps) {
       1,
       Math.ceil(
         (dateRange.endDate.getTime() - dateRange.startDate.getTime()) /
-          (1000 * 60 * 60 * 24)
+        (1000 * 60 * 60 * 24)
       )
     );
 

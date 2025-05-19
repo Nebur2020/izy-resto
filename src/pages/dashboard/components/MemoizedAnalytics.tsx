@@ -71,15 +71,13 @@ function AnalyticsGridComponent({
     const { settings } = useSettings();
     const currency = settings?.currency;
 
-    // Ensure avgOrderValue is reasonable (cap at 1000)
-    const safeAvgOrderValue = typeof avgOrderValue === 'number' && !isNaN(avgOrderValue)
-        ? Math.min(avgOrderValue, 1000)
-        : 0;
+    // Using avgOrderValue directly without capping
+    const safeAvgOrderValue = avgOrderValue;
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
             <AnalyticCard
-                title={t('total-revenue')}
+                title={t('common:total-income')}
                 value={formatCurrency(totalRevenue, currency)}
                 subtitle={t('from-delivered-orders')}
                 icon={<TrendingUp size={24} style={{ color: primaryColor }} />}

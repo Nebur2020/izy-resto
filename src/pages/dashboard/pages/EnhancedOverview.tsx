@@ -65,35 +65,21 @@ export function EnhancedOverview() {
             })
             .filter(subtotal => subtotal !== null) as number[];
 
-        // Calculate average order value with robust statistics
-        let totalRevenue = 0;
-        let avgOrderValue = 0;
+        // Calculate total revenue consistently with other views
+        const totalRevenue = deliveredOrders.reduce((sum, order) => {
+            // Safely access subtotal - handle strings or numbers
+            const subtotal = typeof order.subtotal === 'string'
+                ? parseFloat(order.subtotal)
+                : (typeof order.subtotal === 'number' ? order.subtotal : 0);
 
-        if (validSubtotals.length > 0) {
-            // Sort subtotals to identify outliers
-            validSubtotals.sort((a, b) => a - b);
+            // Only add valid numbers
+            return sum + (isNaN(subtotal) ? 0 : subtotal);
+        }, 0);
 
-            // Simple approach: filter out extreme outliers (more than 5x the median)
-            const median = validSubtotals[Math.floor(validSubtotals.length / 2)];
-            const cleanedSubtotals = median > 0
-                ? validSubtotals.filter(val => val <= median * 5)
-                : validSubtotals;
-
-            // Calculate clean total and average
-            totalRevenue = cleanedSubtotals.reduce((sum, val) => sum + val, 0);
-
-            // Calculate average with additional validation and capping
-            if (cleanedSubtotals.length > 0) {
-                const rawAverage = totalRevenue / cleanedSubtotals.length;
-
-                // Add additional safeguard against unrealistic values
-                if (rawAverage > 1000) {
-                    avgOrderValue = 1000; // Cap at 1000
-                } else {
-                    avgOrderValue = rawAverage;
-                }
-            }
-        }
+        // Calculate the average order value (simple approach - total divided by count)
+        const avgOrderValue = deliveredOrders.length > 0
+            ? totalRevenue / deliveredOrders.length
+            : 0;
 
         // Calculate customer retention rate using our utility function
         const retentionMetrics = calculateRetentionMetrics(deliveredOrders);

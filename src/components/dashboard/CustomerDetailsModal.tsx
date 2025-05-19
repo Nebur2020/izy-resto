@@ -39,8 +39,15 @@ export function CustomerDetailsModal({
   const stats = React.useMemo(() => {
     if (!orders.length) return null;
 
-    const totalSpent = orders.reduce((sum, order) => sum + order.total, 0);
-    const averageOrder = totalSpent / orders.length;
+    const totalSpent = orders.reduce((sum, order) => {
+      // Get subtotal consistently - same approach as other components
+      const subtotal = typeof order.subtotal === 'string'
+        ? parseFloat(order.subtotal)
+        : (typeof order.subtotal === 'number' ? order.subtotal : 0);
+
+      return sum + (isNaN(subtotal) ? 0 : subtotal);
+    }, 0);
+    const averageOrder = orders.length > 0 ? totalSpent / orders.length : 0;
     const firstOrder = orders[orders.length - 1];
     const lastOrder = orders[0];
 

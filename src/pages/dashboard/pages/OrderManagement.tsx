@@ -8,6 +8,7 @@ import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
 import { useTranslation } from 'react-i18next';
 import { Search, RefreshCw, X } from 'lucide-react';
 import LoadMoreButton from '../../../components/ui/LoadMoreButton';
+import { DateFilter } from '../../../components/dashboard/components/accounting/DateFilter';
 
 export function OrderManagement() {
   const { t } = useTranslation();
@@ -23,7 +24,10 @@ export function OrderManagement() {
   } = useOrders();
 
   const [statusFilter, setStatusFilter] = useState<OrderStatus | 'all'>('all');
-  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
+  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({
+    from: new Date(new Date().setHours(0, 0, 0, 0)),
+    to: new Date()
+  });
   const [cancelConfirmation, setCancelConfirmation] = useState<{
     isOpen: boolean;
     orderId?: string;
@@ -243,11 +247,21 @@ export function OrderManagement() {
       <OrderStats stats={stats} />
 
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+          <h2 className="text-lg font-semibold">{t('common:orders-filter')}</h2>
+          {dateRange.from && dateRange.to && (
+            <div className="flex-shrink-0">
+              <DateFilter
+                startDate={dateRange.from}
+                endDate={dateRange.to}
+                onDateChange={(start, end) => setDateRange({ from: start, to: end })}
+              />
+            </div>
+          )}
+        </div>
         <OrderFilters
           currentFilter={statusFilter}
           onFilterChange={setStatusFilter}
-          dateRange={dateRange}
-          onDateRangeChange={setDateRange}
         />
       </div>
 
@@ -266,7 +280,7 @@ export function OrderManagement() {
       {!isSearching && hasMore && !isLoading && !isLoadingMore && (
         <div className="flex justify-center mt-6">
           <LoadMoreButton
-            handleLoadMore={loadMoreOrders || (() => {})}
+            handleLoadMore={loadMoreOrders || (() => { })}
             isLoading={(isLoading || isLoadingMore) ?? false}
           />
         </div>

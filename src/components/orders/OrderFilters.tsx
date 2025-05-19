@@ -1,18 +1,15 @@
 import { OrderStatus } from '../../types';
 import { Button } from '../ui/Button';
-import { Calendar } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '../../hooks';
 
 interface IOrderFiltersProps {
   currentFilter: OrderStatus | 'all';
   onFilterChange: (filter: OrderStatus | 'all') => void;
-  dateRange: { from?: Date; to?: Date };
-  onDateRangeChange: (range: { from?: Date; to?: Date }) => void;
 }
 
 export function OrderFilters(props: IOrderFiltersProps) {
-  const { currentFilter, onFilterChange, dateRange, onDateRangeChange } = props;
+  const { currentFilter, onFilterChange } = props;
   const { t } = useTranslation('order');
   const filters: Array<{ value: OrderStatus | 'all'; label: string }> = [
     { value: 'all', label: t('common:all-orders') },
@@ -21,27 +18,6 @@ export function OrderFilters(props: IOrderFiltersProps) {
     { value: 'delivered', label: t('common:delivered') },
     { value: 'cancelled', label: t('common:canceled') },
   ];
-
-  const presets = [
-    { label: t('common:today'), days: 0 },
-    { label: t('common:last-week'), days: 7 },
-    { label: t('common:last-month'), days: 30 },
-  ];
-
-  const handleDatePreset = (days: number) => {
-    const to = new Date();
-    const from = new Date();
-    if (days > 0) {
-      from.setDate(from.getDate() - days);
-    } else {
-      from.setHours(0, 0, 0, 0);
-    }
-    onDateRangeChange({ from, to });
-  };
-
-  const clearDateRange = () => {
-    onDateRangeChange({});
-  };
 
   const { settings } = useSettings();
   const primaryColor = settings?.palette.primary;
@@ -64,24 +40,6 @@ export function OrderFilters(props: IOrderFiltersProps) {
             {filter.label}
           </Button>
         ))}
-      </div>
-      <div className="flex flex-wrap items-center gap-2">
-        <Calendar className="w-5 h-5 text-gray-500" />
-        {presets.map(preset => (
-          <Button
-            key={preset.label}
-            variant="secondary"
-            size="sm"
-            onClick={() => handleDatePreset(preset.days)}
-          >
-            {preset.label}
-          </Button>
-        ))}
-        {(dateRange.from || dateRange.to) && (
-          <Button variant="secondary" size="sm" onClick={clearDateRange}>
-            {t('common:reset-filter')}
-          </Button>
-        )}
       </div>
     </div>
   );

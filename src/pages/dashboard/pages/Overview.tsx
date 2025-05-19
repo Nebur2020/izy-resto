@@ -33,11 +33,13 @@ export function Overview() {
   const primaryColor = settings?.palette.primary;
 
   const filteredOrders = useMemo(() => {
-    return filterOrdersByDateRange(debouncedStartDate, debouncedEndDate);
+    // Use the same function as EnhancedOverview - filter with status parameter
+    return filterOrdersByDateRange(debouncedStartDate, debouncedEndDate, 'delivered');
   }, [filterOrdersByDateRange, debouncedStartDate, debouncedEndDate]);
 
+  // No need to filter again since we're already filtering by 'delivered' status above
   const deliveredOrders = useMemo(() => {
-    return filteredOrders.filter(order => order.status === 'delivered');
+    return filteredOrders;
   }, [filteredOrders]);
 
   const analytics = useMemo(() => {
@@ -52,11 +54,25 @@ export function Overview() {
     const dailyOrderRate = deliveredOrders.length / daysDiff;
 
     return {
-      totalRevenue: deliveredOrders.reduce(
-        (sum, order) => sum + Number(order.subtotal || 0),
-        0
-      ),
+      totalRevenue: deliveredOrders.reduce((sum, order) => {
+        // Safely access subtotal - handle strings or numbers
+        const subtotal = typeof order.subtotal === 'string'
+          ? parseFloat(order.subtotal)
+          : (typeof order.subtotal === 'number' ? order.subtotal : 0);
+
+        // Only add valid numbers
+        return sum + (isNaN(subtotal) ? 0 : subtotal);
+      }, 0),
       totalOrders: deliveredOrders.length,
+      // Add average order value using simple total/count approach
+      avgOrderValue: deliveredOrders.length > 0
+        ? deliveredOrders.reduce((sum, order) => {
+          const subtotal = typeof order.subtotal === 'string'
+            ? parseFloat(order.subtotal)
+            : (typeof order.subtotal === 'number' ? order.subtotal : 0);
+          return sum + (isNaN(subtotal) ? 0 : subtotal);
+        }, 0) / deliveredOrders.length
+        : 0,
       uniqueCustomers: new Set(
         deliveredOrders
           .filter(order => order.customerEmail || order.customerPhone)

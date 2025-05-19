@@ -74,10 +74,15 @@ export function TrafficAnalytics() {
       order => order.status === 'delivered'
     );
 
-    const totalRevenue = deliveredOrders.reduce(
-      (sum, order) => sum + Number(order.subtotal),
-      0
-    );
+    const totalRevenue = deliveredOrders.reduce((sum, order) => {
+      // Safely access subtotal - handle strings or numbers
+      const subtotal = typeof order.subtotal === 'string'
+        ? parseFloat(order.subtotal)
+        : (typeof order.subtotal === 'number' ? order.subtotal : 0);
+
+      // Only add valid numbers
+      return sum + (isNaN(subtotal) ? 0 : subtotal);
+    }, 0);
 
     const averageOrderValue =
       deliveredOrders.length > 0 ? totalRevenue / deliveredOrders.length : 0;
@@ -161,7 +166,7 @@ export function TrafficAnalytics() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {t('common:tota-income')}
+                    {t('common:total-income')}
                   </p>
                   <p className="text-2xl font-semibold">
                     {formatCurrency(metrics.totalRevenue, settings?.currency)}

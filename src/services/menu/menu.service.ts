@@ -39,9 +39,13 @@ class MenuService extends FirestoreService<MenuItem> {
       let q;
 
       if (category === 'all') {
-        q = query(collectionRef);
+        q = query(collectionRef, orderBy('createdAt', 'desc'));
       } else {
-        q = query(collectionRef, where('categoryId', '==', category));
+        q = query(
+          collectionRef,
+          where('categoryId', '==', category),
+          orderBy('createdAt', 'desc')
+        );
       }
 
       const snapshot = await getDocs(q);
@@ -72,7 +76,9 @@ class MenuService extends FirestoreService<MenuItem> {
   async getAll() {
     try {
       const collectionRef = collection(db, this.collectionName);
-      const snapshot = await getDocs(collectionRef);
+      // Add sorting by createdAt in descending order (newest first)
+      const q = query(collectionRef, orderBy('createdAt', 'desc'));
+      const snapshot = await getDocs(q);
 
       return snapshot.docs.map(doc => {
         const data = doc.data();
@@ -345,15 +351,18 @@ class MenuService extends FirestoreService<MenuItem> {
     try {
       // Create collection reference
       const collectionRef = collection(db, this.collectionName);
-      let baseQuery = query(collectionRef);
+      let constraints = [];
 
       // Add category filter if specified
       if (filters?.category && filters?.category !== 'all') {
-        baseQuery = query(
-          baseQuery,
-          where('categoryId', '==', filters.category)
-        );
+        constraints.push(where('categoryId', '==', filters.category));
       }
+
+      // Add sorting by createdAt in descending order (newest first)
+      constraints.push(orderBy('createdAt', 'desc'));
+
+      // Build the query with all constraints
+      const baseQuery = query(collectionRef, ...constraints);
 
       const snapshot = await getDocs(baseQuery);
 
