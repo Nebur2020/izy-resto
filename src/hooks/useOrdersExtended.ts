@@ -1,12 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { orderService } from '../services/orders/order.service';
-import { Order } from '../types';
+import { Order, OrderStatus } from '../types';
 import toast from 'react-hot-toast';
+import { validateOrderTimestamp, getOrderDate } from '../utils/orderUtils';
 
-export function useOrdersRealtime() {
+/**
+ * Enhanced version of useOrdersRealtime with better filtering capabilities
+ * and more functionality specific to the delivered orders dashboard
+ */
+export function useOrdersExtended() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+
+  // Create memoized deliveredOrders
+  const deliveredOrders = useMemo(() => {
+    return orders.filter(order => order.status === 'delivered');
+  }, [orders]);
 
   useEffect(() => {
     let isMounted = true; // Track component mount state
@@ -29,7 +39,12 @@ export function useOrdersRealtime() {
               amountPaid: o.amountPaid ? Number(o.amountPaid) : 0,
               change: o.change ? Number(o.change) : 0,
               // Ensure createdAt is always a valid object with seconds
-              createdAt: o.createdAt || { seconds: Date.now() / 1000 },
+              createdAt:
+                o.createdAt &&
+                typeof o.createdAt === 'object' &&
+                'seconds' in o.createdAt
+                  ? o.createdAt
+                  : { seconds: Date.now() / 1000 },
             };
 
             // Ensure status is always a valid string
@@ -85,10 +100,74 @@ export function useOrdersRealtime() {
     };
   }, []);
 
+  /**
+   * Filter orders by date range
+   * Using useCallback to maintain referential stability to avoid rerenders
+   */
+  const filterOrdersByDateRange = useCallback(
+    (startDate: Date, endDate: Date, statusFilter?: OrderStatus): Order[] => {
+      return orders.filter(order => {
+        // Apply status filter if provided
+        if (statusFilter && order.status !== statusFilter) {
+          return false;
+        }
+
+        try {
+          if (!validateOrderTimestamp(order)) {
+            return false;
+          }
+
+          const orderDate = getOrderDate(order);
+          return orderDate >= startDate && orderDate <= endDate;
+        } catch (err) {
+          console.error('Error parsing order date:', err, order);
+          return false;
+        }
+      });
+    },
+    [orders] // Only recalculate when orders change
+  );
+
+  /**
+   * Get only delivered orders within a date range
+   * Using useCallback to maintain referential stability
+   */
+  const getDeliveredOrdersByDateRange = useCallback(
+    (startDate: Date, endDate: Date): Order[] => {
+      return filterOrdersByDateRange(startDate, endDate, 'delivered');
+    },
+    [filterOrdersByDateRange] // Only recalculate when filterOrdersByDateRange changes
+  );
+
   return {
     orders,
+    deliveredOrders,
     isLoading,
     error,
     isError: !!error,
+    filterOrdersByDateRange,
+    getDeliveredOrdersByDateRange,
   };
+}
+
+/**
+ * Debounce a value change to prevent too many updates
+ * @param value The value to debounce
+ * @param delay The delay in ms
+ * @returns The debounced value
+ */
+export function useDebouncedValue<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
 }

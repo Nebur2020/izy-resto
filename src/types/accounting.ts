@@ -16,6 +16,16 @@ export interface AccountingStats {
   totalCredit: number;
   netAmount: number;
   transactionCount: number;
+  totalRevenue: number;
+  totalExpenses: number;
+  orderCount: number;
+  netIncome: number;
+  totalTaxes?: number;
+  totalTips?: number;
+  totalDelivery?: number;
+  taxRate?: number;
+  averageTip?: number;
+  deliveryCount?: number;
 }
 
 export interface AccountingPeriod {

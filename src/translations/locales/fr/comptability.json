@@ -56,5 +56,13 @@
   "total-tips": "Total des pourboires",
   "tips-average": "Moyenne des pourboires",
   "delivery-average": "Moyenne des livraisons",
-  "delivery-report": "rapport-de-livraison"
+  "delivery-report": "rapport-de-livraison",
+  "additional-stats": "Statistiques Supplémentaires",
+  "tax-stats": "Statistiques des Taxes",
+  "tip-stats": "Statistiques des Pourboires",
+  "delivery-stats": "Statistiques des Livraisons",
+  "taxable-orders": "Commandes Taxées",
+  "orders-with-tips": "Commandes avec Pourboire",
+  "average-tip": "Pourboire Moyen",
+  "delivery-count": "Nombre de Livraisons"
 }

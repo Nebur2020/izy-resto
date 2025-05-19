@@ -19,13 +19,26 @@ export function AccountingOverview({
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {[...Array(3)].map((_, i) => (
-          <div
-            key={i}
-            className="h-32 animate-pulse bg-gray-100 dark:bg-gray-800 rounded-lg"
-          />
-        ))}
+      <div className="space-y-6">
+        {/* Main statistics skeletons */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[...Array(3)].map((_, i) => (
+            <div
+              key={i}
+              className="h-32 animate-pulse bg-gray-100 dark:bg-gray-800 rounded-lg"
+            />
+          ))}
+        </div>
+
+        {/* Additional statistics skeletons */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[...Array(3)].map((_, i) => (
+            <div
+              key={i + 3}
+              className="h-32 animate-pulse bg-gray-100 dark:bg-gray-800 rounded-lg opacity-50"
+            />
+          ))}
+        </div>
       </div>
     );
   }
@@ -54,31 +67,100 @@ export function AccountingOverview({
     },
   ];
 
+  // Additional statistics for taxes, tips, and delivery if available
+  const additionalStats = [
+    ...(stats?.totalTaxes !== undefined
+      ? [
+        {
+          label: t('comptability:total-taxes'),
+          amount: stats.totalTaxes || 0,
+          icon: DollarSign,
+          color: 'text-indigo-600 dark:text-indigo-400',
+          bgColor: 'bg-indigo-50 dark:bg-indigo-900/20',
+        },
+      ]
+      : []),
+    ...(stats?.totalTips !== undefined
+      ? [
+        {
+          label: t('comptability:total-tips'),
+          amount: stats.totalTips || 0,
+          icon: DollarSign,
+          color: 'text-amber-600 dark:text-amber-400',
+          bgColor: 'bg-amber-50 dark:bg-amber-900/20',
+        },
+      ]
+      : []),
+    ...(stats?.totalDelivery !== undefined
+      ? [
+        {
+          label: t('comptability:total-delivery'),
+          amount: stats.totalDelivery || 0,
+          icon: DollarSign,
+          color: 'text-cyan-600 dark:text-cyan-400',
+          bgColor: 'bg-cyan-50 dark:bg-cyan-900/20',
+        },
+      ]
+      : []),
+  ];
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {overviewStats.map((stat, index) => (
-        <motion.div
-          key={stat.label}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.1 }}
-          className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm"
-        >
-          <div className="flex items-center gap-4">
-            <div className={`p-3 rounded-lg ${stat.bgColor}`}>
-              <stat.icon className={`w-6 h-6 ${stat.color}`} />
+    <div className="space-y-6">
+      {/* Main statistics */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {overviewStats.map((stat, index) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm"
+          >
+            <div className="flex items-center gap-4">
+              <div className={`p-3 rounded-lg ${stat.bgColor}`}>
+                <stat.icon className={`w-6 h-6 ${stat.color}`} />
+              </div>
+              <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {stat.label}
+                </p>
+                <p className="text-2xl font-semibold">
+                  {formatCurrency(stat.amount, settings?.currency)}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {stat.label}
-              </p>
-              <p className="text-2xl font-semibold">
-                {formatCurrency(stat.amount, settings?.currency)}
-              </p>
-            </div>
-          </div>
-        </motion.div>
-      ))}
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Additional statistics if available */}
+      {additionalStats.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {additionalStats.map((stat, index) => (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 + index * 0.1 }}
+              className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm"
+            >
+              <div className="flex items-center gap-4">
+                <div className={`p-3 rounded-lg ${stat.bgColor}`}>
+                  <stat.icon className={`w-6 h-6 ${stat.color}`} />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {stat.label}
+                  </p>
+                  <p className="text-2xl font-semibold">
+                    {formatCurrency(stat.amount, settings?.currency)}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

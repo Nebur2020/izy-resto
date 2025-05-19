@@ -5,8 +5,6 @@ import {
   DollarSign,
   Download,
   Package,
-  ChevronDown,
-  Loader2,
 } from 'lucide-react';
 import { useSettings } from '../../../hooks';
 import { useOrders } from '../../../context/OrderContext';
@@ -16,85 +14,9 @@ import { formatCurrency } from '../../../utils/currency';
 import { Language, Order } from '../../../types';
 import { useTranslation } from 'react-i18next';
 import LoadMoreButton from '../../../components/ui/LoadMoreButton';
+import { exportTipsToCSV } from '../../../utils/csvExportHelpers';
 
 const ITEMS_PER_PAGE = 10;
-
-const exportTipsToCSV = (
-  orders: Order[],
-  settings: any,
-  dateRange: { from: Date; to: Date },
-  t: (key: string) => string,
-  lng: Language
-) => {
-  const totalTips = orders.reduce(
-    (sum, order) => sum + (order.tip?.amount || 0),
-    0
-  );
-  const averageTip = totalTips / orders.length;
-
-  const headers = [
-    t('common:date'),
-    t('common:references'),
-    t('comptability:order-amount'),
-    t('common:tip'),
-    t('comptability:tip-percentage'),
-    t('comptability:customer-name'),
-    t('common:payment-method'),
-  ].join(',');
-
-  const summary = [
-    `${t('common:period')},${formatDate(
-      dateRange.from,
-      settings.language || 'fr'
-    )} - ${formatDate(dateRange.to)}`,
-    `${t('comptability:total-tips')},${formatCurrency(
-      totalTips,
-      settings?.currency
-    )}`,
-    `${t('comptability:tips-average')},${formatCurrency(
-      averageTip,
-      settings?.currency
-    )}`,
-    '',
-  ].join('\n');
-
-  const rows = orders
-    .map(order => {
-      return [
-        formatDate(order.createdAt, settings.language || 'fr'),
-        order.id,
-        formatCurrency(order.total, settings?.currency),
-        formatCurrency(order.tip?.amount || 0, settings?.currency),
-        order.tip?.percentage
-          ? `${order.tip.percentage}%`
-          : t('common:personalised'),
-        order.customerName,
-        order.paymentMethod?.name || '-',
-      ].join(',');
-    })
-    .join('\n');
-
-  const csv = `${summary}\n${headers}\n${rows}`;
-
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  const url = URL.createObjectURL(blob);
-
-  link.setAttribute('href', url);
-  link.setAttribute(
-    'download',
-    `${t('common:tip')}-${formatDate(dateRange.from, false, lng)}-${formatDate(
-      dateRange.to,
-      false,
-      lng
-    )}.csv`
-  );
-  link.style.visibility = 'hidden';
-
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
 
 export const AccountingTipsManagement = () => {
   const { t, i18n } = useTranslation();

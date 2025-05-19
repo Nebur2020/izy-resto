@@ -14,12 +14,20 @@ export function formatCurrency(
     return '0';
   }
 
-  const numericAmount =
-    typeof amount === 'string' ? parseFloat(amount) : amount;
+  let numericAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
 
   if (isNaN(numericAmount)) {
     console.error('Invalid amount provided to formatCurrency:', amount);
     return '0';
+  }
+
+  // Apply reasonable limits to currency values
+  if (numericAmount > 1000000) {
+    console.warn('Very large currency value detected:', numericAmount);
+    numericAmount = Math.min(numericAmount, 1000000);
+  } else if (numericAmount < -1000000) {
+    console.warn('Very small currency value detected:', numericAmount);
+    numericAmount = Math.max(numericAmount, -1000000);
   }
 
   const formattedNumber = formatNumberByLanguage(

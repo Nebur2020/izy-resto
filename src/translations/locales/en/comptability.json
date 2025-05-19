@@ -54,5 +54,13 @@
   "total-tips": "Total Tips",
   "tips-average": "Tips average",
   "delivery-average": "Delivery average",
-  "delivery-report": "delivery-report"
+  "delivery-report": "delivery-report",
+  "additional-stats": "Additional Statistics",
+  "tax-stats": "Tax Statistics",
+  "tip-stats": "Tip Statistics",
+  "delivery-stats": "Delivery Statistics",
+  "taxable-orders": "Taxable Orders",
+  "orders-with-tips": "Orders with Tips",
+  "average-tip": "Average Tip",
+  "delivery-count": "Delivery Count"
 }

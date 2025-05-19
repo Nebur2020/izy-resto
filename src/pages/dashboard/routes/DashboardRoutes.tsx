@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { DashboardPageWrapper } from '../../../components/dashboard/DashboardPageWrapper';
 import { Overview } from '../pages/Overview';
+import { EnhancedOverview } from '../pages/EnhancedOverview';
 import { CategoryManagement } from '../pages/CategoryManagement';
 import { MenuManagement } from '../pages/MenuManagement';
 import { OrderManagement } from '../pages/OrderManagement';
@@ -48,6 +49,23 @@ export function DashboardRoutes({
             element={
               <WrapComponent>
                 <Overview />
+              </WrapComponent>
+            }
+            isStaff={isStaff}
+            staffData={staffData}
+          />
+        }
+      />
+
+      <Route
+        path="/enhanced"
+        element={
+          <ProtectedRoute
+            settings={settings}
+            route="dashboard"
+            element={
+              <WrapComponent>
+                <EnhancedOverview />
               </WrapComponent>
             }
             isStaff={isStaff}

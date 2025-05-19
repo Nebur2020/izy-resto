@@ -5,8 +5,6 @@ import {
   DollarSign,
   Download,
   Package,
-  ChevronDown,
-  Loader2,
 } from 'lucide-react';
 import { useSettings } from '../../../hooks';
 import { useOrders } from '../../../context/OrderContext';
@@ -16,80 +14,9 @@ import { formatCurrency } from '../../../utils/currency';
 import { Language, Order } from '../../../types';
 import { useTranslation } from 'react-i18next';
 import LoadMoreButton from '../../../components/ui/LoadMoreButton';
+import { exportDeliveryToCSV } from '../../../utils/csvExportHelpers';
 
 const ITEMS_PER_PAGE = 10;
-
-const exportTipsToCSV = (
-  orders: Order[],
-  settings: any,
-  dateRange: { from: Date; to: Date },
-  t: (key: string) => string,
-  lng: Language
-) => {
-  const totalDelivery = orders.reduce(
-    (sum, order) => sum + Number(order.delivery?.price || 0),
-    0
-  );
-  const averageTip = totalDelivery / orders.length;
-
-  const headers = [
-    t('common:date'),
-    t('common:references'),
-    t('comptability:order-amount'),
-    t('comptability:delivery-amount'),
-    t('comptability:customer-name'),
-    t('common:payment-method'),
-  ].join(',');
-
-  const summary = [
-    `${t('common:period')},${formatDate(dateRange.from)} - ${formatDate(
-      dateRange.to
-    )}`,
-    `${t('comptability:total-delivery')},${formatCurrency(
-      totalDelivery,
-      settings?.currency
-    )}`,
-    `${t('comptability:delivery-average')},${formatCurrency(
-      averageTip,
-      settings?.currency
-    )}`,
-    '',
-  ].join('\n');
-
-  const rows = orders
-    .map(order => {
-      return [
-        formatDate(order.createdAt),
-        order.id,
-        formatCurrency(order.total, settings?.currency),
-        formatCurrency(Number(order.delivery?.price || 0), settings?.currency),
-        order.customerName || order.customerPhone || order.customerEmail || '#',
-        order.paymentMethod?.name || '-',
-      ].join(',');
-    })
-    .join('\n');
-
-  const csv = `${summary}\n${headers}\n${rows}`;
-
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  const url = URL.createObjectURL(blob);
-
-  link.setAttribute('href', url);
-  link.setAttribute(
-    'download',
-    `${t('common:delivery-report')}-${formatDate(
-      dateRange.from,
-      false,
-      lng
-    )}-${formatDate(dateRange.to, false, lng)}.csv`
-  );
-  link.style.visibility = 'hidden';
-
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
 
 export const AccountingDeliveryManagement = () => {
   const { t, i18n } = useTranslation();
@@ -120,7 +47,7 @@ export const AccountingDeliveryManagement = () => {
       const ordersWithDelivery = allOrders.filter(
         order => !!order.delivery && Number(order.delivery?.price || 0) !== 0
       );
-      exportTipsToCSV(ordersWithDelivery, settings, dateRange, t, lng);
+      exportDeliveryToCSV(ordersWithDelivery, settings, dateRange, t, lng);
     } catch (error) {
       console.error('Error exporting delivery data:', error);
     } finally {

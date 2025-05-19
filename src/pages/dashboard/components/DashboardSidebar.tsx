@@ -63,6 +63,7 @@ export function DashboardSidebar({
 
   const menuItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: t('dashboard') },
+    { id: 'enhanced', icon: LayoutDashboard, label: t('enhanced-overview') },
     { id: 'orders', icon: ShoppingBag, label: t('orders') },
     { id: 'pos', icon: Store, label: t('pos') },
     { id: 'traffic', icon: BarChart, label: t('traffic') },
@@ -131,11 +132,10 @@ export function DashboardSidebar({
                   w-full flex items-center space-x-3 
                   ${isCollapsed ? 'justify-center px-3 py-3' : 'px-4 py-3'}
                   rounded-lg transition-colors relative group
-                  ${
-                    currentPage === item.id
+                  ${currentPage === item.id
                       ? ''
                       : 'text-gray-700 dark:text-gray-200 hover:text-[color:var(--text-hover-color)] hover:bg-[color:var(--hover-color)] dark:hover:bg-[color:var(--hover-color)]'
-                  }
+                    }
                 `}
                 >
                   <div
@@ -193,14 +193,12 @@ export function DashboardSidebar({
         {/* Version Display Component */}
         <div className="mt-auto px-3 py-4 border-t border-gray-100 dark:border-gray-700">
           <div
-            className={`flex items-center ${
-              isCollapsed ? 'justify-center' : 'px-2'
-            }`}
+            className={`flex items-center ${isCollapsed ? 'justify-center' : 'px-2'
+              }`}
           >
             <Info
-              className={`${
-                isCollapsed ? 'w-5 h-5' : 'w-4 h-4'
-              } text-gray-400 flex-shrink-0`}
+              className={`${isCollapsed ? 'w-5 h-5' : 'w-4 h-4'
+                } text-gray-400 flex-shrink-0`}
             />
 
             <AnimatePresence mode="wait">
@@ -255,8 +253,8 @@ export function DashboardSidebar({
                 {version?.isStable
                   ? ` (${t('stable')})`
                   : version
-                  ? ` (${t('beta')})`
-                  : ''}
+                    ? ` (${t('beta')})`
+                    : ''}
               </div>
             )}
           </div>

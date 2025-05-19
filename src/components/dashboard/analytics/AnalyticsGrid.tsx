@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { DollarSign, TrendingUp, Users, Calendar } from 'lucide-react';
+import { memo } from 'react';
 import { useSettings } from '../../../hooks/useSettings';
 import {
   formatCurrency,
@@ -14,7 +15,8 @@ interface AnalyticsGridProps {
   dailyOrderRate: number;
 }
 
-export function AnalyticsGrid(props: AnalyticsGridProps) {
+// Define the component as a function expression
+const AnalyticsGridComponent = (props: AnalyticsGridProps) => {
   const { totalRevenue, totalOrders, uniqueCustomers, dailyOrderRate } = props;
   const { settings } = useSettings();
 
@@ -59,15 +61,14 @@ export function AnalyticsGrid(props: AnalyticsGridProps) {
         >
           <div className="flex items-center gap-3 sm:gap-4">
             <div
-              className={`flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center ${
-                stat.color === 'green'
+              className={`flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center ${stat.color === 'green'
                   ? 'bg-green-100 text-green-600 dark:bg-green-900/50 dark:text-green-400'
                   : stat.color === 'blue'
-                  ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400'
-                  : stat.color === 'purple'
-                  ? 'bg-purple-100 text-purple-600 dark:bg-purple-900/50 dark:text-purple-400'
-                  : 'bg-orange-100 text-orange-600 dark:bg-orange-900/50 dark:text-orange-400'
-              }`}
+                    ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400'
+                    : stat.color === 'purple'
+                      ? 'bg-purple-100 text-purple-600 dark:bg-purple-900/50 dark:text-purple-400'
+                      : 'bg-orange-100 text-orange-600 dark:bg-orange-900/50 dark:text-orange-400'
+                }`}
             >
               <stat.icon className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
@@ -87,3 +88,6 @@ export function AnalyticsGrid(props: AnalyticsGridProps) {
     </div>
   );
 }
+
+// Export the component with memo to prevent unnecessary re-renders
+export const AnalyticsGrid = memo(AnalyticsGridComponent);

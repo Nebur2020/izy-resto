@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
   Users,
@@ -21,6 +21,7 @@ import {
 import { Tabs } from '../../../components/ui/Tabs';
 import { FeedbackAnalytics } from '../../../components/dashboard/components/analytics/FeedbackAnalytics';
 import { useTranslation } from 'react-i18next';
+import { useDebouncedValue } from '../../../hooks/useOrdersExtended';
 
 export function TrafficAnalytics() {
   const { t } = useTranslation('analyse');
@@ -29,11 +30,22 @@ export function TrafficAnalytics() {
   const [activeTab, setActiveTab] = useState('overview');
   const [dateRange, setDateRange] = useState({
     start: new Date(new Date().setHours(0, 0, 0, 0)),
-    end: new Date(),
+    end: new Date(new Date().setHours(23, 59, 59, 999)),
   });
+
+  // Use debounced values to prevent excessive re-renders
+  const debouncedStartDate = useDebouncedValue(dateRange.start, 300);
+  const debouncedEndDate = useDebouncedValue(dateRange.end, 300);
+
   const [currentPage, setCurrentPage] = useState(1);
 
-  const stats = useTrafficStats(orders, dateRange);
+  // Create a debounced dateRange object for the stats hook
+  const debouncedDateRange = useMemo(() => ({
+    start: debouncedStartDate,
+    end: debouncedEndDate
+  }), [debouncedStartDate, debouncedEndDate]);
+
+  const stats = useTrafficStats(orders, debouncedDateRange);
 
   const primaryColor = settings?.palette.primary;
 
@@ -44,10 +56,18 @@ export function TrafficAnalytics() {
 
   const filteredOrders = useMemo(() => {
     return orders.filter(order => {
-      const orderDate = new Date(order.createdAt.seconds * 1000);
-      return orderDate >= dateRange.start && orderDate <= dateRange.end;
+      if (!order.createdAt || !order.createdAt.seconds) {
+        return false;
+      }
+      try {
+        const orderDate = new Date(order.createdAt.seconds * 1000);
+        return orderDate >= debouncedStartDate && orderDate <= debouncedEndDate;
+      } catch (err) {
+        console.error('Error parsing order date:', err, order);
+        return false;
+      }
     });
-  }, [orders, dateRange]);
+  }, [orders, debouncedStartDate, debouncedEndDate]);
 
   const metrics = useMemo(() => {
     const deliveredOrders = filteredOrders.filter(
@@ -95,8 +115,24 @@ export function TrafficAnalytics() {
     };
   }, [filteredOrders]);
 
+  const normalizeDate = (date: Date, isEndOfDay = false): Date => {
+    const normalized = new Date(date);
+    if (isEndOfDay) {
+      // For end date, set time to end of day (23:59:59.999)
+      normalized.setHours(23, 59, 59, 999);
+    } else {
+      // For start date, set time to beginning of day (00:00:00.000)
+      normalized.setHours(0, 0, 0, 0);
+    }
+    return normalized;
+  };
+
   const handleDateChange = (start: Date, end: Date) => {
-    setDateRange({ start, end });
+    // Normalize dates to ensure accurate time boundaries
+    const normalizedStart = normalizeDate(start);
+    const normalizedEnd = normalizeDate(end, true);
+
+    setDateRange({ start: normalizedStart, end: normalizedEnd });
     setCurrentPage(1);
   };
 

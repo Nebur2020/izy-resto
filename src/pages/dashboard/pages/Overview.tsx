@@ -8,11 +8,12 @@ import { ProductSalesStats } from '../../../components/dashboard/components/anal
 import { PaginatedCustomerList } from '../../../components/dashboard/PaginatedCustomerList';
 import { PaginatedRecentOrders } from '../../../components/dashboard/PaginatedRecentOrders';
 import { RevenueDetails } from '../../../components/dashboard/RevenueDetails';
-import { useOrdersRealtime } from '../../../hooks/useOrdersRealtime';
+import { useOrdersExtended, useDebouncedValue } from '../../../hooks/useOrdersExtended';
 import { Laptop, Loader } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { PaymentMethodStats } from '../../../components/dashboard/components/analytics/PaymentMethodStats';
+import { PaymentMethodStats } from '../../../components/dashboard/components/analytics/MemoizedPaymentMethodStats';
 import { useSettings } from '../../../hooks';
+import { OverviewSwitcher } from '../components/OverviewSwitcher';
 
 export function Overview() {
   const isMobile = useIsMobile();
@@ -20,31 +21,20 @@ export function Overview() {
     startDate: new Date(new Date().setHours(0, 0, 0, 0)),
     endDate: new Date(),
   });
-  const { orders, isLoading, error } = useOrdersRealtime();
+
+  // Use debounced values to prevent excessive re-renders
+  const debouncedStartDate = useDebouncedValue(dateRange.startDate, 300);
+  const debouncedEndDate = useDebouncedValue(dateRange.endDate, 300);
+
+  const { filterOrdersByDateRange, isLoading, error } = useOrdersExtended();
   const { t } = useTranslation('dashboard');
 
   const { settings } = useSettings();
   const primaryColor = settings?.palette.primary;
 
   const filteredOrders = useMemo(() => {
-    if (!orders || orders.length === 0) return [];
-
-    return orders.filter(order => {
-      if (!order.createdAt || !order.createdAt.seconds) {
-        return false;
-      }
-
-      try {
-        const orderDate = new Date(order.createdAt.seconds * 1000);
-        return (
-          orderDate >= dateRange.startDate && orderDate <= dateRange.endDate
-        );
-      } catch (err) {
-        console.error('Error parsing order date:', err, order);
-        return false;
-      }
-    });
-  }, [orders, dateRange]);
+    return filterOrdersByDateRange(debouncedStartDate, debouncedEndDate);
+  }, [filterOrdersByDateRange, debouncedStartDate, debouncedEndDate]);
 
   const deliveredOrders = useMemo(() => {
     return filteredOrders.filter(order => order.status === 'delivered');
@@ -54,8 +44,8 @@ export function Overview() {
     const daysDiff = Math.max(
       1,
       Math.ceil(
-        (dateRange.endDate.getTime() - dateRange.startDate.getTime()) /
-          (1000 * 60 * 60 * 24)
+        (debouncedEndDate.getTime() - debouncedStartDate.getTime()) /
+        (1000 * 60 * 60 * 24)
       )
     );
 
@@ -74,7 +64,7 @@ export function Overview() {
       ).size,
       dailyOrderRate: Math.round(dailyOrderRate * 10) / 10,
     };
-  }, [deliveredOrders, dateRange]);
+  }, [deliveredOrders, debouncedStartDate, debouncedEndDate]);
 
   if (isLoading) {
     return (
@@ -138,6 +128,7 @@ export function Overview() {
 
   return (
     <div className="space-y-6 p-4 sm:p-6">
+      <OverviewSwitcher />
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
           {t('dashboard')}
@@ -179,7 +170,10 @@ export function Overview() {
               className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
             >
               <h3 className="text-lg font-semibold mb-4">{t('income')}</h3>
-              <RevenueDetails orders={deliveredOrders} dateRange={dateRange} />
+              <RevenueDetails orders={deliveredOrders} dateRange={{
+                startDate: debouncedStartDate,
+                endDate: debouncedEndDate
+              }} />
             </motion.div>
 
             <motion.div

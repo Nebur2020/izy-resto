@@ -624,6 +624,7 @@ class OrderService {
         ...updateData,
         updatedAt: Timestamp.now(),
       });
+
     } catch (error) {
       console.error('Error updating order:', error);
       if (error instanceof OrderServiceError) {

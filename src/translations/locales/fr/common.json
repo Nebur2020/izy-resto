@@ -32,11 +32,14 @@
   "printing-error": "Erreur lors de l'impression",
   "printing": "Impression...",
   "items": "Articles",
+  "order": "Commande",
+  "orders": "commandes",
   "all-orders": "Toutes les commandes",
   "pending": "En attente",
   "in-cooking": "En préparation",
   "delivered": "Livré",
   "canceled": "Annulé",
+  "unknown": "Inconnu",
   "reset-filter": "Réinitialiser le filtre",
   "total-orders": "Total commandes",
   "delivery": "livraison",
@@ -62,7 +65,16 @@
     "thursday": "Jeudi",
     "friday": "Vendredi",
     "saturday": "Samedi",
-    "sunday": "Dimanche"
+    "sunday": "Dimanche",
+    "short": {
+      "monday": "Lun",
+      "tuesday": "Mar",
+      "wednesday": "Mer",
+      "thursday": "Jeu",
+      "friday": "Ven",
+      "saturday": "Sam",
+      "sunday": "Dim"
+    }
   },
   "no-opening-hours": "Aucun horaire défini",
   "opening-hours-modal-title": "Horaires d'ouverture",
@@ -245,7 +257,6 @@
   "cart-summary": "Résumé de la Commande",
   "no-tip": "Aucun",
   "cart-items": "articles",
-  "cart-item": "article",
   "item-created": "Article créé",
   "item-updated": "Article mis à jour",
   "item-deleted": "Article supprimé",
@@ -337,5 +348,8 @@
   "contact-us": "Contactez-nous",
   "address": "Adresse",
   "opening-time": "Heures d'ouverture",
-  "select-storage-destination": "Sélectionner la destination de stockage"
+  "select-storage-destination": "Sélectionner la destination de stockage",
+  "cart-item": "article",
+  "day": "jour",
+  "orders-title": "Commandes"
 }

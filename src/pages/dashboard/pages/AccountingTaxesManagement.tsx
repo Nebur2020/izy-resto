@@ -5,8 +5,6 @@ import {
   DollarSign,
   Download,
   Package,
-  ChevronDown,
-  Loader2,
 } from 'lucide-react';
 import { useSettings } from '../../../hooks';
 import { useOrders } from '../../../context/OrderContext';
@@ -16,128 +14,9 @@ import { formatCurrency } from '../../../utils/currency';
 import { Language, Order } from '../../../types';
 import { useTranslation } from 'react-i18next';
 import LoadMoreButton from '../../../components/ui/LoadMoreButton';
+import { exportTaxesToCSV } from '../../../utils/csvExportHelpers';
 
 const ITEMS_PER_PAGE = 10;
-
-export async function generateTaxReportCSV(
-  receivedOrders: Order[],
-  t: (key: string) => string,
-  lng: Language,
-  settings?: any,
-  dateRange?: { from: Date; to: Date }
-): Promise<void> {
-  try {
-    const orders = receivedOrders.sort((a, b) => {
-      return a.createdAt - b.createdAt;
-    });
-    const taxTotals = new Map<string, { amount: number; rate: number }>();
-    let totalHT = 0;
-    let totalTTC = 0;
-
-    orders.forEach(order => {
-      totalHT += order.subtotal;
-      totalTTC += totalHT + order.taxTotal;
-
-      order.taxes.forEach(tax => {
-        const existing = taxTotals.get(tax.name);
-        if (existing) {
-          existing.amount += tax.amount;
-        } else {
-          taxTotals.set(tax.name, { amount: tax.amount, rate: tax.rate });
-        }
-      });
-    });
-
-    let csvContent = '';
-
-    csvContent += `${settings?.name || 'Restaurant'}\n`;
-    csvContent += t('comptability:tax-report') + '\n';
-    csvContent += `${t('common:period')} ${formatDate(
-      dateRange?.from
-    )} - ${formatDate(dateRange?.to)}\n\n`;
-
-    csvContent += t('comptability:summary') + '\n';
-    csvContent += `${t('comptability:total-ht')},${formatCurrency(
-      totalHT,
-      settings?.currency
-    )}\n`;
-    csvContent += `${t('comptability:total-tax')},${formatCurrency(
-      totalTTC - totalHT,
-      settings?.currency
-    )}\n`;
-    csvContent += `${t('comptability:total-ttc')},${formatCurrency(
-      totalTTC,
-      settings?.currency
-    )}\n\n`;
-
-    csvContent += t('comptability:tax-details') + '\n';
-    csvContent +=
-      t('comptability:tax-name') +
-      ',' +
-      t('comptability:tax-rate') +
-      ',' +
-      t('comptability:tax-amount') +
-      '\n';
-    Array.from(taxTotals.entries()).forEach(([name, data]) => {
-      csvContent += `${name},${(data.rate * 100).toFixed(2)}%,${formatCurrency(
-        data.amount,
-        settings?.currency
-      )}\n`;
-    });
-    csvContent += '\n';
-
-    csvContent += t('comptability:orders-details') + '\n';
-    csvContent += `${t('common:date')},${t('common:references')},${t(
-      'comptability:total-ht'
-    )},${t('comptability:tax-details')},${t('comptability:total-tax')},${t(
-      'comptability:total-ttc'
-    )}\n`;
-
-    orders.forEach(order => {
-      const taxDetails = order.taxes
-        .map(
-          tax =>
-            `${tax.name} (${(tax.rate * 100).toFixed(2)}%): ${formatCurrency(
-              tax.amount,
-              settings?.currency
-            )}`
-        )
-        .join(' | ');
-
-      csvContent +=
-        [
-          formatDate(order.createdAt),
-          `#${order.id}`,
-          formatCurrency(order.subtotal, settings?.currency),
-          taxDetails,
-          formatCurrency(order.taxTotal, settings?.currency),
-          formatCurrency(order.total, settings?.currency),
-        ].join(',') + '\n';
-    });
-
-    const blob = new Blob(['\ufeff' + csvContent], {
-      type: 'text/csv;charset=utf-8;',
-    });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-
-    link.setAttribute('href', url);
-    link.setAttribute(
-      'download',
-      `taxes-${formatDate(dateRange?.from, false, lng)}-${formatDate(
-        dateRange?.to,
-        false,
-        lng
-      )}.csv`
-    );
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  } catch (error) {
-    console.error('Error generating tax report CSV:', error);
-    throw new Error('Failed to generate tax report CSV');
-  }
-}
 
 export const AccountingTaxesManagement = () => {
   const { t, i18n } = useTranslation();
@@ -217,7 +96,7 @@ export const AccountingTaxesManagement = () => {
       const ordersWithTaxes = allOrders.filter(
         order => order?.taxes?.length > 0
       );
-      await generateTaxReportCSV(ordersWithTaxes, t, lng, settings, dateRange);
+      exportTaxesToCSV(ordersWithTaxes, settings, dateRange, t, lng);
     } catch (error) {
       console.error(error);
     } finally {

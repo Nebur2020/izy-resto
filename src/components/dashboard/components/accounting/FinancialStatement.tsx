@@ -2,19 +2,20 @@ import { Transaction } from '../../../../types/accounting';
 import { formatCurrency } from '../../../../utils/currency';
 import { formatDate } from '../../../../utils/date';
 import { Building, TrendingUp, TrendingDown, FileText } from 'lucide-react';
-import { Language, RestaurantSettings } from '../../../../types';
+import { Language, RestaurantSettings, Order } from '../../../../types';
 import { useTranslation } from 'react-i18next';
 
 interface IFinancialStatementProps {
   transactions: Transaction[];
   period: { startDate: Date; endDate: Date };
   settings: RestaurantSettings;
+  orders?: Order[];
 }
 
 export function FinancialStatement(props: IFinancialStatementProps) {
   const { t, i18n } = useTranslation();
   const lng = i18n.language as Language;
-  const { transactions, period, settings } = props;
+  const { transactions, period, settings, orders = [] } = props;
   const totals = transactions.reduce(
     (acc, t) => ({
       debit: acc.debit + (t.debit || 0),
@@ -25,6 +26,31 @@ export function FinancialStatement(props: IFinancialStatementProps) {
   );
 
   const currency = settings?.currency || 'XOF';
+
+  // Calculate statistics from order data (more accurate than transaction descriptions)
+  const deliveredOrders = orders.filter(order => order.status === 'delivered');
+
+  // Tax statistics
+  const totalTaxes = deliveredOrders.reduce((acc, order) => {
+    return acc + (order.taxTotal || 0);
+  }, 0);
+
+  // Tip statistics
+  const ordersWithTips = deliveredOrders.filter(order => !!order?.tip);
+  const totalTips = deliveredOrders.reduce((acc, order) => {
+    return acc + (order.tip?.amount || 0);
+  }, 0);
+  const tippableCount = ordersWithTips.length;
+  const averageTip = tippableCount > 0 ? totalTips / tippableCount : 0;
+
+  // Delivery statistics
+  const ordersWithDelivery = deliveredOrders.filter(
+    order => !!order.delivery && Number(order.delivery?.price || 0) !== 0
+  );
+  const totalDelivery = deliveredOrders.reduce((acc, order) => {
+    return acc + Number(order.delivery?.price || 0);
+  }, 0);
+  const deliveryCount = ordersWithDelivery.length;
 
   return (
     <div className="p-12 bg-white text-black font-sans max-w-4xl mx-auto">
@@ -155,13 +181,111 @@ export function FinancialStatement(props: IFinancialStatementProps) {
             </p>
           </div>
           <p
-            className={`text-2xl font-bold ${
-              totals.net >= 0 ? 'text-green-600' : 'text-red-600'
-            }`}
+            className={`text-2xl font-bold ${totals.net >= 0 ? 'text-green-600' : 'text-red-600'
+              }`}
             style={{ color: '#000' }}
           >
             {formatCurrency(totals.net, currency)}
           </p>
+        </div>
+      </div>
+
+      {/* Additional section for tax, tip, and delivery statistics */}
+      <div className="mb-8">
+        <h3 className="text-lg font-semibold mb-4 text-black border-b border-gray-200 pb-2">
+          {t('comptability:additional-stats')}
+        </h3>
+        <div className="grid grid-cols-3 gap-6">
+          {/* Tax Statistics */}
+          <div className="bg-blue-50 rounded-lg p-4 shadow-sm">
+            <h4 className="font-medium text-sm mb-2 text-black">
+              {t('comptability:tax-stats')}
+            </h4>
+            <div className="space-y-1">
+              <div className="flex justify-between">
+                <span className="text-xs text-gray-600">
+                  {t('comptability:total-taxes')}:
+                </span>
+                <span className="text-xs font-medium text-black">
+                  {formatCurrency(totalTaxes, currency)}
+                </span>
+              </div>
+              {deliveredOrders.length > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-xs text-gray-600">
+                    {t('comptability:taxable-orders')}:
+                  </span>
+                  <span className="text-xs font-medium text-black">
+                    {deliveredOrders.filter(o => (o.taxTotal || 0) > 0).length}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Tip Statistics */}
+          <div className="bg-blue-50 rounded-lg p-4 shadow-sm">
+            <h4 className="font-medium text-sm mb-2 text-black">
+              {t('comptability:tip-stats')}
+            </h4>
+            <div className="space-y-1">
+              <div className="flex justify-between">
+                <span className="text-xs text-gray-600">
+                  {t('comptability:total-tips')}:
+                </span>
+                <span className="text-xs font-medium text-black">
+                  {formatCurrency(totalTips, currency)}
+                </span>
+              </div>
+              {tippableCount > 0 && (
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-xs text-gray-600">
+                      {t('comptability:orders-with-tips')}:
+                    </span>
+                    <span className="text-xs font-medium text-black">
+                      {tippableCount}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-xs text-gray-600">
+                      {t('comptability:average-tip')}:
+                    </span>
+                    <span className="text-xs font-medium text-black">
+                      {formatCurrency(averageTip, currency)}
+                    </span>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Delivery Statistics */}
+          <div className="bg-blue-50 rounded-lg p-4 shadow-sm">
+            <h4 className="font-medium text-sm mb-2 text-black">
+              {t('comptability:delivery-stats')}
+            </h4>
+            <div className="space-y-1">
+              <div className="flex justify-between">
+                <span className="text-xs text-gray-600">
+                  {t('comptability:total-delivery')}:
+                </span>
+                <span className="text-xs font-medium text-black">
+                  {formatCurrency(totalDelivery, currency)}
+                </span>
+              </div>
+              {deliveryCount > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-xs text-gray-600">
+                    {t('comptability:delivery-count')}:
+                  </span>
+                  <span className="text-xs font-medium text-black">
+                    {deliveryCount}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { Button } from '../../../ui/Button';
 import { DatePicker } from '../../../ui/DatePicker';
@@ -38,16 +38,44 @@ export function DateFilter(props: IDateFilterProps) {
     { label: isMobile ? '30j' : t('common:last-month'), days: 30 },
   ];
 
-  const handlePresetClick = (days: number) => {
-    const end = new Date();
+  // Function to ensure consistent date normalization
+  const normalizeDate = useCallback((date: Date, isEndOfDay = false): Date => {
+    const normalized = new Date(date);
+    if (isEndOfDay) {
+      // For end date, set time to end of day (23:59:59.999)
+      normalized.setHours(23, 59, 59, 999);
+    } else {
+      // For start date, set time to beginning of day (00:00:00.000)
+      normalized.setHours(0, 0, 0, 0);
+    }
+    return normalized;
+  }, []);
+
+  // Enhanced date selection handlers with proper normalization
+  const handleStartDateSelect = useCallback((date: Date) => {
+    const normalizedDate = normalizeDate(date);
+    onDateChange(normalizedDate, endDate);
+    setIsStartPickerOpen(false);
+  }, [onDateChange, endDate, normalizeDate]);
+
+  const handleEndDateSelect = useCallback((date: Date) => {
+    const normalizedDate = normalizeDate(date, true);
+    onDateChange(startDate, normalizedDate);
+    setIsEndPickerOpen(false);
+  }, [onDateChange, startDate, normalizeDate]);
+
+  // Enhanced preset handler with proper time normalization
+  const handlePresetClick = useCallback((days: number) => {
+    const end = normalizeDate(new Date(), true);
     const start = new Date();
+
     if (days > 0) {
       start.setDate(start.getDate() - days);
-    } else {
-      start.setHours(0, 0, 0, 0);
     }
-    onDateChange(start, end);
-  };
+
+    const normalizedStart = normalizeDate(start);
+    onDateChange(normalizedStart, end);
+  }, [onDateChange, normalizeDate]);
 
   return (
     <div className="w-full sm:w-auto relative">
@@ -95,13 +123,10 @@ export function DateFilter(props: IDateFilterProps) {
                   </div>
                   <DatePicker
                     date={startDate}
-                    onSelect={date => {
-                      onDateChange(date, endDate);
-                      setIsStartPickerOpen(false);
-                    }}
+                    onSelect={handleStartDateSelect}
                     isOpen={isStartPickerOpen}
                     onClose={() => setIsStartPickerOpen(false)}
-                    position="center"
+                    position="bottom"
                   />
                 </div>
               </div>
@@ -140,13 +165,10 @@ export function DateFilter(props: IDateFilterProps) {
                   </div>
                   <DatePicker
                     date={endDate}
-                    onSelect={date => {
-                      onDateChange(startDate, date);
-                      setIsEndPickerOpen(false);
-                    }}
+                    onSelect={handleEndDateSelect}
                     isOpen={isEndPickerOpen}
                     onClose={() => setIsEndPickerOpen(false)}
-                    position="center"
+                    position="bottom"
                   />
                 </div>
               </div>
