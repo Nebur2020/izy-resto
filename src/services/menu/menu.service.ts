@@ -189,7 +189,7 @@ class MenuService extends FirestoreService<MenuItem> {
     }
   }
 
-  // Search menu items with pagination and deduplication
+  // Search menu items across the entire collection
   async searchMenuItems(
     searchTerm: string,
     pageSize: number = 10,
@@ -197,104 +197,131 @@ class MenuService extends FirestoreService<MenuItem> {
     categoryId?: string
   ): Promise<PaginatedResult<MenuItemWithVariants>> {
     try {
+      // For searching, we need to get all items from Firebase since they don't support text search
+      console.log(
+        'Searching for menu items with term:',
+        searchTerm,
+        'category:',
+        categoryId
+      );
+
       // Create the base collection reference
       const collectionRef = collection(db, this.collectionName);
+      let constraints = [];
+      let useClientSideFiltering = false;
 
-      // Build constraints array
-      const constraints = [];
+      // If we have a category, we'll need an index for the combined query
+      // As a fallback, we'll get all items and filter on the client side
+      if (categoryId && categoryId !== 'all') {
+        try {
+          // First try with where + orderBy (requires composite index)
+          constraints.push(where('categoryId', '==', categoryId));
+          constraints.push(orderBy('createdAt', 'desc'));
 
-      // When searching, we want to search across all categories by default
-      // Only apply category filter if explicitly requested AND no search term is provided
-      if (
-        categoryId &&
-        categoryId !== 'all' &&
-        (!searchTerm || searchTerm.trim() === '')
-      ) {
-        constraints.push(where('categoryId', '==', categoryId));
+          // Build the query
+          const menuQuery = query(collectionRef, ...constraints);
+
+          // Test if the query works (if no index, this will throw)
+          await getDocs(menuQuery);
+
+          // If we get here, the index exists and we can use the query
+          console.log(
+            'Using database filtering with index for category + ordering'
+          );
+          useClientSideFiltering = false;
+        } catch (indexError) {
+          console.log(
+            'Composite index not found, falling back to client-side filtering'
+          );
+          // Reset constraints and use client-side filtering
+          constraints = [orderBy('createdAt', 'desc')];
+          useClientSideFiltering = true;
+        }
+      } else {
+        // No category filter, just order by createdAt
+        constraints.push(orderBy('createdAt', 'desc'));
       }
 
-      // Add ordering constraint
-      constraints.push(orderBy('createdAt', 'desc'));
+      // Build the query
+      const menuQuery = query(collectionRef, ...constraints);
 
-      // We need to fetch more items when searching since we'll filter afterward
-      const fetchSize = searchTerm ? Math.min(50, pageSize * 3) : pageSize + 1;
+      // Execute the query to get all items for searching
+      const snapshot = await getDocs(menuQuery);
+      console.log(`Retrieved ${snapshot.docs.length} items from Firebase`);
 
-      // Add pagination limit - fetch extra items to ensure we have enough after filtering
-      constraints.push(limit(fetchSize));
-
-      // Construct the initial query with constraints
-      let baseQuery = query(collectionRef, ...constraints);
-
-      // If we have a last document reference, add the startAfter constraint
-      if (lastDoc) {
-        baseQuery = query(baseQuery, startAfter(lastDoc));
-      }
-
-      // Execute the query
-      const snapshot = await getDocs(baseQuery);
-
-      // Process query results
-      let items: MenuItemWithVariants[] = [];
-      let newLastDoc: QueryDocumentSnapshot<DocumentData> | null = null;
+      let allItems: MenuItemWithVariants[] = [];
 
       // Process each document
-      for (const doc of snapshot.docs) {
-        // Check that the document exists
+      snapshot.docs.forEach(doc => {
         if (doc.exists()) {
-          const itemData = doc.data() as Omit<MenuItemWithVariants, 'id'>;
-
-          // Create the menu item with proper processing
-          const item = {
+          const data = doc.data();
+          const item: MenuItemWithVariants = {
             id: doc.id,
-            ...itemData,
-            // Ensure variantPrices is properly filtered
-            variantPrices: (itemData.variantPrices || []).filter(
-              vp =>
+            ...(data as Omit<MenuItemWithVariants, 'id'>),
+            variantPrices: (data.variantPrices || []).filter(
+              (vp: any) =>
                 Array.isArray(vp?.variantCombination) &&
                 vp.variantCombination.length > 0
             ),
           };
-
-          items.push(item);
+          allItems.push(item);
         }
-      }
+      });
 
-      // Filter by search term if provided
-      if (searchTerm && searchTerm.trim() !== '') {
-        const normalizedSearchTerm = searchTerm.toLowerCase().trim();
-        items = items.filter(
-          item =>
-            item.name.toLowerCase().includes(normalizedSearchTerm) ||
-            (item.description &&
-              item.description.toLowerCase().includes(normalizedSearchTerm))
+      // Apply client-side category filtering if needed
+      if (useClientSideFiltering && categoryId && categoryId !== 'all') {
+        allItems = allItems.filter(item => item.categoryId === categoryId);
+        console.log(
+          `After category filtering (${categoryId}): ${allItems.length} items remain`
         );
+      }
 
-        // If we're searching with a category filter, apply it after the text search
-        if (categoryId && categoryId !== 'all') {
-          items = items.filter(item => item.categoryId === categoryId);
+      // Filter by search term
+      let filteredItems = allItems;
+      if (searchTerm && searchTerm.trim() !== '') {
+        const normalizedTerm = searchTerm.toLowerCase().trim();
+        filteredItems = allItems.filter(
+          item =>
+            item.name.toLowerCase().includes(normalizedTerm) ||
+            (item.description &&
+              item.description.toLowerCase().includes(normalizedTerm))
+        );
+        console.log(
+          `Found ${filteredItems.length} items matching search term '${searchTerm}'`
+        );
+      }
+
+      // Handle pagination
+      let startIndex = 0;
+
+      // If lastDoc is provided, find its index in the filtered items
+      if (lastDoc) {
+        const lastItemIndex = filteredItems.findIndex(
+          item => item.id === lastDoc.id
+        );
+        if (lastItemIndex !== -1) {
+          startIndex = lastItemIndex + 1;
         }
       }
 
-      // Remove duplicates based on id and name
-      const uniqueItems = items.filter(
-        (item, index, self) =>
-          index ===
-          self.findIndex(i => i.id === item.id && i.name === item.name)
+      // Get the items for this page
+      const paginatedItems = filteredItems.slice(
+        startIndex,
+        startIndex + pageSize
       );
+      const hasMore = startIndex + pageSize < filteredItems.length;
 
-      // Get just the items for this page
-      const pageItems = uniqueItems.slice(0, pageSize);
-
-      // Set the last document for pagination
-      newLastDoc = snapshot.docs[snapshot.docs.length - 1] || null;
-
-      // Determine if there are more results
-      const hasMore = uniqueItems.length > pageSize;
+      // Find the last document reference for the next page
+      let newLastDoc = null;
+      if (paginatedItems.length > 0) {
+        const lastItemId = paginatedItems[paginatedItems.length - 1].id;
+        newLastDoc = snapshot.docs.find(doc => doc.id === lastItemId) || null;
+      }
 
       return {
-        items: pageItems,
+        items: paginatedItems,
         lastDoc: newLastDoc,
-        hasMore: hasMore,
+        hasMore,
       };
     } catch (error) {
       // Enhanced error logging

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, RefreshCw, Search as SearchIcon } from 'lucide-react';
+import { Plus, Search as SearchIcon } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../../components/ui/Button';
@@ -136,12 +136,19 @@ export function MenuManagement() {
   };
 
   const performSearch = async () => {
-    if (!searchTerm.trim()) return;
+    if (!searchTerm.trim()) {
+      // If search term is empty, reset to normal view
+      setIsSearching(false);
+      return loadInitialItems();
+    }
 
     setIsLoading(true);
     setIsSearching(true);
+    // Reset pagination state when starting a new search
+    setLastDoc(null);
 
     try {
+      console.log('Performing search for:', searchTerm, 'with category:', selectedCategory);
       // Use the searchMenuItems function with pagination support instead of filtering all items
       const result = await menuService.searchMenuItems(
         searchTerm,
@@ -150,6 +157,7 @@ export function MenuManagement() {
         selectedCategory !== 'all' ? selectedCategory : undefined
       );
 
+      console.log('Search results:', result.items.length, 'items');
       setItems(result.items);
       setLastDoc(result.lastDoc);
       setHasMore(result.hasMore);
@@ -167,6 +175,7 @@ export function MenuManagement() {
 
     try {
       setIsLoadingMore(true);
+      console.log('Loading more search results with lastDoc', lastDoc);
 
       const result = await menuService.searchMenuItems(
         searchTerm,
@@ -175,7 +184,20 @@ export function MenuManagement() {
         selectedCategory !== 'all' ? selectedCategory : undefined
       );
 
-      setItems(prevItems => [...prevItems, ...result.items]);
+      // Check if we got new items
+      if (result.items.length === 0) {
+        setHasMore(false);
+        return;
+      }
+
+      setItems(prevItems => {
+        // Create a Set of existing item IDs to prevent duplicates
+        const existingIds = new Set(prevItems.map(item => item.id));
+        // Only add items that aren't already in the list
+        const newItems = result.items.filter(item => !existingIds.has(item.id));
+        return [...prevItems, ...newItems];
+      });
+
       setLastDoc(result.lastDoc);
       setHasMore(result.hasMore);
     } catch (error) {
@@ -312,19 +334,13 @@ export function MenuManagement() {
         </div>
       )}
 
-      {!isLoading && items.length > 0 ? (
+      {!isLoading && items.length > 0 && (
         <MenuItemList
           items={items}
           onEdit={handleEdit}
           onDelete={handleDelete}
           currency={settings?.currency}
         />
-      ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-          <div className="divide-y divide-gray-200 dark:divide-gray-700">
-            <EmptySection title={t('common:no-items-found')} />
-          </div>
-        </div>
       )}
 
       {!isLoading && hasMore && (
