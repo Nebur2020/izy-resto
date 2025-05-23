@@ -1,0 +1,105 @@
+name: Deploy to Netlify
+on:
+  workflow_dispatch:
+    inputs:
+      NETLIFY_TOKEN:
+        description: 'Netlify authentication token for deployment'
+        required: true
+        type: string
+      FIREBASE:
+        description: 'Firebase configuration (JSON format)'
+        required: true
+        type: string
+      CLOUDINARY:
+        description: 'Cloudinary configuration (JSON format)'
+        required: true
+        type: string
+      NETLIFY_SITE_NAME:
+        description: 'Netlify site name'
+        required: true
+        type: string
+      NETLIFY_SITE_ID:
+        description: 'Netlify site ID'
+        required: true
+        type: string
+      version:
+        description: 'Git version (branch or tag)'
+        required: false
+        default: 'main'
+        type: string
+      action:
+        description: 'Deployment action (deploy or pause)'
+        required: false
+        default: 'deploy'
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.version }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Generate .env file
+        run: |
+          echo "Parsing configuration inputs..."
+          echo '${{ github.event.inputs.FIREBASE }}' > firebase.json
+          echo '${{ github.event.inputs.CLOUDINARY }}' > cloudinary.json
+          echo "Creating .env file..."
+          node -e "
+            const firebase = require('./firebase.json');
+            const cloudinary = require('./cloudinary.json');
+            const fs = require('fs');
+            
+            const viteEnvLines = [];
+            
+            // Firebase configuration
+            viteEnvLines.push(\`VITE_FIREBASE_API_KEY=\${firebase.apiKey}\`);
+            viteEnvLines.push(\`VITE_FIREBASE_AUTH_DOMAIN=\${firebase.authDomain}\`);
+            viteEnvLines.push(\`VITE_FIREBASE_PROJECT_ID=\${firebase.projectId}\`);
+            viteEnvLines.push(\`VITE_FIREBASE_STORAGE_BUCKET=\${firebase.storageBucket}\`);
+            viteEnvLines.push(\`VITE_FIREBASE_MESSAGING_SENDER_ID=\${firebase.messagingSenderId}\`);
+            viteEnvLines.push(\`VITE_FIREBASE_APP_ID=\${firebase.appId}\`);
+            viteEnvLines.push(\`VITE_FIREBASE_MEASUREMENT_ID=\${firebase.measurementId}\`);
+            
+            // Cloudinary configuration
+            viteEnvLines.push(\`VITE_CLOUDINARY_CLOUD_NAME=\${cloudinary.cloudName}\`);
+            viteEnvLines.push(\`VITE_CLOUDINARY_UPLOAD_PRESET=\${cloudinary.uploadPreset}\`);
+            viteEnvLines.push(\`VITE_CLOUDINARY_API_KEY=\${cloudinary.apiKey}\`);
+            viteEnvLines.push(\`VITE_CLOUDINARY_API_SECRET=\${cloudinary.apiSecret}\`);
+            
+            // App configuration
+            viteEnvLines.push('VITE_APP_SITE_ID=${{ github.event.inputs.NETLIFY_SITE_ID }}');
+            viteEnvLines.push('VITE_APP_URL=https://${{ github.event.inputs.NETLIFY_SITE_NAME }}.netlify.app');
+            viteEnvLines.push(\`VITE_APP_UNAVAILABLE=\${('${{ github.event.inputs.action }}' === 'pause') ? 'true' : 'false'}\`);
+            
+            // Write .env file
+            fs.writeFileSync('.env', viteEnvLines.join('\\n'));
+          "
+          cat .env 
+          echo ".env file created successfully"
+        shell: bash
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build app
+        run: npm run build
+      
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v2
+        with:
+          publish-dir: dist
+          production-deploy: true
+          github-token: ${{ secrets.ACCOUNT_TOKEN }}
+          deploy-message: 'Deploy from GitHub Action'
+        env:
+          NETLIFY_SITE_ID: ${{ github.event.inputs.NETLIFY_SITE_ID }}
+          NETLIFY_AUTH_TOKEN: ${{ github.event.inputs.NETLIFY_TOKEN }}
