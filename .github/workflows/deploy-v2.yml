@@ -22,6 +22,16 @@ on:
         description: 'Netlify site ID'
         required: true
         type: string
+      BRANCH:
+        description: 'Git branch to deploy'
+        required: false
+        default: 'main'
+        type: string
+      ENVIRONMENT:
+        description: 'Deployment environment (e.g., production, staging, development)'
+        required: false
+        default: 'production'
+        type: string
       version:
         description: 'Git version (branch or tag)'
         required: false
@@ -40,7 +50,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.event.inputs.version }}
+          ref: ${{ github.event.inputs.BRANCH }}
       
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -78,6 +88,8 @@ jobs:
             // App configuration
             viteEnvLines.push('VITE_APP_SITE_ID=${{ github.event.inputs.NETLIFY_SITE_ID }}');
             viteEnvLines.push('VITE_APP_URL=https://${{ github.event.inputs.NETLIFY_SITE_NAME }}.netlify.app');
+            viteEnvLines.push('VITE_APP_BRANCH=${{ github.event.inputs.BRANCH }}');
+            viteEnvLines.push('VITE_APP_ENVIRONMENT=${{ github.event.inputs.ENVIRONMENT }}');
             viteEnvLines.push(\`VITE_APP_UNAVAILABLE=\${('${{ github.event.inputs.action }}' === 'pause') ? 'true' : 'false'}\`);
             
             // Write .env file
