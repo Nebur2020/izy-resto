@@ -17,15 +17,7 @@ const DAYS = [
   'sunday',
 ] as const;
 
-const FRENCH_DAYS: Record<string, string> = {
-  sunday: 'Dimanche',
-  monday: 'Lundi',
-  tuesday: 'Mardi',
-  wednesday: 'Mercredi',
-  thursday: 'Jeudi',
-  friday: 'Vendredi',
-  saturday: 'Samedi',
-};
+// Using translation system for days instead of hardcoded values
 
 export function RestaurantClosedModal() {
   const { settings } = useSettings();
@@ -56,20 +48,20 @@ export function RestaurantClosedModal() {
             <Lock className="w-8 h-8 text-red-600 dark:text-red-400" />
           </div>
 
-          <h2 className="text-2xl font-bold mb-2">Nous sommes fermés</h2>
+          <h2 className="text-2xl font-bold mb-2">{t('common:we-are-closed')}</h2>
 
           <p className="text-gray-600 dark:text-gray-400 mb-6">
             {nextOpenTime ? (
-              <>Nous ouvrirons {nextOpenTime}</>
+              <>{t('common:we-will-open')} {nextOpenTime}</>
             ) : (
-              <>Nous sommes actuellement fermés</>
+              <>{t('common:currently-closed')}</>
             )}
           </p>
 
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400">
               <Clock className="w-4 h-4" />
-              Horaires d'ouverture :
+              {t('common:opening-hours-label')}
             </div>
 
             <div className="space-y-1 text-sm px-10">
@@ -82,10 +74,9 @@ export function RestaurantClosedModal() {
                     </span>
                     <span>
                       {hours?.closed
-                        ? 'Fermé'
-                        : `${hours?.open || '--:--'} - ${
-                            hours?.close || '--:--'
-                          }`}
+                        ? t('common:closed')
+                        : `${hours?.open || '--:--'} - ${hours?.close || '--:--'
+                        }`}
                     </span>
                   </div>
                 );
@@ -96,7 +87,7 @@ export function RestaurantClosedModal() {
               <Link to="/login">
                 <Button variant="ghost" className="w-full">
                   <Settings className="w-4 h-4 mr-2" />
-                  Administration
+                  {t('common:administration')}
                 </Button>
               </Link>
             </div>

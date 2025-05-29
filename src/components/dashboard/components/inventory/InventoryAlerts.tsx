@@ -8,7 +8,7 @@ interface InventoryAlertsProps {
 }
 
 export function InventoryAlerts({ items }: InventoryAlertsProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common', 'inventory']);
   const lowStockItems = items.filter(item => {
     return Number(item.quantity) <= Number(item.minQuantity);
   });
@@ -69,7 +69,7 @@ export function InventoryAlerts({ items }: InventoryAlertsProps) {
           <div className="flex items-center gap-3">
             <AlertCircle className="h-5 w-5 text-red-500" />
             <h3 className="font-medium text-red-800 dark:text-red-400">
-              Produits expirés
+              {t('inventory:expired-products')}
             </h3>
           </div>
           <div className="mt-2 space-y-1">
@@ -78,7 +78,7 @@ export function InventoryAlerts({ items }: InventoryAlertsProps) {
                 key={item.id}
                 className="text-sm text-red-700 dark:text-red-300"
               >
-                {item.name} - Expiré le{' '}
+                {item.name} - {t('inventory:expired-on')}{' '}
                 {new Date(item.expiryDate!).toLocaleDateString()}
               </p>
             ))}
@@ -95,7 +95,7 @@ export function InventoryAlerts({ items }: InventoryAlertsProps) {
           <div className="flex items-center gap-3">
             <AlertTriangle className="h-5 w-5 text-blue-500" />
             <h3 className="font-medium text-blue-800 dark:text-blue-400">
-              Produits bientôt expirés
+              {t('inventory:soon-to-expire')}
             </h3>
           </div>
           <div className="mt-2 space-y-1">
@@ -104,7 +104,7 @@ export function InventoryAlerts({ items }: InventoryAlertsProps) {
                 key={item.id}
                 className="text-sm text-blue-700 dark:text-blue-300"
               >
-                {item.name} - Expire le{' '}
+                {item.name} - {t('inventory:expires-on')}{' '}
                 {new Date(item.expiryDate!).toLocaleDateString()}
               </p>
             ))}

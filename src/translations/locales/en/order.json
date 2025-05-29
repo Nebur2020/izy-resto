@@ -98,5 +98,13 @@
   },
   "search-orders": "Search orders",
   "new-order-notification": "New order",
-  "no-orders-found": "No orders found"
+  "no-orders-found": "No orders found",
+  "rating": {
+    "your-feedback": "Your feedback",
+    "how-would-you-rate": "How would you rate your order?",
+    "add-comment": "Add a comment (Optional)",
+    "share-experience": "Share your experience...",
+    "sending": "Sending...",
+    "send-feedback": "Send feedback"
+  }
 }

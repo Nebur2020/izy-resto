@@ -96,5 +96,13 @@
   },
   "search-orders": "Rechercher des commandes",
   "new-order-notification": "Nouvelle commande",
-  "no-orders-found": "Aucune commande trouvée"
+  "no-orders-found": "Aucune commande trouvée",
+  "rating": {
+    "your-feedback": "Votre avis",
+    "how-would-you-rate": "Comment évaluez-vous votre commande ?",
+    "add-comment": "Un commentaire à ajouter ? (Optionnel)",
+    "share-experience": "Partagez votre expérience...",
+    "sending": "Envoi en cours...",
+    "send-feedback": "Envoyer mon avis"
+  }
 }
