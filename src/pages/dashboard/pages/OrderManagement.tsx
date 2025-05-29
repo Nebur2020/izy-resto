@@ -277,7 +277,7 @@ export function OrderManagement() {
         isLoading={(isLoading || searchLoading) && displayedOrders.length === 0}
       />
 
-      {!isSearching && hasMore && !isLoading && !isLoadingMore && (
+      {!isSearching && hasMore && !isLoading && !isLoadingMore && displayedOrders.length > 0 && displayedOrders.length >= 10 && (
         <div className="flex justify-center mt-6">
           <LoadMoreButton
             handleLoadMore={loadMoreOrders || (() => { })}
@@ -286,7 +286,7 @@ export function OrderManagement() {
         </div>
       )}
 
-      {!isSearching && isLoadingMore && (
+      {!isSearching && isLoadingMore && displayedOrders.length > 0 && (
         <div className="flex justify-center mt-6">
           <div className="animate-spin text-blue-500">
             <RefreshCw className="w-6 h-6" />
