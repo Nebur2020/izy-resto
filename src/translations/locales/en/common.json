@@ -140,6 +140,24 @@
   "fri": "Fri",
   "sat": "Sat",
   "sun": "Sun",
+  "days": {
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday",
+    "short": {
+      "monday": "Mon",
+      "tuesday": "Tue",
+      "wednesday": "Wed",
+      "thursday": "Thu",
+      "friday": "Fri",
+      "saturday": "Sat",
+      "sunday": "Sun"
+    }
+  },
   "filed-is-required": "This field is required",
   "no-logo": "No logo",
   "choose-from-bibliotheque": "Choose from library",
