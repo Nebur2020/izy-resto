@@ -1,0 +1,99 @@
+name: CI - React App
+
+on:
+  push:
+    branches:
+      - main
+      - 'release/**'
+  pull_request:
+    branches:
+      - main
+      - 'release/**'
+  workflow_dispatch:
+
+env:
+  # Node version for consistency across jobs
+  NODE_VERSION: '20.x'
+  # Set to 'production' for main/release branches, else 'development'
+  NODE_ENV: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release/') && 'production' || 'development' }}
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      # Checkout repository securely
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      # Set up Node.js environment
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      # Restore node_modules cache for faster builds
+      - name: Restore node_modules cache
+        uses: actions/cache@v4
+        id: node-modules-cache
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+
+      # Install dependencies (uses cache if available)
+      - name: Install dependencies
+        run: npm ci
+        env:
+          NODE_ENV: development
+
+      # Lint codebase for code quality
+      - name: Lint code
+        run: npm run lint
+
+      # Run tests with coverage
+      - name: Run tests
+        run: npm test -- --ci --coverage
+        env:
+          CI: true
+
+      # Build the React app for production or staging
+      - name: Build React app
+        run: npm run build
+        env:
+          NODE_ENV: ${{ env.NODE_ENV }}
+
+      # Upload build artifacts for further jobs if needed
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: react-build
+          path: build/
+          retention-days: 3
+
+  # Deployment job is omitted as per deployment preferences (Deployment Preferences: no)
+  # If deployment is required in the future, add a job here for Netlify or other platforms
+
+  # Example of a job matrix for future environment-specific jobs
+  # matrix-example:
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       environment: [staging, production]
+  #   steps:
+  #     - name: Example step
+  #       run: echo "Environment: ${{ matrix.environment }}"
+
+# Notes:
+# - Secrets (e.g., API keys) should be referenced via ${{ secrets.SECRET_NAME }} if needed.
+# - Add deployment steps in a separate job if/when deployment is required.
+# - This workflow is modular and can be extended for staging/production environments.
+# - All steps use latest stable actions and follow security best practices.
