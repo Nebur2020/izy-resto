@@ -32,11 +32,6 @@ on:
         required: false
         default: 'production'
         type: string
-      version:
-        description: 'Git version (branch or tag)'
-        required: false
-        default: 'main'
-        type: string
       action:
         description: 'Deployment action (deploy or pause)'
         required: false
